@@ -8,8 +8,6 @@ using System.Collections.Generic;
 using Avalonia.Interactivity;
 using System;
 using Avalonia.Threading;
-using System.IO;
-using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.UI;
 

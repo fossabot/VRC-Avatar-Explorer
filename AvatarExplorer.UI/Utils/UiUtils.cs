@@ -74,8 +74,7 @@ public static class UIUtils
 
         button.Content = contentPanel;
         if (onClick != null) button.Click += onClick;
-
-        // StackPanel に追加
+        
         parent.Children.Add(button);
     }
 }

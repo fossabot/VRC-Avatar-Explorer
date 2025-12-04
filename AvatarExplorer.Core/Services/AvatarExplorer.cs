@@ -16,7 +16,7 @@ public class AvatarExplorer
     #region Database
     public void LoadItemDatabase(bool fromV1 = false)
     {
-        var database =  DatabaseUtils.LoadItemsData(SystemPath.ItemDatabasePath);
+        var database = fromV1 ? DatabaseUtils.LoadItemsDataFromV1(SystemPath.ItemDatabasePath) : DatabaseUtils.LoadItemsData(SystemPath.ItemDatabasePath);
 
         _items.Clear();
         _items.AddRange(database);
