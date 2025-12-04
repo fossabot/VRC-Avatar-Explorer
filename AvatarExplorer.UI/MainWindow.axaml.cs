@@ -30,8 +30,7 @@ public partial class MainWindow : Window
     {
         try
         {
-            var softwareFolderPath = DatabaseUtils.GetDataFolderPath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-            _avatarExplorer.LoadItemDatabase(Path.Join(softwareFolderPath, SystemFile.DatabaseFile));
+            _avatarExplorer.LoadItemDatabase(true);
             Localizer.Instance.LoadFromFile("ja-JP.json");
         }
         catch
@@ -73,7 +72,7 @@ public partial class MainWindow : Window
         foreach (ISelectableItem item in items.Take(30))
         {
             item.CustomTagType = customTagType;
-            UIUtils.AddItemButton(LeftPanel, item.GetImagePath(), item.GetTitle(), item.GetDescription(), item.GetTag(), LeftPanelButton_Clicked);
+            UIUtils.AddItemButton(LeftPanel, item.GetImagePath(), item.GetTitle(), item.GetDescription(), item.IconType, item.GetTag(), LeftPanelButton_Clicked);
         }
     }
 
@@ -95,7 +94,7 @@ public partial class MainWindow : Window
 
         foreach (ISelectableItem item in _avatarExplorer.GetItemsForCurrentState().Take(30))
         {
-            UIUtils.AddItemButton(RightPanel, item.GetImagePath(), item.GetTitle(), item.GetDescription(), item.GetTag(), RightPanelButton_Clicked);
+            UIUtils.AddItemButton(RightPanel, item.GetImagePath(), item.GetTitle(), item.GetDescription(), item.IconType, item.GetTag(), RightPanelButton_Clicked);
         }
     }
 
@@ -132,7 +131,7 @@ public partial class MainWindow : Window
 
         foreach (Item item in items.Take(30))
         {
-            UIUtils.AddItemButton(RightPanel, item.GetImagePath(), item.GetTitle(), string.Format(item.GetDescription(), item.Author));
+            UIUtils.AddItemButton(RightPanel, item.GetImagePath(), item.GetTitle(), string.Format(item.GetDescription(), item.Author), item.IconType, item.ItemPath);
         }
     }
 

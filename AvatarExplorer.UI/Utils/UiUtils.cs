@@ -1,16 +1,16 @@
 using System;
-using System.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using AvatarExplorer.Core.Models;
 
 namespace AvatarExplorer.UI.Utils;
 
 public static class UIUtils
 {
-    public static void AddItemButton(StackPanel parent, string imagePath, string title, string description, object? tag = null, EventHandler<RoutedEventArgs>? onClick = null)
+    public static void AddItemButton(StackPanel parent, string imagePath, string title, string description, IconType iconType, object? tag = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
         var button = new Button
         {
@@ -28,7 +28,7 @@ public static class UIUtils
 
         var image = new Image
         {
-            Source = IconUtils.GetIcon(imagePath),
+            Source = IconUtils.GetIcon(imagePath, iconType),
             Width = 70,
             Height = 70
         };

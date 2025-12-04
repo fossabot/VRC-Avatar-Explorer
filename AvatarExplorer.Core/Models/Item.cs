@@ -100,7 +100,7 @@ public class Item : ISelectableItem
 
     public string GetImagePath()
     {
-        return AuthorThumbnmailFileName;
+        return ThumbnmailFileName;
     }
 
     public string CustomTagType { get; set; } = string.Empty;
@@ -108,6 +108,8 @@ public class Item : ISelectableItem
     {
         return new ItemTagInfo(string.IsNullOrEmpty(CustomTagType) ? "Item" : CustomTagType, ItemPath);
     }
+    
+    public IconType IconType { get; } = IconType.Item;
 
     [JsonIgnore]
     public string SearchIndex { get; private set; } = string.Empty;

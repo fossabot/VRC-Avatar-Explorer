@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Avalonia.Media.Imaging;
+using AvatarExplorer.Core.Models;
 
 namespace AvatarExplorer.UI.Utils;
 
@@ -12,10 +13,16 @@ internal static class IconUtils
     };
     internal static bool IsSystemFileIcons(string fileName) => systemIcons.ContainsKey(fileName);
 
-    internal static Bitmap? GetIcon(string fileName)
+    internal static Bitmap? GetIcon(string fileName, IconType iconType)
     {
         if (IsSystemFileIcons(fileName)) return systemIcons[fileName];
-        return LoadImage(fileName);
+
+        return iconType switch
+        {
+            IconType.Item => LoadImage(Path.Join(SystemPath.ItemThumbnailsPath, fileName)),
+            IconType.Author => LoadImage(Path.Join(SystemPath.AuthorThumbnailsPath, fileName)),
+            _ => LoadImage(fileName),
+        };
     }
 
     private static Bitmap? LoadImage(string filePath)

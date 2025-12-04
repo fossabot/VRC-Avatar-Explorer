@@ -91,4 +91,6 @@ public class Category : ISelectableItem
     {
         return new ItemTagInfo(string.IsNullOrEmpty(CustomTagType) ? "Item.Category" : CustomTagType, Type.GetInternalId() ?? CustomCategory);
     }
+    
+    public IconType IconType { get; set; } = IconType.Item;
 }

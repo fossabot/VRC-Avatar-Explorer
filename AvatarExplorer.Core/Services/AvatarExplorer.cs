@@ -14,9 +14,17 @@ public class AvatarExplorer
     private readonly SelectionState _selectionState = new();
 
     #region Database
-    public void LoadItemDatabase(string path)
+    public void LoadItemDatabase(bool fromV1 = false)
     {
-        var database = DatabaseUtils.LoadItemsData(path);
+        var database =  DatabaseUtils.LoadItemsData(SystemPath.ItemDatabasePath);
+
+        _items.Clear();
+        _items.AddRange(database);
+    }
+
+    public void LoadItemDatabase(string path, bool fromV1 = false)
+    {
+        var database = fromV1 ? DatabaseUtils.LoadItemsDataFromV1(path) : DatabaseUtils.LoadItemsData(path);
 
         _items.Clear();
         _items.AddRange(database);
@@ -64,7 +72,7 @@ public class AvatarExplorer
             authors.Add(new Author
             {
                 Name = item.Author,
-                AuthorId = item.AuthorId,
+                AuthorThumbnailFileName = item.AuthorThumbnmailFileName,
                 AuthorItemCount = _items.Count(i => i.Author == item.Author)
             });
         }

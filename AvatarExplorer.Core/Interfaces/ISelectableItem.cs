@@ -1,4 +1,3 @@
-using System;
 using AvatarExplorer.Core.Models;
 
 namespace AvatarExplorer.Core.Interfaces;
@@ -11,4 +10,5 @@ public interface ISelectableItem
 
     public string CustomTagType { get; set; }
     public ItemTagInfo GetTag();
+    public IconType IconType { get; }
 }

@@ -1,5 +1,4 @@
 ﻿using AvatarExplorer.Core.Interfaces;
-using AvatarExplorer.Core.Models.V1;
 
 namespace AvatarExplorer.Core.Models;
 
@@ -13,7 +12,7 @@ public class Author : ISelectableItem
     /// <summary>
     /// アイテムの作者の画像パスを取得または設定します。
     /// </summary>
-    public string AuthorId { get; set; } = string.Empty;
+    public string AuthorThumbnailFileName { get; set; } = string.Empty;
 
     public int AuthorItemCount { get; set; } = 0;
 
@@ -28,7 +27,7 @@ public class Author : ISelectableItem
         
     public string GetImagePath()
     {
-        return AuthorId;
+        return AuthorThumbnailFileName;
     }
 
     public string CustomTagType { get; set; } = string.Empty;
@@ -36,4 +35,6 @@ public class Author : ISelectableItem
     {
         return new ItemTagInfo(string.IsNullOrEmpty(CustomTagType) ? "Author" : CustomTagType, Name);
     }
+    
+    public IconType IconType { get; set; } = IconType.Author;
 }

@@ -17,12 +17,12 @@ public static class DatabaseUtils
 
     public static string GetImagesFolderPath(string softwarePath)
         => Path.Combine(softwarePath, "images");
-
-    public static string GetAuthorImagesFolderPath(string softwarePath)
-        => Path.Combine(GetImagesFolderPath(softwarePath), "author_thumbnails");
-
+        
     public static string GetItemThumbnailsFolderPath(string softwarePath)
         => Path.Combine(GetImagesFolderPath(softwarePath), "item_thumbnails");
+
+    public static string GetAuthorThumbnailsFolderPath(string softwarePath)
+        => Path.Combine(GetImagesFolderPath(softwarePath), "author_thumbnails");
 
     internal static List<Item> LoadItemsDataFromV1(string path)
     {
