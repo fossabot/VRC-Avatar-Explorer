@@ -9,12 +9,13 @@ using System;
 using Avalonia.Threading;
 using AvatarExplorer.UI.Models;
 using AvatarExplorer.Core.Extensions;
+using AvatarExplorer.Core.Services;
 
 namespace AvatarExplorer.UI;
 
 public partial class MainWindow : Window
 {
-    private readonly Core.Services.AvatarExplorer _avatarExplorer = new();
+    private readonly AvatarExplorerApp _avatarExplorer = new();
 
     public MainWindow()
     {

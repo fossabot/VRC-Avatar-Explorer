@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
+using AvatarExplorer.Core.Services;
 using AvatarExplorer.Test.Localization;
 using AvatarExplorer.Test.Utils;
 
-var avatarExplorer = new AvatarExplorer.Core.Services.AvatarExplorer();
+var avatarExplorer = new AvatarExplorerApp();
 avatarExplorer.LoadItemDatabase(true);
 Localizer.Instance.LoadFromFile("locales/ja-JP.json");
 

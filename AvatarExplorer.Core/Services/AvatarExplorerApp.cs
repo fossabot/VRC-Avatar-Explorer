@@ -4,7 +4,7 @@ using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Services;
 
-public class AvatarExplorer
+public class AvatarExplorerApp
 {
     private readonly List<Item> _items = new();
     private readonly List<CommonAvatar> _commonAvatars = new();
