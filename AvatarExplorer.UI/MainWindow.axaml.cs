@@ -27,6 +27,7 @@ public partial class MainWindow : Window
         TODO: UIのタグを使った翻訳機能を追加する
         TODO: 空のアイコンを実装する
         TODO: 検索時のパスの表記を修正する
+        TODO: 実装やタグは新しくUIを作って上げることで実装する。右クリックメニューでは扱わない（チェックとかでメモリリークする可能性があるため）
         */
 
         InitializeComponent();
