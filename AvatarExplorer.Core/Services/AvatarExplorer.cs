@@ -61,32 +61,25 @@ public class AvatarExplorer
     #endregion
 
     #region Get API
-    public IReadOnlyList<Author> GetAuthors()
+    public IReadOnlyList<ItemCountInfo> GetAuthors()
     {
-        List<Author> authors = new();
-
-        foreach (Item item in _items)
-        {
-            if (authors.Any(author => author.Name == item.Author)) continue;
-            authors.Add(new Author
-            {
-                Name = item.Author,
-                AuthorThumbnailFileName = item.AuthorThumbnmailFileName,
-                AuthorItemCount = _items.Count(i => i.Author == item.Author)
-            });
-        }
-
-        return authors;
+        return _items
+            .GroupBy(item => new { item.Author, item.AuthorThumbnmailFileName })
+            .Select(g => new ItemCountInfo(
+                new Author { Name = g.Key.Author, AuthorThumbnailFileName = g.Key.AuthorThumbnmailFileName },
+                g.Count()
+            ))
+            .ToList();
     }
 
-    public IReadOnlyList<Item> GetAvatars()
+    public IReadOnlyList<ItemCountInfo> GetAvatars()
     {
-        return _items.Where(i => i.Type == ItemType.Avatar).ToList();
+        return _items.Where(i => i.Type == ItemType.Avatar).Select(i => new ItemCountInfo(i, 0)).ToList();
     }
 
-    public IReadOnlyList<Category> GetCategories()
+    public IReadOnlyList<ItemCountInfo> GetCategories()
     {
-        return CategoryUtils.GetCategories(_items);
+        return CategoryUtils.GetCategories(_items).ToList();
     }
 
     public IReadOnlyList<Item> GetAllItems()
@@ -94,76 +87,69 @@ public class AvatarExplorer
         return _items;
     }
 
-    public IReadOnlyList<ISelectableItem> GetItemsForCurrentState()
+    public IReadOnlyList<ItemCountInfo> GetItemsForCurrentState()
     {
         SelectionNode? currentSelectionNode = _selectionState.Current;
-        if (currentSelectionNode == null) return new List<ISelectableItem>();
+        if (currentSelectionNode == null) return new List<ItemCountInfo>();
 
         switch (currentSelectionNode.Type)
         {
             case "Root.Avatar":
                 {
-                    return GetCategoriesFromItems(_items.Where(i => i.SupportedAvatars.Count == 0 || i.SupportedAvatars.Contains(currentSelectionNode.Key) || i.ImplementedAvatars.Contains(currentSelectionNode.Key)), true);
+                    return GetCategoriesFromItems(_items.Where(i => i.SupportedAvatars.Count == 0 || i.SupportedAvatars.Contains(currentSelectionNode.Key) || i.ImplementedAvatars.Contains(currentSelectionNode.Key)));
                 }
 
             case "Root.Author":
                 {
-                    return GetCategoriesFromItems(_items.Where(i => i.Author == currentSelectionNode.Key), true);
+                    return GetCategoriesFromItems(_items.Where(i => i.Author == currentSelectionNode.Key));
                 }
 
             case "Root.Category":
                 {
-                    return _items.Where(i => (i.Type == ItemType.Custom && i.CustomCategory == currentSelectionNode.Key) || (i.Type.GetInternalId() == currentSelectionNode.Key)).ToList();
+                    return _items
+                        .Where(i => (i.Type == ItemType.Custom && i.CustomCategory == currentSelectionNode.Key) || (i.Type.GetInternalId() == currentSelectionNode.Key))
+                        .Select(i => new ItemCountInfo(i, 0))
+                        .ToList();
                 }
 
             case "Item.Category":
                 {
                     SelectionNode? rootSelectionNode = _selectionState.Root;
-                    if (rootSelectionNode == null) return new List<ISelectableItem>();
+                    if (rootSelectionNode == null) return new List<ItemCountInfo>();
                     
                     if (rootSelectionNode.Type == "Root.Avatar")
                     {
                         return _items.Where(i => (i.SupportedAvatars.Count == 0 || i.SupportedAvatars.Contains(rootSelectionNode.Key) || i.ImplementedAvatars.Contains(rootSelectionNode.Key)) &&
                             ((i.Type == ItemType.Custom && i.CustomCategory == currentSelectionNode.Key) || (i.Type.GetInternalId() == currentSelectionNode.Key))
-                        ).ToList();
+                        ).Select(i => new ItemCountInfo(i, 0)).ToList();
                     }
                     else if (rootSelectionNode.Type == "Root.Author")
                     {
                         return _items.Where(i => i.Author == rootSelectionNode.Key &&
                             ((i.Type == ItemType.Custom && i.CustomCategory == currentSelectionNode.Key) || (i.Type.GetInternalId() == currentSelectionNode.Key))
-                        ).ToList();
+                        ).Select(i => new ItemCountInfo(i, 0)).ToList();
                     }
 
                     break;
                 }
         }
 
-        return new List<ISelectableItem>();
+        return new List<ItemCountInfo>();
     }
 
-    private static List<Category> GetCategoriesFromItems(IEnumerable<Item> items, bool isRoot)
+    private static List<ItemCountInfo> GetCategoriesFromItems(IEnumerable<Item> items)
     {
-        IEnumerable<Category> itemCategories = items
+        IEnumerable<ItemCountInfo> itemCategories = items
             .Where(i => i.Type != ItemType.Custom)
             .Select(i => i.Type)
             .Distinct()
-            .Select(i => new Category(i)
-            {
-                CategoryItemCount = items.Count(item => item.Type == i),
-                InternalId = i.GetInternalId() ?? ""
-            });
+            .Select(i => new ItemCountInfo(new Category(i), items.Count(item => item.Type == i)));
 
-        IEnumerable<Category> itemCustomCategories = items
+        IEnumerable<ItemCountInfo> itemCustomCategories = items
             .Where(i => i.Type == ItemType.Custom)
             .Select(i => i.CustomCategory)
             .Distinct()
-            .Select(i => new Category(i)
-            {
-                CategoryItemCount = items.Count(item => item.CustomCategory == i)
-            });
-
-        var allCategories = itemCategories.Concat(itemCustomCategories).ToList();
-        if (isRoot) allCategories.ForEach(c => c.CustomTagType = "Root.Category");
+            .Select(i => new ItemCountInfo(new Category(i), items.Count(item => item.CustomCategory == i)));
 
         return itemCategories.Concat(itemCustomCategories).ToList();
     }

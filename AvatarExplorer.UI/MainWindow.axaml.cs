@@ -3,11 +3,11 @@ using AvatarExplorer.UI.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.Core.Models;
 using System.Linq;
-using AvatarExplorer.Core.Interfaces;
 using System.Collections.Generic;
 using Avalonia.Interactivity;
 using System;
 using Avalonia.Threading;
+using AvatarExplorer.UI.Models;
 
 namespace AvatarExplorer.UI;
 
@@ -44,34 +44,33 @@ public partial class MainWindow : Window
 
         LeftPanel.Children.Clear();
 
-        List<ISelectableItem> items = new();
+        List<ItemCountInfo> items = new();
         
-        string customTagType = string.Empty;
+        string customType = string.Empty;
         switch (LeftFilter.SelectedIndex)
         {
             case 0:
             {
                 items.AddRange(_avatarExplorer.GetAvatars());
-                customTagType = "Root.Avatar";
+                customType = "Root.Avatar";
                 break;
             }
             case 1:
             {
                 items.AddRange(_avatarExplorer.GetAuthors());
-                customTagType = "Root.Author";
+                customType = "Root.Author";
                 break;
             }
             case 2:{
                 items.AddRange(_avatarExplorer.GetCategories());
-                customTagType = "Root.Category";
+                customType = "Root.Category";
                 break;
             }
         }
 
-        foreach (ISelectableItem item in items.Take(30))
+        foreach (ItemCountInfo itemCountInfo in items.Take(30))
         {
-            item.CustomTagType = customTagType;
-            UIUtils.AddItemButton(LeftPanel, item, LeftPanelButton_Clicked);
+            UIUtils.AddItemButton(LeftPanel, new UISelectableItem(itemCountInfo).SetType(customType), LeftPanelButton_Clicked);
         }
     }
 
@@ -98,9 +97,9 @@ public partial class MainWindow : Window
         if (RightPanel == null) return;
         RightPanel.Children.Clear();
 
-        foreach (ISelectableItem item in _avatarExplorer.GetItemsForCurrentState().Take(30))
+        foreach (ItemCountInfo itemCountInfo in _avatarExplorer.GetItemsForCurrentState().Take(30))
         {
-            UIUtils.AddItemButton(RightPanel, item, RightPanelButton_Clicked);
+            UIUtils.AddItemButton(RightPanel, new UISelectableItem(itemCountInfo), RightPanelButton_Clicked);
         }
     }
     private void RightPanelButton_Clicked(object? sender, RoutedEventArgs e)
@@ -138,7 +137,7 @@ public partial class MainWindow : Window
 
         foreach (Item item in items.Take(30))
         {
-            UIUtils.AddItemButton(RightPanel, item);
+            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0));
         }
     }
     #endregion

@@ -2,10 +2,9 @@
 using AvatarExplorer.Test.Localization;
 using AvatarExplorer.Test.Utils;
 
-var avatarExplorer = new AvatarExplorer.Core.AvatarExplorer();
-avatarExplorer.LoadItemDatabase("./ItemsData.json");
-
-Localizer.Instance.LoadFromFile("./ja-JP.json");
+var avatarExplorer = new AvatarExplorer.Core.Services.AvatarExplorer();
+avatarExplorer.LoadItemDatabase(true);
+Localizer.Instance.LoadFromFile("locales/ja-JP.json");
 
 var searchFilter = SearchUtils.BuildFilter("Avatar=キプフェル まめひなた");
 

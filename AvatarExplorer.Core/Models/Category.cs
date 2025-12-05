@@ -7,7 +7,6 @@ public class Category : ISelectableItem
 {
     public ItemType Type { get; private set; } = ItemType.None;
     public string CustomCategory { get; private set; } = string.Empty;
-    public int CategoryItemCount { get; set; } = 0;
 
     #region Constructor
     public Category()
@@ -60,19 +59,8 @@ public class Category : ISelectableItem
 
     public bool IsEmpty() => Type == ItemType.None && CustomCategory == string.Empty;
 
-    public void SetEmpty()
+    public override string ToString()
     {
-        Type = ItemType.None;
-        CustomCategory = string.Empty;
+        return Type == ItemType.Custom ? CustomCategory : Type.GetInternalId() ?? "";
     }
-
-    #region ISelectableItem
-    public string GetTitle() => Type == ItemType.Custom ? CustomCategory : Type.ToString();
-    public (string internalId, string[] args) GetDescription() => ("Button.Description.Item.Count", [ CategoryItemCount.ToString() ]);
-    public string GetImageFileName() => "System.Icon.Folder";
-    public string CustomTagType { get; set; } = string.Empty;
-    public ItemTagInfo GetTag() => new ItemTagInfo(string.IsNullOrEmpty(CustomTagType) ? "Item.Category" : CustomTagType, Type.GetInternalId() ?? CustomCategory);
-    public IconType IconType { get; set; } = IconType.Item;
-    public string InternalId { get; set; } = "";
-    #endregion
 }

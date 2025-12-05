@@ -4,21 +4,21 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
-using AvatarExplorer.Core.Interfaces;
 using AvatarExplorer.UI.Localization;
+using AvatarExplorer.UI.Models;
 
 namespace AvatarExplorer.UI.Utils;
 
 public static class UIUtils
 {
-    public static void AddItemButton(StackPanel parent, ISelectableItem item, EventHandler<RoutedEventArgs>? onClick = null)
+    public static void AddItemButton(StackPanel parent, UISelectableItem item, EventHandler<RoutedEventArgs>? onClick = null)
     {
         var button = new Button
         {
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Top,
             Margin = new Thickness(15, 0, 25, 10),
-            Tag = item.GetTag()
+            Tag = item.Tag
         };
 
         var contentPanel = new StackPanel
@@ -29,12 +29,12 @@ public static class UIUtils
 
         var image = new Image
         {
-            Source = IconUtils.GetIcon(item.GetImageFileName(), item.IconType),
+            Source = IconUtils.GetIcon(item.ImageFileName, item.IconType),
             Width = 70,
             Height = 70
         };
 
-        if (!IconUtils.IsSystemFileIcons(item.GetImageFileName()))
+        if (!IconUtils.IsSystemFileIcons(item.ImageFileName))
         {
             image.PointerEntered += (s, e) =>
             {
@@ -56,12 +56,12 @@ public static class UIUtils
 
         var titleText = new TextBlock
         {
-            Text = string.IsNullOrEmpty(item.InternalId) ? item.GetTitle() : Localizer.Instance.GetDisplayName(item.InternalId),
+            Text = Localizer.Instance.GetDisplayName(item.Title),
             FontSize = 16,
             FontWeight = FontWeight.Bold
         };
 
-        var (internalId, args) = item.GetDescription();
+        var (internalId, args) = item.Description;
         var descText = new TextBlock
         {
             Text = Localizer.Instance.GetDisplayName(internalId, args),
