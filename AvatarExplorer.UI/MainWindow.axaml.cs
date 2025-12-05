@@ -24,6 +24,7 @@ public partial class MainWindow : Window
         TODO: 戻ったときに、どこを表示するのかはっきりする
         TODO: 検索からアイテムを開いて、またそこで検索したらどんどん溜まっていくのを修正する
         TODO: 右クリックメニューを作る
+        TODO: UIのタグを使った翻訳機能を追加する
         */
 
         InitializeComponent();
@@ -108,7 +109,12 @@ public partial class MainWindow : Window
         if (RightPanel == null) return;
         RightPanel.Children.Clear();
 
-        foreach (ItemCountInfo itemCountInfo in _avatarExplorer.GetItemsForCurrentState().Take(30))
+        var items = _avatarExplorer.GetItemsForCurrentState();
+        
+        if (items.Count == 0) ShowNoItemsLabel();
+        else HideNoItemsLabel();
+
+        foreach (ItemCountInfo itemCountInfo in items.Take(30))
         {
             UIUtils.AddItemButton(RightPanel, new UISelectableItem(itemCountInfo), RightPanelButton_Clicked);
         }
@@ -178,6 +184,9 @@ public partial class MainWindow : Window
 
         RightPanel.Children.Clear();
         var items = _avatarExplorer.SearchItems(SearchUtils.BuildFilter(SearchTextBox.Text));
+        
+        if (items.Count == 0) ShowNoItemsLabel();
+        else HideNoItemsLabel();
 
         foreach (Item item in items.Take(30))
         {
@@ -257,6 +266,18 @@ public partial class MainWindow : Window
                     return Localizer.Instance.GetDisplayName(key, [value]);
                 })
         );
+    }
+
+    private void ShowNoItemsLabel()
+    {
+        if (NoItemsMessage == null) return;
+        NoItemsMessage.IsVisible = true;
+    }
+
+    private void HideNoItemsLabel()
+    {
+        if (NoItemsMessage == null) return;
+        NoItemsMessage.IsVisible = false;
     }
 
     #region UI Event Handler
