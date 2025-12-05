@@ -7,6 +7,7 @@ public static class SystemPath
     public static readonly string SoftwareDataPath = DatabaseUtils.GetSoftwareFolderPath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
     public static readonly string DatabaseFolderPath = DatabaseUtils.GetDataFolderPath(SoftwareDataPath);
     public static readonly string ImagesFolderPath = DatabaseUtils.GetImagesFolderPath(SoftwareDataPath);
+    public static readonly string ItemsFolderPath = DatabaseUtils.GetItemsFolderPath(SoftwareDataPath);
 
     public static readonly string AuthorThumbnailsPath = DatabaseUtils.GetAuthorThumbnailsFolderPath(SoftwareDataPath);
     public static readonly string ItemThumbnailsPath = DatabaseUtils.GetItemThumbnailsFolderPath(SoftwareDataPath);

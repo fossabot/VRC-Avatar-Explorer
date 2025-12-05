@@ -1,3 +1,4 @@
+using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Models;
 
 namespace AvatarExplorer.Core.Utils;
@@ -15,7 +16,8 @@ public static class CategoryUtils
                 .Where(i => !InvalidItemTypes.Contains(i) && i != ItemType.Custom)
                 .Select(i => new Category(i)
                 {
-                    CategoryItemCount = items.Count(item => item.Type == i)
+                    CategoryItemCount = items.Count(item => item.Type == i),
+                    InternalId = i.GetInternalId() ?? ""
                 })
         );
 

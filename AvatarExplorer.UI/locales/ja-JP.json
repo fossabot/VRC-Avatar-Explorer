@@ -7,5 +7,10 @@
     "Search.Category.HairStyle": "髪型",
     "Search.Category.Animation": "アニメーション",
     "Search.Category.Tool": "ツール",
-    "Search.Category.Shader": "シェーダー"
+    "Search.Category.Shader": "シェーダー",
+
+    "Button.Description.Item.AuthorName": "作者: {0}",
+    "Button.Description.Item.AuthorName.CommonAvatar": "作者: {0}  |  共通素体名: {1}",
+    "Button.Description.Item.AuthorName.CommonAvatar.Tags": "作者: {0}  |  共通素体名: {1}\nタグ: {2}",
+    "Button.Description.Item.Count": "{0}個の項目"
 }

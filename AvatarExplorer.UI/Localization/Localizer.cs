@@ -37,6 +37,12 @@ public class Localizer
         return _map.TryGetValue(internalId, out var name) ? name : internalId;
     }
 
+    public string GetDisplayName(string internalId, string[] args)
+    {
+        var localizedText = _map.TryGetValue(internalId, out var name) ? name : internalId;
+        return args.Length > 0 ? string.Format(localizedText, args) : localizedText;
+    }
+
     public string? GetInternalId(string displayName)
     {
         foreach (var kv in _map)

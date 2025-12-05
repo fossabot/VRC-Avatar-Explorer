@@ -16,25 +16,13 @@ public class Author : ISelectableItem
 
     public int AuthorItemCount { get; set; } = 0;
 
-    public string GetTitle()
-    {
-        return Name;
-    }
-    public string GetDescription()
-    {
-        return string.Format("{0}個の項目", AuthorItemCount);
-    }
-        
-    public string GetImagePath()
-    {
-        return AuthorThumbnailFileName;
-    }
-
+    #region ISelectableItem
+    public string GetTitle() => Name;
+    public (string internalId, string[] args) GetDescription() => ("Button.Description.Item.Count", [ AuthorItemCount.ToString() ]);
+    public string GetImageFileName() => AuthorThumbnailFileName;
     public string CustomTagType { get; set; } = string.Empty;
-    public ItemTagInfo GetTag()
-    {
-        return new ItemTagInfo(string.IsNullOrEmpty(CustomTagType) ? "Author" : CustomTagType, Name);
-    }
-    
+    public ItemTagInfo GetTag() => new ItemTagInfo(string.IsNullOrEmpty(CustomTagType) ? "Author" : CustomTagType, Name);
     public IconType IconType { get; set; } = IconType.Author;
+    public string InternalId { get; set; } = "";
+    #endregion
 }

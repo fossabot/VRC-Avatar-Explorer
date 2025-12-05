@@ -1,4 +1,3 @@
-using System;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Interfaces;
 
@@ -14,7 +13,6 @@ public class Category : ISelectableItem
     public Category()
     {
     }
-
     public Category(Category category)
     {
         Type = category.Type;
@@ -34,6 +32,7 @@ public class Category : ISelectableItem
     }
     #endregion
 
+    #region Set API
     public void SetCategory(Category category)
     {
         Type = category.Type;
@@ -51,6 +50,7 @@ public class Category : ISelectableItem
         Type = ItemType.Custom;
         CustomCategory = customCategory;
     }
+    #endregion
 
     public string GetCategoryName()
     {
@@ -66,31 +66,13 @@ public class Category : ISelectableItem
         CustomCategory = string.Empty;
     }
 
-    public string GetTitle()
-    {
-        if (Type == ItemType.Custom)
-        {
-            return CustomCategory;
-        }
-        else
-        {
-            return Type.ToString();
-        }
-    }
-
-    public string GetDescription()
-        => string.Format("{0}個の項目", CategoryItemCount);
-
-    public string GetImagePath()
-    {
-        return "System.Icon.Folder";
-    }
-
+    #region ISelectableItem
+    public string GetTitle() => Type == ItemType.Custom ? CustomCategory : Type.ToString();
+    public (string internalId, string[] args) GetDescription() => ("Button.Description.Item.Count", [ CategoryItemCount.ToString() ]);
+    public string GetImageFileName() => "System.Icon.Folder";
     public string CustomTagType { get; set; } = string.Empty;
-    public ItemTagInfo GetTag()
-    {
-        return new ItemTagInfo(string.IsNullOrEmpty(CustomTagType) ? "Item.Category" : CustomTagType, Type.GetInternalId() ?? CustomCategory);
-    }
-    
+    public ItemTagInfo GetTag() => new ItemTagInfo(string.IsNullOrEmpty(CustomTagType) ? "Item.Category" : CustomTagType, Type.GetInternalId() ?? CustomCategory);
     public IconType IconType { get; set; } = IconType.Item;
+    public string InternalId { get; set; } = "";
+    #endregion
 }

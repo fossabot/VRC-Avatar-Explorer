@@ -1,6 +1,6 @@
 namespace AvatarExplorer.Core.Models;
 
-public enum IconType //システムアイコンは事前に処理されるため関係ない
+public enum IconType
 {
     Item,
     Author

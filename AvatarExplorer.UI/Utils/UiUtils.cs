@@ -4,20 +4,21 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Interfaces;
+using AvatarExplorer.UI.Localization;
 
 namespace AvatarExplorer.UI.Utils;
 
 public static class UIUtils
 {
-    public static void AddItemButton(StackPanel parent, string imagePath, string title, string description, IconType iconType, object? tag = null, EventHandler<RoutedEventArgs>? onClick = null)
+    public static void AddItemButton(StackPanel parent, ISelectableItem item, EventHandler<RoutedEventArgs>? onClick = null)
     {
         var button = new Button
         {
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Top,
             Margin = new Thickness(15, 0, 25, 10),
-            Tag = tag
+            Tag = item.GetTag()
         };
 
         var contentPanel = new StackPanel
@@ -28,12 +29,12 @@ public static class UIUtils
 
         var image = new Image
         {
-            Source = IconUtils.GetIcon(imagePath, iconType),
+            Source = IconUtils.GetIcon(item.GetImageFileName(), item.IconType),
             Width = 70,
             Height = 70
         };
 
-        if (!IconUtils.IsSystemFileIcons(imagePath))
+        if (!IconUtils.IsSystemFileIcons(item.GetImageFileName()))
         {
             image.PointerEntered += (s, e) =>
             {
@@ -55,14 +56,15 @@ public static class UIUtils
 
         var titleText = new TextBlock
         {
-            Text = title,
+            Text = string.IsNullOrEmpty(item.InternalId) ? item.GetTitle() : Localizer.Instance.GetDisplayName(item.InternalId),
             FontSize = 16,
             FontWeight = FontWeight.Bold
         };
 
+        var (internalId, args) = item.GetDescription();
         var descText = new TextBlock
         {
-            Text = description,
+            Text = Localizer.Instance.GetDisplayName(internalId, args),
             FontSize = 13
         };
 

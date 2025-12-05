@@ -90,26 +90,36 @@ public class Item : ISelectableItem
     /// </summary>
     public string UpdatedDate { get; set; } = string.Empty;
 
-    public string GetTitle()
-        => Title;
+    //TODO: 全部で共有されちゃうから直す。やっぱりGetDescriptionに渡すのが良いかも
+    [JsonIgnore]
+    public string CommonAvatarName { get; set; } = "";
 
-    public string GetDescription()
+    #region ISelectableItem
+    public string GetTitle() => Title;
+    public (string internalId, string[] args) GetDescription()
     {
-        return string.Format("作者: {0}", Author);
+        if (!string.IsNullOrEmpty(CommonAvatarName) && Tags.Count > 0)
+        {
+            return ("Button.Description.Item.AuthorName.CommonAvatar.Memo", [Author, CustomCategory, string.Join(", ", Tags)]);
+        }
+        else if (!string.IsNullOrEmpty(CommonAvatarName))
+        {
+            return ("Button.Description.Item.AuthorName.CommonAvatar", [Author, CustomCategory]);
+        }
+        else
+        {
+            return ("Button.Description.Item.AuthorName", [Author]);
+        }
     }
-
-    public string GetImagePath()
-    {
-        return ThumbnmailFileName;
-    }
-
+    public string GetImageFileName() => ThumbnmailFileName;
+    [JsonIgnore]
     public string CustomTagType { get; set; } = string.Empty;
-    public ItemTagInfo GetTag()
-    {
-        return new ItemTagInfo(string.IsNullOrEmpty(CustomTagType) ? "Item" : CustomTagType, ItemPath);
-    }
-    
+    public ItemTagInfo GetTag() => new ItemTagInfo(string.IsNullOrEmpty(CustomTagType) ? "Item" : CustomTagType, ItemPath);
+    [JsonIgnore]
     public IconType IconType { get; } = IconType.Item;
+    [JsonIgnore]
+    public string InternalId { get; set; } = "";
+    #endregion
 
     [JsonIgnore]
     public string SearchIndex { get; private set; } = string.Empty;

@@ -1,10 +1,9 @@
 ﻿using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Interfaces;
 using AvatarExplorer.Core.Models;
-using AvatarExplorer.Core.Services;
 using AvatarExplorer.Core.Utils;
 
-namespace AvatarExplorer.Core;
+namespace AvatarExplorer.Core.Services;
 
 public class AvatarExplorer
 {
@@ -150,7 +149,8 @@ public class AvatarExplorer
             .Distinct()
             .Select(i => new Category(i)
             {
-                CategoryItemCount = items.Count(item => item.Type == i)
+                CategoryItemCount = items.Count(item => item.Type == i),
+                InternalId = i.GetInternalId() ?? ""
             });
 
         IEnumerable<Category> itemCustomCategories = items

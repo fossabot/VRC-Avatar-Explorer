@@ -13,7 +13,7 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow : Window
 {
-    private readonly Core.AvatarExplorer _avatarExplorer = new();
+    private readonly Core.Services.AvatarExplorer _avatarExplorer = new();
 
     public MainWindow()
     {
@@ -29,7 +29,7 @@ public partial class MainWindow : Window
         try
         {
             _avatarExplorer.LoadItemDatabase(true);
-            Localizer.Instance.LoadFromFile("ja-JP.json");
+            Localizer.Instance.LoadFromFile("locales/ja-JP.json");
         }
         catch
         {
@@ -37,6 +37,7 @@ public partial class MainWindow : Window
         }
     }
 
+    #region Left Panel
     private void RenderLeftPanel()
     {
         if (LeftPanel == null) return;
@@ -70,7 +71,7 @@ public partial class MainWindow : Window
         foreach (ISelectableItem item in items.Take(30))
         {
             item.CustomTagType = customTagType;
-            UIUtils.AddItemButton(LeftPanel, item.GetImagePath(), item.GetTitle(), item.GetDescription(), item.IconType, item.GetTag(), LeftPanelButton_Clicked);
+            UIUtils.AddItemButton(LeftPanel, item, LeftPanelButton_Clicked);
         }
     }
 
@@ -84,7 +85,14 @@ public partial class MainWindow : Window
             RenderRightPanel();
         }
     }
+    
+    private void LeftFilter_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        RenderLeftPanel();
+    }
+    #endregion
 
+    #region Right Panel
     private void RenderRightPanel()
     {
         if (RightPanel == null) return;
@@ -92,10 +100,9 @@ public partial class MainWindow : Window
 
         foreach (ISelectableItem item in _avatarExplorer.GetItemsForCurrentState().Take(30))
         {
-            UIUtils.AddItemButton(RightPanel, item.GetImagePath(), item.GetTitle(), item.GetDescription(), item.IconType, item.GetTag(), RightPanelButton_Clicked);
+            UIUtils.AddItemButton(RightPanel, item, RightPanelButton_Clicked);
         }
     }
-
     private void RightPanelButton_Clicked(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is ItemTagInfo itemTagInfo)
@@ -104,7 +111,9 @@ public partial class MainWindow : Window
             RenderRightPanel();
         }
     }
+    #endregion
 
+    #region Search Box
     private readonly DispatcherTimer _searchTimer = new() { Interval = TimeSpan.FromMilliseconds(150) };
     private void SearchTextBox_TextChanged(object? sender, TextChangedEventArgs e)
     {
@@ -129,15 +138,12 @@ public partial class MainWindow : Window
 
         foreach (Item item in items.Take(30))
         {
-            UIUtils.AddItemButton(RightPanel, item.GetImagePath(), item.GetTitle(), string.Format(item.GetDescription(), item.Author), item.IconType, item.ItemPath);
+            UIUtils.AddItemButton(RightPanel, item);
         }
     }
+    #endregion
 
-    private void LeftFilter_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        RenderLeftPanel();
-    }
-
+    #region Dialog
     private void ShowDialog(string title, string content)
     {
         if (DialogTitle == null || DialogContent == null) return;
@@ -147,7 +153,15 @@ public partial class MainWindow : Window
 
         DialogOverlay.IsVisible = true;
     }
+    private void DialogOK_Click(object? sender, RoutedEventArgs e)
+    {
+        if (DialogOverlay == null) return;
 
+        DialogOverlay.IsVisible = false;
+    }
+    #endregion
+
+    #region Progress Dialog
     private void ShowProgress(string title)
     {
         if (ProgressBarTitle == null || ProgressOverlay == null) return;
@@ -162,16 +176,13 @@ public partial class MainWindow : Window
         ProgressBar.Value = Math.Clamp(value, 0, 100);
         ProgressBar.IsIndeterminate = isIndeterminate;
     }
+    #endregion
 
-    private void DialogOK_Click(object? sender, RoutedEventArgs e)
-    {
-        if (DialogOverlay == null) return;
-        DialogOverlay.IsVisible = false;
-    }
-
+    #region UI Event Handler
     private void Undo_Click(object? sender, RoutedEventArgs e)
     {
         _avatarExplorer.SelectUndo();
         RenderRightPanel();
     }
+    #endregion
 }

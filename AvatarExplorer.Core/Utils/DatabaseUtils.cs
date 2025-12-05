@@ -17,6 +17,9 @@ public static class DatabaseUtils
 
     public static string GetImagesFolderPath(string softwarePath)
         => Path.Combine(softwarePath, "images");
+
+    public static string GetItemsFolderPath(string softwarePath)
+        => Path.Combine(softwarePath, "items");
         
     public static string GetItemThumbnailsFolderPath(string softwarePath)
         => Path.Combine(GetImagesFolderPath(softwarePath), "item_thumbnails");
