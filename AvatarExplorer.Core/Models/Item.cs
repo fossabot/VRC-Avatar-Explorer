@@ -112,13 +112,13 @@ public class Item : ISelectableItem
 
     public static Item FromV1(ItemV1 item)
     {
-        return new Item()
+        var migratedItem = new Item()
         {
             Title = item.Title,
             Author = item.AuthorName,
             AuthorId = item.AuthorId,
             BoothId = item.BoothId,
-            ItemPath = item.ItemPath.Replace("Datas\\Items\\", "<sys>"),
+            ItemPath = MigrateItemPath(item.ItemPath),
             MaterialPath = item.MaterialPath,
             ThumbnmailFileName = item.ImagePath.Replace("Datas\\Thumbnail\\", ""),
             AuthorThumbnmailFileName = item.AuthorImageFilePath.Replace("Datas\\AuthorImage\\", ""),
@@ -131,5 +131,21 @@ public class Item : ISelectableItem
             CreatedDate = item.CreatedDate,
             UpdatedDate = item.UpdatedDate,
         };
+
+        MigrateItemPaths(migratedItem.SupportedAvatars);
+        MigrateItemPaths(migratedItem.ImplementedAvatars);
+
+        return migratedItem;
     }
+
+    private static void MigrateItemPaths(List<string> paths)
+    {
+        for (int i = 0; i < paths.Count; i++)
+        {
+            paths[i] = MigrateItemPath(paths[i]);
+        }
+    }
+
+    private static string MigrateItemPath(string path)
+        => path.Replace("Datas\\Items\\", "<sys>");
 }

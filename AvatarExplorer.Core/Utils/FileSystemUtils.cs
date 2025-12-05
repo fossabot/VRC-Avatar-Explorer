@@ -4,6 +4,9 @@ public static class FileSystemUtils
 {
     public static IEnumerable<string> EnumerateFiles(string root)
     {
+        if (!Directory.Exists(root))
+            yield break;
+
         var directories = new Stack<string>();
         directories.Push(root);
 

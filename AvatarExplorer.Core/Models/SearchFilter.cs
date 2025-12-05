@@ -124,13 +124,13 @@ public class SearchFilter
             (target, filter) => target.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
         );
 
-        // TODO: File対応
-        // bool matchFile = FileNames.Count == 0
-        //     || MatchesFilter(
-        //         ItemUtils.GetItemFolderInfo(item.ItemPath, item.MaterialPath).GetAllItem().Select(file => file.FileName + file.FileExtension), FileNames,
-        //         IsOrSearch,
-        //         (target, filter) => target.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
-        //     );
+        //TODO: マテリアルフォルダも追加
+        bool matchFile = FileNames.Count == 0
+            || MatchesFilter(
+                FileSystemUtils.EnumerateFiles(ItemUtils.GetItemPath(item.ItemPath)), FileNames,
+                IsOrSearch,
+                (target, filter) => target.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
+            );
         
         var implementedAvatarNames = item.ImplementedAvatars.Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar));
 
@@ -178,7 +178,7 @@ public class SearchFilter
             && matchCategory
             && matchMemo
             && matchPath
-            // && matchFile
+            && matchFile
             && matchImplemented
             && matchNotImplemented
             && matchTag

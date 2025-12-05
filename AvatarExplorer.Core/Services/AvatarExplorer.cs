@@ -136,7 +136,7 @@ public class AvatarExplorer
                 {
                     var fileItems = new List<ItemCountInfo>();
 
-                    string itemPath = currentSelectionNode.Key.StartsWith("<sys>") ? Path.Join(SystemPath.ItemsFolderPath, currentSelectionNode.Key.Replace("<sys>", "")) : currentSelectionNode.Key;
+                    string itemPath = ItemUtils.GetItemPath(currentSelectionNode.Key);
 
                     FileCategory[] extensionFilters = Enum.GetValues<FileCategory>();
                     foreach (var filter in extensionFilters)
@@ -157,7 +157,7 @@ public class AvatarExplorer
                                 categoryItem.FilePaths.Add(file);
                             }
                         }
-                        
+
                         if (categoryItem.FilePaths.Count > 0)
                         {
                             fileItems.Add(new ItemCountInfo(categoryItem, categoryItem.FilePaths.Count));
@@ -216,7 +216,7 @@ public class AvatarExplorer
     public IReadOnlyList<Item> SearchItems(SearchFilter filter)
     {
         var avatarNameMaps = DatabaseUtils.GetAvatarNameMaps(_items);
-
+        
         return _items
             .Where(i => filter.Matches(avatarNameMaps, _commonAvatars, i))
             .OrderByDescending(i => SearchUtils.GetScore(i, filter.SearchWords))

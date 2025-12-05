@@ -42,4 +42,9 @@ internal static class ItemUtils
 
         return avatarStatus;
     }
+
+    internal static string GetItemPath(string itemPath)
+    {
+        return itemPath.StartsWith("<sys>") ? Path.Join(SystemPath.ItemsFolderPath, itemPath.Replace("<sys>", "")) : itemPath;
+    }
 }
