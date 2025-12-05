@@ -24,4 +24,6 @@ internal class SelectionState
     public void Clear() => _stack.Clear();
 
     public SelectionNode? Search(string type) => _stack.FirstOrDefault(i => i.Type == type);
+    
+    public IEnumerable<SelectionNode> GetCurrentPath() => _stack.Reverse();
 }

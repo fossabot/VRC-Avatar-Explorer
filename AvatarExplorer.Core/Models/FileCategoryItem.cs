@@ -1,4 +1,3 @@
-using System;
 using AvatarExplorer.Core.Interfaces;
 
 namespace AvatarExplorer.Core.Models;

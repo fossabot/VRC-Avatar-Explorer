@@ -111,7 +111,7 @@ public class AvatarExplorer
                         .ToList();
                 }
 
-            case ItemTagState.ItemCategory:
+            case ItemTagState.RootSelectedCategory:
                 {
                     SelectionNode? rootSelectionNode = _selectionState.Root;
                     if (rootSelectionNode == null) return new List<ItemCountInfo>();
@@ -132,14 +132,14 @@ public class AvatarExplorer
                     break;
                 }
             
-            case ItemTagState.Item:
+            case ItemTagState.RootSelectedItem:
                 {
                     return GetCategoryItemsFromPathInternal(ItemUtils.GetItemPath(currentSelectionNode.Key));
                 }
 
             case ItemTagState.ItemFileCategory:
                 {
-                    SelectionNode? fileSelectionNode = _selectionState.Search(ItemTagState.Item);
+                    SelectionNode? fileSelectionNode = _selectionState.Search(ItemTagState.RootSelectedItem);
                     if (fileSelectionNode == null) return new List<ItemCountInfo>();
 
                     return GetFilesFromPathInternal(ItemUtils.GetItemPath(fileSelectionNode.Key), currentSelectionNode.Key);
@@ -149,13 +149,15 @@ public class AvatarExplorer
         return new List<ItemCountInfo>();
     }
 
-        public Item? GetSelectedItem()
-        {
-            SelectionNode? itemSelectionNode = _selectionState.Search(ItemTagState.Item);
-            if (itemSelectionNode == null) return null;
+    public IEnumerable<SelectionNode> GetCurrentPath() => _selectionState.GetCurrentPath();
 
-            return _items.FirstOrDefault(i => i.ItemPath == itemSelectionNode.Key);
-        }
+    public Item? GetSelectedItem()
+    {
+        SelectionNode? itemSelectionNode = _selectionState.Search(ItemTagState.RootSelectedItem);
+        if (itemSelectionNode == null) return null;
+
+        return _items.FirstOrDefault(i => i.ItemPath == itemSelectionNode.Key);
+    }
 
     private static List<ItemCountInfo> GetCategoryItemsFromPathInternal(string itemPath)
     {

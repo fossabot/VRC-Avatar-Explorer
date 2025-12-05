@@ -22,7 +22,7 @@ public enum FileCategory
     [InternalId("FileCategory.Unitypackage")]
     Unitypackage,
 
-    [InternalId("FileCategory.Modification")]
+    [InternalId("FileCategory.Material")]
     Material,
     Unknown
 }

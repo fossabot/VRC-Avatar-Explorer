@@ -55,7 +55,7 @@ public class UISelectableItem
         }
 
         ImageFileName = item.ThumbnmailFileName;
-        Tag = new(ItemTagState.Item, item.ItemPath);
+        Tag = new(ItemTagState.RootSelectedItem, item.ItemPath);
         IconType = IconType.Item;
     }
 
@@ -64,7 +64,9 @@ public class UISelectableItem
         Title = author.Name;
         Description = ("Button.Description.Item.Count", [ ItemCount.ToString() ]);
         ImageFileName = author.AuthorThumbnailFileName;
-        Tag = new(ItemTagState.Author, author.Name);
+
+        // TODO: このタグややこしいかも
+        Tag = new(ItemTagState.RootSelectedItem, author.Name);
         IconType = IconType.Author;
     }
 
@@ -73,7 +75,9 @@ public class UISelectableItem
         Title = category.ToString();
         Description = ("Button.Description.Item.Count", [ ItemCount.ToString() ]);
         ImageFileName = SystemIcon.FolderIcon;
-        Tag = new(ItemTagState.ItemCategory, category.Type.GetInternalId() ?? category.CustomCategory);
+
+        // TODO: このタグもややこしいかも。今度直す
+        Tag = new(ItemTagState.RootSelectedCategory, category.Type.GetInternalId() ?? category.CustomCategory);
         IconType = IconType.Author;
     }
 

@@ -78,6 +78,7 @@ public partial class MainWindow : Window
             _avatarExplorer.Select(itemTagInfo.Type, itemTagInfo.Value);
 
             RenderRightPanel();
+            LoadCurrentPath();
         }
     }
     
@@ -130,6 +131,8 @@ public partial class MainWindow : Window
                 _avatarExplorer.Select(itemTagInfo.Type, itemTagInfo.Value);
                 RenderRightPanel();
             }
+
+            LoadCurrentPath();
         }
     }
     #endregion
@@ -153,13 +156,18 @@ public partial class MainWindow : Window
     private void UpdateRightPanel()
     {
         if (SearchTextBox == null) return;
+        if (string.IsNullOrEmpty(SearchTextBox.Text))
+        {
+            RenderRightPanel();
+            return;
+        }
 
         RightPanel.Children.Clear();
-        var items = _avatarExplorer.SearchItems(SearchUtils.BuildFilter(SearchTextBox.Text!));
+        var items = _avatarExplorer.SearchItems(SearchUtils.BuildFilter(SearchTextBox.Text));
 
         foreach (Item item in items.Take(30))
         {
-            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0));
+            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0), RightPanelButton_Clicked);
         }
     }
     #endregion
@@ -204,11 +212,44 @@ public partial class MainWindow : Window
     }
     #endregion
 
+    private void LoadCurrentPath()
+    {
+        if (PathBox == null) return;
+
+        PathBox.Text = string.Join(
+            " > ",
+            _avatarExplorer.GetCurrentPath()
+                .Select(i => {
+                    string key = i.Type;
+                    string value = i.Key;
+
+                    if (i.Type == ItemTagState.RootAvatar || i.Type == ItemTagState.RootSelectedItem)
+                    {
+                        Item? item = _avatarExplorer.GetAllItems().FirstOrDefault(item => item.ItemPath == i.Key);
+                        if (item != null) value = item.Title; // アイテムはパスからタイトルに変換する
+                    }
+
+                    if (i.Type == ItemTagState.RootCategory || i.Type == ItemTagState.RootSelectedCategory || i.Type == ItemTagState.ItemFileCategory)
+                    {
+                        // カテゴリはValue自体を翻訳する
+                        // カテゴリ: Search.Category.Textureのような感じで入っているため
+                        value = Localizer.Instance.GetDisplayName(value);
+                    }
+
+                    bool isCategoryKey = i.Type.StartsWith("Search.") || i.Type.StartsWith("FileCategory.");
+                    if (!isCategoryKey) key = "Path." + i.Type; // パス専用のキーだけ"Path."のPrefixを付ける
+
+                    return Localizer.Instance.GetDisplayName(key, [value]);
+                })
+        );
+    }
+
     #region UI Event Handler
     private void Undo_Click(object? sender, RoutedEventArgs e)
     {
         _avatarExplorer.SelectUndo();
         RenderRightPanel();
+        LoadCurrentPath();
     }
     #endregion
 }

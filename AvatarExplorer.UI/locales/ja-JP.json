@@ -25,5 +25,13 @@
     "Loading.Unitypackage.Preparing": "ファイルの準備中です...",
     "Loading.Unitypackage.Extracting": "ファイルの展開中です...",
     "Loading.Unitypackage.Creating": "UnityPackageの作成中です...",
-    "Loading.Unitypackage.Completed": "Unitypackageの作成が完了しました"
+    "Loading.Unitypackage.Completed": "Unitypackageの作成が完了しました",
+
+    "Path.Root.Avatar": "アバター: {0}",
+    "Path.Root.Author": "作者: {0}",
+    "Path.Root.Category": "カテゴリ: {0}",
+    "Path.Root.Selected.Category": "{0}",
+    "Path.Root.Selected.Category.Item": "{0}",
+    "Path.Root.Selected.Category.Item.FileCategory": "{0}",
+    "Path.Root.Selected.Category.Item.FileCategory.Open": "{0}"
 }
