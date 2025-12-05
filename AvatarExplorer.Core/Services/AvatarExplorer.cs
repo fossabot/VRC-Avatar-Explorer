@@ -93,17 +93,17 @@ public class AvatarExplorer
 
         switch (currentSelectionNode.Type)
         {
-            case "Root.Avatar":
+            case ItemTagState.RootAvatar:
                 {
-                    return GetCategoriesFromItems(_items.Where(i => i.SupportedAvatars.Count == 0 || i.SupportedAvatars.Contains(currentSelectionNode.Key) || i.ImplementedAvatars.Contains(currentSelectionNode.Key)));
+                    return GetCategoriesFromItemsInternal(_items.Where(i => i.SupportedAvatars.Count == 0 || i.SupportedAvatars.Contains(currentSelectionNode.Key) || i.ImplementedAvatars.Contains(currentSelectionNode.Key)));
                 }
 
-            case "Root.Author":
+            case ItemTagState.RootAuthor:
                 {
-                    return GetCategoriesFromItems(_items.Where(i => i.Author == currentSelectionNode.Key));
+                    return GetCategoriesFromItemsInternal(_items.Where(i => i.Author == currentSelectionNode.Key));
                 }
 
-            case "Root.Category":
+            case ItemTagState.RootCategory:
                 {
                     return _items
                         .Where(i => (i.Type == ItemType.Custom && i.CustomCategory == currentSelectionNode.Key) || (i.Type.GetInternalId() == currentSelectionNode.Key))
@@ -111,18 +111,18 @@ public class AvatarExplorer
                         .ToList();
                 }
 
-            case "Item.Category":
+            case ItemTagState.ItemCategory:
                 {
                     SelectionNode? rootSelectionNode = _selectionState.Root;
                     if (rootSelectionNode == null) return new List<ItemCountInfo>();
                     
-                    if (rootSelectionNode.Type == "Root.Avatar")
+                    if (rootSelectionNode.Type == ItemTagState.RootAvatar)
                     {
                         return _items.Where(i => (i.SupportedAvatars.Count == 0 || i.SupportedAvatars.Contains(rootSelectionNode.Key) || i.ImplementedAvatars.Contains(rootSelectionNode.Key)) &&
                             ((i.Type == ItemType.Custom && i.CustomCategory == currentSelectionNode.Key) || (i.Type.GetInternalId() == currentSelectionNode.Key))
                         ).Select(i => new ItemCountInfo(i, 0)).ToList();
                     }
-                    else if (rootSelectionNode.Type == "Root.Author")
+                    else if (rootSelectionNode.Type == ItemTagState.RootAuthor)
                     {
                         return _items.Where(i => i.Author == rootSelectionNode.Key &&
                             ((i.Type == ItemType.Custom && i.CustomCategory == currentSelectionNode.Key) || (i.Type.GetInternalId() == currentSelectionNode.Key))
@@ -132,46 +132,87 @@ public class AvatarExplorer
                     break;
                 }
             
-            case "Item":
+            case ItemTagState.Item:
                 {
-                    var fileItems = new List<ItemCountInfo>();
+                    return GetCategoryItemsFromPathInternal(ItemUtils.GetItemPath(currentSelectionNode.Key));
+                }
 
-                    string itemPath = ItemUtils.GetItemPath(currentSelectionNode.Key);
+            case ItemTagState.ItemFileCategory:
+                {
+                    SelectionNode? fileSelectionNode = _selectionState.Search(ItemTagState.Item);
+                    if (fileSelectionNode == null) return new List<ItemCountInfo>();
 
-                    FileCategory[] extensionFilters = Enum.GetValues<FileCategory>();
-                    foreach (var filter in extensionFilters)
-                    {
-                        var filters = filter.GetExtensionFilters();
-                        if (filters == null) continue;
-
-                        var categoryItem = new FileCategoryItem
-                        {
-                            FileCategory = filter
-                        };
-
-                        foreach (var file in FileSystemUtils.EnumerateFiles(itemPath))
-                        {
-                            string fileExtension = Path.GetExtension(file);
-                            if (filters.Contains(fileExtension))
-                            {
-                                categoryItem.FilePaths.Add(file);
-                            }
-                        }
-
-                        if (categoryItem.FilePaths.Count > 0)
-                        {
-                            fileItems.Add(new ItemCountInfo(categoryItem, categoryItem.FilePaths.Count));
-                        }
-                    }
-                    
-                    return fileItems;
+                    return GetFilesFromPathInternal(ItemUtils.GetItemPath(fileSelectionNode.Key), currentSelectionNode.Key);
                 }
         }
 
         return new List<ItemCountInfo>();
     }
 
-    private static List<ItemCountInfo> GetCategoriesFromItems(IEnumerable<Item> items)
+        public Item? GetSelectedItem()
+        {
+            SelectionNode? itemSelectionNode = _selectionState.Search(ItemTagState.Item);
+            if (itemSelectionNode == null) return null;
+
+            return _items.FirstOrDefault(i => i.ItemPath == itemSelectionNode.Key);
+        }
+
+    private static List<ItemCountInfo> GetCategoryItemsFromPathInternal(string itemPath)
+    {
+        List<ItemCountInfo> categoryItems = new();
+
+        FileCategory[] extensionFilters = Enum.GetValues<FileCategory>();
+        foreach (var filter in extensionFilters)
+        {
+            var filters = filter.GetExtensionFilters();
+            if (filters == null) continue;
+
+            var categoryItem = new FileCategoryItem
+            {
+                FileCategory = filter
+            };
+
+            foreach (var file in FileSystemUtils.EnumerateFiles(itemPath))
+            {
+                string fileExtension = Path.GetExtension(file);
+                if (filters.Contains(fileExtension))
+                {
+                    categoryItem.FilePaths.Add(file);
+                }
+            }
+
+            if (categoryItem.FilePaths.Count > 0)
+            {
+                categoryItems.Add(new ItemCountInfo(categoryItem, categoryItem.FilePaths.Count));
+            }
+        }
+
+        return categoryItems;
+    }
+
+    private static List<ItemCountInfo> GetFilesFromPathInternal(string itemPath, string category)
+    {
+        List<ItemCountInfo> categoryItems = new();
+
+        FileCategory fileCategory = Enum.GetValues<FileCategory>().FirstOrDefault(i => i.GetInternalId() == category);
+        if (fileCategory == default) return new();
+
+        string[]? filters = fileCategory.GetExtensionFilters();
+        if (filters == null) return new();
+
+        foreach (var file in FileSystemUtils.EnumerateFiles(itemPath))
+        {
+            string fileExtension = Path.GetExtension(file);
+            if (filters.Contains(fileExtension))
+            {
+                categoryItems.Add(new ItemCountInfo(new ItemFile(Path.GetFullPath(file)), 0));
+            }
+        }
+
+        return categoryItems;
+    }
+
+    private static List<ItemCountInfo> GetCategoriesFromItemsInternal(IEnumerable<Item> items)
     {
         IEnumerable<ItemCountInfo> itemCategories = items
             .Where(i => i.Type != ItemType.Custom)
@@ -186,6 +227,13 @@ public class AvatarExplorer
             .Select(i => new ItemCountInfo(new Category(i), items.Count(item => item.CustomCategory == i)));
 
         return itemCategories.Concat(itemCustomCategories).ToList();
+    }
+    #endregion
+
+    #region Open File API
+    public void OpenFile(string itemPath, string itemCategoryName = "", bool normalOpen = false, IProgress<(string, int)>? progress = null)
+    {
+        FileSystemUtils.OpenFile(itemPath, itemCategoryName, normalOpen, progress);
     }
     #endregion
 

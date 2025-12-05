@@ -22,4 +22,6 @@ internal class SelectionState
     public SelectionNode? Root => _stack.Count > 0 ? _stack.Last() : null;
 
     public void Clear() => _stack.Clear();
+
+    public SelectionNode? Search(string type) => _stack.FirstOrDefault(i => i.Type == type);
 }

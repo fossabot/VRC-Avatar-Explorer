@@ -8,6 +8,7 @@ using Avalonia.Interactivity;
 using System;
 using Avalonia.Threading;
 using AvatarExplorer.UI.Models;
+using AvatarExplorer.Core.Extensions;
 
 namespace AvatarExplorer.UI;
 
@@ -51,15 +52,15 @@ public partial class MainWindow : Window
         {
             case 0:
             {
-                items.AddRange(_avatarExplorer.GetAvatars()); customType = "Root.Avatar"; break;
+                items.AddRange(_avatarExplorer.GetAvatars()); customType = ItemTagState.RootAvatar; break;
             }
             case 1:
             {
-                items.AddRange(_avatarExplorer.GetAuthors()); customType = "Root.Author"; break;
+                items.AddRange(_avatarExplorer.GetAuthors()); customType = ItemTagState.RootAuthor; break;
             }
             case 2:
             {
-                items.AddRange(_avatarExplorer.GetCategories()); customType = "Root.Category"; break;
+                items.AddRange(_avatarExplorer.GetCategories()); customType = ItemTagState.RootCategory; break;
             }
         }
 
@@ -101,8 +102,34 @@ public partial class MainWindow : Window
     {
         if (sender is Button button && button.Tag is ItemTagInfo itemTagInfo)
         {
-            _avatarExplorer.Select(itemTagInfo.Type, itemTagInfo.Value);
-            RenderRightPanel();
+            if (itemTagInfo.Type == ItemTagState.ItemFileCategoryOpen)
+            {
+                var selectedItem = _avatarExplorer.GetSelectedItem();
+                if (selectedItem == null)
+                {
+                    _avatarExplorer.OpenFile(itemTagInfo.Value, normalOpen: true);
+                    return;
+                }
+
+                var progress = new Progress<(string, int)>(tuple =>
+                {
+                    if (tuple.Item2 == 100)
+                    {
+                        HideProgress();
+                        return;
+                    }
+
+                    ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1));
+                    UpdateProgress(tuple.Item2);
+                });
+
+                _avatarExplorer.OpenFile(itemTagInfo.Value, Localizer.Instance.GetDisplayName(selectedItem.Type.GetInternalId() ?? ""), progress: progress);
+            }
+            else
+            {
+                _avatarExplorer.Select(itemTagInfo.Type, itemTagInfo.Value);
+                RenderRightPanel();
+            }
         }
     }
     #endregion
@@ -163,12 +190,17 @@ public partial class MainWindow : Window
         ProgressOverlay.IsVisible = true;
     }
 
-    private void UpdateProgress(int value, bool isIndeterminate)
+    private void HideProgress()
     {
         if (ProgressOverlay == null) return;
+        ProgressOverlay.IsVisible = false;
+    }
 
+    private void UpdateProgress(int value)
+    {
+        if (ProgressOverlay == null) return;
         ProgressBar.Value = Math.Clamp(value, 0, 100);
-        ProgressBar.IsIndeterminate = isIndeterminate;
+        ProgressBar.IsIndeterminate = value == 0;
     }
     #endregion
 

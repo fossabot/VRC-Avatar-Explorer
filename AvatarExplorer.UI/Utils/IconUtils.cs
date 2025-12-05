@@ -9,7 +9,8 @@ internal static class IconUtils
 {
     private static readonly Dictionary<string, Bitmap?> systemIcons = new()
     {
-        { "System.Icon.Folder", LoadImage("Assets/FolderIcon.png") }
+        { SystemIcon.FolderIcon, LoadImage("Assets/FolderIcon.png") },
+        { SystemIcon.FileIcon, LoadImage("Assets/FileIcon.png") },
     };
     internal static bool IsSystemFileIcons(string fileName) => systemIcons.ContainsKey(fileName);
 

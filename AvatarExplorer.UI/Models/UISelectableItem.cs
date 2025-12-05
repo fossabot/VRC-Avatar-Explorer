@@ -24,6 +24,7 @@ public class UISelectableItem
         else if (source is Author author) FromAuthor(author);
         else if (source is Category category) FromCategory(category);
         else if (source is FileCategoryItem fileCategoryItem) FromFileCategoryItem(fileCategoryItem);
+        else if (source is ItemFile itemFile) FromFileItemFile(itemFile);
     }
 
     public UISelectableItem(ItemCountInfo itemCountInfo)
@@ -42,14 +43,19 @@ public class UISelectableItem
         Title = item.Title;
 
         if (!string.IsNullOrEmpty(CommonAvatarName) && item.Tags.Count > 0)
+        {
             Description = ("Button.Description.Item.AuthorName.CommonAvatar.Tags", [item.Author, item.CustomCategory, string.Join(", ", item.Tags)]);
+        }
         else if (!string.IsNullOrEmpty(CommonAvatarName))
+        {
             Description = ("Button.Description.Item.AuthorName.CommonAvatar", [item.Author, item.CustomCategory]);
-        else
+        } else
+        {
             Description = ("Button.Description.Item.AuthorName", [item.Author]);
+        }
 
         ImageFileName = item.ThumbnmailFileName;
-        Tag = new("Item", item.ItemPath);
+        Tag = new(ItemTagState.Item, item.ItemPath);
         IconType = IconType.Item;
     }
 
@@ -58,7 +64,7 @@ public class UISelectableItem
         Title = author.Name;
         Description = ("Button.Description.Item.Count", [ ItemCount.ToString() ]);
         ImageFileName = author.AuthorThumbnailFileName;
-        Tag = new("Author", author.Name);
+        Tag = new(ItemTagState.Author, author.Name);
         IconType = IconType.Author;
     }
 
@@ -67,7 +73,7 @@ public class UISelectableItem
         Title = category.ToString();
         Description = ("Button.Description.Item.Count", [ ItemCount.ToString() ]);
         ImageFileName = SystemIcon.FolderIcon;
-        Tag = new("Item.Category", category.Type.GetInternalId() ?? category.CustomCategory);
+        Tag = new(ItemTagState.ItemCategory, category.Type.GetInternalId() ?? category.CustomCategory);
         IconType = IconType.Author;
     }
 
@@ -76,7 +82,16 @@ public class UISelectableItem
         Title = fileCategoryItem.FileCategory.GetInternalId() ?? "";
         Description = ("Button.Description.Item.Count", [ ItemCount.ToString() ]);
         ImageFileName = SystemIcon.FolderIcon;
-        Tag = new("Item.FileCategory", fileCategoryItem.FileCategory.GetInternalId() ?? "");
+        Tag = new(ItemTagState.ItemFileCategory, fileCategoryItem.FileCategory.GetInternalId() ?? "");
+        IconType = IconType.Author;
+    }
+
+    private void FromFileItemFile(ItemFile itemFile)
+    {
+        Title = itemFile.FileName;
+        Description = ("Button.Description.File.Extension", [ itemFile.Extension ]);
+        ImageFileName = SystemIcon.FileIcon;
+        Tag = new(ItemTagState.ItemFileCategoryOpen, itemFile.FullPath);
         IconType = IconType.Author;
     }
 }
