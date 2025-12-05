@@ -17,7 +17,7 @@ public static class UIUtils
         {
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Top,
-            Margin = new Thickness(15, 0, 25, 10),
+            Margin = new Thickness(15, 0, 20, 0),
             Tag = item.Tag
         };
 

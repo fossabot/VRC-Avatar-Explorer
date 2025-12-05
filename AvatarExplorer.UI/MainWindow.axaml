@@ -75,28 +75,22 @@
 
             </Border>
 
-            <Grid DockPanel.Dock="Top" Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="250"/>
-                </Grid.ColumnDefinitions>
-
+            <Grid DockPanel.Dock="Top" Margin="10" ColumnDefinitions="Auto,*,Auto,250">
                 <Button Grid.Column="0" Content="戻る" Width="100" Margin="10,0,8,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Undo_Click"/>
                 <TextBox x:Name="PathBox" Grid.Column="1" IsReadOnly="True" Text="ここには現在のパスが表示されます" Margin="10,0,8,0"/>
                 <TextBlock Grid.Column="2" Text="検索" Margin="20,0,10,0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
                 <TextBox x:Name="SearchTextBox" Grid.Column="3" Watermark="検索..." TextChanged="SearchTextBox_TextChanged"/>
             </Grid>
 
-            <Grid ColumnDefinitions="2*,5,5*">
-                <Grid Grid.Column="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="200" Width="300"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition MinWidth="200" Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                    <ComboBox SelectedIndex="0" Grid.Row="0" Width="200" Margin="20,0,20,10" x:Name="LeftFilter" SelectionChanged="LeftFilter_SelectionChanged">
+                <Grid Grid.Column="0" RowDefinitions="Auto,*">
+                    <ComboBox Grid.Row="0" HorizontalAlignment="Stretch" SelectedIndex="0" Margin="20,0,20,10" x:Name="LeftFilter" SelectionChanged="LeftFilter_SelectionChanged">
                         <ComboBoxItem Content="アバター" Tag="Filter.Avatar"/>
                         <ComboBoxItem Content="作者" Tag="Filter.Author"/>
                         <ComboBoxItem Content="カテゴリ" Tag="Filter.Category"/>
@@ -139,18 +133,9 @@
             </Border>
         </Border>
         
-        <Border x:Name="DialogOverlay"
-            Background="#80000000"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            IsVisible="false">
+        <Border x:Name="DialogOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="false">
 
-            <Border CornerRadius="15"
-                Background="#FF333333"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Padding="20">
-
+            <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel Spacing="10">
                     <TextBlock x:Name="DialogTitle" Text="Dialog Title" Foreground="white" FontSize="24" Margin="0,0,0,10" FontWeight="Bold"/>
                     <TextBlock x:Name="DialogContent" Text="Content" Foreground="white" FontSize="17" Margin="0,0,0,10" MinWidth="300"/>
