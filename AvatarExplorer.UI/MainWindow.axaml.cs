@@ -25,6 +25,7 @@ public partial class MainWindow : Window
         TODO: 検索からアイテムを開いて、またそこで検索したらどんどん溜まっていくのを修正する
         TODO: 右クリックメニューを作る
         TODO: UIのタグを使った翻訳機能を追加する
+        TODO: 空のアイコンを実装する
         */
 
         InitializeComponent();
