@@ -76,7 +76,7 @@ public static class UIUtils
 
         button.Content = contentPanel;
         if (onClick != null) button.Click += onClick;
-        
+
         parent.Children.Add(button);
     }
 }

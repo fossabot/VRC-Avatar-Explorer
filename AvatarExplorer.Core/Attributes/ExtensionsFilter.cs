@@ -1,5 +1,3 @@
-using System;
-
 namespace AvatarExplorer.Core.Attributes;
 
 [AttributeUsage(AttributeTargets.Field)]

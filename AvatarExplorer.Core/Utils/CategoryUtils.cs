@@ -1,3 +1,4 @@
+using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Models;
 
 namespace AvatarExplorer.Core.Utils;
@@ -25,5 +26,10 @@ public static class CategoryUtils
         );
 
         return categories;
+    }
+
+    public static bool IsCategoryMatch(Item item, string category)
+    {
+        return (item.Type == ItemType.Custom && item.CustomCategory == category) || (item.Type.GetInternalId() == category);
     }
 }

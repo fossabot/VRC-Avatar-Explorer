@@ -15,6 +15,6 @@ public static class EnumExtensions
     {
         var fi = value.GetType().GetField(value.ToString());
         var attr = fi?.GetCustomAttributes(typeof(ExtensionsFilterAttribute), false).FirstOrDefault() as ExtensionsFilterAttribute;
-        return attr?.Filter.Split("|") ?? null;
+        return attr?.Filter.Split('|') ?? null;
     }
 }

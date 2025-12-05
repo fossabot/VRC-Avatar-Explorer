@@ -1,5 +1,3 @@
-using System;
-
 namespace AvatarExplorer.Core.Models;
 
 public static class SystemIcon

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Utils;
 

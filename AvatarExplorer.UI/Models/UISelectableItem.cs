@@ -49,7 +49,8 @@ public class UISelectableItem
         else if (!string.IsNullOrEmpty(CommonAvatarName))
         {
             Description = ("Button.Description.Item.AuthorName.CommonAvatar", [item.Author, item.CustomCategory]);
-        } else
+        }
+        else
         {
             Description = ("Button.Description.Item.AuthorName", [item.Author]);
         }
@@ -62,7 +63,7 @@ public class UISelectableItem
     private void FromAuthor(Author author)
     {
         Title = author.Name;
-        Description = ("Button.Description.Item.Count", [ ItemCount.ToString() ]);
+        Description = ("Button.Description.Item.Count", [ItemCount.ToString()]);
         ImageFileName = author.AuthorThumbnailFileName;
 
         // TODO: このタグややこしいかも
@@ -73,7 +74,7 @@ public class UISelectableItem
     private void FromCategory(Category category)
     {
         Title = category.ToString();
-        Description = ("Button.Description.Item.Count", [ ItemCount.ToString() ]);
+        Description = ("Button.Description.Item.Count", [ItemCount.ToString()]);
         ImageFileName = SystemIcon.FolderIcon;
 
         // TODO: このタグもややこしいかも。今度直す
@@ -84,7 +85,7 @@ public class UISelectableItem
     private void FromFileCategoryItem(FileCategoryItem fileCategoryItem)
     {
         Title = fileCategoryItem.FileCategory.GetInternalId() ?? "";
-        Description = ("Button.Description.Item.Count", [ ItemCount.ToString() ]);
+        Description = ("Button.Description.Item.Count", [ItemCount.ToString()]);
         ImageFileName = SystemIcon.FolderIcon;
         Tag = new(ItemTagState.ItemFileCategory, fileCategoryItem.FileCategory.GetInternalId() ?? "");
         IconType = IconType.Author;
@@ -93,7 +94,7 @@ public class UISelectableItem
     private void FromFileItemFile(ItemFile itemFile)
     {
         Title = itemFile.FileName;
-        Description = ("Button.Description.File.Extension", [ itemFile.Extension ]);
+        Description = ("Button.Description.File.Extension", [itemFile.Extension]);
         ImageFileName = SystemIcon.FileIcon;
         Tag = new(ItemTagState.ItemFileCategoryOpen, itemFile.FullPath);
         IconType = IconType.Author;

@@ -7,7 +7,7 @@ namespace AvatarExplorer.UI.Localization;
 public class Localizer
 {
     private readonly Dictionary<string, string> _map;
-    
+
     public static Localizer Instance { get; private set; } = new Localizer();
 
     private Localizer()

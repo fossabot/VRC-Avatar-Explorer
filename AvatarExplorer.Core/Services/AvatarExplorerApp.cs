@@ -10,6 +10,20 @@ public class AvatarExplorerApp
     private readonly List<CommonAvatar> _commonAvatars = new();
 
     private readonly SelectionState _selectionState = new();
+    private readonly Dictionary<string, Func<SelectionNode, IReadOnlyList<ItemCountInfo>>> _stateHandlers;
+
+    public AvatarExplorerApp()
+    {
+        _stateHandlers = new()
+        {
+            { ItemTagState.RootAvatar, HandleRootAvatar },
+            { ItemTagState.RootAuthor, HandleRootAuthor },
+            { ItemTagState.RootCategory, HandleRootCategory },
+            { ItemTagState.RootSelectedCategory, HandleRootSelectedCategory },
+            { ItemTagState.RootSelectedItem, HandleRootSelectedItem },
+            { ItemTagState.ItemFileCategory, HandleItemFileCategory }
+        };
+    }
 
     #region Database
     public void LoadItemDatabase(bool fromV1 = false)
@@ -52,7 +66,7 @@ public class AvatarExplorerApp
     {
         _selectionState.Pop();
     }
-    
+
     public void SelectClear()
     {
         _selectionState.Clear();
@@ -88,65 +102,71 @@ public class AvatarExplorerApp
 
     public IReadOnlyList<ItemCountInfo> GetItemsForCurrentState()
     {
-        SelectionNode? currentSelectionNode = _selectionState.Current;
-        if (currentSelectionNode == null) return new List<ItemCountInfo>();
+        SelectionNode? current = _selectionState.Current;
 
-        switch (currentSelectionNode.Type)
+        if (current == null)
+            return new List<ItemCountInfo>();
+
+        if (_stateHandlers.TryGetValue(current.Type, out var handler))
+            return handler(current);
+
+        return new List<ItemCountInfo>();
+    }
+    private IReadOnlyList<ItemCountInfo> HandleRootAvatar(SelectionNode selectionNode)
+    {
+        //TODO: 共通素体の判定も追加する。詳細はAvatar ExplorerのIsSupportedOrCommonを参照。あと、実装済みの判定は多分要らない
+        return GetCategoriesFromItemsInternal(
+            _items
+                .Where(i =>
+                    i.SupportedAvatars.Count == 0 ||
+                    i.SupportedAvatars.Contains(selectionNode.Key) ||
+                    i.ImplementedAvatars.Contains(selectionNode.Key)
+                ));
+    }
+    private IReadOnlyList<ItemCountInfo> HandleRootAuthor(SelectionNode selectionNode)
+    {
+        return GetCategoriesFromItemsInternal(_items.Where(i => i.Author == selectionNode.Key));
+    }
+    private IReadOnlyList<ItemCountInfo> HandleRootCategory(SelectionNode selectionNode)
+    {
+        return _items
+            .Where(i => CategoryUtils.IsCategoryMatch(i, selectionNode.Key))
+            .Select(i => new ItemCountInfo(i, 0))
+            .ToList();
+    }
+    private IReadOnlyList<ItemCountInfo> HandleRootSelectedCategory(SelectionNode selectionNode)
+    {
+        SelectionNode? rootSelectionNode = _selectionState.Root;
+        if (rootSelectionNode == null) return new List<ItemCountInfo>();
+
+        if (rootSelectionNode.Type == ItemTagState.RootAvatar)
         {
-            case ItemTagState.RootAvatar:
-                {
-                    return GetCategoriesFromItemsInternal(_items.Where(i => i.SupportedAvatars.Count == 0 || i.SupportedAvatars.Contains(currentSelectionNode.Key) || i.ImplementedAvatars.Contains(currentSelectionNode.Key)));
-                }
-
-            case ItemTagState.RootAuthor:
-                {
-                    return GetCategoriesFromItemsInternal(_items.Where(i => i.Author == currentSelectionNode.Key));
-                }
-
-            case ItemTagState.RootCategory:
-                {
-                    return _items
-                        .Where(i => (i.Type == ItemType.Custom && i.CustomCategory == currentSelectionNode.Key) || (i.Type.GetInternalId() == currentSelectionNode.Key))
-                        .Select(i => new ItemCountInfo(i, 0))
-                        .ToList();
-                }
-
-            case ItemTagState.RootSelectedCategory:
-                {
-                    SelectionNode? rootSelectionNode = _selectionState.Root;
-                    if (rootSelectionNode == null) return new List<ItemCountInfo>();
-                    
-                    if (rootSelectionNode.Type == ItemTagState.RootAvatar)
-                    {
-                        return _items.Where(i => (i.SupportedAvatars.Count == 0 || i.SupportedAvatars.Contains(rootSelectionNode.Key) || i.ImplementedAvatars.Contains(rootSelectionNode.Key)) &&
-                            ((i.Type == ItemType.Custom && i.CustomCategory == currentSelectionNode.Key) || (i.Type.GetInternalId() == currentSelectionNode.Key))
-                        ).Select(i => new ItemCountInfo(i, 0)).ToList();
-                    }
-                    else if (rootSelectionNode.Type == ItemTagState.RootAuthor)
-                    {
-                        return _items.Where(i => i.Author == rootSelectionNode.Key &&
-                            ((i.Type == ItemType.Custom && i.CustomCategory == currentSelectionNode.Key) || (i.Type.GetInternalId() == currentSelectionNode.Key))
-                        ).Select(i => new ItemCountInfo(i, 0)).ToList();
-                    }
-
-                    break;
-                }
-            
-            case ItemTagState.RootSelectedItem:
-                {
-                    return GetCategoryItemsFromPathInternal(ItemUtils.GetItemPath(currentSelectionNode.Key));
-                }
-
-            case ItemTagState.ItemFileCategory:
-                {
-                    SelectionNode? fileSelectionNode = _selectionState.Search(ItemTagState.RootSelectedItem);
-                    if (fileSelectionNode == null) return new List<ItemCountInfo>();
-
-                    return GetFilesFromPathInternal(ItemUtils.GetItemPath(fileSelectionNode.Key), currentSelectionNode.Key);
-                }
+            //TODO: 共通素体の判定も追加する。詳細はAvatar ExplorerのIsSupportedOrCommonを参照。あと、実装済みの判定は要らない
+            return _items
+                .Where(i => (i.SupportedAvatars.Count == 0 || i.SupportedAvatars.Contains(rootSelectionNode.Key) || i.ImplementedAvatars.Contains(rootSelectionNode.Key)) && CategoryUtils.IsCategoryMatch(i, selectionNode.Key))
+                .Select(i => new ItemCountInfo(i, 0))
+                .ToList();
+        }
+        else if (rootSelectionNode.Type == ItemTagState.RootAuthor)
+        {
+            return _items
+                .Where(i => i.Author == rootSelectionNode.Key && CategoryUtils.IsCategoryMatch(i, selectionNode.Key))
+                .Select(i => new ItemCountInfo(i, 0))
+                .ToList();
         }
 
         return new List<ItemCountInfo>();
+    }
+    private IReadOnlyList<ItemCountInfo> HandleRootSelectedItem(SelectionNode selectionNode)
+    {
+        return GetCategoryItemsFromPathInternal(ItemUtils.GetItemPath(selectionNode.Key));
+    }
+    private IReadOnlyList<ItemCountInfo> HandleItemFileCategory(SelectionNode selectionNode)
+    {
+        SelectionNode? fileSelectionNode = _selectionState.Search(ItemTagState.RootSelectedItem);
+        if (fileSelectionNode == null) return new List<ItemCountInfo>();
+
+        return GetFilesFromPathInternal(ItemUtils.GetItemPath(fileSelectionNode.Key), selectionNode.Key);
     }
 
     public IEnumerable<SelectionNode> GetCurrentPath() => _selectionState.GetCurrentPath();
@@ -254,7 +274,7 @@ public class AvatarExplorerApp
 
         return removed > 0;
     }
-    
+
     public bool RemoveCommonAvatar(string commonAvatarName)
     {
         int removed = _commonAvatars.RemoveAll(i => i.Name == commonAvatarName);
@@ -266,7 +286,7 @@ public class AvatarExplorerApp
     public IReadOnlyList<Item> SearchItems(SearchFilter filter)
     {
         var avatarNameMaps = DatabaseUtils.GetAvatarNameMaps(_items);
-        
+
         return _items
             .Where(i => filter.Matches(avatarNameMaps, _commonAvatars, i))
             .OrderByDescending(i => SearchUtils.GetScore(i, filter.SearchWords))

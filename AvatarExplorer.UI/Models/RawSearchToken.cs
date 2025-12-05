@@ -1,5 +1,3 @@
-using System;
-
 namespace AvatarExplorer.UI.Models;
 
 public class RawSearchToken

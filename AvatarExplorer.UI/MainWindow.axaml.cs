@@ -1,15 +1,15 @@
-using Avalonia.Controls;
-using AvatarExplorer.UI.Utils;
-using AvatarExplorer.UI.Localization;
-using AvatarExplorer.Core.Models;
-using System.Linq;
-using System.Collections.Generic;
-using Avalonia.Interactivity;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
-using AvatarExplorer.UI.Models;
 using AvatarExplorer.Core.Extensions;
+using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
+using AvatarExplorer.UI.Localization;
+using AvatarExplorer.UI.Models;
+using AvatarExplorer.UI.Utils;
 
 namespace AvatarExplorer.UI;
 
@@ -47,22 +47,28 @@ public partial class MainWindow : Window
         LeftPanel.Children.Clear();
 
         List<ItemCountInfo> items = new();
-        
+
         string customType = string.Empty;
         switch (LeftFilter.SelectedIndex)
         {
             case 0:
-            {
-                items.AddRange(_avatarExplorer.GetAvatars()); customType = ItemTagState.RootAvatar; break;
-            }
+                {
+                    items.AddRange(_avatarExplorer.GetAvatars());
+                    customType = ItemTagState.RootAvatar;
+                    break;
+                }
             case 1:
-            {
-                items.AddRange(_avatarExplorer.GetAuthors()); customType = ItemTagState.RootAuthor; break;
-            }
+                {
+                    items.AddRange(_avatarExplorer.GetAuthors());
+                    customType = ItemTagState.RootAuthor;
+                    break;
+                }
             case 2:
-            {
-                items.AddRange(_avatarExplorer.GetCategories()); customType = ItemTagState.RootCategory; break;
-            }
+                {
+                    items.AddRange(_avatarExplorer.GetCategories());
+                    customType = ItemTagState.RootCategory;
+                    break;
+                }
         }
 
         foreach (ItemCountInfo itemCountInfo in items.Take(30))
@@ -82,7 +88,7 @@ public partial class MainWindow : Window
             LoadCurrentPath();
         }
     }
-    
+
     private void LeftFilter_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         RenderLeftPanel();
@@ -220,7 +226,8 @@ public partial class MainWindow : Window
         PathBox.Text = string.Join(
             " > ",
             _avatarExplorer.GetCurrentPath()
-                .Select(i => {
+                .Select(i =>
+                {
                     string key = i.Type;
                     string value = i.Key;
 
