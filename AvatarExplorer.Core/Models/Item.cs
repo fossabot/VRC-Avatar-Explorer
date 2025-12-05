@@ -118,7 +118,7 @@ public class Item : ISelectableItem
             Author = item.AuthorName,
             AuthorId = item.AuthorId,
             BoothId = item.BoothId,
-            ItemPath = item.ItemPath,
+            ItemPath = item.ItemPath.Replace("Datas\\Items\\", "<sys>"),
             MaterialPath = item.MaterialPath,
             ThumbnmailFileName = item.ImagePath.Replace("Datas\\Thumbnail\\", ""),
             AuthorThumbnmailFileName = item.AuthorImageFilePath.Replace("Datas\\AuthorImage\\", ""),

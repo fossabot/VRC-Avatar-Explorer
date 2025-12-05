@@ -23,6 +23,7 @@ public class UISelectableItem
         if (source is Item item) FromItem(item);
         else if (source is Author author) FromAuthor(author);
         else if (source is Category category) FromCategory(category);
+        else if (source is FileCategoryItem fileCategoryItem) FromFileCategoryItem(fileCategoryItem);
     }
 
     public UISelectableItem(ItemCountInfo itemCountInfo)
@@ -67,6 +68,15 @@ public class UISelectableItem
         Description = ("Button.Description.Item.Count", [ ItemCount.ToString() ]);
         ImageFileName = SystemIcon.FolderIcon;
         Tag = new("Item.Category", category.Type.GetInternalId() ?? category.CustomCategory);
+        IconType = IconType.Author;
+    }
+
+    private void FromFileCategoryItem(FileCategoryItem fileCategoryItem)
+    {
+        Title = fileCategoryItem.FileCategory.GetInternalId() ?? "";
+        Description = ("Button.Description.Item.Count", [ ItemCount.ToString() ]);
+        ImageFileName = SystemIcon.FolderIcon;
+        Tag = new("Item.FileCategory", fileCategoryItem.FileCategory.GetInternalId() ?? "");
         IconType = IconType.Author;
     }
 }

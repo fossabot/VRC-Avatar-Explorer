@@ -51,20 +51,15 @@ public partial class MainWindow : Window
         {
             case 0:
             {
-                items.AddRange(_avatarExplorer.GetAvatars());
-                customType = "Root.Avatar";
-                break;
+                items.AddRange(_avatarExplorer.GetAvatars()); customType = "Root.Avatar"; break;
             }
             case 1:
             {
-                items.AddRange(_avatarExplorer.GetAuthors());
-                customType = "Root.Author";
-                break;
+                items.AddRange(_avatarExplorer.GetAuthors()); customType = "Root.Author"; break;
             }
-            case 2:{
-                items.AddRange(_avatarExplorer.GetCategories());
-                customType = "Root.Category";
-                break;
+            case 2:
+            {
+                items.AddRange(_avatarExplorer.GetCategories()); customType = "Root.Category"; break;
             }
         }
 

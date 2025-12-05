@@ -1,5 +1,4 @@
 ﻿using AvatarExplorer.Core.Extensions;
-using AvatarExplorer.Core.Interfaces;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Utils;
 
@@ -131,6 +130,41 @@ public class AvatarExplorer
                     }
 
                     break;
+                }
+            
+            case "Item":
+                {
+                    var fileItems = new List<ItemCountInfo>();
+
+                    string itemPath = currentSelectionNode.Key.StartsWith("<sys>") ? Path.Join(SystemPath.ItemsFolderPath, currentSelectionNode.Key.Replace("<sys>", "")) : currentSelectionNode.Key;
+
+                    FileCategory[] extensionFilters = Enum.GetValues<FileCategory>();
+                    foreach (var filter in extensionFilters)
+                    {
+                        var filters = filter.GetExtensionFilters();
+                        if (filters == null) continue;
+
+                        var categoryItem = new FileCategoryItem
+                        {
+                            FileCategory = filter
+                        };
+
+                        foreach (var file in FileSystemUtils.EnumerateFiles(itemPath))
+                        {
+                            string fileExtension = Path.GetExtension(file);
+                            if (filters.Contains(fileExtension))
+                            {
+                                categoryItem.FilePaths.Add(file);
+                            }
+                        }
+                        
+                        if (categoryItem.FilePaths.Count > 0)
+                        {
+                            fileItems.Add(new ItemCountInfo(categoryItem, categoryItem.FilePaths.Count));
+                        }
+                    }
+                    
+                    return fileItems;
                 }
         }
 
