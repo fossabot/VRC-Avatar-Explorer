@@ -19,6 +19,12 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
+        /* プロジェクトTODO
+        TODO: 言語変更ボタン、並び替えを実装する
+        TODO: 戻ったときに、どこを表示するのかはっきりする。
+        TODO: 検索からアイテムを開いて、またそこで検索したらどんどん溜まっていくのを修正する
+        */
+
         InitializeComponent();
         InitializeAvatarExplorer();
 
