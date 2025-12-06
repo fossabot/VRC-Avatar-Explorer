@@ -19,7 +19,7 @@ public partial class MainWindow : Window
 {
     private readonly AvatarExplorerApp _avatarExplorer = new();
 
-    private Dictionary<ActionKey, Func<string, Task>>? _contextMenuHandlers = null!;
+    private Dictionary<ActionKey, Func<string, Task>>? _contextMenuHandlers;
 
     public MainWindow()
     {
@@ -386,7 +386,7 @@ public partial class MainWindow : Window
     {
         if (contextMenuAction.ActionLayer == ActionLayer.UI)
         {
-            if (_contextMenuHandlers.TryGetValue(contextMenuAction.ActionKey, out var handler))
+            if (_contextMenuHandlers != null && _contextMenuHandlers.TryGetValue(contextMenuAction.ActionKey, out var handler))
                 await handler(contextMenuAction.Tag);
         }
         else if (contextMenuAction.ActionLayer == ActionLayer.Core)
