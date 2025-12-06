@@ -124,10 +124,10 @@ public class Item : ISelectableItem
             Author = item.AuthorName,
             AuthorId = item.AuthorId,
             BoothId = item.BoothId,
-            ItemPath = MigrateItemPath(item.ItemPath),
-            MaterialPath = MigrateItemPath(item.MaterialPath),
-            ThumbnmailFileName = item.ImagePath.Replace("Datas\\Thumbnail\\", ""),
-            AuthorThumbnmailFileName = item.AuthorImageFilePath.Replace("Datas\\AuthorImage\\", ""),
+            ItemPath = MigrateUtils.MigrateItemPath(item.ItemPath),
+            MaterialPath = MigrateUtils.MigrateItemPath(item.MaterialPath),
+            ThumbnmailFileName = MigrateUtils.MigrateItemPath(item.ImagePath),
+            AuthorThumbnmailFileName = MigrateUtils.MigrateItemPath(item.AuthorImageFilePath),
             Type = item.Type,
             CustomCategory = item.CustomCategory,
             SupportedAvatars = new List<string>(item.SupportedAvatar),
@@ -138,20 +138,9 @@ public class Item : ISelectableItem
             UpdatedDate = item.UpdatedDate,
         };
 
-        MigrateItemPaths(migratedItem.SupportedAvatars);
-        MigrateItemPaths(migratedItem.ImplementedAvatars);
+        MigrateUtils.MigrateItemPaths(migratedItem.SupportedAvatars);
+        MigrateUtils.MigrateItemPaths(migratedItem.ImplementedAvatars);
 
         return migratedItem;
     }
-
-    private static void MigrateItemPaths(List<string> paths)
-    {
-        for (int i = 0; i < paths.Count; i++)
-        {
-            paths[i] = MigrateItemPath(paths[i]);
-        }
-    }
-
-    private static string MigrateItemPath(string path)
-        => path.Replace("Datas\\Items\\", "<sys>");
 }

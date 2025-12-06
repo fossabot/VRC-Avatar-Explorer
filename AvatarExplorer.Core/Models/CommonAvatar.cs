@@ -1,4 +1,5 @@
 ﻿using AvatarExplorer.Core.Models.V1;
+using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Models;
 
@@ -22,19 +23,8 @@ public class CommonAvatar
             Avatars = new List<string>(commonAvatar.Avatars),
         };
 
-        MigrateItemPaths(migratedCommonAvatar.Avatars);
+        MigrateUtils.MigrateItemPaths(migratedCommonAvatar.Avatars);
 
         return migratedCommonAvatar;
     }
-
-    private static void MigrateItemPaths(List<string> paths)
-    {
-        for (int i = 0; i < paths.Count; i++)
-        {
-            paths[i] = MigrateItemPath(paths[i]);
-        }
-    }
-
-    private static string MigrateItemPath(string path)
-        => path.Replace("Datas\\Items\\", "<sys>");
 }
