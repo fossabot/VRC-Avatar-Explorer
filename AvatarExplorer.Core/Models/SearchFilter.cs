@@ -123,13 +123,26 @@ public class SearchFilter
             (target, filter) => target.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
         );
 
-        //TODO: マテリアルフォルダも追加
-        bool matchFile = FileNames.Count == 0
-            || MatchesFilter(
-                FileSystemUtils.EnumerateFiles(ItemUtils.GetItemPath(item.ItemPath)), FileNames,
+        bool matchFile;
+        if (FileNames.Count == 0)
+        {
+            matchFile = true;
+        }
+        else
+        {
+            string itemPath = ItemUtils.GetItemPath(item.ItemPath);
+            string materialPath = ItemUtils.GetItemPath(item.MaterialPath);
+
+            var files = new List<string>();
+            if (!string.IsNullOrEmpty(itemPath) && Directory.Exists(itemPath)) files.AddRange(FileSystemUtils.EnumerateFiles(itemPath));
+            if (!string.IsNullOrEmpty(materialPath) && Directory.Exists(materialPath)) files.AddRange(FileSystemUtils.EnumerateFiles(materialPath));
+
+            matchFile = MatchesFilter(
+                files, FileNames,
                 IsOrSearch,
                 (target, filter) => target.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
             );
+        }
         
         var implementedAvatarNames = item.ImplementedAvatars.Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar));
 

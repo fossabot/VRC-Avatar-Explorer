@@ -181,34 +181,17 @@ public partial class MainWindow : Window
         {
             if (itemTagInfo.Type == ItemTagState.ItemFileCategoryOpen)
             {
-                var selectedItem = _avatarExplorer.GetSelectedItem();
-                if (selectedItem == null)
+                string itemPath = itemTagInfo.Value;
+
+                bool isUnitypackage = itemPath.ToLower().EndsWith(".unitypackage");
+                if (isUnitypackage)
                 {
-                    await AvaloniaLauncherUtils.OpenFile(this, itemTagInfo.Value);
-                    return;
+                    await OpenUnitypackageInternalAsync(itemPath);
                 }
-
-                var progress = new Progress<(string, int, string)>(tuple =>
+                else
                 {
-                    if (tuple.Item2 == 100)
-                    {
-                        HideProgress();
-
-                        // Unitypackage展開後は自動で引数3にUnitypackageのパスが来る
-                        // 空白の場合はないということ
-                        if (!string.IsNullOrEmpty(tuple.Item3))
-                        {
-                            _ = AvaloniaLauncherUtils.OpenFile(this, tuple.Item3);
-                        }
-
-                        return;
-                    }
-
-                    ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1));
-                    UpdateProgress(tuple.Item2);
-                });
-
-                _avatarExplorer.ModifyUnityPackageFilePath(itemTagInfo.Value, Localizer.Instance.GetDisplayName(selectedItem.Type.GetInternalId() ?? ""), progress: progress);
+                    await AvaloniaLauncherUtils.OpenFile(this, itemPath);
+                }
             }
             else
             {
@@ -218,6 +201,38 @@ public partial class MainWindow : Window
 
             LoadCurrentPath();
         }
+    }
+
+    private async Task OpenUnitypackageInternalAsync(string itemPath)
+    {
+        var selectedItem = _avatarExplorer.GetSelectedItem();
+        if (selectedItem == null)
+        {
+            await AvaloniaLauncherUtils.OpenFile(this, itemPath);
+            return;
+        }
+
+        var progress = new Progress<(string, int, string)>(tuple =>
+        {
+            if (tuple.Item2 == 100)
+            {
+                HideProgress();
+
+                // Unitypackage展開後は自動で引数3にUnitypackageのパスが来る
+                // 空白の場合はないということ
+                if (!string.IsNullOrEmpty(tuple.Item3))
+                {
+                    _ = AvaloniaLauncherUtils.OpenFile(this, tuple.Item3);
+                }
+            }
+            else
+            {
+                ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, [tuple.Item2.ToString()]));
+                UpdateProgress(tuple.Item2);
+            }
+        });
+
+        _avatarExplorer.ModifyUnityPackageFilePath(itemPath, Localizer.Instance.GetDisplayName(selectedItem.Type.GetInternalId() ?? ""), progress: progress);
     }
     #endregion
 
