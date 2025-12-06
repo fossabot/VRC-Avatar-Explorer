@@ -71,7 +71,7 @@
 
                 <ScrollViewer Grid.Column="2">
                     <Grid>
-                        <TextBlock Text="あいてむがみつからないよっ！" Tag="UI" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="false" FontWeight="Bold" FontSize="25" x:Name="NoItemsMessage"/>
+                        <StackPanel x:Name="RightPanelParent" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" IsVisible="False"/>
                         <StackPanel x:Name="RightPanel" Spacing="8"/>
                     </Grid>
                 </ScrollViewer>

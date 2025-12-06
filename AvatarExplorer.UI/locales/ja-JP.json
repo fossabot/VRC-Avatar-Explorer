@@ -33,5 +33,7 @@
     "Path.Root.Selected.Category": "{0}",
     "Path.Root.Selected.Category.Item": "{0}",
     "Path.Root.Selected.Category.Item.FileCategory": "{0}",
-    "Path.Root.Selected.Category.Item.FileCategory.Open": "{0}"
+    "Path.Root.Selected.Category.Item.FileCategory.Open": "{0}",
+
+    "System.Found.Nothing": "アイテムが見つからないよっ！"
 }

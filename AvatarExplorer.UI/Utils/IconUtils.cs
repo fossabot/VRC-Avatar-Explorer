@@ -11,10 +11,11 @@ internal static class IconUtils
     {
         { SystemIcon.FolderIcon, LoadImage("Assets/FolderIcon.png") },
         { SystemIcon.FileIcon, LoadImage("Assets/FileIcon.png") },
+        { SystemIcon.NothingIcon, LoadImage("Assets/NothingIcon.png") },
     };
     internal static bool IsSystemFileIcons(string fileName) => systemIcons.ContainsKey(fileName);
 
-    internal static Bitmap? GetIcon(string fileName, IconType iconType)
+    internal static Bitmap? GetIcon(string fileName, IconType iconType = IconType.None)
     {
         if (IsSystemFileIcons(fileName)) return systemIcons[fileName];
 

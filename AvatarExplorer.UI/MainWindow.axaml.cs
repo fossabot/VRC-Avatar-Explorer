@@ -25,13 +25,13 @@ public partial class MainWindow : Window
         TODO: 検索からアイテムを開いて、またそこで検索したらどんどん溜まっていくのを修正する
         TODO: 右クリックメニューを作る
         TODO: UIのタグを使った翻訳機能を追加する
-        TODO: 空のアイコンを実装する
         TODO: 検索時のパスの表記を修正する
         TODO: 実装やタグは新しくUIを作って上げることで実装する。右クリックメニューでは扱わない（チェックとかでメモリリークする可能性があるため）
         */
 
         InitializeComponent();
         InitializeAvatarExplorer();
+        InitializeNoItemsLabel();
 
         RenderLeftPanel();
         RenderRightPanel();
@@ -271,16 +271,46 @@ public partial class MainWindow : Window
         );
     }
 
+    private void InitializeNoItemsLabel()
+    {
+        if (RightPanelParent == null) return;
+
+        RightPanelParent.Children.Clear();
+
+        var image = new Image
+        {
+            Source = IconUtils.GetIcon(SystemIcon.NothingIcon),
+            Width = 150,
+            Height = 150,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+        };
+
+        var text = new TextBlock
+        {
+            Text = Localizer.Instance.GetDisplayName("System.Found.Nothing"),
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            FontWeight = Avalonia.Media.FontWeight.Bold,
+            FontSize = 25
+        };
+
+        RightPanelParent.Children.Add(image);
+        RightPanelParent.Children.Add(text);
+    }
+
     private void ShowNoItemsLabel()
     {
-        if (NoItemsMessage == null) return;
-        NoItemsMessage.IsVisible = true;
+        if (RightPanelParent == null) return;
+
+        RightPanelParent.IsVisible = true;
     }
 
     private void HideNoItemsLabel()
     {
-        if (NoItemsMessage == null) return;
-        NoItemsMessage.IsVisible = false;
+        if (RightPanelParent == null) return;
+
+        RightPanelParent.IsVisible = false;
     }
 
     #region UI Event Handler
