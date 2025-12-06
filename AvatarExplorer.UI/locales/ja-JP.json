@@ -48,5 +48,8 @@
     "ContextMenu.Item.Add.Folder": "アイテムフォルダを追加する",
     "ContextMenu.Item.Edit.Implemented": "実装 / 未実装",
     "ContextMenu.Item.Edit.Tag": "タグの編集",
-    "ContextMenu.Item.Remove": "アイテムを削除する"
+    "ContextMenu.Item.Remove": "アイテムを削除する",
+
+    "System.Error": "エラー",
+    "System.Error.NotImplemented": "この機能はまだ実装されていません。"
 }

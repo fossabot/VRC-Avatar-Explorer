@@ -371,11 +371,11 @@ public partial class MainWindow : Window
         if (contextMenuAction.ActionLayer == ActionLayer.UI)
         {
             if (_contextMenuHandlers.TryGetValue(contextMenuAction.ActionKey, out var handler))
-                _ = handler(contextMenuAction.Tag);
+                await handler(contextMenuAction.Tag);
         }
         else if (contextMenuAction.ActionLayer == ActionLayer.Core)
         {
-            _ = _avatarExplorer.ExecuteContextMenuItemCommand(contextMenuAction);
+            await _avatarExplorer.ExecuteContextMenuItemCommand(contextMenuAction);
         }
     }
     private Item? GetItemByPath(string itemPath)
@@ -428,32 +428,32 @@ public partial class MainWindow : Window
     }
     private Task ChangeThumbnail(string itemPath)
     {
-        ShowDialog("エラー", "この処理はまだ実装されていません");
+        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
         return Task.CompletedTask;
     }
     private Task EditItem(string itemPath)
     {
-        ShowDialog("エラー", "この処理はまだ実装されていません");
+        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
         return Task.CompletedTask;
     }
     private Task AddMemo(string itemPath)
     {
-        ShowDialog("エラー", "この処理はまだ実装されていません");
+        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
         return Task.CompletedTask;
     }
     private Task AddItemFolder(string itemPath)
     {
-        ShowDialog("エラー", "この処理はまだ実装されていません");
+        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
         return Task.CompletedTask;
     }
     private Task EditImplementedAvatar(string itemPath)
     {
-        ShowDialog("エラー", "この処理はまだ実装されていません");
+        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
         return Task.CompletedTask;
     }
     private Task EditItemTag(string itemPath)
     {
-        ShowDialog("エラー", "この処理はまだ実装されていません");
+        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
         return Task.CompletedTask;
     }
     #endregion
