@@ -16,29 +16,33 @@ public static class ItemUtils
         return avatarName ?? "";
     }
 
-    internal static AvatarStatus GetAvatarStatus(Item item, List<CommonAvatar> commonAvatars, string? path)
+    internal static AvatarStatus GetAvatarStatus(Item item, List<CommonAvatar> commonAvatars, string? avatarPath)
     {
         var avatarStatus = new AvatarStatus();
-
-        if (string.IsNullOrEmpty(path)) return avatarStatus;
-        if (item.SupportedAvatars.Contains(path))
-        {
+        if (string.IsNullOrEmpty(avatarPath)) return avatarStatus;
+        
+        if (item.SupportedAvatars.Count == 0 || item.SupportedAvatars.Contains(avatarPath))
             avatarStatus.IsSupported = true;
-            return avatarStatus;
-        }
 
         if (item.Type != ItemType.Clothing) return avatarStatus;
-        var commonAvatarsArray = commonAvatars.Where(x => x.Avatars.Contains(path));
-        var isCommonAvatar = item.SupportedAvatars.Any(supportedAvatar => commonAvatarsArray.Any(x => x.Avatars.Contains(supportedAvatar)));
 
-        if (!isCommonAvatar) return new AvatarStatus();
+        var groupsForPath = commonAvatars
+            .Where(x => x.Avatars.Contains(avatarPath))
+            .ToArray();
 
-        var commonAvatar = item.SupportedAvatars
-            .Select(avatar => commonAvatarsArray.FirstOrDefault(x => x.Avatars.Contains(avatar)))
-            .FirstOrDefault(x => x != null);
+        if (groupsForPath.Length == 0)
+            return avatarStatus;
 
-        avatarStatus.IsCommon = true;
-        avatarStatus.CommonAvatarName = commonAvatar?.Name ?? string.Empty;
+        foreach (var supportedAvatar in item.SupportedAvatars)
+        {
+            var group = groupsForPath.FirstOrDefault(g => g.Avatars.Contains(supportedAvatar));
+            if (group != null)
+            {
+                avatarStatus.IsCommon = true;
+                avatarStatus.CommonAvatarName = group.GroupName;
+                break;
+            }
+        }
 
         return avatarStatus;
     }

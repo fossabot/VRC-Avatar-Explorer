@@ -34,6 +34,14 @@ public class AvatarExplorerApp
         _items.AddRange(database);
     }
 
+    public void LoadCommonAvatarDatabase(bool fromV1 = false)
+    {
+        var database = fromV1 ? DatabaseUtils.LoadCommonAvatarsDataFromV1(SystemPath.CommonAvatarDatabasePath) :  DatabaseUtils.LoadCommonAvatarsData(SystemPath.CommonAvatarDatabasePath);
+
+        _commonAvatars.Clear();
+        _commonAvatars.AddRange(database);
+    }
+
     public void LoadItemDatabase(string path, bool fromV1 = false)
     {
         var database = fromV1 ? DatabaseUtils.LoadItemsDataFromV1(path) : DatabaseUtils.LoadItemsData(path);
@@ -42,9 +50,12 @@ public class AvatarExplorerApp
         _items.AddRange(database);
     }
 
-    public void LoadCommonAvatarDatabase(string path)
+    public void LoadCommonAvatarDatabase(string path, bool fromV1 = false)
     {
-        throw new NotImplementedException();
+        var database = fromV1 ? DatabaseUtils.LoadCommonAvatarsDataFromV1(path) :  DatabaseUtils.LoadCommonAvatarsData(path);
+
+        _commonAvatars.Clear();
+        _commonAvatars.AddRange(database);
     }
     #endregion
 
@@ -79,7 +90,11 @@ public class AvatarExplorerApp
         return _items
             .GroupBy(item => new { item.Author, item.AuthorThumbnmailFileName })
             .Select(g => new ItemCountInfo(
-                new Author { Name = g.Key.Author, AuthorThumbnailFileName = g.Key.AuthorThumbnmailFileName },
+                new Author
+                {
+                    Name = g.Key.Author,
+                    AuthorThumbnailFileName = g.Key.AuthorThumbnmailFileName
+                },
                 g.Count()
             ))
             .ToList();
@@ -98,6 +113,10 @@ public class AvatarExplorerApp
     public IReadOnlyList<Item> GetAllItems()
     {
         return _items;
+    }
+    public IReadOnlyList<CommonAvatar> GetCommonAvatars()
+    {
+        return _commonAvatars;
     }
 
     public Item? GetItemByPath(string itemPath)
@@ -119,14 +138,7 @@ public class AvatarExplorerApp
     }
     private IReadOnlyList<ItemCountInfo> HandleRootAvatar(SelectionNode selectionNode)
     {
-        //TODO: 共通素体の判定も追加する。詳細はAvatar ExplorerのIsSupportedOrCommonを参照。あと、実装済みの判定は多分要らない
-        return GetCategoriesFromItemsInternal(
-            _items
-                .Where(i =>
-                    i.SupportedAvatars.Count == 0 ||
-                    i.SupportedAvatars.Contains(selectionNode.Key) ||
-                    i.ImplementedAvatars.Contains(selectionNode.Key)
-                ));
+        return GetCategoriesFromItemsInternal(_items.Where(i => ItemUtils.GetAvatarStatus(i, _commonAvatars, selectionNode.Key).IsSupportedOrCommon));
     }
     private IReadOnlyList<ItemCountInfo> HandleRootAuthor(SelectionNode selectionNode)
     {
@@ -146,16 +158,24 @@ public class AvatarExplorerApp
 
         if (rootSelectionNode.Type == ItemTagState.RootAvatar)
         {
-            //TODO: 共通素体の判定も追加する。詳細はAvatar ExplorerのIsSupportedOrCommonを参照。あと、実装済みの判定は要らない
-            return _items
-                .Where(i => (i.SupportedAvatars.Count == 0 || i.SupportedAvatars.Contains(rootSelectionNode.Key) || i.ImplementedAvatars.Contains(rootSelectionNode.Key)) && CategoryUtils.IsCategoryMatch(i, selectionNode.Key))
-                .Select(i => new ItemCountInfo(i, 0))
-                .ToList();
+            List<ItemCountInfo> filteredResult = new();
+
+            foreach (Item item in _items)
+            {
+                if (!CategoryUtils.IsCategoryMatch(item, selectionNode.Key)) continue;
+
+                AvatarStatus avatarStatus = ItemUtils.GetAvatarStatus(item, _commonAvatars, rootSelectionNode.Key);
+                if (!avatarStatus.IsSupportedOrCommon) continue;
+                
+                filteredResult.Add(new ItemCountInfo(item, 0, avatarStatus.OnlyCommon ? avatarStatus.CommonAvatarName : string.Empty));
+            }
+
+            return filteredResult;
         }
         else if (rootSelectionNode.Type == ItemTagState.RootAuthor)
         {
             return _items
-                .Where(i => i.Author == rootSelectionNode.Key && CategoryUtils.IsCategoryMatch(i, selectionNode.Key))
+                .Where(i => CategoryUtils.IsCategoryMatch(i, selectionNode.Key) && i.Author == rootSelectionNode.Key)
                 .Select(i => new ItemCountInfo(i, 0))
                 .ToList();
         }
@@ -282,7 +302,7 @@ public class AvatarExplorerApp
 
     public bool RemoveCommonAvatar(string commonAvatarName)
     {
-        int removed = _commonAvatars.RemoveAll(i => i.Name == commonAvatarName);
+        int removed = _commonAvatars.RemoveAll(i => i.GroupName == commonAvatarName);
         return removed > 0;
     }
     #endregion

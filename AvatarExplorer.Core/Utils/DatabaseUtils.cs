@@ -29,17 +29,7 @@ public static class DatabaseUtils
 
     public static string GetAuthorThumbnailsFolderPath(string softwarePath)
         => Path.Combine(GetImagesFolderPath(softwarePath), "author_thumbnails");
-
-    internal static List<Item> LoadItemsDataFromV1(string path)
-    {
-        if (!File.Exists(path)) throw new FileNotFoundException();
-
-        string json = File.ReadAllText(path);
-        var items = JsonSerializer.Deserialize<List<ItemV1>>(json) ?? [];
-
-        return MigrateFromV1(items);
-    }
-
+    
     internal static List<Item> LoadItemsData(string path)
     {
         if (!File.Exists(path)) throw new FileNotFoundException();
@@ -50,9 +40,43 @@ public static class DatabaseUtils
         return items;
     }
 
-    private static List<Item> MigrateFromV1(List<ItemV1> items)
+    internal static List<CommonAvatar> LoadCommonAvatarsData(string path)
+    {
+        if (!File.Exists(path)) throw new FileNotFoundException();
+
+        string json = File.ReadAllText(path);
+        var commonAvatars = JsonSerializer.Deserialize<List<CommonAvatar>>(json) ?? [];
+
+        return commonAvatars;
+    }
+
+    internal static List<Item> LoadItemsDataFromV1(string path)
+    {
+        if (!File.Exists(path)) throw new FileNotFoundException();
+
+        string json = File.ReadAllText(path);
+        var items = JsonSerializer.Deserialize<List<ItemV1>>(json) ?? [];
+
+        return MigrateItemsFromV1(items);
+    }
+
+    internal static List<CommonAvatar> LoadCommonAvatarsDataFromV1(string path)
+    {
+        if (!File.Exists(path)) throw new FileNotFoundException();
+
+        string json = File.ReadAllText(path);
+        var commonAvatars = JsonSerializer.Deserialize<List<CommonAvatarV1>>(json) ?? [];
+
+        return MigrateCommonAvatarsFromV1(commonAvatars);
+    }
+
+    private static List<Item> MigrateItemsFromV1(List<ItemV1> items)
     {
         return items.Select(Item.FromV1).ToList();
+    }
+    private static List<CommonAvatar> MigrateCommonAvatarsFromV1(List<CommonAvatarV1> commonAvatars)
+    {
+        return commonAvatars.Select(CommonAvatar.FromV1).ToList();
     }
 
     internal static Dictionary<string, string> GetAvatarNameMaps(List<Item> items)

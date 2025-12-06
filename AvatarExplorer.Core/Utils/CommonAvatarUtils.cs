@@ -8,7 +8,7 @@ namespace AvatarExplorer.Core.Utils
         {
             if (string.IsNullOrWhiteSpace(name)) return null;
 
-            return commonAvatars.FirstOrDefault(commonAvatar => commonAvatar.Name == name);
+            return commonAvatars.FirstOrDefault(commonAvatar => commonAvatar.GroupName == name);
         }
     }
 }

@@ -28,7 +28,7 @@ internal class UISelectableItem
     }
 
     internal UISelectableItem(ItemCountInfo itemCountInfo)
-        : this(itemCountInfo.Item, itemCountInfo.Count)
+        : this(itemCountInfo.Item, itemCountInfo.Count, itemCountInfo.CommonAvatarName)
     {
     }
 
@@ -44,11 +44,11 @@ internal class UISelectableItem
 
         if (!string.IsNullOrEmpty(CommonAvatarName) && item.Tags.Count > 0)
         {
-            Description = ("Button.Description.Item.AuthorName.CommonAvatar.Tags", [item.Author, item.CustomCategory, string.Join(", ", item.Tags)]);
+            Description = ("Button.Description.Item.AuthorName.CommonAvatar.Tags", [item.Author, CommonAvatarName, string.Join(", ", item.Tags)]);
         }
         else if (!string.IsNullOrEmpty(CommonAvatarName))
         {
-            Description = ("Button.Description.Item.AuthorName.CommonAvatar", [item.Author, item.CustomCategory]);
+            Description = ("Button.Description.Item.AuthorName.CommonAvatar", [item.Author, CommonAvatarName]);
         }
         else
         {

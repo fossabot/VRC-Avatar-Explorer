@@ -3,7 +3,7 @@ namespace AvatarExplorer.Core.Models;
 public class AvatarStatus
 {
     /// <summary>
-    /// 対応アバターかどうかを取得または設定します。
+    /// 対応アバターかどうかを取得または設定します。0の場合も対応アバターとして扱われます
     /// </summary>
     internal bool IsSupported { get; set; }
 

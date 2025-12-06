@@ -48,6 +48,7 @@ public partial class MainWindow : Window
         try
         {
             _avatarExplorer.LoadItemDatabase(true);
+            _avatarExplorer.LoadCommonAvatarDatabase(true);
             Localizer.Instance.LoadFromFile("locales/ja-JP.json");
         }
         catch
