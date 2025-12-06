@@ -1,7 +1,7 @@
 namespace AvatarExplorer.UI.Models;
 
-public class RawSearchToken
+internal class RawSearchToken
 {
-    public string Key { get; set; } = "";
-    public string Value { get; set; } = "";
+    internal string Key { get; set; } = "";
+    internal string Value { get; set; } = "";
 }

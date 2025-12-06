@@ -9,14 +9,14 @@ using AvatarExplorer.UI.Models;
 
 namespace AvatarExplorer.UI.Utils;
 
-public static partial class SearchUtils
+internal static partial class SearchUtils
 {
     [GeneratedRegex(@"(?<key>Title|Author|Booth|Avatar|Category|Memo|Folder|File|Implemented|NotImplemented|Tag|Common|OR|BrokenItems)=(?:""(?<value>.*?)""|(?<value>[^\s]+))|(?<word>[^\s]+)")]
     private static partial Regex SearchFilterRegex();
 
     private static readonly string[] CategoryKeys = Enum.GetValues<ItemType>().Select(i => i.GetInternalId()).Where(i => i != null).ToArray()!;
 
-    public static List<RawSearchToken> ParseSearchText(string text)
+    internal static List<RawSearchToken> ParseSearchText(string text)
     {
         var matches = SearchFilterRegex().Matches(text);
         var tokens = new List<RawSearchToken>();
@@ -44,7 +44,7 @@ public static partial class SearchUtils
         return tokens;
     }
 
-    public static string ParseCategory(string text)
+    internal static string ParseCategory(string text)
     {
         var parseResult = Localizer.Instance.GetInternalId(text);
         if (parseResult == null || !CategoryKeys.Contains(parseResult)) return text;
@@ -52,7 +52,7 @@ public static partial class SearchUtils
         return parseResult;
     }
 
-    public static SearchFilter BuildFilter(string searchText)
+    internal static SearchFilter BuildFilter(string searchText)
     {
         var rawTokens = ParseSearchText(searchText);
         var filter = new SearchFilter();

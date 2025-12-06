@@ -4,18 +4,18 @@ using AvatarExplorer.Core.Models;
 
 namespace AvatarExplorer.UI.Models;
 
-public class UISelectableItem
+internal class UISelectableItem
 {
-    public string Title { get; private set; } = string.Empty;
-    public (string internalId, string[] args) Description { get; set; } = new();
-    public string ImageFileName { get; private set; } = string.Empty;
-    public ItemTagInfo Tag { get; private set; } = new(); // 選択されたときに使用されるタグ
-    public IconType IconType { get; private set; } = IconType.None;
+    internal string Title { get; private set; } = string.Empty;
+    internal (string internalId, string[] args) Description { get; set; } = new();
+    internal string ImageFileName { get; private set; } = string.Empty;
+    internal ItemTagInfo Tag { get; private set; } = new(); // 選択されたときに使用されるタグ
+    internal IconType IconType { get; private set; } = IconType.None;
 
-    public string CommonAvatarName { get; set; } // アイテム表記用
-    public int ItemCount { get; set; } = 0; // カテゴリなどの数表記用
+    internal string CommonAvatarName { get; set; } // アイテム表記用
+    internal int ItemCount { get; set; } = 0; // カテゴリなどの数表記用
 
-    public UISelectableItem(ISelectableItem source, int itemCount, string commonAvatarName = "")
+    internal UISelectableItem(ISelectableItem source, int itemCount, string commonAvatarName = "")
     {
         ItemCount = itemCount;
         CommonAvatarName = commonAvatarName;
@@ -27,12 +27,12 @@ public class UISelectableItem
         else if (source is ItemFile itemFile) FromFileItemFile(itemFile);
     }
 
-    public UISelectableItem(ItemCountInfo itemCountInfo)
+    internal UISelectableItem(ItemCountInfo itemCountInfo)
         : this(itemCountInfo.Item, itemCountInfo.Count)
     {
     }
 
-    public UISelectableItem SetType(string type)
+    internal UISelectableItem SetType(string type)
     {
         Tag = new ItemTagInfo(type, Tag.Value);
         return this;

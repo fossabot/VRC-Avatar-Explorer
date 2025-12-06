@@ -169,9 +169,9 @@ public class SearchFilter
         bool matchBroken = !BrokenItems || (BrokenItems && !(item.SupportedAvatars.Contains(item.ItemPath) || item.ImplementedAvatars.Contains(item.ItemPath)));
 
         bool matchWord = SearchWords.Count == 0
-            || IsOrSearch
+            || (IsOrSearch
                 ? SearchWords.Any(w => GetWordSearchResult(avatarNameMaps, item, w))
-                : SearchWords.All(w => GetWordSearchResult(avatarNameMaps, item, w));
+                : SearchWords.All(w => GetWordSearchResult(avatarNameMaps, item, w)));
 
         return matchTitle
             && matchAuthor

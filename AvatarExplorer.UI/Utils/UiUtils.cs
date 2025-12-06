@@ -9,9 +9,9 @@ using AvatarExplorer.UI.Models;
 
 namespace AvatarExplorer.UI.Utils;
 
-public static class UIUtils
+internal static class UIUtils
 {
-    public static void AddItemButton(StackPanel parent, UISelectableItem item, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
+    internal static void AddItemButton(StackPanel parent, UISelectableItem item, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
         var button = new Button
         {
