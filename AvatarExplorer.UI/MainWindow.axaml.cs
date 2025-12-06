@@ -232,7 +232,7 @@ public partial class MainWindow : Window
             }
         });
 
-        _avatarExplorer.ModifyUnityPackageFilePath(itemPath, Localizer.Instance.GetDisplayName(selectedItem.Type.GetInternalId() ?? ""), progress: progress);
+        AvatarExplorerApp.ModifyUnityPackageFilePath(itemPath, Localizer.Instance.GetDisplayName(selectedItem.Type.GetInternalId() ?? ""), progress: progress);
     }
     #endregion
 

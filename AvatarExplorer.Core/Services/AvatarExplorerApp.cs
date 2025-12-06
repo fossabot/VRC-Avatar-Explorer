@@ -278,7 +278,7 @@ public class AvatarExplorerApp
     #endregion
 
     #region File API
-    public void ModifyUnityPackageFilePath(string itemPath, string itemCategoryName = "", IProgress<(string, int, string)>? progress = null)
+    public static void ModifyUnityPackageFilePath(string itemPath, string itemCategoryName = "", IProgress<(string, int, string)>? progress = null)
     {
         FileSystemUtils.ModifyUnityPackageFilePathAsync(itemPath, itemCategoryName, progress);
     }
