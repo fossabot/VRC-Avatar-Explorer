@@ -11,7 +11,7 @@ namespace AvatarExplorer.UI.Utils;
 
 public static class UIUtils
 {
-    public static void AddItemButton(StackPanel parent, UISelectableItem item, EventHandler<RoutedEventArgs>? onClick = null)
+    public static void AddItemButton(StackPanel parent, UISelectableItem item, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
         var button = new Button
         {
@@ -75,6 +75,8 @@ public static class UIUtils
         contentPanel.Children.Add(textPanel);
 
         button.Content = contentPanel;
+
+        if (contextMenu != null) button.ContextMenu = contextMenu;
         if (onClick != null) button.Click += onClick;
 
         parent.Children.Add(button);

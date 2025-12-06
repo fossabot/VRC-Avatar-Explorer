@@ -35,5 +35,18 @@
     "Path.Root.Selected.Category.Item.FileCategory": "{0}",
     "Path.Root.Selected.Category.Item.FileCategory.Open": "{0}",
 
-    "System.Found.Nothing": "アイテムが見つからないよっ！"
+    "System.Found.Nothing": "アイテムが見つからないよ！",
+
+    "ContextMenu.Item.OpenFolder": "フォルダを開く",
+    "ContextMenu.Item.Booth.Copy": "Boothリンクのコピー",
+    "ContextMenu.Item.Booth.Open": "Boothリンクを開く",
+    "ContextMenu.Item.ShowOtherItemsByAuthor": "この作者の他のアイテムを表示",
+    "ContextMenu.Item.Thumbnail.Change": "サムネイルを変更する",
+    "ContextMenu.Item.Thumbnail.Fetch": "サムネイルを取得する",
+    "ContextMenu.Item.Edit": "アイテムを編集する",
+    "ContextMenu.Item.Add.Memo": "アイテムを編集する",
+    "ContextMenu.Item.Add.Folder": "アイテムフォルダを追加する",
+    "ContextMenu.Item.Edit.Implemented": "実装 / 未実装",
+    "ContextMenu.Item.Edit.Tag": "タグの編集",
+    "ContextMenu.Item.Remove": "アイテムを削除する"
 }

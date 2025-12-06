@@ -2,7 +2,7 @@
 
 namespace AvatarExplorer.Core.Utils;
 
-internal static class ItemUtils
+public static class ItemUtils
 {
     internal static string GetAvatarNameFromPath(IReadOnlyList<Item> items, string? path)
     {
@@ -10,7 +10,7 @@ internal static class ItemUtils
         return items.Where(i => i.Type == ItemType.Avatar).FirstOrDefault(x => x.ItemPath == path)?.Title ?? string.Empty;
     }
 
-    public static string GetAvatarNameFromDictionary(Dictionary<string, string> avatarNamesDictionary, string avatarPath)
+    internal static string GetAvatarNameFromDictionary(Dictionary<string, string> avatarNamesDictionary, string avatarPath)
     {
         avatarNamesDictionary.TryGetValue(avatarPath, out var avatarName);
         return avatarName ?? "";
@@ -43,8 +43,9 @@ internal static class ItemUtils
         return avatarStatus;
     }
 
-    internal static string GetItemPath(string itemPath)
+    public static string GetItemPath(string itemPath)
     {
+        // <sys>で始まっていないものはフルパスと認識する
         return itemPath.StartsWith("<sys>") ? Path.Join(SystemPath.ItemsFolderPath, itemPath.Replace("<sys>", "")) : itemPath;
     }
 }

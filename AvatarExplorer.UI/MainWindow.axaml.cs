@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
+using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
 using AvatarExplorer.UI.Utils;
@@ -23,20 +25,24 @@ public partial class MainWindow : Window
         TODO: 言語変更、並び替えを実装する
         TODO: 戻ったときに、どこを表示するのかはっきりする
         TODO: 検索からアイテムを開いて、またそこで検索したらどんどん溜まっていくのを修正する
-        TODO: 右クリックメニューを作る
+        TODO: 右クリックメニューの処理を作る
         TODO: UIのタグを使った翻訳機能を追加する
         TODO: 検索時のパスの表記を修正する
         TODO: 実装やタグは新しくUIを作って上げることで実装する。右クリックメニューでは扱わない（チェックとかでメモリリークする可能性があるため）
+        TODO: ページ機能を追加する（Dictionaryで現在のパスを元に保存してもいいかも）
+        TODO: 下のボタンの処理を実装する
         */
 
         InitializeComponent();
         InitializeAvatarExplorer();
+        InitializeContextMenuHandlers();
         InitializeNoItemsLabel();
 
         RenderLeftPanel();
         RenderRightPanel();
     }
 
+    #region Initializing
     private void InitializeAvatarExplorer()
     {
         try
@@ -49,6 +55,50 @@ public partial class MainWindow : Window
             // Ignored
         }
     }
+    private void InitializeNoItemsLabel()
+    {
+        if (RightPanelParent == null) return;
+
+        RightPanelParent.Children.Clear();
+
+        var image = new Image
+        {
+            Source = IconUtils.GetIcon(SystemIcon.NothingIcon),
+            Width = 150,
+            Height = 150,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+        };
+
+        var text = new TextBlock
+        {
+            Text = Localizer.Instance.GetDisplayName("System.Found.Nothing"),
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            FontWeight = Avalonia.Media.FontWeight.Bold,
+            FontSize = 25
+        };
+
+        RightPanelParent.Children.Add(image);
+        RightPanelParent.Children.Add(text);
+    }
+    private void InitializeContextMenuHandlers()
+    {
+        _contextMenuHandlers = new()
+        {
+            { ActionKey.OpenItemFolder, OpenItemFolder },
+            { ActionKey.CopyBoothLink, CopyBoothLink },
+            { ActionKey.OpenBoothLink, OpenBoothLink },
+            { ActionKey.ShowOtherItemsByAuthor, ShowOtherItemsByAuthor },
+            { ActionKey.ChangeThumbnail, ChangeThumbnail },
+            { ActionKey.EditItem, EditItem },
+            { ActionKey.AddItemMemo, AddMemo},
+            { ActionKey.AddItemFolder, AddItemFolder },
+            { ActionKey.EditImplementedAvatar, EditImplementedAvatar },
+            { ActionKey.EditItemTag, EditItemTag }
+        };
+    }
+    #endregion
 
     #region Left Panel
     private void RenderLeftPanel()
@@ -84,7 +134,8 @@ public partial class MainWindow : Window
 
         foreach (ItemCountInfo itemCountInfo in items.Take(30))
         {
-            UIUtils.AddItemButton(LeftPanel, new UISelectableItem(itemCountInfo).SetType(customType), LeftPanelButton_Clicked);
+            ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ContextMenuItem_Click);
+            UIUtils.AddItemButton(LeftPanel, new UISelectableItem(itemCountInfo).SetType(customType), itemContextMenu, LeftPanelButton_Clicked);
         }
     }
 
@@ -113,16 +164,17 @@ public partial class MainWindow : Window
         RightPanel.Children.Clear();
 
         var items = _avatarExplorer.GetItemsForCurrentState();
-        
+
         if (items.Count == 0) ShowNoItemsLabel();
         else HideNoItemsLabel();
 
         foreach (ItemCountInfo itemCountInfo in items.Take(30))
         {
-            UIUtils.AddItemButton(RightPanel, new UISelectableItem(itemCountInfo), RightPanelButton_Clicked);
+            ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ContextMenuItem_Click);
+            UIUtils.AddItemButton(RightPanel, new UISelectableItem(itemCountInfo), itemContextMenu, RightPanelButton_Clicked);
         }
     }
-    private void RightPanelButton_Clicked(object? sender, RoutedEventArgs e)
+    private async void RightPanelButton_Clicked(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is ItemTagInfo itemTagInfo)
         {
@@ -131,15 +183,23 @@ public partial class MainWindow : Window
                 var selectedItem = _avatarExplorer.GetSelectedItem();
                 if (selectedItem == null)
                 {
-                    _avatarExplorer.OpenFile(itemTagInfo.Value, normalOpen: true);
+                    await AvaloniaLauncherUtils.OpenFile(this, itemTagInfo.Value);
                     return;
                 }
 
-                var progress = new Progress<(string, int)>(tuple =>
+                var progress = new Progress<(string, int, string)>(tuple =>
                 {
                     if (tuple.Item2 == 100)
                     {
                         HideProgress();
+
+                        // Unitypackage展開後は自動で引数3にUnitypackageのパスが来る
+                        // 空白の場合はないということ
+                        if (!string.IsNullOrEmpty(tuple.Item3))
+                        {
+                            _ = AvaloniaLauncherUtils.OpenFile(this, tuple.Item3);
+                        }
+
                         return;
                     }
 
@@ -147,7 +207,7 @@ public partial class MainWindow : Window
                     UpdateProgress(tuple.Item2);
                 });
 
-                _avatarExplorer.OpenFile(itemTagInfo.Value, Localizer.Instance.GetDisplayName(selectedItem.Type.GetInternalId() ?? ""), progress: progress);
+                _avatarExplorer.ModifyUnityPackageFilePath(itemTagInfo.Value, Localizer.Instance.GetDisplayName(selectedItem.Type.GetInternalId() ?? ""), progress: progress);
             }
             else
             {
@@ -187,13 +247,14 @@ public partial class MainWindow : Window
 
         RightPanel.Children.Clear();
         var items = _avatarExplorer.SearchItems(SearchUtils.BuildFilter(SearchTextBox.Text));
-        
+
         if (items.Count == 0) ShowNoItemsLabel();
         else HideNoItemsLabel();
 
         foreach (Item item in items.Take(30))
         {
-            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0), RightPanelButton_Clicked);
+            ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(item), ContextMenuItem_Click);
+            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0), itemContextMenu, RightPanelButton_Clicked);
         }
     }
     #endregion
@@ -271,34 +332,6 @@ public partial class MainWindow : Window
         );
     }
 
-    private void InitializeNoItemsLabel()
-    {
-        if (RightPanelParent == null) return;
-
-        RightPanelParent.Children.Clear();
-
-        var image = new Image
-        {
-            Source = IconUtils.GetIcon(SystemIcon.NothingIcon),
-            Width = 150,
-            Height = 150,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-        };
-
-        var text = new TextBlock
-        {
-            Text = Localizer.Instance.GetDisplayName("System.Found.Nothing"),
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-            FontWeight = Avalonia.Media.FontWeight.Bold,
-            FontSize = 25
-        };
-
-        RightPanelParent.Children.Add(image);
-        RightPanelParent.Children.Add(text);
-    }
-
     private void ShowNoItemsLabel()
     {
         if (RightPanelParent == null) return;
@@ -319,6 +352,108 @@ public partial class MainWindow : Window
         _avatarExplorer.SelectUndo();
         RenderRightPanel();
         LoadCurrentPath();
+    }
+
+    private async void ContextMenuItem_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem menuItem && menuItem.Tag is ContextMenuAction contextMenuAction)
+        {
+            await ExecuteContextMenuItemCommand(contextMenuAction);
+        }
+    }
+    #endregion
+
+    #region ContextMenu
+    private Dictionary<ActionKey, Func<string, Task>> _contextMenuHandlers;
+    private async Task ExecuteContextMenuItemCommand(ContextMenuAction contextMenuAction)
+    {
+        if (contextMenuAction.ActionLayer == ActionLayer.UI)
+        {
+            if (_contextMenuHandlers.TryGetValue(contextMenuAction.ActionKey, out var handler))
+                _ = handler(contextMenuAction.Tag);
+        }
+        else if (contextMenuAction.ActionLayer == ActionLayer.Core)
+        {
+            _ = _avatarExplorer.ExecuteContextMenuItemCommand(contextMenuAction);
+        }
+    }
+    private Item? GetItemByPath(string itemPath)
+    {
+        var item = _avatarExplorer.GetItemByPath(itemPath);
+        if (item == null) ShowDialog("エラー", "アイテムが見つかりませんでした");
+
+        return item;
+    }
+    private async Task OpenItemFolder(string itemPath)
+    {
+        var item = GetItemByPath(itemPath);
+        if (item == null) return;
+
+        await AvaloniaLauncherUtils.OpenFolder(this, ItemUtils.GetItemPath(item.ItemPath));
+    }
+    private async Task CopyBoothLink(string itemPath)
+    {
+        var item = GetItemByPath(itemPath);
+        if (item == null) return;
+
+        var boothLink = item.GetBoothLink();
+
+        try
+        {
+            await ClipboardUtils.SetTextToClipboard(boothLink);
+            ShowDialog("成功", "クリップボードにリンクをコピーしました。");
+        }
+        catch
+        {
+            ShowDialog("エラー", "クリップボードにリンクをコピー出来ませんでした。");
+        }
+    }
+    private async Task OpenBoothLink(string itemPath)
+    {
+        var item = GetItemByPath(itemPath);
+        if (item == null) return;
+
+        await AvaloniaLauncherUtils.OpenLink(this, item.GetBoothLink());
+    }
+    private Task ShowOtherItemsByAuthor(string itemPath)
+    {
+        var item = GetItemByPath(itemPath);
+        if (item == null) return Task.CompletedTask;
+
+        if (SearchTextBox != null) SearchTextBox.Text = string.Format("Author=\"{0}\"", item.Author);
+        UpdateRightPanel();
+
+        return Task.CompletedTask;
+    }
+    private Task ChangeThumbnail(string itemPath)
+    {
+        ShowDialog("エラー", "この処理はまだ実装されていません");
+        return Task.CompletedTask;
+    }
+    private Task EditItem(string itemPath)
+    {
+        ShowDialog("エラー", "この処理はまだ実装されていません");
+        return Task.CompletedTask;
+    }
+    private Task AddMemo(string itemPath)
+    {
+        ShowDialog("エラー", "この処理はまだ実装されていません");
+        return Task.CompletedTask;
+    }
+    private Task AddItemFolder(string itemPath)
+    {
+        ShowDialog("エラー", "この処理はまだ実装されていません");
+        return Task.CompletedTask;
+    }
+    private Task EditImplementedAvatar(string itemPath)
+    {
+        ShowDialog("エラー", "この処理はまだ実装されていません");
+        return Task.CompletedTask;
+    }
+    private Task EditItemTag(string itemPath)
+    {
+        ShowDialog("エラー", "この処理はまだ実装されていません");
+        return Task.CompletedTask;
     }
     #endregion
 }

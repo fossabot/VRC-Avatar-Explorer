@@ -90,6 +90,11 @@ public class Item : ISelectableItem
     /// </summary>
     public string UpdatedDate { get; set; } = string.Empty;
 
+    public string GetBoothLink()
+    {
+        return string.Format(BoothLink.ItemURLFormat, AuthorId, BoothId);
+    }
+
     [JsonIgnore]
     public string SearchIndex { get; private set; } = string.Empty;
 

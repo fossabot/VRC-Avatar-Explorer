@@ -100,6 +100,11 @@ public class AvatarExplorerApp
         return _items;
     }
 
+    public Item? GetItemByPath(string itemPath)
+    {
+        return _items.FirstOrDefault(i => i.ItemPath == itemPath);
+    }
+
     public IReadOnlyList<ItemCountInfo> GetItemsForCurrentState()
     {
         SelectionNode? current = _selectionState.Current;
@@ -252,10 +257,10 @@ public class AvatarExplorerApp
     }
     #endregion
 
-    #region Open File API
-    public void OpenFile(string itemPath, string itemCategoryName = "", bool normalOpen = false, IProgress<(string, int)>? progress = null)
+    #region File API
+    public void ModifyUnityPackageFilePath(string itemPath, string itemCategoryName = "", IProgress<(string, int, string)>? progress = null)
     {
-        FileSystemUtils.OpenFile(itemPath, itemCategoryName, normalOpen, progress);
+        FileSystemUtils.ModifyUnityPackageFilePathAsync(itemPath, itemCategoryName, progress);
     }
     #endregion
 
@@ -291,6 +296,18 @@ public class AvatarExplorerApp
             .Where(i => filter.Matches(avatarNameMaps, _commonAvatars, i))
             .OrderByDescending(i => SearchUtils.GetScore(i, filter.SearchWords))
             .ToList();
+    }
+    #endregion
+
+    #region Ececute Context Menu Command
+    public async Task ExecuteContextMenuItemCommand(ContextMenuAction contextMenuAction)
+    {
+        ActionKey actionKey = contextMenuAction.ActionKey;
+
+        switch (actionKey)
+        {
+            case ActionKey.FetchThumbnail: throw new NotImplementedException();
+        }
     }
     #endregion
 }
