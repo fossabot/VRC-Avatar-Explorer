@@ -19,6 +19,8 @@ public partial class MainWindow : Window
 {
     private readonly AvatarExplorerApp _avatarExplorer = new();
 
+    private Dictionary<ActionKey, Func<string, Task>>? _contextMenuHandlers = null!;
+
     public MainWindow()
     {
         /* プロジェクトTODO
@@ -380,7 +382,6 @@ public partial class MainWindow : Window
     #endregion
 
     #region ContextMenu
-    private Dictionary<ActionKey, Func<string, Task>> _contextMenuHandlers;
     private async Task ExecuteContextMenuItemCommand(ContextMenuAction contextMenuAction)
     {
         if (contextMenuAction.ActionLayer == ActionLayer.UI)
