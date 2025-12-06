@@ -32,6 +32,7 @@ public class Item : ISelectableItem
 
     /// <summary>
     /// アイテムフォルダがあるパスを取得または設定します。
+    /// `ItemUtils.GetItemPath()`でフルパスを取得できます。
     /// </summary>
     public string ItemPath { get; set; } = string.Empty;
 
@@ -124,7 +125,7 @@ public class Item : ISelectableItem
             AuthorId = item.AuthorId,
             BoothId = item.BoothId,
             ItemPath = MigrateItemPath(item.ItemPath),
-            MaterialPath = item.MaterialPath,
+            MaterialPath = MigrateItemPath(item.MaterialPath),
             ThumbnmailFileName = item.ImagePath.Replace("Datas\\Thumbnail\\", ""),
             AuthorThumbnmailFileName = item.AuthorImageFilePath.Replace("Datas\\AuthorImage\\", ""),
             Type = item.Type,
