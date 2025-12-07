@@ -1,3 +1,3 @@
 namespace AvatarExplorer.Core.Models;
 
-public readonly record struct ItemTagInfo(string Type, string Value);
+public readonly record struct ItemTagInfo(ItemTagState State, string Value);

@@ -9,7 +9,7 @@ namespace AvatarExplorer.UI.Utils;
 
 internal static class ContextMenuUtils
 {
-    internal static ContextMenu GetContextMenu(IEnumerable<ContextMenuAction> contextMenuActions, EventHandler<RoutedEventArgs>? onClick = null)
+    internal static ContextMenu GetContextMenu(List<ContextMenuAction> contextMenuActions, EventHandler<RoutedEventArgs>? onClick = null)
     {
         ContextMenu contextMenu = new();
 

@@ -1,5 +1,6 @@
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Interfaces;
+using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 
 namespace AvatarExplorer.UI.Models;
@@ -7,7 +8,7 @@ namespace AvatarExplorer.UI.Models;
 internal class UISelectableItem
 {
     internal string Title { get; private set; } = string.Empty;
-    internal (string internalId, string[] args) Description { get; set; } = new();
+    internal (string localizationKey, string[] args) Description { get; set; } = new();
     internal string ImageFileName { get; private set; } = string.Empty;
     internal ItemTagInfo Tag { get; private set; } = new(); // 選択されたときに使用されるタグ
     internal IconType IconType { get; private set; } = IconType.None;
@@ -32,9 +33,9 @@ internal class UISelectableItem
     {
     }
 
-    internal UISelectableItem SetType(string type)
+    internal UISelectableItem SetState(ItemTagState state)
     {
-        Tag = new ItemTagInfo(type, Tag.Value);
+        Tag = new ItemTagInfo(state, Tag.Value);
         return this;
     }
 
@@ -44,15 +45,15 @@ internal class UISelectableItem
 
         if (!string.IsNullOrEmpty(CommonAvatarName) && item.Tags.Count > 0)
         {
-            Description = ("Button.Description.Item.AuthorName.CommonAvatar.Tags", [item.Author, CommonAvatarName, string.Join(", ", item.Tags)]);
+            Description = (LocalizationKey.UI.Button.Description.Item.Author.WithAvatarTags, [item.Author, CommonAvatarName, string.Join(", ", item.Tags)]);
         }
         else if (!string.IsNullOrEmpty(CommonAvatarName))
         {
-            Description = ("Button.Description.Item.AuthorName.CommonAvatar", [item.Author, CommonAvatarName]);
+            Description = (LocalizationKey.UI.Button.Description.Item.Author.WithAvatar, [item.Author, CommonAvatarName]);
         }
         else
         {
-            Description = ("Button.Description.Item.AuthorName", [item.Author]);
+            Description = (LocalizationKey.UI.Button.Description.Item.Author.Default, [item.Author]);
         }
 
         ImageFileName = item.ThumbnmailFileName;
@@ -63,38 +64,36 @@ internal class UISelectableItem
     private void FromAuthor(Author author)
     {
         Title = author.Name;
-        Description = ("Button.Description.Item.Count", [ItemCount.ToString()]);
+        Description = (LocalizationKey.UI.Button.Description.Item.Count, [ItemCount.ToString()]);
         ImageFileName = author.AuthorThumbnailFileName;
 
-        // TODO: このタグややこしいかも
-        Tag = new(ItemTagState.RootSelectedItem, author.Name);
+        Tag = new(ItemTagState.RootAuthor, author.Name);
         IconType = IconType.Author;
     }
 
     private void FromCategory(Category category)
     {
         Title = category.ToString();
-        Description = ("Button.Description.Item.Count", [ItemCount.ToString()]);
+        Description = (LocalizationKey.UI.Button.Description.Item.Count, [ItemCount.ToString()]);
         ImageFileName = SystemIcon.FolderIcon;
-
-        // TODO: このタグもややこしいかも。今度直す
-        Tag = new(ItemTagState.RootSelectedCategory, category.Type.GetInternalId() ?? category.CustomCategory);
+        
+        Tag = new(ItemTagState.RootSelectedCategory, category.Type.GetLocalizationKey() ?? category.CustomCategory);
         IconType = IconType.Author;
     }
 
     private void FromFileCategoryItem(FileCategoryItem fileCategoryItem)
     {
-        Title = fileCategoryItem.FileCategory.GetInternalId() ?? "";
-        Description = ("Button.Description.Item.Count", [ItemCount.ToString()]);
+        Title = fileCategoryItem.FileCategory.GetLocalizationKey() ?? "";
+        Description = (LocalizationKey.UI.Button.Description.Item.Count, [ItemCount.ToString()]);
         ImageFileName = SystemIcon.FolderIcon;
-        Tag = new(ItemTagState.ItemFileCategory, fileCategoryItem.FileCategory.GetInternalId() ?? "");
+        Tag = new(ItemTagState.ItemFileCategory, fileCategoryItem.FileCategory.GetLocalizationKey() ?? "");
         IconType = IconType.Author;
     }
 
     private void FromFileItemFile(ItemFile itemFile)
     {
         Title = itemFile.FileName;
-        Description = ("Button.Description.File.Extension", [itemFile.Extension]);
+        Description = (LocalizationKey.UI.Button.Description.File.Extension, [itemFile.Extension]);
         ImageFileName = SystemIcon.FileIcon;
         Tag = new(ItemTagState.ItemFileCategoryOpen, itemFile.FullPath);
         IconType = IconType.Author;

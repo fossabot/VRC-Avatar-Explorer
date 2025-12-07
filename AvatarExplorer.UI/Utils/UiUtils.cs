@@ -61,10 +61,10 @@ internal static class UIUtils
             FontWeight = FontWeight.Bold
         };
 
-        var (internalId, args) = item.Description;
+        var (localizationKey, args) = item.Description;
         var descText = new TextBlock
         {
-            Text = Localizer.Instance.GetDisplayName(internalId, args),
+            Text = Localizer.Instance.GetDisplayName(localizationKey, args),
             FontSize = 13
         };
 
@@ -76,7 +76,7 @@ internal static class UIUtils
 
         button.Content = contentPanel;
 
-        if (contextMenu != null) button.ContextMenu = contextMenu;
+        if (contextMenu != null && contextMenu.ItemCount > 0) button.ContextMenu = contextMenu;
         if (onClick != null) button.Click += onClick;
 
         parent.Children.Add(button);

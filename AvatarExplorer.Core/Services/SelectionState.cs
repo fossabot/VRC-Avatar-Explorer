@@ -1,14 +1,25 @@
+using AvatarExplorer.Core.Models;
+
 namespace AvatarExplorer.Core.Services;
 
-public record SelectionNode(string Type, string Key);
+public record SelectionNode(ItemTagState State, string Key);
 
 internal class SelectionState
 {
     private readonly Stack<SelectionNode> _stack = new();
 
-    public void Push(string type, string key)
+    public void Push(ItemTagState state, string key)
     {
-        _stack.Push(new SelectionNode(type, key));
+        if (state == ItemTagState.SearchItem && Search(ItemTagState.SearchItem) != null)
+        {
+            foreach (var itemTagState in _stack.Select(i => i.State).ToArray())
+            {
+                Pop();
+                if (itemTagState == ItemTagState.SearchItem) break;
+            }
+        }
+
+        _stack.Push(new SelectionNode(state, key));
     }
 
     public SelectionNode? Pop()
@@ -23,7 +34,7 @@ internal class SelectionState
 
     public void Clear() => _stack.Clear();
 
-    public SelectionNode? Search(string type) => _stack.FirstOrDefault(i => i.Type == type);
+    public SelectionNode? Search(ItemTagState state) => _stack.FirstOrDefault(i => i.State == state);
     
     public IEnumerable<SelectionNode> GetCurrentPath() => _stack.Reverse();
 }

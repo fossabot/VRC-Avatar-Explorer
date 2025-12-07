@@ -10,12 +10,13 @@ public class AvatarExplorerApp
     private readonly List<CommonAvatar> _commonAvatars = new();
 
     private readonly SelectionState _selectionState = new();
-    private readonly Dictionary<string, Func<SelectionNode, IReadOnlyList<ItemCountInfo>>> _stateHandlers;
+    private readonly Dictionary<ItemTagState, Func<SelectionNode, IReadOnlyList<ItemCountInfo>>> _stateHandlers;
 
     public AvatarExplorerApp()
     {
         _stateHandlers = new()
         {
+            { ItemTagState.SearchItem, HandleRootSelectedItem },
             { ItemTagState.RootAvatar, HandleRootAvatar },
             { ItemTagState.RootAuthor, HandleRootAuthor },
             { ItemTagState.RootCategory, HandleRootCategory },
@@ -68,7 +69,7 @@ public class AvatarExplorerApp
     #endregion
 
     #region Select API
-    public void Select(string type, string key)
+    public void Select(ItemTagState type, string key)
     {
         _selectionState.Push(type, key);
     }
@@ -131,7 +132,7 @@ public class AvatarExplorerApp
         if (current == null)
             return new List<ItemCountInfo>();
 
-        if (_stateHandlers.TryGetValue(current.Type, out var handler))
+        if (_stateHandlers.TryGetValue(current.State, out var handler))
             return handler(current);
 
         return new List<ItemCountInfo>();
@@ -156,7 +157,7 @@ public class AvatarExplorerApp
         SelectionNode? rootSelectionNode = _selectionState.Root;
         if (rootSelectionNode == null) return new List<ItemCountInfo>();
 
-        if (rootSelectionNode.Type == ItemTagState.RootAvatar)
+        if (rootSelectionNode.State == ItemTagState.RootAvatar)
         {
             List<ItemCountInfo> filteredResult = new();
 
@@ -172,7 +173,7 @@ public class AvatarExplorerApp
 
             return filteredResult;
         }
-        else if (rootSelectionNode.Type == ItemTagState.RootAuthor)
+        else if (rootSelectionNode.State == ItemTagState.RootAuthor)
         {
             return _items
                 .Where(i => CategoryUtils.IsCategoryMatch(i, selectionNode.Key) && i.Author == rootSelectionNode.Key)
@@ -241,7 +242,7 @@ public class AvatarExplorerApp
     {
         List<ItemCountInfo> categoryItems = new();
 
-        FileCategory fileCategory = Enum.GetValues<FileCategory>().FirstOrDefault(i => i.GetInternalId() == category);
+        FileCategory fileCategory = Enum.GetValues<FileCategory>().FirstOrDefault(i => i.GetLocalizationKey() == category);
         if (fileCategory == default) return new();
 
         string[]? filters = fileCategory.GetExtensionFilters();
@@ -313,7 +314,7 @@ public class AvatarExplorerApp
         var avatarNameMaps = DatabaseUtils.GetAvatarNameMaps(_items);
 
         return _items
-            .Where(i => filter.Matches(avatarNameMaps, _commonAvatars, i))
+            .Where(i => SearchUtils.Matches(filter, avatarNameMaps, _commonAvatars, i))
             .OrderByDescending(i => SearchUtils.GetScore(i, filter.SearchWords))
             .ToList();
     }

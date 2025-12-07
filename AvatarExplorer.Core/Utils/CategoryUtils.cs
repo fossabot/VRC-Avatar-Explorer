@@ -30,6 +30,6 @@ public static class CategoryUtils
 
     public static bool IsCategoryMatch(Item item, string category)
     {
-        return (item.Type == ItemType.Custom && item.CustomCategory == category) || (item.Type.GetInternalId() == category);
+        return (item.Type == ItemType.Custom && item.CustomCategory == category) || (item.Type.GetLocalizationKey() == category);
     }
 }

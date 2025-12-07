@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AvatarExplorer.Core.Extensions;
+using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
@@ -14,7 +15,7 @@ internal static partial class SearchUtils
     [GeneratedRegex(@"(?<key>Title|Author|Booth|Avatar|Category|Memo|Folder|File|Implemented|NotImplemented|Tag|Common|OR|BrokenItems)=(?:""(?<value>.*?)""|(?<value>[^\s]+))|(?<word>[^\s]+)")]
     private static partial Regex SearchFilterRegex();
 
-    private static readonly string[] CategoryKeys = Enum.GetValues<ItemType>().Select(i => i.GetInternalId()).Where(i => i != null).ToArray()!;
+    private static readonly string[] CategoryLocalizationKeys = Enum.GetValues<ItemType>().Select(i => i.GetLocalizationKey()).Where(i => i != null).ToArray()!;
 
     internal static List<RawSearchToken> ParseSearchText(string text)
     {
@@ -46,10 +47,10 @@ internal static partial class SearchUtils
 
     internal static string ParseCategory(string text)
     {
-        var parseResult = Localizer.Instance.GetInternalId(text);
-        if (parseResult == null || !CategoryKeys.Contains(parseResult)) return text;
+        var parsedResult = Localizer.Instance.GetLocalizationKey(text);
+        if (parsedResult == null || !CategoryLocalizationKeys.Contains(parsedResult)) return text;
 
-        return parseResult;
+        return parsedResult;
     }
 
     internal static SearchFilter BuildFilter(string searchText)
@@ -110,5 +111,33 @@ internal static partial class SearchUtils
         }
 
         return filter;
+    }
+
+    internal static string ToPathString(this SearchFilter searchFilter)
+    {
+        List<string> searchFilterStrings = new();
+
+        void addKey(string key, IEnumerable<string> values)
+            => searchFilterStrings.Add(Localizer.Instance.GetDisplayName(key, [toSeparatedString(values)]));
+
+        string toSeparatedString(IEnumerable<string> values, string separateString = ", ")
+            => string.Join(separateString, values);
+
+        if (searchFilter.Titles.Count != 0) addKey(LocalizationKey.SearchFilter.Title, searchFilter.Titles);
+        if (searchFilter.Authors.Count != 0) addKey(LocalizationKey.SearchFilter.Author, searchFilter.Authors);
+        if (searchFilter.BoothIds.Count != 0) addKey(LocalizationKey.SearchFilter.Booth, searchFilter.BoothIds);
+        if (searchFilter.SupportedAvatars.Count != 0) addKey(LocalizationKey.SearchFilter.SupportedAvatar, searchFilter.SupportedAvatars);
+        if (searchFilter.Categories.Count != 0) addKey(LocalizationKey.SearchFilter.Category, searchFilter.Categories.Select(Localizer.Instance.GetDisplayName));
+        if (searchFilter.ItemMemos.Count != 0) addKey(LocalizationKey.SearchFilter.ItemMemo, searchFilter.ItemMemos);
+        if (searchFilter.FolderNames.Count != 0) addKey(LocalizationKey.SearchFilter.FolderName, searchFilter.FolderNames);
+        if (searchFilter.FileNames.Count != 0) addKey(LocalizationKey.SearchFilter.FileName, searchFilter.FileNames);
+        if (searchFilter.ImplementedAvatars.Count != 0) addKey(LocalizationKey.SearchFilter.ImplementedAvatar, searchFilter.ImplementedAvatars);
+        if (searchFilter.NotImplementedAvatars.Count != 0) addKey(LocalizationKey.SearchFilter.NotImplementedAvatar, searchFilter.NotImplementedAvatars);
+        if (searchFilter.Tags.Count != 0) addKey(LocalizationKey.SearchFilter.Tag, searchFilter.Tags);
+        if (searchFilter.CommonAvatars.Count != 0) addKey(LocalizationKey.SearchFilter.CommonAvatar, searchFilter.CommonAvatars);
+        if (searchFilter.SearchWords.Count != 0) addKey(LocalizationKey.SearchFilter.SearchWord, searchFilter.SearchWords);
+
+        string result = toSeparatedString(searchFilterStrings, " / ");
+        return Localizer.Instance.GetDisplayName(LocalizationKey.SearchFilter.Default, [result]);
     }
 }

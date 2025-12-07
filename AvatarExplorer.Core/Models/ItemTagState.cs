@@ -1,13 +1,27 @@
+using AvatarExplorer.Core.Attributes;
+using AvatarExplorer.Core.Localization;
+
 namespace AvatarExplorer.Core.Models;
 
-public static class ItemTagState
+public enum ItemTagState
 {
-    public const string RootAvatar = "Root.Avatar";
-    public const string RootAuthor = "Root.Author";
-    public const string RootCategory = "Root.Category";
+    Unknown,
 
-    public const string RootSelectedCategory = "Root.Selected.Category";
-    public const string RootSelectedItem = "Root.Selected.Category.Item";
-    public const string ItemFileCategory = "Root.Selected.Category.Item.FileCategory";
-    public const string ItemFileCategoryOpen = "Root.Selected.Category.Item.FileCategory.Open";
+    // RootだけはPrefixがあるため、翻訳キーを追加している。その他はそのままで大丈夫
+    [LocalizationKey(LocalizationKey.Path.SearchResult)]
+    SearchItem,
+
+    [LocalizationKey(LocalizationKey.Path.Root.Avatar)]
+    RootAvatar,
+
+    [LocalizationKey(LocalizationKey.Path.Root.Author)]
+    RootAuthor,
+
+    [LocalizationKey(LocalizationKey.Path.Root.Category)]
+    RootCategory,
+    
+    RootSelectedCategory,
+    RootSelectedItem,
+    ItemFileCategory,
+    ItemFileCategoryOpen
 }

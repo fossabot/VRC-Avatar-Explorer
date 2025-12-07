@@ -1,28 +1,31 @@
 ﻿using AvatarExplorer.Core.Attributes;
+using AvatarExplorer.Core.Localization;
 
 namespace AvatarExplorer.Core.Models;
 
 public enum FileCategory
 {
     None,
-
-    [ExtensionsFilter(".psd|.clip|.blend|.fbx")]
-    [InternalId("FileCategory.Modification")]
+    
+    [ExtensionsFilter(".psd|.psb|.clip|.kra|.sai|.sai2|.blend|.fbx|.obj|.gltf|.glb|.dae|.stl")]
+    [LocalizationKey(LocalizationKey.FileCategory.Modification)]
     Modification,
 
-    [ExtensionsFilter(".png|.jpg")]
-    [InternalId("FileCategory.Texture")]
+    [ExtensionsFilter(".png|.jpg|.jpeg|.webp|.tga|.bmp|.dds|.tiff|.tif|.gif|.hdr|.exr")]
+    [LocalizationKey(LocalizationKey.FileCategory.Texture)]
     Texture,
 
-    [ExtensionsFilter(".txt|.md|.pdf")]
-    [InternalId("FileCategory.Document")]
+    [ExtensionsFilter(".txt|.md|.pdf|.rtf|.doc|.docx")]
+    [LocalizationKey(LocalizationKey.FileCategory.Document)]
     Document,
 
     [ExtensionsFilter(".unitypackage")]
-    [InternalId("FileCategory.Unitypackage")]
+    [LocalizationKey(LocalizationKey.FileCategory.Unitypackage)]
     Unitypackage,
 
-    [InternalId("FileCategory.Material")]
+    [LocalizationKey(LocalizationKey.FileCategory.Material)]
     Material,
+
     Unknown
 }
+

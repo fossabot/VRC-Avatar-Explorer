@@ -11,7 +11,7 @@ public static partial class SearchUtils
     [GeneratedRegex(@"(?<key>Title|Author|Booth|Avatar|Category|Memo|Folder|File|Implemented|NotImplemented|Tag|Common|OR|BrokenItems)=(?:""(?<value>.*?)""|(?<value>[^\s]+))|(?<word>[^\s]+)")]
     private static partial Regex SearchFilterRegex();
 
-    private static readonly string[] CategoryKeys = Enum.GetValues<ItemType>().Select(i => i.GetInternalId()).Where(i => i != null).ToArray()!;
+    private static readonly string[] CategoryLocalizationKeys = Enum.GetValues<ItemType>().Select(i => i.GetLocalizationKey()).Where(i => i != null).ToArray()!;
 
     public static List<RawSearchToken> ParseSearchText(string text)
     {
@@ -43,10 +43,10 @@ public static partial class SearchUtils
 
     public static string ParseCategory(string text)
     {
-        var parseResult = Localizer.Instance.GetInternalId(text);
-        if (parseResult == null || !CategoryKeys.Contains(parseResult)) return text;
+        var parsedResult = Localizer.Instance.GetInternalId(text);
+        if (parsedResult == null || !CategoryLocalizationKeys.Contains(parsedResult)) return text;
 
-        return parseResult;
+        return parsedResult;
     }
 
     public static SearchFilter BuildFilter(string searchText)

@@ -1,7 +1,7 @@
 namespace AvatarExplorer.Core.Attributes;
 
 [AttributeUsage(AttributeTargets.Field)]
-public class InternalIdAttribute(string id) : Attribute
+public class LocalizationKeyAttribute(string key) : Attribute
 {
-    public string Id { get; } = id;
+    public string Key { get; } = key;
 }

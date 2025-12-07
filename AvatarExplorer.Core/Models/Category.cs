@@ -61,6 +61,6 @@ public class Category : ISelectableItem
 
     public override string ToString()
     {
-        return Type == ItemType.Custom ? CustomCategory : Type.GetInternalId() ?? "";
+        return Type == ItemType.Custom ? CustomCategory : (Type.GetLocalizationKey() ?? "");
     }
 }

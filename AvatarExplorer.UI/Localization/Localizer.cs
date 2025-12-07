@@ -32,18 +32,18 @@ internal class Localizer
         }
     }
 
-    internal string GetDisplayName(string internalId)
+    internal string GetDisplayName(string localizationKey)
     {
-        return _map.TryGetValue(internalId, out var name) ? name : internalId;
+        return _map.TryGetValue(localizationKey, out var name) ? name : localizationKey;
     }
 
-    internal string GetDisplayName(string internalId, string[] args)
+    internal string GetDisplayName(string localizationKey, string[] args)
     {
-        var localizedText = _map.TryGetValue(internalId, out var name) ? name : internalId;
+        var localizedText = _map.TryGetValue(localizationKey, out var name) ? name : localizationKey;
         return args.Length > 0 ? string.Format(localizedText, args) : localizedText;
     }
 
-    internal string? GetInternalId(string displayName)
+    internal string? GetLocalizationKey(string displayName)
     {
         foreach (var kv in _map)
         {

@@ -1,7 +1,7 @@
-using System.Diagnostics;
 using System.Formats.Tar;
 using System.IO.Compression;
 using System.Text;
+using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Tar;
@@ -58,24 +58,24 @@ public static class FileSystemUtils
     {
         await Task.Run(async () =>
         {
-            progress?.Report(("Loading.Unitypackage.Preparing", 0, string.Empty));
+            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Preparing, 0, string.Empty));
 
             var (saveFolder, saveFilePath, unityPackagePath) = PrepareSavePaths(itemPath);
             PrepareSaveDirectory(saveFolder);
 
-            progress?.Report(("Loading.Unitypackage.Extracting", 10, string.Empty));
+            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Extracting, 10, string.Empty));
 
             int totalEntries = await CountTarEntriesAsync(itemPath);
             await ExtractTarToFolderAsync(itemPath, saveFilePath, itemCategoryName, totalEntries, progress);
 
-            progress?.Report(("Loading.Unitypackage.Creating", 90, string.Empty));
+            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Creating, 90, string.Empty));
 
             CreateTarArchive(saveFilePath, unityPackagePath);
 
             Directory.Delete(saveFilePath, true);
             
             // ここの3つ目の引数で出力先のアイテムパスをUI側に返してあげる
-            progress?.Report(("Loading.Unitypackage.Completed", 100, unityPackagePath));
+            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Completed, 100, unityPackagePath));
         });
     }
     private static (string saveFolder, string saveFilePath, string unityPackagePath) PrepareSavePaths(string itemPath)
@@ -153,7 +153,7 @@ public static class FileSystemUtils
 
             if (currentProgress != lastProgress)
             {
-                progress?.Report(("Loading.Unitypackage.Extracting", currentProgress, string.Empty));
+                progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Extracting, currentProgress, string.Empty));
                 lastProgress = currentProgress;
             }
         }

@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvatarExplorer.Core.Extensions;
+using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
 using AvatarExplorer.Core.Utils;
@@ -26,10 +27,8 @@ public partial class MainWindow : Window
         /* プロジェクトTODO
         TODO: 言語変更、並び替えを実装する
         TODO: 戻ったときに、どこを表示するのかはっきりする
-        TODO: 検索からアイテムを開いて、またそこで検索したらどんどん溜まっていくのを修正する
         TODO: 右クリックメニューの処理を作る
         TODO: UIのタグを使った翻訳機能を追加する
-        TODO: 検索時のパスの表記を修正する
         TODO: 実装やタグは新しくUIを作って上げることで実装する。右クリックメニューでは扱わない（チェックとかでメモリリークする可能性があるため）
         TODO: ページ機能を追加する（Dictionaryで現在のパスを元に保存してもいいかも）
         TODO: 下のボタンの処理を実装する
@@ -75,7 +74,7 @@ public partial class MainWindow : Window
 
         var text = new TextBlock
         {
-            Text = Localizer.Instance.GetDisplayName("System.Found.Nothing"),
+            Text = Localizer.Instance.GetDisplayName(LocalizationKey.Error.Nothing),
             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             FontWeight = Avalonia.Media.FontWeight.Bold,
@@ -112,7 +111,7 @@ public partial class MainWindow : Window
 
         List<ItemCountInfo> items = new();
 
-        string customType = string.Empty;
+        ItemTagState customType = ItemTagState.Unknown;
         switch (LeftFilter.SelectedIndex)
         {
             case 0:
@@ -138,7 +137,7 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in items.Take(30))
         {
             ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ContextMenuItem_Click);
-            UIUtils.AddItemButton(LeftPanel, new UISelectableItem(itemCountInfo).SetType(customType), itemContextMenu, LeftPanelButton_Clicked);
+            UIUtils.AddItemButton(LeftPanel, new UISelectableItem(itemCountInfo).SetState(customType), itemContextMenu, LeftPanelButton_Clicked);
         }
     }
 
@@ -147,7 +146,7 @@ public partial class MainWindow : Window
         if (sender is Button button && button.Tag is ItemTagInfo itemTagInfo)
         {
             _avatarExplorer.SelectClear();
-            _avatarExplorer.Select(itemTagInfo.Type, itemTagInfo.Value);
+            _avatarExplorer.Select(itemTagInfo.State, itemTagInfo.Value);
 
             RenderRightPanel();
             LoadCurrentPath();
@@ -181,7 +180,7 @@ public partial class MainWindow : Window
     {
         if (sender is Button button && button.Tag is ItemTagInfo itemTagInfo)
         {
-            if (itemTagInfo.Type == ItemTagState.ItemFileCategoryOpen)
+            if (itemTagInfo.State == ItemTagState.ItemFileCategoryOpen)
             {
                 string itemPath = itemTagInfo.Value;
 
@@ -197,7 +196,7 @@ public partial class MainWindow : Window
             }
             else
             {
-                _avatarExplorer.Select(itemTagInfo.Type, itemTagInfo.Value);
+                _avatarExplorer.Select(itemTagInfo.State, itemTagInfo.Value);
                 RenderRightPanel();
             }
 
@@ -234,7 +233,7 @@ public partial class MainWindow : Window
             }
         });
 
-        AvatarExplorerApp.ModifyUnityPackageFilePath(itemPath, Localizer.Instance.GetDisplayName(selectedItem.Type.GetInternalId() ?? ""), progress: progress);
+        AvatarExplorerApp.ModifyUnityPackageFilePath(itemPath, Localizer.Instance.GetDisplayName(selectedItem.Type.GetLocalizationKey() ?? ""), progress: progress);
     }
     #endregion
 
@@ -264,7 +263,10 @@ public partial class MainWindow : Window
         }
 
         RightPanel.Children.Clear();
-        var items = _avatarExplorer.SearchItems(SearchUtils.BuildFilter(SearchTextBox.Text));
+        SearchFilter searchFilter = SearchUtils.BuildFilter(SearchTextBox.Text);
+        IReadOnlyList<Item> items = _avatarExplorer.SearchItems(searchFilter);
+
+        PathBox.Text = searchFilter.ToPathString();
 
         if (items.Count == 0) ShowNoItemsLabel();
         else HideNoItemsLabel();
@@ -272,7 +274,7 @@ public partial class MainWindow : Window
         foreach (Item item in items.Take(30))
         {
             ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(item), ContextMenuItem_Click);
-            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0), itemContextMenu, RightPanelButton_Clicked);
+            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), itemContextMenu, RightPanelButton_Clicked);
         }
     }
     #endregion
@@ -321,31 +323,45 @@ public partial class MainWindow : Window
     {
         if (PathBox == null) return;
 
+        IEnumerable<SelectionNode> currentSelectionNodes = _avatarExplorer.GetCurrentPath();
+        if (!currentSelectionNodes.Any())
+        {
+            PathBox.Text = Localizer.Instance.GetDisplayName(LocalizationKey.Path.Default);
+            return;
+        }
+
+        List<SelectionNode> selectionNodes = new();
+        foreach (var node in currentSelectionNodes)
+        {
+            if (node.State == ItemTagState.SearchItem) selectionNodes.Clear();
+            selectionNodes.Add(node);
+        }
+
         PathBox.Text = string.Join(
             " > ",
-            _avatarExplorer.GetCurrentPath()
+            selectionNodes
                 .Select(i =>
                 {
-                    string key = i.Type;
+                    ItemTagState key = i.State;
                     string value = i.Key;
 
-                    if (i.Type == ItemTagState.RootAvatar || i.Type == ItemTagState.RootSelectedItem)
+                    if (i.State == ItemTagState.SearchItem || i.State == ItemTagState.RootAvatar || i.State == ItemTagState.RootSelectedItem)
                     {
                         Item? item = _avatarExplorer.GetAllItems().FirstOrDefault(item => item.ItemPath == i.Key);
                         if (item != null) value = item.Title; // アイテムはパスからタイトルに変換する
                     }
 
-                    if (i.Type == ItemTagState.RootCategory || i.Type == ItemTagState.RootSelectedCategory || i.Type == ItemTagState.ItemFileCategory)
+                    if (i.State == ItemTagState.RootCategory || i.State == ItemTagState.RootSelectedCategory || i.State == ItemTagState.ItemFileCategory)
                     {
                         // カテゴリはValue自体を翻訳する
                         // カテゴリ: Search.Category.Textureのような感じで入っているため
                         value = Localizer.Instance.GetDisplayName(value);
                     }
 
-                    bool isCategoryKey = i.Type.StartsWith("Search.") || i.Type.StartsWith("FileCategory.");
-                    if (!isCategoryKey) key = "Path." + i.Type; // パス専用のキーだけ"Path."のPrefixを付ける
+                     // 翻訳できない(Root以外)はここがnullになるため、valueがパスになる。ある場合はPrefixが翻訳される。
+                    string? localizationKey = key.GetLocalizationKey();
 
-                    return Localizer.Instance.GetDisplayName(key, [value]);
+                    return localizationKey == null ? value : Localizer.Instance.GetDisplayName(localizationKey, [value]);
                 })
         );
     }
@@ -444,32 +460,32 @@ public partial class MainWindow : Window
     }
     private Task ChangeThumbnail(string itemPath)
     {
-        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
+        ShowDialog(Localizer.Instance.GetDisplayName(LocalizationKey.Error.Default), Localizer.Instance.GetDisplayName(LocalizationKey.Error.NotImplemented));
         return Task.CompletedTask;
     }
     private Task EditItem(string itemPath)
     {
-        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
+        ShowDialog(Localizer.Instance.GetDisplayName(LocalizationKey.Error.Default), Localizer.Instance.GetDisplayName(LocalizationKey.Error.NotImplemented));
         return Task.CompletedTask;
     }
     private Task AddMemo(string itemPath)
     {
-        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
+        ShowDialog(Localizer.Instance.GetDisplayName(LocalizationKey.Error.Default), Localizer.Instance.GetDisplayName(LocalizationKey.Error.NotImplemented));
         return Task.CompletedTask;
     }
     private Task AddItemFolder(string itemPath)
     {
-        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
+        ShowDialog(Localizer.Instance.GetDisplayName(LocalizationKey.Error.Default), Localizer.Instance.GetDisplayName(LocalizationKey.Error.NotImplemented));
         return Task.CompletedTask;
     }
     private Task EditImplementedAvatar(string itemPath)
     {
-        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
+        ShowDialog(Localizer.Instance.GetDisplayName(LocalizationKey.Error.Default), Localizer.Instance.GetDisplayName(LocalizationKey.Error.NotImplemented));
         return Task.CompletedTask;
     }
     private Task EditItemTag(string itemPath)
     {
-        ShowDialog(Localizer.Instance.GetDisplayName("System.Error"), Localizer.Instance.GetDisplayName("System.Error.NotImplemented"));
+        ShowDialog(Localizer.Instance.GetDisplayName(LocalizationKey.Error.Default), Localizer.Instance.GetDisplayName(LocalizationKey.Error.NotImplemented));
         return Task.CompletedTask;
     }
     #endregion

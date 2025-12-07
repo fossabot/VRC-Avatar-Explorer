@@ -1,4 +1,5 @@
 ﻿using AvatarExplorer.Core.Attributes;
+using AvatarExplorer.Core.Localization;
 
 namespace AvatarExplorer.Core.Models;
 
@@ -9,31 +10,31 @@ public enum ItemType
 {
     None = -1,
 
-    [InternalId("Search.Category.Avatar")]
+    [LocalizationKey(LocalizationKey.ItemCategory.Avatar)]
     Avatar = 0,
 
-    [InternalId("Search.Category.Clothing")]
+    [LocalizationKey(LocalizationKey.ItemCategory.Clothing)]
     Clothing = 1,
 
-    [InternalId("Search.Category.Texture")]
+    [LocalizationKey(LocalizationKey.ItemCategory.Texture)]
     Texture = 2,
 
-    [InternalId("Search.Category.Gimmick")]
+    [LocalizationKey(LocalizationKey.ItemCategory.Gimmick)]
     Gimmick = 3,
 
-    [InternalId("Search.Category.Accessory")]
+    [LocalizationKey(LocalizationKey.ItemCategory.Accessory)]
     Accessory = 4,
 
-    [InternalId("Search.Category.HairStyle")]
+    [LocalizationKey(LocalizationKey.ItemCategory.HairStyle)]
     HairStyle = 5,
 
-    [InternalId("Search.Category.Animation")]
+    [LocalizationKey(LocalizationKey.ItemCategory.Animation)]
     Animation = 6,
 
-    [InternalId("Search.Category.Tool")]
+    [LocalizationKey(LocalizationKey.ItemCategory.Tool)]
     Tool = 7,
 
-    [InternalId("Search.Category.Shader")]
+    [LocalizationKey(LocalizationKey.ItemCategory.Shader)]
     Shader = 8,
 
     Custom = 9,
