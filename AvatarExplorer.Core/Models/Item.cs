@@ -171,10 +171,10 @@ public class Item : ISelectableItem
         return this;
     }
 
-    internal async static Task<Item> FromItemCreationContext(ItemCreationContext itemCreationContext)
+    internal async static Task<Item> FromItemCreationContext(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
     {
-        string extractDestinationFolderPath = Path.Combine(itemCreationContext.ItemsParentFolderPath, itemCreationContext.LocalizedCategoryName);
-        var (itemPath, materialPath, _) = await FileSystemUtils.ExtractItemFolders(itemCreationContext, extractDestinationFolderPath, itemCreationContext.RemoveOriginalFile);
+        string extractDestinationFolderPath = Path.Combine(runtimeSettings.DataRootDirectory, itemCreationContext.LocalizedCategoryName);
+        var (itemPath, materialPath, _) = await FileSystemUtils.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, extractDestinationFolderPath, runtimeSettings.RemoveOriginal);
         
         var newItem = new Item()
         {

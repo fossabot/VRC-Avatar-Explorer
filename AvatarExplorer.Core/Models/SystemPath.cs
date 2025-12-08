@@ -9,12 +9,16 @@ public static class SystemPath
     public static readonly string DatabaseFolderPath = DatabaseUtils.GetDataFolderPath(SoftwareDataPath);
     public static readonly string ImagesFolderPath = DatabaseUtils.GetImagesFolderPath(SoftwareDataPath);
     public static readonly string DefaultItemsFolderPath = DatabaseUtils.GetItemsFolderPath(DocumentPath);
+    public static readonly string SettingsFolderPath = DatabaseUtils.GetSettingsFolderPath(SoftwareDataPath);
 
     public static readonly string TempFolderPath = DatabaseUtils.GetSoftwareFolderPath(Path.GetTempPath());
 
     public static readonly string AuthorThumbnailsPath = DatabaseUtils.GetAuthorThumbnailsFolderPath(SoftwareDataPath);
     public static readonly string ItemThumbnailsPath = DatabaseUtils.GetItemThumbnailsFolderPath(SoftwareDataPath);
 
-    public static readonly string ItemDatabasePath = Path.Join(DatabaseFolderPath, SystemFile.DatabaseFile);
-    public static readonly string CommonAvatarDatabasePath = Path.Join(DatabaseFolderPath, SystemFile.CommonAvatarDatabaseFile);
+    public static readonly string ItemDatabasePath = Path.Join(DatabaseFolderPath, SystemFile.Database.Items);
+    public static readonly string CommonAvatarDatabasePath = Path.Join(DatabaseFolderPath, SystemFile.Database.CommonAvatars);
+
+    public static readonly string RuntimeSettingsFilePath = Path.Join(SettingsFolderPath, SystemFile.Settings.Runtime);
+    public static readonly string UserPreferencesFilePath = Path.Join(SettingsFolderPath, SystemFile.Settings.Preferences);
 }

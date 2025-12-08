@@ -6,8 +6,6 @@ public class ItemCreationContext
 {
     public List<string> Folders { get; set; } = new();
     public string MaterialFolder { get; set; } = string.Empty;
-    public string ItemsParentFolderPath { get; set; } = string.Empty;
-    public bool RemoveOriginalFile { get; set; } = false;
     public string Title { get; set; } = string.Empty;
     public string Author { get; set; } = string.Empty;
     public string AuthorId { get; set; } = string.Empty;

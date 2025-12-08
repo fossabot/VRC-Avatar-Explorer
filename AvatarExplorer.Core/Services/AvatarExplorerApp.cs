@@ -62,6 +62,27 @@ public class AvatarExplorerApp
     }
     #endregion
 
+    #region Runtime Settings
+    public void LoadRuntimeSettings()
+    {
+        var runtimeSettings = SettingsUtils.LoadRuntimeSettings(SystemPath.RuntimeSettingsFilePath);
+        SetRuntimeSettingsInternal(runtimeSettings);
+        _runtimeSettings.Save();
+    }
+    public void LoadRuntimeSettings(string path)
+    {
+        var runtimeSettings = SettingsUtils.LoadRuntimeSettings(path);
+        SetRuntimeSettingsInternal(runtimeSettings);
+        _runtimeSettings.Save();
+    }
+    private void SetRuntimeSettingsInternal(RuntimeSettings runtimeSettings)
+    {
+        _runtimeSettings.SetDataRootDirectory(runtimeSettings.DataRootDirectory);
+        _runtimeSettings.SetSortOrder(runtimeSettings.ItemSortOrder);
+        _runtimeSettings.SetRemoveOriginal(runtimeSettings.RemoveOriginal);
+    }
+    #endregion
+
     #region Update API
     public void UpdateSearchIndex()
     {
@@ -281,6 +302,11 @@ public class AvatarExplorerApp
     {
         return _runtimeSettings.DataRootDirectory;
     }
+
+    public RuntimeSettings GetRuntimeSettings()
+    {
+        return _runtimeSettings;
+    }
     #endregion
 
     #region Set API
@@ -298,7 +324,7 @@ public class AvatarExplorerApp
     #region Add API
     public async Task<Item> AddItem(ItemCreationContext itemCreationContext)
     {
-        return await Item.FromItemCreationContext(itemCreationContext);
+        return await Item.FromItemCreationContext(itemCreationContext, _runtimeSettings);
     }
 
     public Item EditItem(Item item, ItemCreationContext itemCreationContext)

@@ -1,11 +1,14 @@
+using AvatarExplorer.Core.Utils;
+
 namespace AvatarExplorer.Core.Models;
 
-internal class RuntimeSettings
+public class RuntimeSettings
 {
-    internal string DataRootDirectory { get; private set; } = SystemPath.DefaultItemsFolderPath;
-    internal SortOrder ItemSortOrder { get; private set; } = SortOrder.Title;
+    public string DataRootDirectory { get; set; } = SystemPath.DefaultItemsFolderPath;
+    public SortOrder ItemSortOrder { get; set; } = SortOrder.Title;
+    public bool RemoveOriginal { get; set; } = false;
 
-    internal void SetSortOrder(SortOrder sortOrder)
+    internal  void SetSortOrder(SortOrder sortOrder)
     {
         ItemSortOrder = sortOrder;
     }
@@ -21,6 +24,23 @@ internal class RuntimeSettings
         {
             DataRootDirectory = Path.GetFullPath(path);
             return true;
+        }
+    }
+
+    internal void SetRemoveOriginal(bool value)
+    {
+        RemoveOriginal = value;
+    }
+
+    internal void Save()
+    {
+        try
+        {
+            FileSystemUtils.SerializeClass(this, SystemPath.RuntimeSettingsFilePath);
+        }
+        catch
+        {
+            // Ignored
         }
     }
 }

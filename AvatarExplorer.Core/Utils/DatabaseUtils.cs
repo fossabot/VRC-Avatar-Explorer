@@ -21,8 +21,8 @@ public static class DatabaseUtils
     public static string GetItemsFolderPath(string softwarePath)
         => Path.Combine(softwarePath, "items");
 
-    public static string GetTempFolderPath(string softwarePath)
-        => Path.Combine(softwarePath, "temp");
+    public static string GetSettingsFolderPath(string softwarePath)
+        => Path.Combine(softwarePath, "settings");
         
     public static string GetItemThumbnailsFolderPath(string softwarePath)
         => Path.Combine(GetImagesFolderPath(softwarePath), "item_thumbnails");

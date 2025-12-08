@@ -1,6 +1,7 @@
 using System.Formats.Tar;
 using System.IO.Compression;
 using System.Text;
+using System.Text.Json;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using SharpCompress.Archives;
@@ -13,7 +14,20 @@ namespace AvatarExplorer.Core.Utils;
 public static class FileSystemUtils
 {
     public static readonly char[] InvalidChars = Path.GetInvalidFileNameChars();
+    private static readonly JsonSerializerOptions jsonSerializerOptions = new()
+    {
+        WriteIndented = true
+    };
     
+    public static void SerializeClass<T>(T values, string filePath)
+    {
+        string? directory = Path.GetDirectoryName(filePath);
+        if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
+
+        string json = JsonSerializer.Serialize(values, jsonSerializerOptions);
+        File.WriteAllText(filePath, json);
+    }
+
     public static IEnumerable<string> EnumerateFiles(string rootDirectory)
     {
         if (!Directory.Exists(rootDirectory))
@@ -176,7 +190,7 @@ public static class FileSystemUtils
         archive.SaveTo(fileStream, new WriterOptions(CompressionType.None));
     }
 
-    internal static async Task<(string, string, List<string>)> ExtractItemFolders(ItemCreationContext itemCreationContext, string destinationDirectory, bool removeOriginal = false)
+    internal static async Task<(string, string, List<string>)> ExtractItemFolders(ItemCreationContext itemCreationContext, string dataRootDirectory, string destinationDirectory, bool removeOriginal = false)
     {
         List<string> processingFailedPaths = new();
 
@@ -225,7 +239,7 @@ public static class FileSystemUtils
             processingFailedPaths.Add(itemCreationContext.MaterialFolder);
         }
 
-        return ($"<sys>{Path.GetRelativePath(itemCreationContext.ItemsParentFolderPath, parentFolder)}", $"<sys>{Path.GetRelativePath(itemCreationContext.ItemsParentFolderPath, materialsFolder)}", processingFailedPaths);
+        return ($"<sys>{Path.GetRelativePath(dataRootDirectory, parentFolder)}", $"<sys>{Path.GetRelativePath(dataRootDirectory, materialsFolder)}", processingFailedPaths);
     }
 
     private const int BufferSize = 1024 * 1024;

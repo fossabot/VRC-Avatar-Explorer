@@ -15,6 +15,7 @@ using AvatarExplorer.Core.Services;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
+using AvatarExplorer.UI.Models.OverlayValues;
 using AvatarExplorer.UI.Utils;
 
 namespace AvatarExplorer.UI;
@@ -26,7 +27,7 @@ public partial class MainWindow : Window
     private Dictionary<ActionKey, Func<string, Task>>? _contextMenuHandlers;
     private readonly Dictionary<ItemTagState, int> _currentPageStates = new()
     {
-        { ItemTagState.SearchItem, 0 },
+        { ItemTagState.SearchItem, 0 }, // TODO: 検索の時のページが上手く機能してないからここ直す
         { ItemTagState.RootAvatar, 0 },
         { ItemTagState.RootAuthor, 0 },
         { ItemTagState.RootCategory, 0 },
@@ -35,7 +36,8 @@ public partial class MainWindow : Window
         { ItemTagState.ItemFileCategory, 0 }
     };
 
-    private const int ItemsPerPage = 30; // TODO: ここは設定でかえれるようにする
+    private readonly UserUiPreferences _userUiPreferences = new();
+    private int ItemsPerPage => _userUiPreferences.ItemsPerPage;
 
     private bool CanDisplayPage(ItemTagState itemTagState)
         => _currentPageStates.ContainsKey(itemTagState);
@@ -67,6 +69,7 @@ public partial class MainWindow : Window
         InitializeAvatarExplorer();
         InitializeContextMenuHandlers();
         InitializeNoItemsLabel();
+        InitializeUserUiPreferences();
 
         RenderLeftPanel();
         RenderRightPanel();
@@ -79,12 +82,20 @@ public partial class MainWindow : Window
         {
             _avatarExplorer.LoadItemDatabase(true);
             _avatarExplorer.LoadCommonAvatarDatabase(true);
+            _avatarExplorer.LoadRuntimeSettings();
             Localizer.Instance.LoadFromFile("locales/ja-JP.json");
         }
         catch
         {
             // Ignored
         }
+    }
+
+    private void InitializeUserUiPreferences()
+    {
+        var userUiPreferences = SettingsUtils.LoadUserPreferences(SystemPath.UserPreferencesFilePath);
+        _userUiPreferences.FromOther(userUiPreferences);
+        _userUiPreferences.Save();
     }
     private void InitializeNoItemsLabel()
     {
@@ -545,44 +556,6 @@ public partial class MainWindow : Window
     //TODO: Add / Edit / SettingsでValueValidate関数を作る
 
     #region Add / Edit Item Menu
-    private class AddItemOverlayWindowValues // TODO: Modelsに移す
-    {
-        internal List<string> Folders { get; set; } = new(); // 新規作成のときにしか使わない
-        internal string MaterialFolder { get; set; } = string.Empty; // 新規作成のときにしか使わない
-        internal string BoothTitle { get; set; } = string.Empty;
-        internal string BoothAuthor { get; set; } = string.Empty;
-        internal string BoothAuthorId { get; set; } = string.Empty; // 内部の値
-        internal string BoothThumbnailUrl { get; set; } = string.Empty; // 内部の値
-        internal int BoothId { get; set; } = -1; // 内部の値
-        internal ItemType ItemType { get; set; } = ItemType.None; // TODO: これもNoneに直しておく
-        internal List<string> SupportedAvatars { get; set; } = new();
-
-        internal void Reset()
-        {
-            Folders.Clear();
-            MaterialFolder = string.Empty;
-            BoothTitle = string.Empty;
-            BoothAuthor = string.Empty;
-            BoothAuthorId = string.Empty;
-            BoothThumbnailUrl = string.Empty;
-            BoothId = -1;
-            ItemType = ItemType.None;
-            SupportedAvatars.Clear();
-        }
-
-        internal void FromItem(Item item)
-        {
-            BoothTitle = item.Title;
-            BoothAuthor = item.Author;
-            BoothAuthorId = item.AuthorId;
-            BoothThumbnailUrl = string.Empty;
-            BoothId = item.BoothId;
-            ItemType = item.Type;
-
-            SupportedAvatars.Clear();
-            SupportedAvatars.AddRange(item.SupportedAvatars);
-        }
-    }
     private Item? _selectedItem = null;
     private readonly AddItemOverlayWindowValues _addItemWindowValues = new();
 
@@ -671,7 +644,6 @@ public partial class MainWindow : Window
         itemCreationContext.ItemType = _addItemWindowValues.ItemType;
         itemCreationContext.SupportedAvatars.AddRange(_addItemWindowValues.SupportedAvatars);
         itemCreationContext.LocalizedCategoryName = Localizer.Instance[itemCreationContext.ItemType.GetLocalizationKey() ?? ""];
-        itemCreationContext.ItemsParentFolderPath = _avatarExplorer.GetDataRootDirectory();
 
         if (_selectedItem == null)
         {
