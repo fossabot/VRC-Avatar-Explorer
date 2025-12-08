@@ -117,12 +117,16 @@ internal static partial class SearchUtils
     {
         List<string> searchFilterStrings = new();
 
+        string localize(string key, IEnumerable<string> values)
+            => Localizer.Instance.GetDisplayName(key, [toSeparatedString(values)]);
+
         void addKey(string key, IEnumerable<string> values)
-            => searchFilterStrings.Add(Localizer.Instance.GetDisplayName(key, [toSeparatedString(values)]));
+            => searchFilterStrings.Add(localize(key, values));
 
         string toSeparatedString(IEnumerable<string> values, string separateString = ", ")
             => string.Join(separateString, values);
 
+        if (searchFilter.IsOrSearch) searchFilterStrings.Add(Localizer.Instance[LocalizationKey.SearchFilter.IsOrSearch]);
         if (searchFilter.Titles.Count != 0) addKey(LocalizationKey.SearchFilter.Title, searchFilter.Titles);
         if (searchFilter.Authors.Count != 0) addKey(LocalizationKey.SearchFilter.Author, searchFilter.Authors);
         if (searchFilter.BoothIds.Count != 0) addKey(LocalizationKey.SearchFilter.Booth, searchFilter.BoothIds);

@@ -1,5 +1,6 @@
 ﻿using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Booth;
 using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Services;
@@ -11,6 +12,7 @@ public class AvatarExplorerApp
 
     private readonly SelectionState _selectionState = new();
     private readonly Dictionary<ItemTagState, Func<SelectionNode, IReadOnlyList<ItemCountInfo>>> _stateHandlers;
+    private readonly RuntimeSettings _runtimeSettings = new();
 
     public AvatarExplorerApp()
     {
@@ -100,17 +102,14 @@ public class AvatarExplorerApp
             ))
             .ToList();
     }
-
     public IReadOnlyList<ItemCountInfo> GetAvatars()
     {
         return _items.Where(i => i.Type == ItemType.Avatar).Select(i => new ItemCountInfo(i, 0)).ToList();
     }
-
     public IReadOnlyList<ItemCountInfo> GetCategories()
     {
         return CategoryUtils.GetCategories(_items).ToList();
     }
-
     public IReadOnlyList<Item> GetAllItems()
     {
         return _items;
@@ -119,7 +118,6 @@ public class AvatarExplorerApp
     {
         return _commonAvatars;
     }
-
     public Item? GetItemByPath(string itemPath)
     {
         return _items.FirstOrDefault(i => i.ItemPath == itemPath);
@@ -139,7 +137,7 @@ public class AvatarExplorerApp
     }
     private IReadOnlyList<ItemCountInfo> HandleRootAvatar(SelectionNode selectionNode)
     {
-        return GetCategoriesFromItemsInternal(_items.Where(i => ItemUtils.GetAvatarStatus(i, _commonAvatars, selectionNode.Key).IsSupportedOrCommon));
+        return GetCategoriesFromItemsInternal(_items.Where(i => ItemUtils.GetAvatarStatus(selectionNode.Key, i, _commonAvatars).IsSupportedOrCommon));
     }
     private IReadOnlyList<ItemCountInfo> HandleRootAuthor(SelectionNode selectionNode)
     {
@@ -149,6 +147,7 @@ public class AvatarExplorerApp
     {
         return _items
             .Where(i => CategoryUtils.IsCategoryMatch(i, selectionNode.Key))
+            .GetSortedItems(_runtimeSettings.ItemSortOrder)
             .Select(i => new ItemCountInfo(i, 0))
             .ToList();
     }
@@ -165,18 +164,21 @@ public class AvatarExplorerApp
             {
                 if (!CategoryUtils.IsCategoryMatch(item, selectionNode.Key)) continue;
 
-                AvatarStatus avatarStatus = ItemUtils.GetAvatarStatus(item, _commonAvatars, rootSelectionNode.Key);
+                AvatarStatus avatarStatus = ItemUtils.GetAvatarStatus(rootSelectionNode.Key, item, _commonAvatars);
                 if (!avatarStatus.IsSupportedOrCommon) continue;
                 
                 filteredResult.Add(new ItemCountInfo(item, 0, avatarStatus.OnlyCommon ? avatarStatus.CommonAvatarName : string.Empty));
             }
 
-            return filteredResult;
+            return filteredResult
+                .GetSortedItemsFromCountInfo(_runtimeSettings.ItemSortOrder)
+                .ToList();
         }
         else if (rootSelectionNode.State == ItemTagState.RootAuthor)
         {
             return _items
                 .Where(i => CategoryUtils.IsCategoryMatch(i, selectionNode.Key) && i.Author == rootSelectionNode.Key)
+                .GetSortedItems(_runtimeSettings.ItemSortOrder)
                 .Select(i => new ItemCountInfo(i, 0))
                 .ToList();
         }
@@ -185,14 +187,14 @@ public class AvatarExplorerApp
     }
     private IReadOnlyList<ItemCountInfo> HandleRootSelectedItem(SelectionNode selectionNode)
     {
-        return GetCategoryItemsFromPathInternal(ItemUtils.GetItemPath(selectionNode.Key));
+        return GetCategoryItemsFromPathInternal(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, selectionNode.Key));
     }
     private IReadOnlyList<ItemCountInfo> HandleItemFileCategory(SelectionNode selectionNode)
     {
         SelectionNode? fileSelectionNode = _selectionState.Search(ItemTagState.RootSelectedItem);
         if (fileSelectionNode == null) return new List<ItemCountInfo>();
 
-        return GetFilesFromPathInternal(ItemUtils.GetItemPath(fileSelectionNode.Key), selectionNode.Key);
+        return GetFilesFromPathInternal(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, fileSelectionNode.Key), selectionNode.Key);
     }
 
     public IEnumerable<SelectionNode> GetCurrentPath() => _selectionState.GetCurrentPath();
@@ -237,7 +239,6 @@ public class AvatarExplorerApp
 
         return categoryItems;
     }
-
     private static List<ItemCountInfo> GetFilesFromPathInternal(string itemPath, string category)
     {
         List<ItemCountInfo> categoryItems = new();
@@ -259,7 +260,6 @@ public class AvatarExplorerApp
 
         return categoryItems;
     }
-
     private static List<ItemCountInfo> GetCategoriesFromItemsInternal(IEnumerable<Item> items)
     {
         IEnumerable<ItemCountInfo> itemCategories = items
@@ -275,6 +275,43 @@ public class AvatarExplorerApp
             .Select(i => new ItemCountInfo(new Category(i), items.Count(item => item.CustomCategory == i)));
 
         return itemCategories.Concat(itemCustomCategories).ToList();
+    }
+    
+    public string GetDataRootDirectory()
+    {
+        return _runtimeSettings.DataRootDirectory;
+    }
+    #endregion
+
+    #region Set API
+    public bool SetItemsParentFolder(string path)
+    {
+        // このパスをアイテムフォルダの親フォルダとして見るようになる（アイテムの相対パスの親がこのフォルダであると設定する）
+        return _runtimeSettings.SetDataRootDirectory(path);
+    }
+    public void SetItemsSortOrder(SortOrder sortOrder)
+    {
+        _runtimeSettings.SetSortOrder(sortOrder);
+    }
+    #endregion
+
+    #region Add API
+    public async Task<Item> AddItem(ItemCreationContext itemCreationContext)
+    {
+        return await Item.FromItemCreationContext(itemCreationContext);
+    }
+
+    public Item EditItem(Item item, ItemCreationContext itemCreationContext)
+    {
+        return item.SetValuesFromCreationContext(itemCreationContext);
+    }
+    #endregion
+
+    #region Booth API
+    public static async Task<BoothItem?> GetBoothItem(string boothUrl)
+    {
+        var boothId = boothUrl.Split('/')[^1];
+        return await BoothUtils.GetBoothItemAsync(boothId);
     }
     #endregion
 
@@ -314,7 +351,7 @@ public class AvatarExplorerApp
         var avatarNameMaps = DatabaseUtils.GetAvatarNameMaps(_items);
 
         return _items
-            .Where(i => SearchUtils.Matches(filter, avatarNameMaps, _commonAvatars, i))
+            .Where(i => SearchUtils.Matches(filter, avatarNameMaps, _commonAvatars, i, _runtimeSettings.DataRootDirectory))
             .OrderByDescending(i => SearchUtils.GetScore(i, filter.SearchWords))
             .ToList();
     }

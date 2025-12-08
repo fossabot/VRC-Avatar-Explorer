@@ -62,6 +62,19 @@ public static class LocalizationKey
                 public const string Completed = "Processing.Unitypackage.Status.Completed";
             }
         }
+
+        public static class Booth
+        {
+            public static class Status
+            {
+                public const string Fetching = "Processing.Booth.Status.Fetching";
+            }
+        }
+
+        public static class DirectoryCopy
+        {
+            public const string Copying = "Processing.DirectoryCopy.Copying";
+        }
     }
 
     public static class Path
@@ -93,6 +106,7 @@ public static class LocalizationKey
         public const string Tag = "SearchFilter.Tag";
         public const string CommonAvatar = "SearchFilter.CommonAvatar";
         public const string SearchWord = "SearchFilter.SearchWord";
+        public const string IsOrSearch = "SearchFilter.IsOrSearch";
     }
 
     public static class Error
@@ -100,6 +114,8 @@ public static class LocalizationKey
         public const string Default = "Error.Default";
         public const string NotImplemented = "Error.NotImplemented";
         public const string Nothing = "Error.Nothing";
+        public const string BoothItemNotFound = "Error.BoothItemNotFound";
+        public const string InvalidPath = "Error.InvalidPath";
     }
 
     public static class ContextMenu

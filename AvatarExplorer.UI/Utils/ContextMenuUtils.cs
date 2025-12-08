@@ -17,7 +17,7 @@ internal static class ContextMenuUtils
         {
             MenuItem menuItem = new()
             {
-                Header = Localizer.Instance.GetDisplayName(contextMenuAction.DisplayName),
+                Header = Localizer.Instance[contextMenuAction.DisplayName],
                 Tag = contextMenuAction
             };
 

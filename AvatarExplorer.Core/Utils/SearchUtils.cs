@@ -5,7 +5,7 @@ namespace AvatarExplorer.Core.Utils;
 
 internal static class SearchUtils
 {
-    internal static bool Matches(SearchFilter searchFilter, Dictionary<string, string> avatarNameMaps, List<CommonAvatar> commonAvatars, Item item) {
+    internal static bool Matches(SearchFilter searchFilter, Dictionary<string, string> avatarNameMaps, List<CommonAvatar> commonAvatars, Item item, string parentFolder) {
         bool matchTitle = searchFilter.Titles.Count == 0 || MatchesFilter(
             [item.Title], searchFilter.Titles,
             searchFilter.IsOrSearch,
@@ -55,8 +55,8 @@ internal static class SearchUtils
         }
         else
         {
-            string itemPath = ItemUtils.GetItemPath(item.ItemPath);
-            string materialPath = ItemUtils.GetItemPath(item.MaterialPath);
+            string itemPath = ItemUtils.GetItemPath(parentFolder, item.ItemPath);
+            string materialPath = ItemUtils.GetItemPath(parentFolder, item.MaterialPath);
 
             var files = new List<string>();
             if (!string.IsNullOrEmpty(itemPath) && Directory.Exists(itemPath)) files.AddRange(FileSystemUtils.EnumerateFiles(itemPath));

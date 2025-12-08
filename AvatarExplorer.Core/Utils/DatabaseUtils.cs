@@ -6,8 +6,8 @@ namespace AvatarExplorer.Core.Utils;
 
 public static class DatabaseUtils
 {
-    public static string GetSoftwareFolderPath(string appDataPath)
-        => Path.Combine(appDataPath, "Avatar Explorer V2");
+    public static string GetSoftwareFolderPath(string path)
+        => Path.Combine(path, "Avatar Explorer V2");
 
     public static string GetDataFolderPath(string softwarePath)
         => Path.Combine(softwarePath, "database");

@@ -11,7 +11,7 @@ public static class EnumExtensions
         return attribute?.Key ?? null;
     }
 
-    public static string[]? GetExtensionFilters(this Enum value)
+    internal static string[]? GetExtensionFilters(this Enum value)
     {
         var firld = value.GetType().GetField(value.ToString());
         var attribute = firld?.GetCustomAttributes(typeof(ExtensionsFilterAttribute), false).FirstOrDefault() as ExtensionsFilterAttribute;

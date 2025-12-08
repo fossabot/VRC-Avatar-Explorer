@@ -16,7 +16,7 @@ internal static class DialogUtils
 
         var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = Localizer.Instance.GetDisplayName(titleKey),
+            Title = Localizer.Instance[titleKey],
             AllowMultiple = allowMultiple
         });
 
@@ -30,7 +30,7 @@ internal static class DialogUtils
 
         var folders = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
-            Title = Localizer.Instance.GetDisplayName(titleKey),
+            Title = Localizer.Instance[titleKey],
             AllowMultiple = allowMultiple
         });
 

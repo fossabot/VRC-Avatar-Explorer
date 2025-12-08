@@ -25,6 +25,8 @@
     "Processing.Unitypackage.Status.Extracting": "ファイルの展開中です... {0}%",
     "Processing.Unitypackage.Status.Creating": "UnityPackageの作成中です... {0}%",
     "Processing.Unitypackage.Status.Completed": "Unitypackageの作成が完了しました {0}%",
+
+    "Processing.Booth.Status.Fetching": "アイテム情報の取得中です...",
     
     "Path.Default": "ここには現在のパスが表示されます",
     "Path.SearchResult": "検索結果: {0}",
@@ -40,7 +42,7 @@
     "ContextMenu.Item.Thumbnail.Change": "サムネイルを変更する",
     "ContextMenu.Item.Thumbnail.Fetch": "サムネイルを取得する",
     "ContextMenu.Item.Edit.Default": "アイテムを編集する",
-    "ContextMenu.Item.Add.Memo": "アイテムを編集する",
+    "ContextMenu.Item.Add.Memo": "メモを追加する",
     "ContextMenu.Item.Add.Folder": "アイテムフォルダを追加する",
     "ContextMenu.Item.Edit.Implemented": "実装 / 未実装",
     "ContextMenu.Item.Edit.Tag": "タグの編集",
@@ -60,8 +62,10 @@
     "SearchFilter.Tag": "タグ: {0}",
     "SearchFilter.CommonAvatar": "共通素体: {0}",
     "SearchFilter.SearchWord": "検索語句: {0}",
+    "SearchFilter.IsOrSearch": "OR検索",
 
     "Error.Default": "エラー",
     "Error.NotImplemented": "この機能はまだ実装されていません。",
-    "Error.Nothing": "アイテムが見つからないよ！"
+    "Error.Nothing": "アイテムが見つからないよ！",
+    "Error.BoothItemNotFound": "Boothのアイテムが見つからないよ！"
 }

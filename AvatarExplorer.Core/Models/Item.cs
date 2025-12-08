@@ -96,6 +96,13 @@ public class Item : ISelectableItem
         return string.Format(BoothLink.ItemURLFormat, AuthorId, BoothId);
     }
 
+    public string GetBoothJsonLink()
+    {
+        // 強制で日本のBoothにアクセスするJsonのURLです。
+        // これは、カテゴリ名などを使って内部でアイテムカテゴリを判別するためです。
+        return string.Format(BoothLink.ItemJsonURLFormat, BoothId);
+    }
+
     [JsonIgnore]
     public string SearchIndex { get; private set; } = string.Empty;
 
@@ -130,17 +137,59 @@ public class Item : ISelectableItem
             AuthorThumbnmailFileName = MigrateUtils.MigrateItemPath(item.AuthorImageFilePath),
             Type = item.Type,
             CustomCategory = item.CustomCategory,
-            SupportedAvatars = new List<string>(item.SupportedAvatar),
-            ImplementedAvatars = new List<string>(item.ImplementedAvatars),
-            Tags = new List<string>(item.Tags),
             ItemMemo = item.ItemMemo,
             CreatedDate = item.CreatedDate,
             UpdatedDate = item.UpdatedDate,
         };
 
+        migratedItem.SupportedAvatars.Clear();
+        migratedItem.SupportedAvatars.AddRange(item.SupportedAvatar);
+
+        migratedItem.ImplementedAvatars.Clear();
+        migratedItem.ImplementedAvatars.AddRange(item.ImplementedAvatars);
+
+        migratedItem.Tags.Clear();
+        migratedItem.Tags.AddRange(item.ImplementedAvatars);
+
         MigrateUtils.MigrateItemPaths(migratedItem.SupportedAvatars);
         MigrateUtils.MigrateItemPaths(migratedItem.ImplementedAvatars);
 
         return migratedItem;
+    }
+    
+    internal Item SetValuesFromCreationContext(ItemCreationContext itemCreationContext)
+    {
+        Title = itemCreationContext.Title;
+        Author = itemCreationContext.Author;
+        AuthorId = itemCreationContext.AuthorId;
+        BoothId = itemCreationContext.BoothId;
+        Type = itemCreationContext.ItemType;
+
+        SupportedAvatars.Clear();
+        SupportedAvatars.AddRange(itemCreationContext.SupportedAvatars);
+
+        return this;
+    }
+
+    internal async static Task<Item> FromItemCreationContext(ItemCreationContext itemCreationContext)
+    {
+        string extractDestinationFolderPath = Path.Combine(itemCreationContext.ItemsParentFolderPath, itemCreationContext.LocalizedCategoryName);
+        var (itemPath, materialPath, _) = await FileSystemUtils.ExtractItemFolders(itemCreationContext, extractDestinationFolderPath, itemCreationContext.RemoveOriginalFile);
+        
+        var newItem = new Item()
+        {
+            Title = itemCreationContext.Title,
+            Author = itemCreationContext.Author,
+            AuthorId = itemCreationContext.AuthorId,
+            BoothId = itemCreationContext.BoothId,
+            ItemPath = itemPath,
+            MaterialPath = materialPath,
+            Type = itemCreationContext.ItemType,
+        };
+
+        newItem.SupportedAvatars.Clear();
+        newItem.SupportedAvatars.AddRange(itemCreationContext.SupportedAvatars);
+
+        return newItem;
     }
 }

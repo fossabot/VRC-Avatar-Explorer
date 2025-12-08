@@ -16,7 +16,7 @@ public static class ItemUtils
         return avatarName ?? "";
     }
 
-    internal static AvatarStatus GetAvatarStatus(Item item, List<CommonAvatar> commonAvatars, string? avatarPath)
+    internal static AvatarStatus GetAvatarStatus(string? avatarPath, Item item, List<CommonAvatar> commonAvatars)
     {
         var avatarStatus = new AvatarStatus();
         if (string.IsNullOrEmpty(avatarPath)) return avatarStatus;
@@ -30,8 +30,7 @@ public static class ItemUtils
             .Where(x => x.Avatars.Contains(avatarPath))
             .ToArray();
 
-        if (groupsForPath.Length == 0)
-            return avatarStatus;
+        if (groupsForPath.Length == 0) return avatarStatus;
 
         foreach (var supportedAvatar in item.SupportedAvatars)
         {
@@ -47,9 +46,9 @@ public static class ItemUtils
         return avatarStatus;
     }
 
-    public static string GetItemPath(string itemPath)
+    public static string GetItemPath(string parentFolder, string itemPath)
     {
         // <sys>で始まっていないものはフルパスと認識する
-        return itemPath.StartsWith("<sys>") ? Path.Join(SystemPath.ItemsFolderPath, itemPath.Replace("<sys>", "")) : itemPath;
+        return itemPath.StartsWith("<sys>") ? Path.Join(parentFolder, itemPath.Replace("<sys>", "")) : itemPath;
     }
 }

@@ -12,36 +12,38 @@ namespace AvatarExplorer.Core.Utils;
 
 public static class FileSystemUtils
 {
-    public static IEnumerable<string> EnumerateFiles(string root)
+    public static readonly char[] InvalidChars = Path.GetInvalidFileNameChars();
+    
+    public static IEnumerable<string> EnumerateFiles(string rootDirectory)
     {
-        if (!Directory.Exists(root))
+        if (!Directory.Exists(rootDirectory))
             yield break;
 
-        var directories = new Stack<string>();
-        directories.Push(root);
+        Stack<string> directories = new();
+        directories.Push(rootDirectory);
 
         while (directories.Count > 0)
         {
-            var dir = directories.Pop();
+            string directory = directories.Pop();
 
             string[] subDirectories;
 
-            try { subDirectories = Directory.GetDirectories(dir); }
+            try { subDirectories = Directory.GetDirectories(directory); }
             catch { continue; }
 
-            foreach (var subDirectory in subDirectories)
+            foreach (string subDirectory in subDirectories)
             {
                 directories.Push(subDirectory);
             }
 
             string[] files;
 
-            try { files = Directory.GetFiles(dir); }
+            try { files = Directory.GetFiles(directory); }
             catch { continue; }
 
-            foreach (var f in files)
+            foreach (string file in files)
             {
-                yield return f;
+                yield return file;
             }
         }
     }
@@ -91,7 +93,7 @@ public static class FileSystemUtils
             return Path.Combine(basePath, i.ToString());
         }
 
-        var saveFolder = getNextFolder(SystemPath.TempFolderPath);
+        string saveFolder = getNextFolder(SystemPath.TempFolderPath);
         string saveFilePath = Path.Combine(saveFolder, $"{Path.GetFileNameWithoutExtension(itemPath)}_export");
         string unityPackagePath = saveFilePath + ".unitypackage";
 
@@ -172,5 +174,219 @@ public static class FileSystemUtils
 
         using var fileStream = new FileStream(outputTarFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 1024 * 1024, FileOptions.SequentialScan);
         archive.SaveTo(fileStream, new WriterOptions(CompressionType.None));
+    }
+
+    internal static async Task<(string, string, List<string>)> ExtractItemFolders(ItemCreationContext itemCreationContext, string destinationDirectory, bool removeOriginal = false)
+    {
+        List<string> processingFailedPaths = new();
+
+        string parentFolder = string.Empty;
+        string othersFolder = string.Empty;
+        string materialsFolder = string.Empty;
+    
+        for (int i = 0; i < itemCreationContext.Folders.Count; i++)
+        {
+            try
+            {
+                var extractedFolderPath = await ProcessExtractItemFoldersInternal(
+                    itemCreationContext.Folders[i],
+                    string.IsNullOrEmpty(parentFolder) ? destinationDirectory : othersFolder,
+                    string.IsNullOrEmpty(parentFolder) ? (itemCreationContext.GetSafeTitle() ?? Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i])) : Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i]), // 親フォルダだけフォルダ名をタイトルに変換する
+                    removeOriginal
+                );
+
+                if (string.IsNullOrEmpty(parentFolder))
+                {
+                    parentFolder = extractedFolderPath;
+                    othersFolder = Path.Combine(parentFolder, "Others");
+                    materialsFolder = Path.Combine(parentFolder, "Materials");
+                }
+            }
+            catch
+            {
+                processingFailedPaths.Add(itemCreationContext.Folders[i]);
+            }
+        }
+
+        try
+        {
+            if (!string.IsNullOrEmpty(parentFolder) && !string.IsNullOrEmpty(itemCreationContext.MaterialFolder))
+            {
+                await ProcessExtractItemFoldersInternal(
+                    itemCreationContext.MaterialFolder,
+                    materialsFolder,
+                    Path.GetFileNameWithoutExtension(itemCreationContext.MaterialFolder),
+                    removeOriginal
+                );
+            }
+        }
+        catch
+        {
+            processingFailedPaths.Add(itemCreationContext.MaterialFolder);
+        }
+
+        return ($"<sys>{Path.GetRelativePath(itemCreationContext.ItemsParentFolderPath, parentFolder)}", $"<sys>{Path.GetRelativePath(itemCreationContext.ItemsParentFolderPath, materialsFolder)}", processingFailedPaths);
+    }
+
+    private const int BufferSize = 1024 * 1024;
+    private static async Task<string> ProcessExtractItemFoldersInternal(string filePath, string destinationFolderPath, string folderName, bool removeOriginal)
+    {
+        var (extractedDestinationFolderPath, isDirectory) = FileExtractorInternal(filePath, destinationFolderPath, folderName, removeOriginal);
+        if (isDirectory)
+        {
+            var copiedFolderPath = PrepareDestinationDirectoryInternal(destinationFolderPath, folderName);
+            await CopyDirectory(filePath, copiedFolderPath); // フォルダが返された場合は、フォルダにコピーする
+            extractedDestinationFolderPath = copiedFolderPath;
+        }
+
+        return extractedDestinationFolderPath;
+    }
+    private static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, IProgress<(string, int, string)>? progress = null, int maxDegreeOfParallelism = 4)
+    {
+        var allFiles = EnumerateFiles(sourceDirectory).ToList();
+        int totalFiles = allFiles.Count;
+
+        int copiedFiles = 0;
+        int lastPercent = -1;
+
+        await Task.Run(async () =>
+        {
+            Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },
+            file =>
+            {
+                try
+                {
+                    string relativePath = Path.GetRelativePath(sourceDirectory, file);
+                    string destPath = Path.Combine(destinationDirectory, relativePath);
+                    Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
+
+                    using var sourceStream = File.OpenRead(file);
+                    using var destStream = File.Create(destPath);
+                    sourceStream.CopyTo(destStream, BufferSize);
+
+                    copiedFiles++;
+                    int percent = (int)(copiedFiles / (double)totalFiles * 100);
+                    if (percent != lastPercent)
+                    {
+                        lastPercent = percent;
+                        progress?.Report((LocalizationKey.Processing.DirectoryCopy.Copying, percent, string.Empty));
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+            });
+        });
+    }
+    private static (string extractedFolderPath, bool isDirectory) FileExtractorInternal(string filePath, string extractDirectory, string folderName, bool removeOriginalFile)
+    {
+        if (string.IsNullOrEmpty(filePath))
+        {
+            throw new InvalidOperationException("Path is Null Or Empty.");
+        }
+
+        if (Directory.Exists(filePath))
+        {
+            return (filePath, true); // フォルダが渡された場合はそのフォルダをそのまま返して上げる
+        }
+
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException(filePath);
+        }
+        
+        string extractedFolderPath;
+        if (filePath.ToLower().EndsWith(".zip")) extractedFolderPath = ZipExtractor(filePath, extractDirectory, folderName);
+        else if (filePath.ToLower().EndsWith(".rar")) extractedFolderPath = RarExtractor(filePath, extractDirectory, folderName);
+        else if (filePath.ToLower().EndsWith(".7z")) extractedFolderPath = SevenZipExtractor(filePath, extractDirectory, folderName);
+        else if (filePath.ToLower().EndsWith(".gz")) extractedFolderPath = GzipExtractor(filePath, extractDirectory, folderName);
+        else throw new NotImplementedException();
+
+        if (removeOriginalFile)
+        {
+            try { File.Delete(filePath); }
+            catch{ }
+        }
+
+        return (extractedFolderPath, false);
+    }
+    private static string ZipExtractor(string filePath, string extractDirectory, string folderName)
+    {
+        var extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+
+        using (var archive = SharpCompress.Archives.Zip.ZipArchive.Open(filePath))
+        EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
+
+        return extractDirectoryFolder;
+    }
+    private static string RarExtractor(string filePath, string extractDirectory, string folderName)
+    {
+        var extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        
+        using (var archive = SharpCompress.Archives.Rar.RarArchive.Open(filePath))
+        EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
+
+        return extractDirectoryFolder;
+    }
+    private static string SevenZipExtractor(string filePath, string extractDirectory, string folderName)
+    {
+        var extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        
+        using (var archive = SharpCompress.Archives.SevenZip.SevenZipArchive.Open(filePath))
+        EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
+
+        return extractDirectoryFolder;
+    }
+    private static string GzipExtractor(string filePath, string extractDirectory, string folderName)
+    {
+        var extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        
+        using (var archive = SharpCompress.Archives.GZip.GZipArchive.Open(filePath))
+        EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
+
+        return extractDirectoryFolder;
+    }
+    private static string PrepareDestinationDirectoryInternal(string extractDirectory, string folderName)
+    {
+        var extractDirectoryFolder = Path.Combine(extractDirectory, folderName);
+
+        if (Directory.Exists(extractDirectoryFolder))
+        {
+            int i = 1;
+            while (Directory.Exists(extractDirectoryFolder + " - " + i)) i++;
+            extractDirectoryFolder += " - " + i;
+        }
+
+        Directory.CreateDirectory(extractDirectoryFolder);
+
+        return extractDirectoryFolder;
+    }
+    private static void EntriesProcessorInternal<T>(string extractDirectoryFolder, ICollection<T> entries)
+        where T: Entry, IArchiveEntry
+    {
+        byte[] buffer = new byte[BufferSize];
+
+        foreach (var entry in entries)
+        {
+            if (!entry.IsDirectory)
+            {
+                string fullPath = Path.Combine(extractDirectoryFolder, entry.Key!);
+                Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+
+                using var inStream = entry.OpenEntryStream();
+                using var outStream = File.Create(fullPath);
+
+                int read;
+                while ((read = inStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    outStream.Write(buffer, 0, read);
+                }
+            }
+            else if (entry.Key != null)
+            {
+                Directory.CreateDirectory(Path.Combine(extractDirectoryFolder, entry.Key));
+            }
+        }
     }
 }

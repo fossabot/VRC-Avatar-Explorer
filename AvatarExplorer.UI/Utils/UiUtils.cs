@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using AvatarExplorer.Core.Models;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
 
@@ -56,7 +57,7 @@ internal static class UIUtils
 
         var titleText = new TextBlock
         {
-            Text = Localizer.Instance.GetDisplayName(item.Title),
+            Text = (item.Tag.State == Core.Models.ItemTagState.RootCategory || item.Tag.State == Core.Models.ItemTagState.RootSelectedCategory || item.Tag.State == Core.Models.ItemTagState.ItemFileCategory) ? Localizer.Instance[item.Title] : item.Title,
             FontSize = 16,
             FontWeight = FontWeight.Bold
         };
@@ -80,5 +81,134 @@ internal static class UIUtils
         if (onClick != null) button.Click += onClick;
 
         parent.Children.Add(button);
+    }
+
+    internal static void AddPageButton(StackPanel parent, ItemTagState itemTagState, int currentPageValue, int itemsPerPage, int totalItemCount, EventHandler<RoutedEventArgs>? onClick = null)
+    {
+        int totalPages = (int)Math.Ceiling((double)totalItemCount / itemsPerPage);
+
+        int start = 0;
+        int end = 0;
+
+        bool isValidPage = currentPageValue >= 0 && currentPageValue < totalPages;
+
+        if (isValidPage)
+        {
+            start = (currentPageValue * itemsPerPage) + 1;
+            end = Math.Min(start + itemsPerPage - 1, totalItemCount);
+        }
+
+        bool renderFirstButton = currentPageValue > 0;
+        bool renderBackButton = currentPageValue > 0;
+        bool renderNextButton = currentPageValue < totalPages - 1;
+        bool renderLastButton = currentPageValue < totalPages - 1;
+
+        var pageGrid = new Grid()
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,*,*,*"),
+            ColumnSpacing = 10,
+            Margin = new Thickness(30, 0, 30, 0)
+        };
+
+        var pageInfoStackPanel = new StackPanel()
+        {
+            Orientation = Orientation.Vertical,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+
+        Grid.SetColumn(pageInfoStackPanel, 0);
+        Grid.SetColumnSpan(pageInfoStackPanel, 4);
+
+        var pageTextBlock = new TextBlock()
+        {
+            Text = $"{currentPageValue + 1}/{totalPages}ページ",
+            FontSize = 15,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        pageInfoStackPanel.Children.Add(pageTextBlock);
+
+        var itemsCountTextBlock = new TextBlock()
+        {
+            Text = $"{start} - {end} / {totalItemCount}個の項目",
+            FontSize = 15,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        pageInfoStackPanel.Children.Add(itemsCountTextBlock);
+
+        pageGrid.Children.Add(pageInfoStackPanel);
+
+        if (renderFirstButton)
+        {
+            var firstButton = new Button()
+            {
+                Content = "<<",
+                FontSize = 15,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Tag = new PageButtonInfo(itemTagState, PageButtonState.First, 0),
+                Width = 50
+            };
+            
+            Grid.SetColumn(firstButton, 0);
+            if (onClick != null) firstButton.Click += onClick;
+            pageGrid.Children.Add(firstButton);
+        }
+
+        if (renderBackButton)
+        {
+            var backButton = new Button()
+            {
+                Content = "<",
+                FontSize = 15,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Tag = new PageButtonInfo(itemTagState, PageButtonState.Back, currentPageValue - 1),
+                Width = 50
+            };
+            Grid.SetColumn(backButton, 1);
+            if (onClick != null) backButton.Click += onClick;
+            pageGrid.Children.Add(backButton);
+        }
+
+        if (renderNextButton)
+        {
+            var nextButton = new Button()
+            {
+                Content = ">",
+                FontSize = 15,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Tag = new PageButtonInfo(itemTagState, PageButtonState.Next, currentPageValue + 1),
+                Width = 50
+            };
+            Grid.SetColumn(nextButton, 2);
+            if (onClick != null) nextButton.Click += onClick;
+            pageGrid.Children.Add(nextButton);
+        }
+
+        if (renderLastButton)
+        {
+            var lastButton = new Button()
+            {
+                Content = ">>",
+                FontSize = 15,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Tag = new PageButtonInfo(itemTagState, PageButtonState.Last, totalPages - 1),
+                Width = 50
+            };
+            Grid.SetColumn(lastButton, 3);
+            if (onClick != null) lastButton.Click += onClick;
+            pageGrid.Children.Add(lastButton);
+        }
+
+        parent.Children.Add(pageGrid);
     }
 }
