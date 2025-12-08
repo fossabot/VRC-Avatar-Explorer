@@ -168,7 +168,7 @@ public class AvatarExplorerApp
     {
         return _items
             .Where(i => CategoryUtils.IsCategoryMatch(i, selectionNode.Key))
-            .GetSortedItems(_runtimeSettings.ItemSortOrder)
+            .GetSortedItems(_runtimeSettings)
             .Select(i => new ItemCountInfo(i, 0))
             .ToList();
     }
@@ -192,14 +192,14 @@ public class AvatarExplorerApp
             }
 
             return filteredResult
-                .GetSortedItemsFromCountInfo(_runtimeSettings.ItemSortOrder)
+                .GetSortedItemsFromCountInfo(_runtimeSettings)
                 .ToList();
         }
         else if (rootSelectionNode.State == ItemTagState.RootAuthor)
         {
             return _items
                 .Where(i => CategoryUtils.IsCategoryMatch(i, selectionNode.Key) && i.Author == rootSelectionNode.Key)
-                .GetSortedItems(_runtimeSettings.ItemSortOrder)
+                .GetSortedItems(_runtimeSettings)
                 .Select(i => new ItemCountInfo(i, 0))
                 .ToList();
         }
@@ -310,7 +310,7 @@ public class AvatarExplorerApp
     #endregion
 
     #region Set API
-    public bool SetItemsParentFolder(string path)
+    public bool SetDataRootDirectory(string path)
     {
         // このパスをアイテムフォルダの親フォルダとして見るようになる（アイテムの相対パスの親がこのフォルダであると設定する）
         return _runtimeSettings.SetDataRootDirectory(path);
@@ -318,6 +318,14 @@ public class AvatarExplorerApp
     public void SetItemsSortOrder(SortOrder sortOrder)
     {
         _runtimeSettings.SetSortOrder(sortOrder);
+    }
+    public void SetRemoveOriginal(bool value)
+    {
+        _runtimeSettings.SetRemoveOriginal(value);
+    }
+    public void SetRemoveBrackets(bool value)
+    {
+        _runtimeSettings.SetRemoveBrackets(value);
     }
     #endregion
 
@@ -380,6 +388,13 @@ public class AvatarExplorerApp
             .Where(i => SearchUtils.Matches(filter, avatarNameMaps, _commonAvatars, i, _runtimeSettings.DataRootDirectory))
             .OrderByDescending(i => SearchUtils.GetScore(i, filter.SearchWords))
             .ToList();
+    }
+    #endregion
+
+    #region Save API
+    public void SaveRuntimeSettings()
+    {
+        _runtimeSettings.Save();
     }
     #endregion
 

@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
 
@@ -12,7 +13,7 @@ namespace AvatarExplorer.UI.Utils;
 
 internal static class UIUtils
 {
-    internal static void AddItemButton(StackPanel parent, UISelectableItem item, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
+    internal static void AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
         var button = new Button
         {
@@ -55,9 +56,12 @@ internal static class UIUtils
             Orientation = Orientation.Vertical
         };
 
+        string itemTitle = (item.Tag.State == ItemTagState.RootCategory || item.Tag.State == ItemTagState.RootSelectedCategory || item.Tag.State == ItemTagState.ItemFileCategory) ? Localizer.Instance[item.Title] : item.Title;
+        if (removeBrackets && (item.Tag.State == ItemTagState.RootAvatar || item.Tag.State == ItemTagState.SearchItem || item.Tag.State == ItemTagState.RootSelectedItem)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
+
         var titleText = new TextBlock
         {
-            Text = (item.Tag.State == Core.Models.ItemTagState.RootCategory || item.Tag.State == Core.Models.ItemTagState.RootSelectedCategory || item.Tag.State == Core.Models.ItemTagState.ItemFileCategory) ? Localizer.Instance[item.Title] : item.Title,
+            Text = itemTitle,
             FontSize = 16,
             FontWeight = FontWeight.Bold
         };
@@ -120,6 +124,8 @@ internal static class UIUtils
         Grid.SetColumn(pageInfoStackPanel, 0);
         Grid.SetColumnSpan(pageInfoStackPanel, 4);
 
+
+        // TODO: Localizeする
         var pageTextBlock = new TextBlock()
         {
             Text = $"{currentPageValue + 1}/{totalPages}ページ",

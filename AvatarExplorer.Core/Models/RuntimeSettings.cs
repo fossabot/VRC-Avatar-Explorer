@@ -7,6 +7,7 @@ public class RuntimeSettings
     public string DataRootDirectory { get; set; } = SystemPath.DefaultItemsFolderPath;
     public SortOrder ItemSortOrder { get; set; } = SortOrder.Title;
     public bool RemoveOriginal { get; set; } = false;
+    public bool RemoveBrackets { get; set; } = false;
 
     internal  void SetSortOrder(SortOrder sortOrder)
     {
@@ -30,6 +31,11 @@ public class RuntimeSettings
     internal void SetRemoveOriginal(bool value)
     {
         RemoveOriginal = value;
+    }
+
+    internal void SetRemoveBrackets(bool value)
+    {
+        RemoveBrackets = value;
     }
 
     internal void Save()

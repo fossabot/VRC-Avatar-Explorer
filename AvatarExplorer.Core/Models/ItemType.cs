@@ -3,9 +3,6 @@ using AvatarExplorer.Core.Localization;
 
 namespace AvatarExplorer.Core.Models;
 
-/// <summary>
-/// アイテムの種類を表します。
-/// </summary>
 public enum ItemType
 {
     None = -1,

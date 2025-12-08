@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
@@ -39,6 +40,8 @@ public partial class MainWindow : Window
     private readonly UserUiPreferences _userUiPreferences = new();
     private int ItemsPerPage => _userUiPreferences.ItemsPerPage;
 
+    private bool RemoveBrackets => _avatarExplorer.GetRuntimeSettings().RemoveBrackets;
+
     private bool CanDisplayPage(ItemTagState itemTagState)
         => _currentPageStates.ContainsKey(itemTagState);
 
@@ -54,12 +57,9 @@ public partial class MainWindow : Window
         TODO: UIのタグを使った翻訳機能を追加する
         TODO: 実装やタグは新しくUIを作って上げることで実装する。右クリックメニューでは扱わない（チェックとかでメモリリークする可能性があるため）
         TODO: 下のボタンの処理を実装する
-        TODO: ZIP展開先を設定ファイルなどで変更可能にする
-        TODO: 展開時、カテゴリ名のフォルダ先に展開するかどうかの設定を追加
+        TODO: 展開時、カテゴリ名のフォルダ先に展開するかどうかの設定を追加(正直あんまりいらないかも)
         TODO: SCHEMEに対応する
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるように変更
-        TODO: アイテムの保存先などの設定データをどこか一つのファイルにまとめる（現時点では、テストフォルダを指定している）
-        TODO: 設定画面を作る
         TODO: 詳細検索用の画面を追加する
         TODO: アイテム追加時の画面に、現時点での全てのカテゴリをComboBoxに入れておき、その横にボタンでカテゴリを追加できるようにする
         TODO: スクロール位置を保存するようにしたいね
@@ -181,7 +181,7 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            UIUtils.AddItemButton(LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), itemContextMenu, LeftPanel_ItemButton_Clicked);
+            UIUtils.AddItemButton(LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RemoveBrackets, itemContextMenu, LeftPanel_ItemButton_Clicked);
         }
 
         if (currentPage != -1) UIUtils.AddPageButton(LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Clicked);
@@ -226,7 +226,7 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            UIUtils.AddItemButton(RightPanel, new UISelectableItem(itemCountInfo), itemContextMenu, RightPanel_ItemButton_Clicked);
+            UIUtils.AddItemButton(RightPanel, new UISelectableItem(itemCountInfo), RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
         }
 
         if (currentPage != -1) UIUtils.AddPageButton(RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Clicked);
@@ -332,7 +332,7 @@ public partial class MainWindow : Window
         foreach (Item item in items.Take(30))
         {
             ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(item), ItemButton_ContextMenuItem_Click);
-            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), itemContextMenu, RightPanel_ItemButton_Clicked);
+            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
         }
     }
     #endregion
@@ -678,7 +678,7 @@ public partial class MainWindow : Window
     #region Settings Menu
     private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e)
     {
-        SettingsOverlay_ItemsFolderPathTextBox.Text = _avatarExplorer.GetDataRootDirectory();
+        SetUiValueFromCurrentSettings();
         SettingsOverlay.IsVisible = true;
     }
     private async void SettingsOverlay_OpenFolder_Click(object? sender, RoutedEventArgs e)
@@ -688,21 +688,61 @@ public partial class MainWindow : Window
     }
     private async void SettingsOverlay_CloseButton_Click(object? sender, RoutedEventArgs e)
     {
-        if (!Directory.Exists(SettingsOverlay_ItemsFolderPathTextBox.Text))
-        {
-            ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.InvalidPath]);
-            return;
-        }
-
-        _avatarExplorer.SetItemsParentFolder(SettingsOverlay_ItemsFolderPathTextBox.Text);
-
         SettingsOverlay.IsVisible = false;
+    }
+
+    private async void SettingsOverlay_ApplyButton_Click(object? sender, RoutedEventArgs e)
+    {
+        ApplySettingsValues();
+    }
+    private void SetUiValueFromCurrentSettings()
+    {
+        var runtimeSettings = _avatarExplorer.GetRuntimeSettings();
+        var userUiPreferences = _userUiPreferences;
+
+        SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory;
+        SettingsOverlay_RemoveBracketsCheckBox.IsChecked = runtimeSettings.RemoveBrackets;
+        SettingsOverlay_RemoveOriginalCheckBox.IsChecked = runtimeSettings.RemoveOriginal;
+        SettingsOverlay_ItemsPerPageTextBox.Text = userUiPreferences.ItemsPerPage.ToString();
+        SettingsOverlay_ThemeComboBox.SelectedIndex = (int)userUiPreferences.Theme;
+        SettingsOverlay_DefaultLanguageComboBox.SelectedIndex = userUiPreferences.DefaultLanguage;
+        SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex = (int)runtimeSettings.ItemSortOrder;
+    }
+
+    private void ApplySettingsValues()
+    {
+        _avatarExplorer.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? "");
+        _avatarExplorer.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
+        _avatarExplorer.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
+        _userUiPreferences.ItemsPerPage = int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var result) ? result : 30;
+        _userUiPreferences.Theme = (Theme)SettingsOverlay_ThemeComboBox.SelectedIndex;
+        _userUiPreferences.DefaultLanguage = SettingsOverlay_DefaultLanguageComboBox.SelectedIndex;
+        _avatarExplorer.SetItemsSortOrder((SortOrder)SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex);
+
+        SetUiValueFromCurrentSettings();
+        ApplyPreferenceSettingsToUi();
+
+        ReloadCurrentWindow();
+
+        _avatarExplorer.SaveRuntimeSettings();
+        _userUiPreferences.Save();
+    }
+
+    private void ApplyPreferenceSettingsToUi()
+    {
+        var currentApplication = Application.Current;
+        if (currentApplication != null)
+        {
+            if (_userUiPreferences.Theme == Models.Theme.Auto) currentApplication.RequestedThemeVariant = ThemeVariant.Default;
+            else if (_userUiPreferences.Theme == Models.Theme.Dark) currentApplication.RequestedThemeVariant = ThemeVariant.Dark;
+            else if (_userUiPreferences.Theme == Models.Theme.Light) currentApplication.RequestedThemeVariant = ThemeVariant.Light;
+        }
     }
     #endregion
 
     private void ReloadCurrentWindow()
     {
         RenderLeftPanel();
-        RenderRightPanel(); // TODO: 検索中だとそれが無視されてしまうから、検索中フラグなどでここはチェックするべき
+        RenderRightPanel(); // TODO: 検索中だと検索画面が無視されてしまうから、検索中フラグなどでここはチェックするべき
     }
 }

@@ -1,9 +1,13 @@
-﻿using AvatarExplorer.Core.Models;
+﻿using System.Text.RegularExpressions;
+using AvatarExplorer.Core.Models;
 
 namespace AvatarExplorer.Core.Utils;
 
-public static class ItemUtils
+public static partial class ItemUtils
 {
+    [GeneratedRegex(@"\u3010[^\u3011]+\u3011")]
+    private static partial Regex TextBracketsRegex();
+
     internal static string GetAvatarNameFromPath(IReadOnlyList<Item> items, string? path)
     {
         if (string.IsNullOrEmpty(path)) return string.Empty;
@@ -51,4 +55,7 @@ public static class ItemUtils
         // <sys>で始まっていないものはフルパスと認識する
         return itemPath.StartsWith("<sys>") ? Path.Join(parentFolder, itemPath.Replace("<sys>", "")) : itemPath;
     }
+
+    public static string RemoveBrackets(string value)
+        => TextBracketsRegex().Replace(value, "");
 }

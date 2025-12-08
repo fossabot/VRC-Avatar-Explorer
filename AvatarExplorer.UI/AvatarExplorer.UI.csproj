@@ -24,8 +24,4 @@
     </PackageReference>
 		<ProjectReference Include="..\AvatarExplorer.Core/AvatarExplorer.Core.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
 </Project>
