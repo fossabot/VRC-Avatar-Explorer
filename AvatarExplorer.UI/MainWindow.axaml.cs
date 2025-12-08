@@ -63,6 +63,8 @@ public partial class MainWindow : Window
         TODO: 詳細検索用の画面を追加する
         TODO: アイテム追加時の画面に、現時点での全てのカテゴリをComboBoxに入れておき、その横にボタンでカテゴリを追加できるようにする
         TODO: スクロール位置を保存するようにしたいね
+        TODO: ソフト終了時にTempを削除したい
+        TODO: AddItemの確認がまだできてないからやる
         */
 
         InitializeComponent();
