@@ -34,7 +34,7 @@ public partial class MainWindow : Window
         { ItemTagState.RootCategory, 0 },
         { ItemTagState.RootSelectedCategory, 0 },
         { ItemTagState.RootSelectedItem, 0 },
-        { ItemTagState.ItemFileCategory, 0 }
+        { ItemTagState.ItemFileCategoryOpen, 0 } // ファイル数が多い時用
     };
 
     private readonly UserUiPreferences _userUiPreferences = new();
@@ -65,6 +65,7 @@ public partial class MainWindow : Window
         TODO: スクロール位置を保存するようにしたいね
         TODO: ソフト終了時にTempを削除したい
         TODO: AddItemの確認がまだできてないからやる
+        TODO: currentPageStatesが別のアイテムでも影響を受けてしまうため、ItemStatesがCurrentPathに存在しなかった時はリセットしてあげる
         */
 
         InitializeComponent();
