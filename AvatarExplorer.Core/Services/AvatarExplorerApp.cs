@@ -125,7 +125,11 @@ public class AvatarExplorerApp
     }
     public IReadOnlyList<ItemCountInfo> GetAvatars()
     {
-        return _items.Where(i => i.Type == ItemType.Avatar).Select(i => new ItemCountInfo(i, 0)).ToList();
+        return _items
+            .Where(i => i.Type == ItemType.Avatar)
+            .GetSortedItems(_runtimeSettings)
+            .Select(i => new ItemCountInfo(i, 0))
+            .ToList();
     }
     public IReadOnlyList<ItemCountInfo> GetCategories()
     {
@@ -156,6 +160,7 @@ public class AvatarExplorerApp
 
         return new List<ItemCountInfo>();
     }
+    #region Current State Internal Handler
     private IReadOnlyList<ItemCountInfo> HandleRootAvatar(SelectionNode selectionNode)
     {
         return GetCategoriesFromItemsInternal(_items.Where(i => ItemUtils.GetAvatarStatus(selectionNode.Key, i, _commonAvatars).IsSupportedOrCommon));
@@ -217,8 +222,10 @@ public class AvatarExplorerApp
 
         return GetFilesFromPathInternal(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, fileSelectionNode.Key), selectionNode.Key);
     }
+    #endregion
 
-    public IEnumerable<SelectionNode> GetCurrentPath() => _selectionState.GetCurrentPath();
+    public IEnumerable<SelectionNode> GetCurrentPaths() => _selectionState.GetCurrentPath();
+    public SelectionNode? GetCurrentPathState() => _selectionState.Current;
 
     public Item? GetSelectedItem()
     {
@@ -297,11 +304,6 @@ public class AvatarExplorerApp
 
         return itemCategories.Concat(itemCustomCategories).ToList();
     }
-    
-    public string GetDataRootDirectory()
-    {
-        return _runtimeSettings.DataRootDirectory;
-    }
 
     public RuntimeSettings GetRuntimeSettings()
     {
@@ -330,9 +332,12 @@ public class AvatarExplorerApp
     #endregion
 
     #region Add API
-    public async Task<Item> AddItem(ItemCreationContext itemCreationContext)
+    public async Task<(Item? newItem, List<string> processingFailedPaths)> AddItem(ItemCreationContext itemCreationContext)
     {
-        return await Item.FromItemCreationContext(itemCreationContext, _runtimeSettings);
+        var newItem = await Item.FromItemCreationContext(itemCreationContext, _runtimeSettings);
+        if (newItem.Item1 != null) _items.Add(newItem.Item1); // アイテムの追加に失敗していなければここで追加してあげる
+
+        return newItem;
     }
 
     public Item EditItem(Item item, ItemCreationContext itemCreationContext)
@@ -342,9 +347,16 @@ public class AvatarExplorerApp
     #endregion
 
     #region Booth API
-    public static async Task<BoothItem?> GetBoothItem(string boothUrl)
+    private DateTime _lastBoothApiGetTime;
+    public bool IsApiCooldownNow => _lastBoothApiGetTime.AddSeconds(5) > DateTime.Now;
+    public async Task<BoothItem?> GetBoothItem(string boothUrl)
     {
+        if (string.IsNullOrEmpty(boothUrl)) return null;
+        if (IsApiCooldownNow) return null;
+
         var boothId = boothUrl.Split('/')[^1];
+
+        _lastBoothApiGetTime = DateTime.Now; // 時間を更新する
         return await BoothUtils.GetBoothItemAsync(boothId);
     }
     #endregion

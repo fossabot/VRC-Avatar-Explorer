@@ -115,7 +115,19 @@ public static class LocalizationKey
         public const string NotImplemented = "Error.NotImplemented";
         public const string Nothing = "Error.Nothing";
         public const string BoothItemNotFound = "Error.BoothItemNotFound";
+        public const string BoothApiCooldown = "Error.BoothApiCooldown";
         public const string InvalidPath = "Error.InvalidPath";
+
+        public static class Validation
+        {
+            public const string NoFolders = "Error.Validation.NoFolders";
+            public const string EmptyTitle = "Error.Validation.EmptyTitle";
+            public const string EmptyAuthor = "Error.Validation.Author";
+        }
+
+        public const string ItemAddFailed = "Error.Item.Add.Failed";
+        public const string ItemFolderProcessingFailedPaths = "Error.Item.Folder.ProcessingFailedPaths";
+
     }
 
     public static class ContextMenu

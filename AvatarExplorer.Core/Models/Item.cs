@@ -164,6 +164,7 @@ public class Item : ISelectableItem
         AuthorId = itemCreationContext.AuthorId;
         BoothId = itemCreationContext.BoothId;
         Type = itemCreationContext.ItemType;
+        CustomCategory = itemCreationContext.CustomCategory;
 
         SupportedAvatars.Clear();
         SupportedAvatars.AddRange(itemCreationContext.SupportedAvatars);
@@ -171,10 +172,15 @@ public class Item : ISelectableItem
         return this;
     }
 
-    internal async static Task<Item> FromItemCreationContext(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
+    internal async static Task<(Item? newItem, List<string> processingFailedPaths)> FromItemCreationContext(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
     {
         string extractDestinationFolderPath = Path.Combine(runtimeSettings.DataRootDirectory, itemCreationContext.LocalizedCategoryName);
-        var (itemPath, materialPath, _) = await FileSystemUtils.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, extractDestinationFolderPath, runtimeSettings.RemoveOriginal);
+        var (itemPath, materialPath, processingFailedPaths) = await FileSystemUtils.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, extractDestinationFolderPath, runtimeSettings.RemoveOriginal);
+        
+        if (string.IsNullOrEmpty(itemPath))
+        {
+            return (null, processingFailedPaths);
+        }
         
         var newItem = new Item()
         {
@@ -185,11 +191,12 @@ public class Item : ISelectableItem
             ItemPath = itemPath,
             MaterialPath = materialPath,
             Type = itemCreationContext.ItemType,
+            CustomCategory = itemCreationContext.CustomCategory
         };
 
         newItem.SupportedAvatars.Clear();
         newItem.SupportedAvatars.AddRange(itemCreationContext.SupportedAvatars);
 
-        return newItem;
+        return (newItem, processingFailedPaths);
     }
 }

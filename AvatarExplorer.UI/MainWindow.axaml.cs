@@ -28,7 +28,7 @@ public partial class MainWindow : Window
     private Dictionary<ActionKey, Func<string, Task>>? _contextMenuHandlers;
     private readonly Dictionary<ItemTagState, int> _currentPageStates = new()
     {
-        { ItemTagState.SearchItem, 0 }, // TODO: 検索の時のページが上手く機能してないからここ直す
+        { ItemTagState.SearchItem, 0 }, // TODO: 検索の時のページが他の検索結果でも引きずられるから直したい。キャッシュするといいかも
         { ItemTagState.RootAvatar, 0 },
         { ItemTagState.RootAuthor, 0 },
         { ItemTagState.RootCategory, 0 },
@@ -37,14 +37,16 @@ public partial class MainWindow : Window
         { ItemTagState.ItemFileCategoryOpen, 0 } // ファイル数が多い時用
     };
 
+    private string _searchTextCache = string.Empty;
+    private bool _isLastWindowSearch = false;
+
     private readonly UserUiPreferences _userUiPreferences = new();
     private int ItemsPerPage => _userUiPreferences.ItemsPerPage;
 
-    private bool RemoveBrackets => _avatarExplorer.GetRuntimeSettings().RemoveBrackets;
+    private RuntimeSettings RuntimeSettings => _avatarExplorer.GetRuntimeSettings();
 
     private bool CanDisplayPage(ItemTagState itemTagState)
         => _currentPageStates.ContainsKey(itemTagState);
-
     private int GetCurrentPage(ItemTagState itemTagState)
         => CanDisplayPage(itemTagState) ? _currentPageStates[itemTagState] : -1;
 
@@ -52,20 +54,16 @@ public partial class MainWindow : Window
     {
         /* プロジェクトTODO
         TODO: 言語変更を実装する (UIが完成したらやる)
-        TODO: 検索中だった場合、検索結果が出てる画面まで戻すのか決める。今は検索状況もリセットされ、その前まで戻される。
         TODO: 右クリックメニューの処理を作る
         TODO: UIのタグを使った翻訳機能を追加する
         TODO: 実装やタグは新しくUIを作って上げることで実装する。右クリックメニューでは扱わない（チェックとかでメモリリークする可能性があるため）
         TODO: 下のボタンの処理を実装する
-        TODO: 展開時、カテゴリ名のフォルダ先に展開するかどうかの設定を追加(正直あんまりいらないかも)
         TODO: SCHEMEに対応する
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるように変更
         TODO: 詳細検索用の画面を追加する
         TODO: アイテム追加時の画面に、現時点での全てのカテゴリをComboBoxに入れておき、その横にボタンでカテゴリを追加できるようにする
         TODO: スクロール位置を保存するようにしたいね
         TODO: ソフト終了時にTempを削除したい
-        TODO: AddItemの確認がまだできてないからやる
-        TODO: currentPageStatesが別のアイテムでも影響を受けてしまうため、ItemStatesがCurrentPathに存在しなかった時はリセットしてあげる
         */
 
         InitializeComponent();
@@ -86,6 +84,7 @@ public partial class MainWindow : Window
             _avatarExplorer.LoadItemDatabase(true);
             _avatarExplorer.LoadCommonAvatarDatabase(true);
             _avatarExplorer.LoadRuntimeSettings();
+            ApplyRuntimeSettingsToUi(); // 並び替え順をセットするため
             Localizer.Instance.LoadFromFile("locales/ja-JP.json");
         }
         catch
@@ -98,6 +97,9 @@ public partial class MainWindow : Window
     {
         var userUiPreferences = SettingsUtils.LoadUserPreferences(SystemPath.UserPreferencesFilePath);
         _userUiPreferences.FromOther(userUiPreferences);
+
+        ApplyPreferenceSettingsToUi();
+
         _userUiPreferences.Save();
     }
     private void InitializeNoItemsLabel()
@@ -151,7 +153,6 @@ public partial class MainWindow : Window
     private void RenderLeftPanel()
     {
         if (LeftPanel == null) return;
-
         LeftPanel.Children.Clear();
 
         List<ItemCountInfo> items = new();
@@ -184,10 +185,10 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            UIUtils.AddItemButton(LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RemoveBrackets, itemContextMenu, LeftPanel_ItemButton_Clicked);
+            UIUtils.AddItemButton(LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings.RemoveBrackets, itemContextMenu, LeftPanel_ItemButton_Clicked);
         }
 
-        if (currentPage != -1) UIUtils.AddPageButton(LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Clicked);
+        if (currentPage != -1 && items.Count != 0) UIUtils.AddPageButton(LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Clicked);
     }
     private void LeftPanel_ItemButton_Clicked(object? sender, RoutedEventArgs e)
     {
@@ -199,7 +200,6 @@ public partial class MainWindow : Window
             _avatarExplorer.Select(itemTagInfo.State, itemTagInfo.Value);
 
             RenderRightPanel();
-            LoadCurrentPath();
         }
 
         if (button.Tag is PageButtonInfo pageButtonInfo)
@@ -229,10 +229,12 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            UIUtils.AddItemButton(RightPanel, new UISelectableItem(itemCountInfo), RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
+            UIUtils.AddItemButton(RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
         }
 
-        if (currentPage != -1) UIUtils.AddPageButton(RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Clicked);
+        if (currentPage != -1 && items.Count != 0) UIUtils.AddPageButton(RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Clicked);
+        _isLastWindowSearch = false;
+        LoadCurrentPath();
     }
     private async void RightPanel_ItemButton_Clicked(object? sender, RoutedEventArgs e)
     {
@@ -250,14 +252,13 @@ public partial class MainWindow : Window
                 _avatarExplorer.Select(itemTagInfo.State, itemTagInfo.Value);
                 RenderRightPanel();
             }
-
-            LoadCurrentPath();
         }
 
         if (button.Tag is PageButtonInfo pageButtonInfo)
         {
             _currentPageStates[pageButtonInfo.ItemTagState] = pageButtonInfo.NextPageValue;
-            RenderRightPanel();
+            if (pageButtonInfo.ItemTagState == ItemTagState.SearchItem) ExecuteSearchItems();
+            else RenderRightPanel();
         }
     }
     private async Task OpenFileInternalAsync(string filePath)
@@ -312,31 +313,37 @@ public partial class MainWindow : Window
     private void OnSearchTimerTick(object? sender, EventArgs e)
     {
         _searchTimer.Stop();
+        _searchTextCache = SearchTextBox.Text ?? "";
         ExecuteSearchItems();
     }
     private void ExecuteSearchItems()
     {
-        if (SearchTextBox == null) return;
-        if (string.IsNullOrEmpty(SearchTextBox.Text))
+        if (string.IsNullOrEmpty(_searchTextCache))
         {
             RenderRightPanel();
             return;
         }
 
         RightPanel.Children.Clear();
-        SearchFilter searchFilter = SearchUtils.BuildFilter(SearchTextBox.Text);
-        IReadOnlyList<Item> items = _avatarExplorer.SearchItems(searchFilter);
 
-        PathBox.Text = searchFilter.ToPathString();
+        SearchFilter searchFilter = SearchUtils.BuildFilter(_searchTextCache);
+        IReadOnlyList<Item> items = _avatarExplorer.SearchItems(searchFilter);
 
         if (items.Count == 0) ShowNoItemsLabel();
         else HideNoItemsLabel();
 
-        foreach (Item item in items.Take(30))
+        int currentPage = GetCurrentPage(ItemTagState.SearchItem); // SearchItemは強制でページが存在しているため
+
+        foreach (Item item in items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage))
         {
             ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(item), ItemButton_ContextMenuItem_Click);
-            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
+            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
         }
+
+        if (items.Count != 0) UIUtils.AddPageButton(RightPanel, ItemTagState.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Clicked);
+        _isLastWindowSearch = true;
+        
+        PathBox.Text = searchFilter.ToPathString();
     }
     #endregion
 
@@ -383,7 +390,7 @@ public partial class MainWindow : Window
     {
         if (PathBox == null) return;
 
-        IEnumerable<SelectionNode> currentSelectionNodes = _avatarExplorer.GetCurrentPath();
+        IEnumerable<SelectionNode> currentSelectionNodes = _avatarExplorer.GetCurrentPaths();
         if (!currentSelectionNodes.Any())
         {
             PathBox.Text = Localizer.Instance[LocalizationKey.Path.Default];
@@ -442,17 +449,21 @@ public partial class MainWindow : Window
     #region Main UI Event Handler
     private void Main_UndoButton_Click(object? sender, RoutedEventArgs e)
     {
+        // 選択されていたアイテムが検索結果時のものだったら、キャッシュを元にもう一度検索してあげる
+        bool isCurrentSearchNode = _avatarExplorer.GetCurrentPathState()?.State == ItemTagState.SearchItem;
+        
+        CheckPageStates(); // SelectUndoより前にやってあげないと、今のページがリセットされる
         _avatarExplorer.SelectUndo();
-        RenderRightPanel();
-        LoadCurrentPath();
+
+        if (isCurrentSearchNode) ExecuteSearchItems();
+        else RenderRightPanel();
     }
-    private void Main_SortOrder_Changed(object? sender, RoutedEventArgs e)
+    private void Main_SortOrderComboBox_Changed(object? sender, RoutedEventArgs e)
     {
         if (sender is not ComboBox comboBox) return;
         _avatarExplorer.SetItemsSortOrder((SortOrder)comboBox.SelectedIndex);
         ReloadCurrentWindow();
     }
-
     private async void ItemButton_ContextMenuItem_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is MenuItem menuItem && menuItem.Tag is ContextMenuAction contextMenuAction)
@@ -485,7 +496,7 @@ public partial class MainWindow : Window
         var item = ContextMenu_GetItemByPath(itemPath);
         if (item == null) return;
 
-        await AvaloniaLauncherUtils.OpenFolder(this, ItemUtils.GetItemPath(_avatarExplorer.GetDataRootDirectory(), item.ItemPath));
+        await AvaloniaLauncherUtils.OpenFolder(this, ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath));
     }
     private async Task ContextMenu_CopyBoothLink(string itemPath)
     {
@@ -556,8 +567,6 @@ public partial class MainWindow : Window
     }
     #endregion
 
-    //TODO: Add / Edit / SettingsでValueValidate関数を作る
-
     #region Add / Edit Item Menu
     private Item? _selectedItem = null;
     private readonly AddItemOverlayWindowValues _addItemWindowValues = new();
@@ -569,28 +578,40 @@ public partial class MainWindow : Window
 
     private void ShowEditItemWindow(Item item)
     {
+        InitializeAddItemWindowCategories();
+
         _selectedItem = item;
         _addItemWindowValues.FromItem(item);
         SetAddItemWindowValues(_addItemWindowValues);
+        AddItemOverlay_BoothLinkTextBox.Text = item.GetBoothLink();
         AddItemOverlay.IsVisible = true;
     }
     private void ShowAddItemWindow()
     {
+        InitializeAddItemWindowCategories();
+
         _selectedItem = null;
         _addItemWindowValues.Reset();
         SetAddItemWindowValues(_addItemWindowValues);
+        AddItemOverlay_BoothLinkTextBox.Text = string.Empty;
         AddItemOverlay.IsVisible = true;
     }
     
     private async void AddItemOverlay_GetBoothItemData_Click(object? sender, RoutedEventArgs e)
     {
-        if (_addItemWindowValues == null || AddItemOverlay_BoothLinkTextBox == null || AddItemOverlay_BoothLinkTextBox.Text == null) return;
-        string boothUrl = AddItemOverlay_BoothLinkTextBox.Text;
+        if (_addItemWindowValues == null) return;
+        string boothUrl = AddItemOverlay_BoothLinkTextBox.Text ?? "";
 
+        if (_avatarExplorer.IsApiCooldownNow)
+        {
+            ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.BoothApiCooldown]);
+            return;
+        }
+        
         ShowProgress(Localizer.Instance[LocalizationKey.Processing.Booth.Status.Fetching]);
         UpdateProgress(0);
         
-        BoothItem? boothItem = await AvatarExplorerApp.GetBoothItem(boothUrl);
+        BoothItem? boothItem = await _avatarExplorer.GetBoothItem(boothUrl);
         HideProgress();
 
         if (boothItem == null)
@@ -599,11 +620,12 @@ public partial class MainWindow : Window
             return;
         }
 
-        _addItemWindowValues.BoothTitle = boothItem.Title;
-        _addItemWindowValues.BoothAuthor = boothItem.Shop.Name;
+        _addItemWindowValues.Title = boothItem.Title;
+        _addItemWindowValues.Author = boothItem.Shop.Name;
         _addItemWindowValues.BoothAuthorId = boothItem.AuthorId;
         _addItemWindowValues.BoothId = boothItem.BoothId;
         _addItemWindowValues.BoothThumbnailUrl = boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty;
+        _addItemWindowValues.ItemType = (boothItem.EstimatedCategory != ItemType.None && boothItem.EstimatedCategory != ItemType.Unknown) ? boothItem.EstimatedCategory : ItemType.Avatar;
 
         AddItemOverlay_ResetBoothItemDataButton.IsVisible = true;
 
@@ -613,8 +635,8 @@ public partial class MainWindow : Window
     {
         if (_addItemWindowValues == null) return;
 
-        _addItemWindowValues.BoothTitle = string.Empty;
-        _addItemWindowValues.BoothAuthor = string.Empty;
+        _addItemWindowValues.Title = string.Empty;
+        _addItemWindowValues.Author = string.Empty;
         _addItemWindowValues.BoothAuthorId = string.Empty;
         _addItemWindowValues.BoothId = -1;
         _addItemWindowValues.BoothThumbnailUrl = string.Empty;
@@ -634,23 +656,36 @@ public partial class MainWindow : Window
 
     private async void AddItemOverlay_ConfirmButton_Click(object? sender, RoutedEventArgs e)
     {
+        Console.WriteLine(GetCategoryFromItemWindow());
         if (_addItemWindowValues == null) return;
+        if (!ValidateAddItemWindowValues()) return;
 
         var itemCreationContext = new ItemCreationContext();
         itemCreationContext.Folders.AddRange(_addItemWindowValues.Folders);
         itemCreationContext.MaterialFolder = _addItemWindowValues.MaterialFolder;
-        itemCreationContext.Title = _addItemWindowValues.BoothTitle;
-        itemCreationContext.Author = _addItemWindowValues.BoothAuthor;
+        itemCreationContext.Title = _addItemWindowValues.Title;
+        itemCreationContext.Author = _addItemWindowValues.Author;
         itemCreationContext.AuthorId = _addItemWindowValues.BoothAuthorId;
         itemCreationContext.ThumbnailUrl = _addItemWindowValues.BoothThumbnailUrl;
         itemCreationContext.BoothId = _addItemWindowValues.BoothId;
-        itemCreationContext.ItemType = _addItemWindowValues.ItemType;
+
+        var categoryInfo = GetCategoryFromItemWindow();
+        itemCreationContext.ItemType = categoryInfo.Item1;
+        if (categoryInfo.Item1 == ItemType.Custom) itemCreationContext.CustomCategory = categoryInfo.Item2;
+
         itemCreationContext.SupportedAvatars.AddRange(_addItemWindowValues.SupportedAvatars);
-        itemCreationContext.LocalizedCategoryName = Localizer.Instance[itemCreationContext.ItemType.GetLocalizationKey() ?? ""];
+        itemCreationContext.LocalizedCategoryName = categoryInfo.Item1 == ItemType.Custom ? categoryInfo.Item2 : Localizer.Instance[categoryInfo.Item1.GetLocalizationKey() ?? ""];
 
         if (_selectedItem == null)
         {
-            await _avatarExplorer.AddItem(itemCreationContext);
+            var itemAddResult = await _avatarExplorer.AddItem(itemCreationContext);
+            if (itemAddResult.processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
+            {
+                ShowDialog(
+                    Localizer.Instance[LocalizationKey.Error.Default],
+                    Localizer.Instance.GetDisplayName(LocalizationKey.Error.ItemFolderProcessingFailedPaths, ["\n" + string.Join('\n', itemAddResult.processingFailedPaths.Select(i => $"- {i}"))])
+                );
+            }
         }
         else
         {
@@ -665,16 +700,37 @@ public partial class MainWindow : Window
     }
     private void SetAddItemWindowValues(AddItemOverlayWindowValues addItemWindowValues)
     {
-        AddItemOverlay_BoothItemTitleTextBox.Text = addItemWindowValues.BoothTitle;
-        AddItemOverlay_BoothItemAuthorTextBox.Text = addItemWindowValues.BoothAuthor;
+        AddItemOverlay_BoothItemTitleTextBox.Text = addItemWindowValues.Title;
+        AddItemOverlay_BoothItemAuthorTextBox.Text = addItemWindowValues.Author;
+        AddItemOverlay_ItemTypeComboBox.SelectedIndex = (int)addItemWindowValues.ItemType;
+    }
+    private void InitializeAddItemWindowCategories()
+    {
         AddItemOverlay_ItemTypeComboBox.Items.Clear();
 
         foreach (var category in _avatarExplorer.GetCategories())
         {
-            AddItemOverlay_ItemTypeComboBox.Items.Add(Localizer.Instance[((Category)category.Item).ToString()]); // TODO: CategoryをどうItemTypeに変換するかを考える。Tagを使っても良いかも
+            AddItemOverlay_ItemTypeComboBox.Items.Add(Localizer.Instance[((Category)category.Item).ToString()]);
+        }
+    }
+    private (ItemType, string) GetCategoryFromItemWindow()
+    {
+        int selectedIndex = AddItemOverlay_ItemTypeComboBox.SelectedIndex;
+
+        // カスタムカテゴリかどうかのチェック(式: ItemTypeの数 - 無効なItemType数 - カスタムカテゴリ)
+        if (selectedIndex >= (Enum.GetValues(typeof(ItemType)).Length - CategoryUtils.InvalidItemTypes.Length - 1)) // ここの1はカスタムカテゴリ分
+        {
+            return (ItemType.Custom, AddItemOverlay_ItemTypeComboBox.SelectedItem?.ToString() ?? "");
         }
 
-        AddItemOverlay_ItemTypeComboBox.SelectedIndex = 0;
+        return ((ItemType)selectedIndex, string.Empty);
+    }
+    private bool ValidateAddItemWindowValues()
+    {
+        var validationResult = _addItemWindowValues.Validate();
+        if (!validationResult.Item1) ShowDialog(LocalizationKey.Error.Default, Localizer.Instance[validationResult.Item2]);
+
+        return validationResult.Item1;
     }
     #endregion
 
@@ -684,21 +740,23 @@ public partial class MainWindow : Window
         SetUiValueFromCurrentSettings();
         SettingsOverlay.IsVisible = true;
     }
+
     private async void SettingsOverlay_OpenFolder_Click(object? sender, RoutedEventArgs e)
     {
-        var folder = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false);
+        var folder = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false); // TODO: Localizeする
         SettingsOverlay_ItemsFolderPathTextBox.Text = folder.Count > 0 ? (folder[0]?.TryGetLocalPath() ?? "") : "";
     }
-    private async void SettingsOverlay_CloseButton_Click(object? sender, RoutedEventArgs e)
+    private void SettingsOverlay_CloseButton_Click(object? sender, RoutedEventArgs e)
     {
         SettingsOverlay.IsVisible = false;
     }
-
-    private async void SettingsOverlay_ApplyButton_Click(object? sender, RoutedEventArgs e)
+    private void SettingsOverlay_ApplyButton_Click(object? sender, RoutedEventArgs e)
     {
         ApplySettingsValues();
+        ReloadCurrentWindow();
     }
-    private void SetUiValueFromCurrentSettings()
+    
+    private void SetUiValueFromCurrentSettings() // 設定画面を読み込んだ時に値をセットするための関数
     {
         var runtimeSettings = _avatarExplorer.GetRuntimeSettings();
         var userUiPreferences = _userUiPreferences;
@@ -711,41 +769,71 @@ public partial class MainWindow : Window
         SettingsOverlay_DefaultLanguageComboBox.SelectedIndex = userUiPreferences.DefaultLanguage;
         SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex = (int)runtimeSettings.ItemSortOrder;
     }
-
-    private void ApplySettingsValues()
+    private void ApplySettingsValues() // 設定の適用ボタンが押されたときのみ
     {
         _avatarExplorer.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? "");
         _avatarExplorer.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
         _avatarExplorer.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
-        _userUiPreferences.ItemsPerPage = int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var result) ? result : 30;
-        _userUiPreferences.Theme = (Theme)SettingsOverlay_ThemeComboBox.SelectedIndex;
-        _userUiPreferences.DefaultLanguage = SettingsOverlay_DefaultLanguageComboBox.SelectedIndex;
+        _userUiPreferences.SetItemsPerPage(int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var result) ? result : 30);
+        _userUiPreferences.SetTheme((Theme)SettingsOverlay_ThemeComboBox.SelectedIndex);
+        _userUiPreferences.SetLanguage(SettingsOverlay_DefaultLanguageComboBox.SelectedIndex);
         _avatarExplorer.SetItemsSortOrder((SortOrder)SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex);
 
-        SetUiValueFromCurrentSettings();
         ApplyPreferenceSettingsToUi();
+        ApplyRuntimeSettingsToUi();
 
-        ReloadCurrentWindow();
-
+        // 適用時は自動で保存する
         _avatarExplorer.SaveRuntimeSettings();
         _userUiPreferences.Save();
     }
-
+    
     private void ApplyPreferenceSettingsToUi()
     {
         var currentApplication = Application.Current;
         if (currentApplication != null)
         {
+            /*
+                これも設定する
+                TransparencyLevelHint="AcrylicBlur"
+                Background="Transparent"
+            */
+
             if (_userUiPreferences.Theme == Models.Theme.Auto) currentApplication.RequestedThemeVariant = ThemeVariant.Default;
             else if (_userUiPreferences.Theme == Models.Theme.Dark) currentApplication.RequestedThemeVariant = ThemeVariant.Dark;
             else if (_userUiPreferences.Theme == Models.Theme.Light) currentApplication.RequestedThemeVariant = ThemeVariant.Light;
         }
+        
+        Main_LanguageComboBox.SelectedIndex = _userUiPreferences.DefaultLanguage; // TODO: 例外対策をする
+    }
+    private void ApplyRuntimeSettingsToUi()
+    {
+        Main_SortOrderComboBox.SelectedIndex = (int)_avatarExplorer.GetRuntimeSettings().ItemSortOrder;
     }
     #endregion
 
     private void ReloadCurrentWindow()
     {
         RenderLeftPanel();
-        RenderRightPanel(); // TODO: 検索中だと検索画面が無視されてしまうから、検索中フラグなどでここはチェックするべき
+
+        // 最後に表示されていた画面が検索画面だったら、キャッシュを元にもう一度検索してあげる
+        if (_isLastWindowSearch) ExecuteSearchItems();
+        else RenderRightPanel();
+    }
+
+    private void CheckPageStates()
+    {
+        List<ItemTagState> selectedItemTagStates = new();
+
+        foreach (var selectionNode in _avatarExplorer.GetCurrentPaths())
+        {
+            if (!selectedItemTagStates.Contains(selectionNode.State))
+                selectedItemTagStates.Add(selectionNode.State);
+        }
+
+        foreach (var pageInfo in _currentPageStates)
+        {
+            if (!selectedItemTagStates.Contains(pageInfo.Key))
+                _currentPageStates[pageInfo.Key] = 0;
+        }
     }
 }

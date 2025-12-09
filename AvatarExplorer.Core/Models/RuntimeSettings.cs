@@ -1,15 +1,24 @@
+using System.Text.Json.Serialization;
 using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Models;
 
+
 public class RuntimeSettings
 {
-    public string DataRootDirectory { get; set; } = SystemPath.DefaultItemsFolderPath;
-    public SortOrder ItemSortOrder { get; set; } = SortOrder.Title;
-    public bool RemoveOriginal { get; set; } = false;
-    public bool RemoveBrackets { get; set; } = false;
+    [JsonInclude]
+    public string DataRootDirectory { get; private set; } = SystemPath.DefaultItemsFolderPath;
+    
+    [JsonInclude]
+    public SortOrder ItemSortOrder { get; private set; } = SortOrder.Title;
+    
+    [JsonInclude]
+    public bool RemoveOriginal { get; private set; } = false;
+    
+    [JsonInclude]
+    public bool RemoveBrackets { get; private set; } = false;
 
-    internal  void SetSortOrder(SortOrder sortOrder)
+    internal void SetSortOrder(SortOrder sortOrder)
     {
         ItemSortOrder = sortOrder;
     }

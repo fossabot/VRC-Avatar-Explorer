@@ -8,12 +8,12 @@
 
     <Grid>
         <DockPanel>
-            <Grid DockPanel.Dock="Top" Margin="10" ColumnDefinitions="Auto,*,Auto,200,50">
-                <Button Grid.Column="0" Content="戻る" Width="100" Margin="10,0,10,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Main_UndoButton_Click"/>
-                <TextBox x:Name="PathBox" Grid.Column="1" IsReadOnly="True" Text="ここには現在のパスが表示されます" Margin="10,0,8,0"/>
-                <TextBlock Grid.Column="2" Text="検索" Margin="20,0,10,0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
-                <TextBox x:Name="SearchTextBox" Grid.Column="3" Watermark="検索..." TextChanged="Main_SearchTextBox_TextChanged"/>
-                <Button Grid.Column="4" Content="設定" Width="50" Margin="10,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Main_SettingsButton_Click"/>
+            <Grid DockPanel.Dock="Top" Margin="10" ColumnDefinitions="10,Auto,10,*,20,Auto,10,200,10,50,10">
+                <Button Grid.Column="1" Content="戻る" Width="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Main_UndoButton_Click"/>
+                <TextBox x:Name="PathBox" Grid.Column="3" IsReadOnly="True" Text="ここには現在のパスが表示されます"/>
+                <TextBlock Grid.Column="5" Text="検索" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                <TextBox x:Name="SearchTextBox" Grid.Column="7" Watermark="検索..." TextChanged="Main_SearchTextBox_TextChanged"/>
+                <Button Grid.Column="9" Content="設定" Width="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Main_SettingsButton_Click"/>
             </Grid>
 
             <Border DockPanel.Dock="Bottom" Padding="10">
@@ -26,7 +26,7 @@
 
                     <StackPanel Grid.Column="8" Orientation="Vertical">
                         <TextBlock Text="言語 / Language" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                        <ComboBox SelectedIndex="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="120">
+                        <ComboBox x:Name="Main_LanguageComboBox" SelectedIndex="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="120">
                             <ComboBoxItem Content="日本語"/>
                             <ComboBoxItem Content="英語"/>
                             <ComboBoxItem Content="韓国語"/>
@@ -35,7 +35,7 @@
 
                     <StackPanel Grid.Column="10" Orientation="Vertical">
                         <TextBlock Text="並び替え順" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                        <ComboBox SelectedIndex="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="120" SelectionChanged="Main_SortOrder_Changed">
+                        <ComboBox x:Name="Main_SortOrderComboBox" SelectedIndex="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="120" SelectionChanged="Main_SortOrderComboBox_Changed">
                             <ComboBoxItem Content="タイトル" Tag="UI.SortOrder.Title"/>
                             <ComboBoxItem Content="作者" Tag="UI.SortOrder.Author"/>
                             <ComboBoxItem Content="登録日時" Tag="UI.SortOrder.Created"/>

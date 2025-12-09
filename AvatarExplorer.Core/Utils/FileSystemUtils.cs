@@ -212,8 +212,8 @@ public static class FileSystemUtils
                 if (string.IsNullOrEmpty(parentFolder))
                 {
                     parentFolder = extractedFolderPath;
-                    othersFolder = Path.Combine(parentFolder, "Others");
-                    materialsFolder = Path.Combine(parentFolder, "Materials");
+                    othersFolder = Path.Combine(parentFolder, "AE_Others");
+                    materialsFolder = Path.Combine(parentFolder, "AE_Materials");
                 }
             }
             catch
@@ -237,6 +237,11 @@ public static class FileSystemUtils
         catch
         {
             processingFailedPaths.Add(itemCreationContext.MaterialFolder);
+        }
+
+        if (string.IsNullOrEmpty(parentFolder)) // 展開全てに失敗した時
+        {
+            return (string.Empty, string.Empty, processingFailedPaths);
         }
 
         return ($"<sys>{Path.GetRelativePath(dataRootDirectory, parentFolder)}", $"<sys>{Path.GetRelativePath(dataRootDirectory, materialsFolder)}", processingFailedPaths);

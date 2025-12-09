@@ -65,7 +65,12 @@
     "SearchFilter.IsOrSearch": "OR検索",
 
     "Error.Default": "エラー",
-    "Error.NotImplemented": "この機能はまだ実装されていません。",
-    "Error.Nothing": "アイテムが見つからないよ！",
-    "Error.BoothItemNotFound": "Boothのアイテムが見つからないよ！"
+    "Error.NotImplemented": "この機能はまだ実装されていません",
+    "Error.Nothing": "アイテムが見つからないよっ！",
+    "Error.BoothItemNotFound": "Boothのアイテムが見つかりませんでした。",
+    "Error.BoothApiCooldown": "情報を取得する間隔が短すぎます",
+
+    "Error.Validation.NoFolders": "フォルダが選択されていません",
+    "Error.Validation.EmptyTitle": "アイテムのタイトル欄が空です",
+    "Error.Validation.EmptyAuthor": "アイテムの作者欄が空です"
 }
