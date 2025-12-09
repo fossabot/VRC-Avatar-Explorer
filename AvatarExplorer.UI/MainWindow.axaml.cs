@@ -28,7 +28,7 @@ public partial class MainWindow : Window
     private Dictionary<ActionKey, Func<string, Task>>? _contextMenuHandlers;
     private readonly Dictionary<ItemTagState, int> _currentPageStates = new()
     {
-        { ItemTagState.SearchItem, 0 }, // TODO: 検索の時のページが他の検索結果でも引きずられるから直したい。キャッシュするといいかも
+        { ItemTagState.SearchItem, 0 },
         { ItemTagState.RootAvatar, 0 },
         { ItemTagState.RootAuthor, 0 },
         { ItemTagState.RootCategory, 0 },
@@ -36,7 +36,7 @@ public partial class MainWindow : Window
         { ItemTagState.RootSelectedItem, 0 },
         { ItemTagState.ItemFileCategoryOpen, 0 } // ファイル数が多い時用
     };
-
+    private string _lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
     private string _searchTextCache = string.Empty;
     private bool _isLastWindowSearch = false;
 
@@ -45,10 +45,10 @@ public partial class MainWindow : Window
 
     private RuntimeSettings RuntimeSettings => _avatarExplorer.GetRuntimeSettings();
 
-    private bool CanDisplayPage(ItemTagState itemTagState)
+    private bool IsPageSupported(ItemTagState itemTagState)
         => _currentPageStates.ContainsKey(itemTagState);
-    private int GetCurrentPage(ItemTagState itemTagState)
-        => CanDisplayPage(itemTagState) ? _currentPageStates[itemTagState] : -1;
+    private int GetPage(ItemTagState itemTagState)
+        => IsPageSupported(itemTagState) ? _currentPageStates[itemTagState] : -1;
 
     public MainWindow()
     {
@@ -180,7 +180,7 @@ public partial class MainWindow : Window
                 }
         }
 
-        int currentPage = GetCurrentPage(customState); // -1が返された場合は対応していないStateのため、全てのアイテムを表示してあげる
+        int currentPage = GetPage(customState); // -1が返された場合は対応していないStateのため、全てのアイテムを表示してあげる
 
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
@@ -224,7 +224,7 @@ public partial class MainWindow : Window
         ItemTagState itemTagState = ItemTagState.Unknown;
         if (items.Count > 0) itemTagState = new UISelectableItem(items[0]).Tag.State;
 
-        int currentPage = GetCurrentPage(itemTagState); // -1が返された場合は対応していないStateのため、全てのアイテムを表示してあげる
+        int currentPage = GetPage(itemTagState); // -1が返された場合は対応していないStateのため、全てのアイテムを表示してあげる
 
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
@@ -328,11 +328,15 @@ public partial class MainWindow : Window
 
         SearchFilter searchFilter = SearchUtils.BuildFilter(_searchTextCache);
         IReadOnlyList<Item> items = _avatarExplorer.SearchItems(searchFilter);
+        
+        // 検索文字列が前回と違う場合はページをリセットする
+        if (_searchTextCache != _lastSearchTextCache) _currentPageStates[ItemTagState.SearchItem] = 0;
+        _lastSearchTextCache = _searchTextCache;
 
         if (items.Count == 0) ShowNoItemsLabel();
         else HideNoItemsLabel();
 
-        int currentPage = GetCurrentPage(ItemTagState.SearchItem); // SearchItemは強制でページが存在しているため
+        int currentPage = GetPage(ItemTagState.SearchItem); // SearchItemは必ずページが存在しているため
 
         foreach (Item item in items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage))
         {
@@ -424,7 +428,7 @@ public partial class MainWindow : Window
             value = Localizer.Instance[value];
         }
 
-            // 翻訳できない(Root以外)はここがnullになるため、valueがパスになる。ある場合はPrefixが翻訳される。
+        // 翻訳できないタグ(Root以外)はここがnullになるため、valueがパスになる。ある場合はPrefixが翻訳される。
         string? localizationKey = state.GetLocalizationKey();
 
         return localizationKey == null ? value : Localizer.Instance.GetDisplayName(localizationKey, [value]);
