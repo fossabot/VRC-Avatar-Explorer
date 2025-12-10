@@ -34,15 +34,14 @@ public partial class MainWindow : Window
         { ItemTagState.RootCategory, 0 },
         { ItemTagState.RootSelectedCategory, 0 },
         { ItemTagState.RootSelectedItem, 0 },
-        { ItemTagState.ItemFileCategoryOpen, 0 } // ファイル数が多い時用
+        { ItemTagState.ItemFileCategoryOpen, 0 }
     };
     private string _lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
     private string _searchTextCache = string.Empty;
     private bool _isLastWindowSearch = false;
-
     private readonly UserUiPreferences _userUiPreferences = new();
+    
     private int ItemsPerPage => _userUiPreferences.ItemsPerPage;
-
     private RuntimeSettings RuntimeSettings => _avatarExplorer.GetRuntimeSettings();
 
     private bool IsPageSupported(ItemTagState itemTagState)
@@ -65,6 +64,7 @@ public partial class MainWindow : Window
         TODO: スクロール位置を保存するようにしたいね
         TODO: ソフト終了時にTempを削除したい
         TODO: Tooltipを作る
+        TODO: アイテムの下に、選択可能なタグ一覧をボタンでいっぱい表示する
         */
 
         InitializeComponent();
