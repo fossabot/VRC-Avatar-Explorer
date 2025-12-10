@@ -15,10 +15,10 @@ public static class DataImporter
         List<CommonAvatar> commonAvatars = DatabaseUtils.LoadCommonAvatarsDataFromV1(SystemPathV1.CommonAvatarDatabasePath(dataFolderPath));
 
         progress?.Report((LocalizationKey.Processing.Import.Copying, 10, string.Empty));
-        await FileSystemUtils.CopyDirectory(SystemPathV1.AuthorThumbnailsPath(dataFolderPath), SystemPath.AuthorThumbnailsPath, progress);
+        await FileSystemUtils.CopyDirectory(SystemPathV1.AuthorThumbnailsPath(dataFolderPath), SystemPath.AuthorThumbnailsPath);
 
         progress?.Report((LocalizationKey.Processing.Import.Copying, 20, string.Empty));
-        await FileSystemUtils.CopyDirectory(SystemPathV1.ItemThumbnailsPath(dataFolderPath), SystemPath.ItemThumbnailsPath, progress);
+        await FileSystemUtils.CopyDirectory(SystemPathV1.ItemThumbnailsPath(dataFolderPath), SystemPath.ItemThumbnailsPath);
 
         // データ移行処理
         int lastPercent = -1;
@@ -31,7 +31,7 @@ public static class DataImporter
             string newItemMaterialPath = Path.Combine(newItemPath, "AE_Materials");
 
             await FileSystemUtils.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), item.ItemPath), newItemPath);
-            if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemUtils.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), item.MaterialPath), newItemMaterialPath, progress);
+            if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemUtils.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), item.MaterialPath), newItemMaterialPath);
 
             item.ItemPath = newItemPath;
 
