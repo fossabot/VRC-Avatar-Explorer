@@ -41,6 +41,12 @@ internal class Localizer
         return args.Length > 0 ? string.Format(localizedText, args) : localizedText;
     }
 
+    internal string GetDisplayName(string localizationKey, string arg)
+    {
+        var localizedText = _map.TryGetValue(localizationKey, out var value) ? value : localizationKey;
+        return string.Format(localizedText, arg);
+    }
+
     internal string this[string key]
         => _map.TryGetValue(key, out var value) ? value : key;
 

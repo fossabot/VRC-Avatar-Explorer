@@ -118,7 +118,7 @@ internal static partial class SearchUtils
         List<string> searchFilterStrings = new();
 
         string localize(string key, IEnumerable<string> values)
-            => Localizer.Instance.GetDisplayName(key, [toSeparatedString(values)]);
+            => Localizer.Instance.GetDisplayName(key, toSeparatedString(values));
 
         void addKey(string key, IEnumerable<string> values)
             => searchFilterStrings.Add(localize(key, values));
@@ -142,6 +142,6 @@ internal static partial class SearchUtils
         if (searchFilter.SearchWords.Count != 0) addKey(LocalizationKey.SearchFilter.SearchWord, searchFilter.SearchWords);
 
         string result = toSeparatedString(searchFilterStrings, " / ");
-        return Localizer.Instance.GetDisplayName(LocalizationKey.SearchFilter.Default, [result]);
+        return Localizer.Instance.GetDisplayName(LocalizationKey.SearchFilter.Default, result);
     }
 }

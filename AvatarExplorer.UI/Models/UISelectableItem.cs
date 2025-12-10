@@ -49,16 +49,7 @@ internal class UISelectableItem
     private void FromItem(Item item)
     {
         Title = item.Title;
-
-        if (!string.IsNullOrEmpty(CommonAvatarName))
-        {
-            Description = (LocalizationKey.UI.Button.Description.Item.Author.WithAvatar, [item.Author, CommonAvatarName]);
-        }
-        else
-        {
-            Description = (LocalizationKey.UI.Button.Description.Item.Author.Default, [item.Author]);
-        }
-
+        Description = (LocalizationKey.UI.Button.Description.Item.Author, [item.Author]);
         ImageFileName = item.ThumbnmailFileName;
         Tag = new(ItemTagState.RootSelectedItem, item.ItemPath);
         IconType = IconType.Item;

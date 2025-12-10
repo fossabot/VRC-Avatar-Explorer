@@ -34,7 +34,7 @@ internal class SelectionState
 
     public void Clear() => _stack.Clear();
 
-    public SelectionNode? Search(ItemTagState state) => _stack.FirstOrDefault(i => i.State == state);
+    public SelectionNode? Search(ItemTagState state) => _stack.FirstOrDefault(i => state.HasFlag(i.State));
     
     public IEnumerable<SelectionNode> GetCurrentPath() => _stack.Reverse();
 }

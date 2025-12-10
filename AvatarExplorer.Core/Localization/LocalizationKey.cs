@@ -23,12 +23,7 @@ public static class LocalizationKey
             {
                 public static class Item
                 {
-                    public static class Author
-                    {
-                        public const string Default = "UI.Button.Description.Item.Author";
-                        public const string WithAvatar = "UI.Button.Description.Item.Author.WithAvatar";
-                    }
-
+                    public const string Author = "UI.Button.Description.Item.Author";
                     public const string Count = "UI.Button.Description.Item.Count";
                 }
 
@@ -36,6 +31,11 @@ public static class LocalizationKey
                 {
                     public const string Extension = "UI.Button.Description.File.Extension";
                 }
+            }
+
+            public static class Tag
+            {
+                public const string CommonAvatar = "UI.Button.Tag.CommonAvatar";
             }
 
             public static class ToolTip

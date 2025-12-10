@@ -13,6 +13,8 @@
     "UI.Button.Description.Item.Author.WithAvatar": "作者: {0}  |  共通素体名: {1}",
     "UI.Button.Description.Item.Count": "{0}個の項目",
     "UI.Button.Description.File.Extension": "{0} ファイル",
+    
+    "UI.Button.Tag.CommonAvatar": "共通素体: {0}",
 
     "UI.Button.ToolTip.CreatedDate": "登録日時: {0}",
     "UI.Button.ToolTip.UpdatedDate": "更新日時: {0}",

@@ -15,11 +15,11 @@ namespace AvatarExplorer.UI.Utils;
 
 internal static class UIUtils
 {
-    private static bool IsItemButton(ItemTagState itemTagState)
-        => itemTagState == ItemTagState.RootAvatar || itemTagState == ItemTagState.SearchItem || itemTagState == ItemTagState.RootSelectedItem;
+    private static bool IsItemState(ItemTagState itemTagState)
+        => StateFlagUtils.ItemsFlag.HasFlag(itemTagState);
 
-    private static bool IsCategoryButton(ItemTagState itemTagState)
-        => itemTagState == ItemTagState.RootCategory || itemTagState == ItemTagState.RootSelectedCategory || itemTagState == ItemTagState.ItemFileCategory;
+    private static bool IsCategoryState(ItemTagState itemTagState)
+        => StateFlagUtils.CategoriesFlag.HasFlag(itemTagState);
 
     internal static void AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
@@ -64,8 +64,8 @@ internal static class UIUtils
             Orientation = Orientation.Vertical
         };
 
-        string itemTitle = IsCategoryButton(item.Tag.State) ? Localizer.Instance[item.Title] : item.Title;
-        if (removeBrackets && IsItemButton(item.Tag.State)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
+        string itemTitle = IsCategoryState(item.Tag.State) ? Localizer.Instance[item.Title] : item.Title;
+        if (removeBrackets && IsItemState(item.Tag.State)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
 
         textPanel.Children.Add(new TextBlock()
         {
@@ -85,21 +85,20 @@ internal static class UIUtils
             Orientation = Orientation.Horizontal,
             ItemSpacing = 10,
             LineSpacing = 3,
-            Margin = new Thickness(0, 5, 0, 0),
-            HorizontalAlignment = HorizontalAlignment.Stretch
+            Margin = new Thickness(0, 5, 0, 0)
         };
+
+        if (!string.IsNullOrEmpty(item.CommonAvatarName))
+        {
+            var commonAvatarButton = GenerateTagButton(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, item.CommonAvatarName));
+            commonAvatarButton.FontWeight = FontWeight.Bold;
+            commonAvatarButton.Background = new SolidColorBrush(Colors.Green);
+            tagPanel.Children.Add(commonAvatarButton);
+        }
 
         foreach (string itemTag in item.ItemTags)
         {
-            tagPanel.Children.Add(new Button()
-            {
-                Content = itemTag,
-                CornerRadius = new CornerRadius(15),
-                Height = 28,
-                FontSize = 13,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalContentAlignment = VerticalAlignment.Center,
-            });
+            tagPanel.Children.Add(GenerateTagButton(itemTag));
         }
 
         textPanel.Children.Add(tagPanel);
@@ -107,12 +106,24 @@ internal static class UIUtils
         contentPanel.Children.Add(textPanel);
 
         itemButton.Content = contentPanel;
-        if (IsItemButton(item.Tag.State)) ToolTip.SetTip(itemButton, GetTooltipForItem(item));
+        if (IsItemState(item.Tag.State)) ToolTip.SetTip(itemButton, GetTooltipForItem(item));
 
         if (contextMenu != null && contextMenu.ItemCount > 0) itemButton.ContextMenu = contextMenu;
         if (onClick != null) itemButton.Click += onClick;
 
         parent.Children.Add(itemButton);
+    }
+    private static Button GenerateTagButton(string text)
+    {
+        return new Button()
+        {
+            Content = text,
+            CornerRadius = new CornerRadius(15),
+            Height = 28,
+            FontSize = 13,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center,
+        };
     }
     private static string? GetTooltipForItem(UISelectableItem item)
     {
@@ -124,9 +135,9 @@ internal static class UIUtils
         toolTipTextBuilder.AppendLine();
         toolTipTextBuilder.AppendLine();
 
-        toolTipTextBuilder.Append(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.CreatedDate, [item.CreatedDate]));
+        toolTipTextBuilder.Append(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.CreatedDate, item.CreatedDate));
         toolTipTextBuilder.AppendLine();
-        toolTipTextBuilder.Append(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.UpdatedDate, [item.UpdatedDate]));
+        toolTipTextBuilder.Append(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.UpdatedDate, item.UpdatedDate));
         
         if (!string.IsNullOrEmpty(item.ItemMemo))
         {

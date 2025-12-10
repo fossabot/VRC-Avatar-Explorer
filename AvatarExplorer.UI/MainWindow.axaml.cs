@@ -295,7 +295,7 @@ public partial class MainWindow : Window
             }
             else
             {
-                ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, [tuple.Item2.ToString()]));
+                ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
                 UpdateProgress(tuple.Item2);
             }
         });
@@ -413,18 +413,19 @@ public partial class MainWindow : Window
 
         PathBox.Text = string.Join(" > ", selectionNodes.Select(BuildPathTextInternal));
     }
+
     private string BuildPathTextInternal(SelectionNode selectionNode)
     {
         ItemTagState state = selectionNode.State;
         string value = selectionNode.Key;
 
-        if (state == ItemTagState.SearchItem || state == ItemTagState.RootAvatar || state == ItemTagState.RootSelectedItem)
+        if (StateFlagUtils.ItemsFlag.HasFlag(state))
         {
             Item? item = _avatarExplorer.GetAllItems().FirstOrDefault(item => item.ItemPath == value);
             if (item != null) value = item.Title; // アイテムはパスからタイトルに変換する
         }
 
-        if (state == ItemTagState.RootCategory || state == ItemTagState.RootSelectedCategory || state == ItemTagState.ItemFileCategory)
+        if (StateFlagUtils.CategoriesFlag.HasFlag(state))
         {
             // カテゴリはValue自体を翻訳する
             // カテゴリ: Search.Category.Textureのような感じで入っているため
@@ -434,7 +435,7 @@ public partial class MainWindow : Window
         // 翻訳できないタグ(Root以外)はここがnullになるため、valueがパスになる。ある場合はPrefixが翻訳される。
         string? localizationKey = state.GetLocalizationKey();
 
-        return localizationKey == null ? value : Localizer.Instance.GetDisplayName(localizationKey, [value]);
+        return localizationKey == null ? value : Localizer.Instance.GetDisplayName(localizationKey, value);
     }
     #endregion
 
@@ -690,7 +691,7 @@ public partial class MainWindow : Window
             {
                 ShowDialog(
                     Localizer.Instance[LocalizationKey.Error.Default],
-                    Localizer.Instance.GetDisplayName(LocalizationKey.Error.ItemFolderProcessingFailedPaths, ["\n" + string.Join('\n', itemAddResult.processingFailedPaths.Select(i => $"- {i}"))])
+                    Localizer.Instance.GetDisplayName(LocalizationKey.Error.ItemFolderProcessingFailedPaths, "\n" + string.Join('\n', itemAddResult.processingFailedPaths.Select(i => $"- {i}")))
                 );
             }
         }
@@ -866,7 +867,7 @@ public partial class MainWindow : Window
             }
             else
             {
-                ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, [tuple.Item2.ToString()]));
+                ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
                 UpdateProgress(tuple.Item2);
             }
         });

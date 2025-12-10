@@ -5,23 +5,23 @@ namespace AvatarExplorer.Core.Models;
 
 public enum ItemTagState
 {
-    Unknown,
+    Unknown = 0,
 
     // RootだけはPrefixがあるため、翻訳キーを追加している。その他はそのままで大丈夫
     [LocalizationKey(LocalizationKey.Path.SearchResult)]
-    SearchItem,
+    SearchItem = 1 << 0,
 
     [LocalizationKey(LocalizationKey.Path.Root.Avatar)]
-    RootAvatar,
+    RootAvatar = 1 << 1,
 
     [LocalizationKey(LocalizationKey.Path.Root.Author)]
-    RootAuthor,
+    RootAuthor = 1 << 2,
 
     [LocalizationKey(LocalizationKey.Path.Root.Category)]
-    RootCategory,
+    RootCategory = 1 << 3,
     
-    RootSelectedCategory,
-    RootSelectedItem,
-    ItemFileCategory,
-    ItemFileCategoryOpen
+    RootSelectedCategory = 1 << 4,
+    RootSelectedItem = 1 << 5,
+    ItemFileCategory = 1 << 6,
+    ItemFileCategoryOpen = 1 << 7
 }
