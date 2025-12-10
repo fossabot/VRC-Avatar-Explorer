@@ -22,7 +22,7 @@
                     <Button Grid.Column="0" Content="CSVに出力" Tag="UI.OutputToCSV" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="40"/>
                     <Button Grid.Column="2" Content="バックアップの作成" Tag="UI.MakeBackup" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="40"/>
                     <Button Grid.Column="4" Content="共通素体の管理" Tag="UI.ManageCommonAvatar" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="40"/>
-                    <Button Grid.Column="6" Content="データを読み込む" Tag="UI.LoadData" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="40"/>
+                    <Button Grid.Column="6" Content="データを読み込む" Tag="UI.LoadData" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="40" Click="Main_ImportData_Click"/>
 
                     <StackPanel Grid.Column="8" Orientation="Vertical">
                         <TextBlock Text="言語 / Language" HorizontalAlignment="Center" Margin="0,0,0,8"/>

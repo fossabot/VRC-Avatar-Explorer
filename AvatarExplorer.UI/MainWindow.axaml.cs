@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
@@ -841,5 +842,37 @@ public partial class MainWindow : Window
             if (!selectedItemTagStates.Contains(pageInfo.Key))
                 _currentPageStates[pageInfo.Key] = 0;
         }
+    }
+
+    private async void Main_ImportData_Click(object? sender, RoutedEventArgs e)
+    {
+        // TODO: ここにV1かKonoAssetかどうかを選ぶダイアログを挟む
+        var folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false); // TODO: Localizeする
+        var selectedFolder = folders.Count > 0 ? (folders[0]?.TryGetLocalPath() ?? "") : "";
+
+        if (selectedFolder == "" || !Directory.Exists(selectedFolder))
+        {
+            ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.Default]);
+            return;
+        }
+
+        var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
+
+        var progress = new Progress<(string, int, string)>(tuple =>
+        {
+            if (tuple.Item2 == 100)
+            {
+                HideProgress();
+            }
+            else
+            {
+                ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, [tuple.Item2.ToString()]));
+                UpdateProgress(tuple.Item2);
+            }
+        });
+
+        await _avatarExplorer.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
+
+        ReloadCurrentWindow();
     }
 }

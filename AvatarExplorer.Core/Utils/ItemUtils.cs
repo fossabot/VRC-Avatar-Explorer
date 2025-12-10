@@ -58,4 +58,16 @@ public static partial class ItemUtils
 
     public static string RemoveBrackets(string value)
         => TextBracketsRegex().Replace(value, "");
+    
+    public static string? GetSafeTitle(string itemTitle)
+    {
+        // パスに使用しても大丈夫な文字だけ残す
+        var safeTitle = itemTitle;
+        foreach (var invalidChar in FileSystemUtils.InvalidChars)
+        {
+            safeTitle = safeTitle.Replace(invalidChar, '_');
+        }
+
+        return string.IsNullOrEmpty(safeTitle) ? null : safeTitle;
+    }
 }

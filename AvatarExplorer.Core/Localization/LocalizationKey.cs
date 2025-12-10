@@ -80,6 +80,11 @@ public static class LocalizationKey
         {
             public const string Copying = "Processing.DirectoryCopy.Copying";
         }
+
+        public static class Import
+        {
+            public const string Copying = "Processing.Import.Copying";
+        }
     }
 
     public static class Path

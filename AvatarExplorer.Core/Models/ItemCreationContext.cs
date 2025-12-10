@@ -15,16 +15,4 @@ public class ItemCreationContext
     public string CustomCategory { get; set; } = string.Empty;
     public string LocalizedCategoryName { get; set; } = string.Empty;
     public List<string> SupportedAvatars { get; set; } = new();
-
-    public string? GetSafeTitle()
-    {
-
-        var safeTitle = Title;
-        foreach (var invalidChar in FileSystemUtils.InvalidChars)
-        {
-            safeTitle = safeTitle.Replace(invalidChar, '_');
-        }
-
-        return string.IsNullOrEmpty(safeTitle) ? null : safeTitle;
-    }
 }

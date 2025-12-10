@@ -29,6 +29,9 @@
     "Processing.Unitypackage.Status.Completed": "Unitypackageの作成が完了しました {0}%",
 
     "Processing.Booth.Status.Fetching": "アイテム情報の取得中です...",
+
+    "Processing.DirectoryCopy.Copying": "フォルダのコピー中です... {0}%",
+    "Processing.Import.Copying": "データの取り込み中です... {0}%",
     
     "Path.Default": "ここには現在のパスが表示されます",
     "Path.SearchResult": "検索結果: {0}",

@@ -411,6 +411,26 @@ public class AvatarExplorerApp
     }
     #endregion
 
+    #region Data Importer API
+    public async Task ImportFromV1(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
+    {
+        (List<Item>, List<CommonAvatar>) result = await DataImporter.FromV1(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, progress);
+        
+        _items.Clear();
+        _items.AddRange(result.Item1);
+
+        _commonAvatars.Clear();
+        _commonAvatars.AddRange(result.Item2);
+    }
+
+    public void ImportFromKonoAsset(string dataFolderPath, IProgress<(string, int, string)>? progress = null)
+    {
+        // TODO: KonoAsset Importerを作る。IKonoAssetItemみたいなINterfaceで全部読み込んでしまうのが良さそ
+        throw new NotImplementedException();
+    }
+
+    #endregion
+
     #region Ececute Context Menu Command
     public async Task ExecuteContextMenuItemCommand(ContextMenuAction contextMenuAction)
     {

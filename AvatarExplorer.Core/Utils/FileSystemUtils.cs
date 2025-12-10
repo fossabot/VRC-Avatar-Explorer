@@ -205,7 +205,7 @@ public static class FileSystemUtils
                 var extractedFolderPath = await ProcessExtractItemFoldersInternal(
                     itemCreationContext.Folders[i],
                     string.IsNullOrEmpty(parentFolder) ? destinationDirectory : othersFolder,
-                    string.IsNullOrEmpty(parentFolder) ? (itemCreationContext.GetSafeTitle() ?? Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i])) : Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i]), // 親フォルダだけフォルダ名をタイトルに変換する
+                    string.IsNullOrEmpty(parentFolder) ? (ItemUtils.GetSafeTitle(itemCreationContext.Title) ?? Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i])) : Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i]), // 親フォルダだけフォルダ名をタイトルに変換する
                     removeOriginal
                 );
 
@@ -260,7 +260,7 @@ public static class FileSystemUtils
 
         return extractedDestinationFolderPath;
     }
-    private static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, IProgress<(string, int, string)>? progress = null, int maxDegreeOfParallelism = 4)
+    internal static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, IProgress<(string, int, string)>? progress = null, int maxDegreeOfParallelism = 4)
     {
         var allFiles = EnumerateFiles(sourceDirectory).ToList();
         int totalFiles = allFiles.Count;
