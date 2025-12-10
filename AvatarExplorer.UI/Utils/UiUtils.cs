@@ -124,7 +124,6 @@ internal static class UIUtils
         Grid.SetColumn(pageInfoStackPanel, 0);
         Grid.SetColumnSpan(pageInfoStackPanel, 4);
 
-
         // TODO: Localizeする
         var pageTextBlock = new TextBlock()
         {

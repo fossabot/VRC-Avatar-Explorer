@@ -64,6 +64,7 @@ public partial class MainWindow : Window
         TODO: アイテム追加時の画面に、現時点での全てのカテゴリをComboBoxに入れておき、その横にボタンでカテゴリを追加できるようにする
         TODO: スクロール位置を保存するようにしたいね
         TODO: ソフト終了時にTempを削除したい
+        TODO: Tooltipを作る
         */
 
         InitializeComponent();
@@ -198,6 +199,7 @@ public partial class MainWindow : Window
         {
             _avatarExplorer.SelectClear();
             _avatarExplorer.Select(itemTagInfo.State, itemTagInfo.Value);
+            CheckPageStates();
 
             RenderRightPanel();
         }
@@ -250,6 +252,8 @@ public partial class MainWindow : Window
             else
             {
                 _avatarExplorer.Select(itemTagInfo.State, itemTagInfo.Value);
+                CheckPageStates();
+
                 RenderRightPanel();
             }
         }
@@ -456,7 +460,7 @@ public partial class MainWindow : Window
         // 選択されていたアイテムが検索結果時のものだったら、キャッシュを元にもう一度検索してあげる
         bool isCurrentSearchNode = _avatarExplorer.GetCurrentPathState()?.State == ItemTagState.SearchItem;
         
-        CheckPageStates(); // SelectUndoより前にやってあげないと、今のページがリセットされる
+        CheckPageStates(); // SelectUndoより前にやってあげないと、戻った先の画面のページ情報がリセットされる
         _avatarExplorer.SelectUndo();
 
         if (isCurrentSearchNode) ExecuteSearchItems();
@@ -807,7 +811,7 @@ public partial class MainWindow : Window
             else if (_userUiPreferences.Theme == Models.Theme.Light) currentApplication.RequestedThemeVariant = ThemeVariant.Light;
         }
         
-        Main_LanguageComboBox.SelectedIndex = _userUiPreferences.DefaultLanguage; // TODO: 例外対策をする
+        Main_LanguageComboBox.SelectedIndex = _userUiPreferences.DefaultLanguage;
     }
     private void ApplyRuntimeSettingsToUi()
     {

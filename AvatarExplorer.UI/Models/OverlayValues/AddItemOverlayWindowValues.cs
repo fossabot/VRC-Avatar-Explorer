@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
