@@ -63,8 +63,6 @@ public partial class MainWindow : Window
         TODO: アイテム追加時の画面に、現時点での全てのカテゴリをComboBoxに入れておき、その横にボタンでカテゴリを追加できるようにする
         TODO: スクロール位置を保存するようにしたいね
         TODO: ソフト終了時にTempを削除したい
-        TODO: Tooltipを作る
-        TODO: アイテムの下に、選択可能なタグ一覧をボタンでいっぱい表示する
         */
 
         InitializeComponent();
@@ -781,7 +779,7 @@ public partial class MainWindow : Window
     {
         _avatarExplorer.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? "");
         _avatarExplorer.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
-        _avatarExplorer.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
+        _avatarExplorer.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
         _userUiPreferences.SetItemsPerPage(int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var result) ? result : 30);
         _userUiPreferences.SetTheme((Theme)SettingsOverlay_ThemeComboBox.SelectedIndex);
         _userUiPreferences.SetLanguage(SettingsOverlay_DefaultLanguageComboBox.SelectedIndex);

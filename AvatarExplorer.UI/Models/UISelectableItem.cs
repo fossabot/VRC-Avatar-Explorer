@@ -3,6 +3,7 @@ using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Interfaces;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.UI.Models;
 
@@ -14,9 +15,13 @@ internal class UISelectableItem
     internal ItemTagInfo Tag { get; private set; } = new(); // ボタンが選択されたときに使用されるタグ
     internal IconType IconType { get; private set; } = IconType.None;
 
-    internal List<string> ItemTags { get; private set; } = new(); // アイテムのタグ
-    internal string CommonAvatarName { get; set; } // アイテム表記用
     internal int ItemCount { get; set; } = 0; // カテゴリなどの数表記用
+
+    internal string CommonAvatarName { get; set; } // アイテム表記用
+    internal string CreatedDate { get; set; } = string.Empty; // アイテムTooltip表記用
+    internal string UpdatedDate { get; set; } = string.Empty; // アイテムTooltip表記用
+    internal List<string> ItemTags { get; private set; } = new(); // アイテムのタグ
+    internal string ItemMemo { get; set; } = string.Empty; // アイテムTooltip表記用
 
     internal UISelectableItem(ISelectableItem source, int itemCount, string commonAvatarName = "")
     {
@@ -58,8 +63,13 @@ internal class UISelectableItem
         Tag = new(ItemTagState.RootSelectedItem, item.ItemPath);
         IconType = IconType.Item;
 
+        CreatedDate = DatetimeUtils.GetDateStringFromUnixTime(item.CreatedDate);
+        UpdatedDate = DatetimeUtils.GetDateStringFromUnixTime(item.UpdatedDate);
+        
         ItemTags.Clear();
         ItemTags.AddRange(item.Tags);
+
+        ItemMemo = item.ItemMemo;
     }
 
     private void FromAuthor(Author author)

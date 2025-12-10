@@ -80,6 +80,7 @@ public class AvatarExplorerApp
         _runtimeSettings.SetDataRootDirectory(runtimeSettings.DataRootDirectory);
         _runtimeSettings.SetSortOrder(runtimeSettings.ItemSortOrder);
         _runtimeSettings.SetRemoveOriginal(runtimeSettings.RemoveOriginal);
+        _runtimeSettings.SetRemoveBrackets(runtimeSettings.RemoveBrackets);
     }
     #endregion
 

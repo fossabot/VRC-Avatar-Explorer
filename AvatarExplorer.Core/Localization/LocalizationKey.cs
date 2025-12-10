@@ -37,6 +37,12 @@ public static class LocalizationKey
                     public const string Extension = "UI.Button.Description.File.Extension";
                 }
             }
+
+            public static class ToolTip
+            {
+                public const string CreatedDate = "UI.Button.ToolTip.CreatedDate";
+                public const string UpdatedDate = "UI.Button.ToolTip.UpdatedDate";
+            }
         }
     }
 

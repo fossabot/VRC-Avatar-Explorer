@@ -1,9 +1,11 @@
 using System;
+using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
@@ -13,6 +15,12 @@ namespace AvatarExplorer.UI.Utils;
 
 internal static class UIUtils
 {
+    private static bool IsItemButton(ItemTagState itemTagState)
+        => itemTagState == ItemTagState.RootAvatar || itemTagState == ItemTagState.SearchItem || itemTagState == ItemTagState.RootSelectedItem;
+
+    private static bool IsCategoryButton(ItemTagState itemTagState)
+        => itemTagState == ItemTagState.RootCategory || itemTagState == ItemTagState.RootSelectedCategory || itemTagState == ItemTagState.ItemFileCategory;
+
     internal static void AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
         var itemButton = new Button()
@@ -56,8 +64,8 @@ internal static class UIUtils
             Orientation = Orientation.Vertical
         };
 
-        string itemTitle = (item.Tag.State == ItemTagState.RootCategory || item.Tag.State == ItemTagState.RootSelectedCategory || item.Tag.State == ItemTagState.ItemFileCategory) ? Localizer.Instance[item.Title] : item.Title;
-        if (removeBrackets && (item.Tag.State == ItemTagState.RootAvatar || item.Tag.State == ItemTagState.SearchItem || item.Tag.State == ItemTagState.RootSelectedItem)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
+        string itemTitle = IsCategoryButton(item.Tag.State) ? Localizer.Instance[item.Title] : item.Title;
+        if (removeBrackets && IsItemButton(item.Tag.State)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
 
         textPanel.Children.Add(new TextBlock()
         {
@@ -93,17 +101,42 @@ internal static class UIUtils
                 VerticalContentAlignment = VerticalAlignment.Center,
             });
         }
-        
+
         textPanel.Children.Add(tagPanel);
 
         contentPanel.Children.Add(textPanel);
 
         itemButton.Content = contentPanel;
+        if (IsItemButton(item.Tag.State)) ToolTip.SetTip(itemButton, GetTooltipForItem(item));
 
         if (contextMenu != null && contextMenu.ItemCount > 0) itemButton.ContextMenu = contextMenu;
         if (onClick != null) itemButton.Click += onClick;
 
         parent.Children.Add(itemButton);
+    }
+    private static string? GetTooltipForItem(UISelectableItem item)
+    {
+        var toolTipTextBuilder = new StringBuilder();
+
+        // AppendLine()1つだとシンプルな改行になるので1行空けたければ2ついる
+        toolTipTextBuilder.Append(item.Title);
+
+        toolTipTextBuilder.AppendLine();
+        toolTipTextBuilder.AppendLine();
+
+        toolTipTextBuilder.Append(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.CreatedDate, [item.CreatedDate]));
+        toolTipTextBuilder.AppendLine();
+        toolTipTextBuilder.Append(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.UpdatedDate, [item.UpdatedDate]));
+        
+        if (!string.IsNullOrEmpty(item.ItemMemo))
+        {
+            toolTipTextBuilder.AppendLine();
+            toolTipTextBuilder.AppendLine();
+            
+            toolTipTextBuilder.Append(item.ItemMemo);
+        }
+
+        return toolTipTextBuilder.ToString();
     }
 
     internal static void AddPageButton(StackPanel parent, ItemTagState itemTagState, int currentPageValue, int itemsPerPage, int totalItemCount, EventHandler<RoutedEventArgs>? onClick = null)

@@ -14,6 +14,9 @@
     "UI.Button.Description.Item.Count": "{0}個の項目",
     "UI.Button.Description.File.Extension": "{0} ファイル",
 
+    "UI.Button.ToolTip.CreatedDate": "登録日時: {0}",
+    "UI.Button.ToolTip.UpdatedDate": "更新日時: {0}",
+
     "FileCategory.Modification": "改変用ファイル",
     "FileCategory.Texture": "テクスチャ",
     "FileCategory.Document": "ドキュメント",
