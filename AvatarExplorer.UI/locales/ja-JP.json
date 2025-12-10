@@ -11,7 +11,6 @@
 
     "UI.Button.Description.Item.Author": "作者: {0}",
     "UI.Button.Description.Item.Author.WithAvatar": "作者: {0}  |  共通素体名: {1}",
-    "UI.Button.Description.Item.Author.WithAvatarTags": "作者: {0}  |  共通素体名: {1}\nタグ: {2}",
     "UI.Button.Description.Item.Count": "{0}個の項目",
     "UI.Button.Description.File.Extension": "{0} ファイル",
 

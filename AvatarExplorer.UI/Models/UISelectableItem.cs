@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Interfaces;
 using AvatarExplorer.Core.Localization;
@@ -8,11 +9,12 @@ namespace AvatarExplorer.UI.Models;
 internal class UISelectableItem
 {
     internal string Title { get; private set; } = string.Empty;
-    internal (string localizationKey, string[] args) Description { get; set; } = new();
+    internal (string LocalizationKey, string[] Args) Description { get; set; } = new();
     internal string ImageFileName { get; private set; } = string.Empty;
-    internal ItemTagInfo Tag { get; private set; } = new(); // 選択されたときに使用されるタグ
+    internal ItemTagInfo Tag { get; private set; } = new(); // ボタンが選択されたときに使用されるタグ
     internal IconType IconType { get; private set; } = IconType.None;
 
+    internal List<string> ItemTags { get; private set; } = new(); // アイテムのタグ
     internal string CommonAvatarName { get; set; } // アイテム表記用
     internal int ItemCount { get; set; } = 0; // カテゴリなどの数表記用
 
@@ -43,11 +45,7 @@ internal class UISelectableItem
     {
         Title = item.Title;
 
-        if (!string.IsNullOrEmpty(CommonAvatarName) && item.Tags.Count > 0)
-        {
-            Description = (LocalizationKey.UI.Button.Description.Item.Author.WithAvatarTags, [item.Author, CommonAvatarName, string.Join(", ", item.Tags)]);
-        }
-        else if (!string.IsNullOrEmpty(CommonAvatarName))
+        if (!string.IsNullOrEmpty(CommonAvatarName))
         {
             Description = (LocalizationKey.UI.Button.Description.Item.Author.WithAvatar, [item.Author, CommonAvatarName]);
         }
@@ -59,6 +57,9 @@ internal class UISelectableItem
         ImageFileName = item.ThumbnmailFileName;
         Tag = new(ItemTagState.RootSelectedItem, item.ItemPath);
         IconType = IconType.Item;
+
+        ItemTags.Clear();
+        ItemTags.AddRange(item.Tags);
     }
 
     private void FromAuthor(Author author)

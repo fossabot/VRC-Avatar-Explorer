@@ -15,7 +15,7 @@ internal static class UIUtils
 {
     internal static void AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
-        var button = new Button
+        var itemButton = new Button()
         {
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Top,
@@ -23,33 +23,33 @@ internal static class UIUtils
             Tag = item.Tag
         };
 
-        var contentPanel = new StackPanel
+        var contentPanel = new StackPanel()
         {
             Orientation = Orientation.Horizontal,
             Spacing = 10
         };
 
-        var image = new Image
+        var itemIcon = new Image()
         {
             Source = IconUtils.GetIcon(item.ImageFileName, item.IconType),
             Width = 70,
             Height = 70
         };
-
         if (!IconUtils.IsSystemFileIcons(item.ImageFileName))
         {
-            image.PointerEntered += (s, e) =>
+            itemIcon.PointerEntered += (s, e) =>
             {
-                image.Width = 200;
-                image.Height = 200;
+                itemIcon.Width = 200;
+                itemIcon.Height = 200;
             };
 
-            image.PointerExited += (s, e) =>
+            itemIcon.PointerExited += (s, e) =>
             {
-                image.Width = 70;
-                image.Height = 70;
+                itemIcon.Width = 70;
+                itemIcon.Height = 70;
             };
         }
+        contentPanel.Children.Add(itemIcon);
 
         var textPanel = new StackPanel
         {
@@ -59,32 +59,51 @@ internal static class UIUtils
         string itemTitle = (item.Tag.State == ItemTagState.RootCategory || item.Tag.State == ItemTagState.RootSelectedCategory || item.Tag.State == ItemTagState.ItemFileCategory) ? Localizer.Instance[item.Title] : item.Title;
         if (removeBrackets && (item.Tag.State == ItemTagState.RootAvatar || item.Tag.State == ItemTagState.SearchItem || item.Tag.State == ItemTagState.RootSelectedItem)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
 
-        var titleText = new TextBlock
+        textPanel.Children.Add(new TextBlock()
         {
             Text = itemTitle,
             FontSize = 16,
             FontWeight = FontWeight.Bold
-        };
-
-        var (localizationKey, args) = item.Description;
-        var descText = new TextBlock
+        });
+        textPanel.Children.Add(new TextBlock()
         {
-            Text = Localizer.Instance.GetDisplayName(localizationKey, args),
+            Text = Localizer.Instance.GetDisplayName(item.Description.LocalizationKey, item.Description.Args),
             FontSize = 13
+        });
+
+        // TODO: タグパネルが横に無限に伸びてしまっているのを修正する
+        var tagPanel = new WrapPanel()
+        {
+            Orientation = Orientation.Horizontal,
+            ItemSpacing = 10,
+            LineSpacing = 3,
+            Margin = new Thickness(0, 5, 0, 0),
+            HorizontalAlignment = HorizontalAlignment.Stretch
         };
 
-        textPanel.Children.Add(titleText);
-        textPanel.Children.Add(descText);
+        foreach (string itemTag in item.ItemTags)
+        {
+            tagPanel.Children.Add(new Button()
+            {
+                Content = itemTag,
+                CornerRadius = new CornerRadius(15),
+                Height = 28,
+                FontSize = 13,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center,
+            });
+        }
+        
+        textPanel.Children.Add(tagPanel);
 
-        contentPanel.Children.Add(image);
         contentPanel.Children.Add(textPanel);
 
-        button.Content = contentPanel;
+        itemButton.Content = contentPanel;
 
-        if (contextMenu != null && contextMenu.ItemCount > 0) button.ContextMenu = contextMenu;
-        if (onClick != null) button.Click += onClick;
+        if (contextMenu != null && contextMenu.ItemCount > 0) itemButton.ContextMenu = contextMenu;
+        if (onClick != null) itemButton.Click += onClick;
 
-        parent.Children.Add(button);
+        parent.Children.Add(itemButton);
     }
 
     internal static void AddPageButton(StackPanel parent, ItemTagState itemTagState, int currentPageValue, int itemsPerPage, int totalItemCount, EventHandler<RoutedEventArgs>? onClick = null)

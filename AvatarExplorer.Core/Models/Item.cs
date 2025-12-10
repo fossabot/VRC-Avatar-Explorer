@@ -149,7 +149,7 @@ public class Item : ISelectableItem
         migratedItem.ImplementedAvatars.AddRange(item.ImplementedAvatars);
 
         migratedItem.Tags.Clear();
-        migratedItem.Tags.AddRange(item.ImplementedAvatars);
+        migratedItem.Tags.AddRange(item.Tags);
 
         MigrateUtils.MigrateItemPaths(migratedItem.SupportedAvatars);
         MigrateUtils.MigrateItemPaths(migratedItem.ImplementedAvatars);

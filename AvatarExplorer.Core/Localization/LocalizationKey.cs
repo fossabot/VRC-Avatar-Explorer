@@ -27,7 +27,6 @@ public static class LocalizationKey
                     {
                         public const string Default = "UI.Button.Description.Item.Author";
                         public const string WithAvatar = "UI.Button.Description.Item.Author.WithAvatar";
-                        public const string WithAvatarTags = "UI.Button.Description.Item.Author.WithAvatarTags";
                     }
 
                     public const string Count = "UI.Button.Description.Item.Count";
