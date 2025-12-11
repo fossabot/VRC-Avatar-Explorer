@@ -423,7 +423,7 @@ public class AvatarExplorerApp
         _commonAvatars.AddRange(result.Item2);
     }
 
-    public void ImportFromKonoAsset(string dataFolderPath, IProgress<(string, int, string)>? progress = null)
+    public Task ImportFromKonoAsset(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
     {
         // TODO: KonoAsset Importerを作る。IKonoAssetItemみたいなINterfaceで全部読み込んでしまうのが良さそ
         throw new NotImplementedException();

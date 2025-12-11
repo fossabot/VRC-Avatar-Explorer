@@ -229,6 +229,20 @@
             </Border>
         </Border>
 
+        <Border x:Name="SelectImportTypeOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="True">
+            <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
+                <StackPanel Spacing="10" Orientation="Vertical" MinWidth="300">
+                    <Grid RowDefinitions="Auto,20,Auto" Margin="0,10,0,0">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="データをインポートする" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="26" FontWeight="Bold"/>
+                    </Grid>
+                    
+                    <Button Grid.Column="0" Content="Avatar Explorer V1.x.x" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontSize="16" Padding="10" FontWeight="Bold" Click="SelectImportTypeOverlay_FromV1_Click"/>
+                    <Button Grid.Column="2" Content="KonoAsset" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontSize="16" Padding="10"  FontWeight="Bold" Click="SelectImportTypeOverlay_FromKonoAsset_Click"/>
+                    <Button Grid.Column="4" Content="キャンセル" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontSize="16" Padding="10"  FontWeight="Bold" Click="SelectImportTypeOverlay_Cancel_Click"/>
+                </StackPanel>
+            </Border>
+        </Border>
+
         <Border x:Name="ProgressOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel Spacing="10">

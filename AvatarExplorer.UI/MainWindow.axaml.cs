@@ -867,7 +867,20 @@ public partial class MainWindow : Window
 
     private async void Main_ImportData_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: ここにV1かKonoAssetかどうかを選ぶダイアログを挟む
+        SelectImportTypeOverlay.IsVisible = true;
+    }
+
+    private void SelectImportTypeOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
+    {
+        SelectImportTypeOverlay.IsVisible = false;
+    }
+
+    private void SelectImportTypeOverlay_FromV1_Click(object? sender, RoutedEventArgs e)
+        => DataImportInternal(DataImportType.V1);
+    private void SelectImportTypeOverlay_FromKonoAsset_Click(object? sender, RoutedEventArgs e)
+        => DataImportInternal(DataImportType.KonoAsset);
+    private async void DataImportInternal(DataImportType dataImportType)
+    {
         var folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false); // TODO: Localizeする
         var selectedFolder = folders.Count > 0 ? (folders[0]?.TryGetLocalPath() ?? "") : "";
 
@@ -876,6 +889,8 @@ public partial class MainWindow : Window
             ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.Default]);
             return;
         }
+        
+        SelectImportTypeOverlay.IsVisible = false;
 
         var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
 
@@ -892,7 +907,8 @@ public partial class MainWindow : Window
             }
         });
 
-        await _avatarExplorer.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
+        if (dataImportType == DataImportType.V1) await _avatarExplorer.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
+        else if (dataImportType == DataImportType.KonoAsset)  await _avatarExplorer.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progress);
 
         ReloadCurrentWindow();
     }
