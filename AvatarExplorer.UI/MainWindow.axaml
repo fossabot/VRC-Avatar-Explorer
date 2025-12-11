@@ -83,8 +83,8 @@
         <Border x:Name="AddItemOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel Spacing="10">
-                    <Grid ColumnDefinitions="Auto,*">
-                        <TextBlock Text="アイテムの追加" Foreground="White" VerticalAlignment="Top" Margin="0,10,0,10" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                    <Grid ColumnDefinitions="Auto,*" Margin="0,10,0,10">
+                        <TextBlock Text="アイテムの追加" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
                     </Grid>
 
                     <Grid ColumnDefinitions="85,Auto,*,Auto" RowDefinitions="*,10,*,10,*">
@@ -101,24 +101,27 @@
                         <TextBox x:Name="AddItemOverlay_BoothLinkTextBox" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Watermark="https://booth.pm/ja/items/123456" HorizontalAlignment="Stretch" Margin="10,0,0,0" VerticalAlignment="Center"/>
                     </Grid>
 
-                    <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10">
-                        <TextBlock Text="Booth アイテム情報" Foreground="White" VerticalAlignment="Top" Margin="0,10,0,10" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                    <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10" Margin="0,10,0,10">
+                        <TextBlock Text="Booth アイテム情報" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
                         <Button Grid.Column="1" Content="情報を取得" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Click="AddItemOverlay_GetBoothItemData_Click"/>
                         <Button Grid.Column="2" x:Name="AddItemOverlay_ResetBoothItemDataButton" Content="情報をリセット" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Click="AddItemOverlay_ResetBoothItemData_Click" IsVisible="False"/>
                     </Grid>
 
-                    <Grid ColumnDefinitions="85,*" RowDefinitions="*,10,*,10,*,10,*">
+                    <Grid ColumnDefinitions="85,10,*" RowDefinitions="*,10,*,10,*,10,*">
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="タイトル" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                        <TextBox x:Name="AddItemOverlay_BoothItemTitleTextBox" Grid.Row="0" Grid.Column="1" Watermark="タイトル未取得" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                        <TextBox x:Name="AddItemOverlay_BoothItemTitleTextBox" Grid.Row="0" Grid.Column="2" Watermark="タイトル未取得" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="作者" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                        <TextBox x:Name="AddItemOverlay_BoothItemAuthorTextBox" Grid.Row="2" Grid.Column="1" Watermark="作者未取得" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                        <TextBox x:Name="AddItemOverlay_BoothItemAuthorTextBox" Grid.Row="2" Grid.Column="2" Watermark="作者未取得" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="タイプ" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                        <ComboBox x:Name="AddItemOverlay_ItemTypeComboBox" Grid.Row="4" Grid.Column="1" Margin="10,0,0,0" Width="190" SelectedIndex="0"/>
+                        <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" Spacing="10">
+                            <ComboBox x:Name="AddItemOverlay_ItemTypeComboBox" MinWidth="190" SelectedIndex="0"/>
+                            <Button Content="追加する" MinWidth="100" HorizontalContentAlignment="Center" Click="AddItemOverlay_AddCustomCategory_Click"/>
+                        </StackPanel>
 
                         <TextBlock Grid.Row="6" Grid.Column="0" Text="対応アバター" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                        <Button Grid.Row="6" Grid.Column="1" Content="選択" Margin="10,0,0,0" Width="130" HorizontalContentAlignment="Center"/>
+                        <Button Grid.Row="6" Grid.Column="2" Content="選択" Width="130" HorizontalContentAlignment="Center"/>
                     </Grid>
 
                     <Grid ColumnDefinitions="Auto,*,Auto" Margin="10,20,10,0">
@@ -131,37 +134,36 @@
 
         <Border x:Name="SettingsOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
-                
                 <StackPanel Spacing="10">
                     <ScrollViewer MaxHeight="500">
                         <StackPanel>
-                            <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,10">
-                                <TextBlock Text="パス設定" Foreground="White" VerticalAlignment="Top" Margin="0,10,0,0" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                            <Grid ColumnDefinitions="Auto,*" Margin="0,10,0,10">
+                                <TextBlock Text="パス設定" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
                             </Grid>
 
-                            <Grid ColumnDefinitions="200,*,Auto" RowDefinitions="*">
-                                <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="データ保存先フォルダ" Margin="0,0,10,0" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                                <TextBox x:Name="SettingsOverlay_ItemsFolderPathTextBox" IsReadOnly="True" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                                <Button Grid.Row="0" Grid.Column="3" Content="フォルダを開く" Margin="10,0,0,0" VerticalAlignment="Center" Click="SettingsOverlay_OpenFolder_Click"/>
+                            <Grid ColumnDefinitions="200,10,*,10,Auto">
+                                <TextBlock Grid.Column="0" TextWrapping="Wrap" Text="データ保存先フォルダ" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
+                                <TextBox x:Name="SettingsOverlay_ItemsFolderPathTextBox" IsReadOnly="True" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                <Button Grid.Column="4" Content="フォルダを開く" VerticalAlignment="Center" Margin="0,0,20,0" Click="SettingsOverlay_OpenFolder_Click"/>
                             </Grid>
 
                             <Grid ColumnDefinitions="Auto,*" Margin="0,30,0,10">
-                                <TextBlock Text="アイテム設定" Foreground="White" VerticalAlignment="Top" Margin="0,10,0,0" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                                <TextBlock Text="アイテム設定" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
                             </Grid>
 
-                            <Grid ColumnDefinitions="200,*" RowDefinitions="*,20,*,20,*">
-                                <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="タイトルの括弧を削除する" Margin="0,0,10,0" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                                <ToggleSwitch x:Name="SettingsOverlay_RemoveBracketsCheckBox" Grid.Row="0" Grid.Column="1"  Margin="10,0,0,0" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            <Grid ColumnDefinitions="200,10,*" RowDefinitions="*,20,*,20,*">
+                                <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="タイトルの括弧を削除する" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
+                                <ToggleSwitch x:Name="SettingsOverlay_RemoveBracketsCheckBox" Grid.Row="0" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                             
-                                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="インポート時にオジリナルファイルを削除する" Margin="0,0,10,0" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                                <ToggleSwitch x:Name="SettingsOverlay_RemoveOriginalCheckBox" Grid.Row="2" Grid.Column="1"  Margin="10,0,0,0" Width="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="インポート時にオジリナルファイルを削除する" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
+                                <ToggleSwitch x:Name="SettingsOverlay_RemoveOriginalCheckBox" Grid.Row="2" Grid.Column="2"  Width="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
 
-                                <TextBlock Grid.Row="4" Grid.Column="0" TextWrapping="Wrap" Text="ページあたりのアイテム表示数" Margin="0,0,10,0" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                                <TextBox x:Name="SettingsOverlay_ItemsPerPageTextBox" Grid.Row="4" Grid.Column="2"  Margin="10,0,0,0" Text="30" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Center"/>
+                                <TextBlock Grid.Row="4" Grid.Column="0" TextWrapping="Wrap" Text="ページあたりのアイテム表示数" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
+                                <TextBox x:Name="SettingsOverlay_ItemsPerPageTextBox" Grid.Row="4" Grid.Column="4" Text="30" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Center"/>
                             </Grid>
 
                             <Grid ColumnDefinitions="Auto,*" Margin="0,30,0,10">
-                                <TextBlock Text="UI設定" Foreground="White" VerticalAlignment="Top" Margin="0,10,0,0" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                                <TextBlock Text="UI設定" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
                             </Grid>
 
                             <Grid ColumnDefinitions="200,*" RowDefinitions="*">
@@ -175,7 +177,7 @@
                             </Grid>
 
                             <Grid ColumnDefinitions="Auto,*" Margin="0,30,0,10">
-                                <TextBlock Text="デフォルト設定" Foreground="White" VerticalAlignment="Top" Margin="0,10,0,0" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                                <TextBlock Text="デフォルト設定" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
                             </Grid>
 
                             <Grid ColumnDefinitions="200,*" RowDefinitions="*,20,*">
@@ -206,6 +208,22 @@
                     <Grid ColumnDefinitions="Auto,*,Auto" Margin="10,50,10,0">
                         <Button CornerRadius="20" Grid.Column="0" Click="SettingsOverlay_CloseButton_Click" Content="閉じる" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" Padding="10" MinWidth="200"/>
                         <Button CornerRadius="20" Grid.Column="2" Click="SettingsOverlay_ApplyButton_Click" Content="適用" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" Padding="10" MinWidth="200"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <Border x:Name="AddCustomCategoryOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False">
+            <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
+                <StackPanel Spacing="10">
+                    <Grid RowDefinitions="Auto,20,Auto,20,Auto" Margin="0,10,0,10">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="カスタムカテゴリを追加する" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                        <TextBox x:Name="AddCustomCategory_CustomCategoryTextBox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Watermark="カスタムカテゴリ名" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+
+                        <Grid ColumnDefinitions="200,*,200" Grid.Row="4" Margin="10,0,10,0">
+                            <Button Grid.Row="4" Grid.Column="0" Content="キャンセル" VerticalAlignment="Center" HorizontalAlignment="Left"  HorizontalContentAlignment="Center" FontSize="15" FontWeight="Bold" Click="AddCustomCategory_CancelButton_Click"/>
+                            <Button Grid.Row="4" Grid.Column="2" Content="追加" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Center" FontSize="15" FontWeight="Bold" Click="AddCustomCategory_AddButton_Click"/>
+                        </Grid>
                     </Grid>
                 </StackPanel>
             </Border>

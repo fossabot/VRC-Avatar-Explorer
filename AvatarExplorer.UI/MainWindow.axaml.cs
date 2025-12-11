@@ -61,7 +61,6 @@ public partial class MainWindow : Window
         TODO: SCHEMEに対応する
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるように変更
         TODO: 詳細検索用の画面を追加する
-        TODO: アイテム追加時の画面に、現時点での全てのカテゴリをComboBoxに入れておき、その横にボタンでカテゴリを追加できるようにする
         TODO: スクロール位置を保存するようにしたいね
         TODO: ソフト終了時にTempを削除したい
         */
@@ -661,6 +660,12 @@ public partial class MainWindow : Window
         _addItemWindowValues.Folders.AddRange(folders.Select(i => i.TryGetLocalPath() ?? ""));
         // TODO: フォルダ追加時に右がとこかに、現在選択されているフォルダを [ファイル | フォルダ名] [削除]みたいにリストで表示して編集しやすくしたいよね
     }
+    
+    private void AddItemOverlay_AddCustomCategory_Click(object? sender, RoutedEventArgs e)
+    {
+        AddCustomCategory_CustomCategoryTextBox.Text = string.Empty;
+        AddCustomCategoryOverlay.IsVisible = true;
+    }
 
     private async void AddItemOverlay_ConfirmButton_Click(object? sender, RoutedEventArgs e)
     {
@@ -816,6 +821,21 @@ public partial class MainWindow : Window
     private void ApplyRuntimeSettingsToUi()
     {
         Main_SortOrderComboBox.SelectedIndex = (int)_avatarExplorer.GetRuntimeSettings().ItemSortOrder;
+    }
+    #endregion
+
+    #region Add CustomCategory Overlay
+    private void AddCustomCategory_AddButton_Click(object? sender, RoutedEventArgs e)
+    {
+        AddCustomCategoryOverlay.IsVisible = false;
+
+        if (string.IsNullOrEmpty(AddCustomCategory_CustomCategoryTextBox.Text)) return;
+        int index = AddItemOverlay_ItemTypeComboBox.Items.Add(AddCustomCategory_CustomCategoryTextBox.Text);
+        AddItemOverlay_ItemTypeComboBox.SelectedIndex = index;
+    }
+    private void AddCustomCategory_CancelButton_Click(object? sender, RoutedEventArgs e)
+    {
+        AddCustomCategoryOverlay.IsVisible = false;
     }
     #endregion
 
