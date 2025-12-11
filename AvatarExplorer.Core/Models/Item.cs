@@ -108,7 +108,7 @@ public class Item : ISelectableItem
 
     public void BuildSearchIndex(Dictionary<string, string> avatarMap)
     {
-        var avatars = SupportedAvatars
+        IEnumerable<string> avatars = SupportedAvatars
             .Concat(ImplementedAvatars)
             .Select(a => ItemUtils.GetAvatarNameFromDictionary(avatarMap, a))
             .Where(name => !string.IsNullOrEmpty(name));
@@ -125,7 +125,7 @@ public class Item : ISelectableItem
 
     public static Item FromV1(ItemV1 item)
     {
-        var migratedItem = new Item()
+        Item migratedItem = new()
         {
             Title = item.Title,
             Author = item.AuthorName,
@@ -172,7 +172,7 @@ public class Item : ISelectableItem
         return this;
     }
 
-    internal async static Task<(Item? newItem, List<string> processingFailedPaths)> FromItemCreationContext(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
+    internal static async Task<(Item? newItem, List<string> processingFailedPaths)> FromItemCreationContext(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
     {
         string extractDestinationFolderPath = Path.Combine(runtimeSettings.DataRootDirectory, itemCreationContext.LocalizedItemTypeName);
         var (itemPath, materialPath, processingFailedPaths) = await FileSystemUtils.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, extractDestinationFolderPath, runtimeSettings.RemoveOriginal);
@@ -182,7 +182,7 @@ public class Item : ISelectableItem
             return (null, processingFailedPaths);
         }
         
-        var newItem = new Item()
+        Item newItem = new()
         {
             Title = itemCreationContext.Title,
             Author = itemCreationContext.Author,

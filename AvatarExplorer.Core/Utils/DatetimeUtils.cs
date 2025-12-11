@@ -6,9 +6,9 @@ public static class DatetimeUtils
     {
         if (string.IsNullOrEmpty(unixTime)) return "Invalid Date";
 
-        if (long.TryParse(unixTime, out var unixTimeLong))
+        if (long.TryParse(unixTime, out long unixTimeLong))
         {
-            var dateTime = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeLong).ToLocalTime().DateTime;
+            DateTime dateTime = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeLong).ToLocalTime().DateTime;
             return dateTime.ToString("yyyy/MM/dd HH:mm:ss");
         }
 

@@ -58,7 +58,7 @@ internal static class SearchUtils
             string itemPath = ItemUtils.GetItemPath(parentFolder, item.ItemPath);
             string materialPath = ItemUtils.GetItemPath(parentFolder, item.MaterialPath);
 
-            var files = new List<string>();
+            List<string> files = new();
             if (!string.IsNullOrEmpty(itemPath) && Directory.Exists(itemPath)) files.AddRange(FileSystemUtils.EnumerateFiles(itemPath));
             if (!string.IsNullOrEmpty(materialPath) && Directory.Exists(materialPath)) files.AddRange(FileSystemUtils.EnumerateFiles(materialPath));
 
@@ -69,7 +69,7 @@ internal static class SearchUtils
             );
         }
         
-        var implementedAvatarNames = item.ImplementedAvatars.Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar));
+        IEnumerable<string> implementedAvatarNames = item.ImplementedAvatars.Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar));
 
         bool matchImplemented = searchFilter.ImplementedAvatars.Count == 0 || MatchesFilter(
             implementedAvatarNames, searchFilter.ImplementedAvatars,
@@ -151,7 +151,7 @@ internal static class SearchUtils
     {
         int count = 0;
 
-        foreach (var word in words)
+        foreach (string word in words)
         {
             int index = 0;
 

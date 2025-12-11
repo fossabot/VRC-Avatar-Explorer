@@ -17,7 +17,7 @@ public class CommonAvatar
 
     public static CommonAvatar FromV1(CommonAvatarV1 commonAvatar)
     {
-        var migratedCommonAvatar = new CommonAvatar()
+        CommonAvatar migratedCommonAvatar = new()
         {
             GroupName = commonAvatar.Name,
             Avatars = new List<string>(commonAvatar.Avatars),

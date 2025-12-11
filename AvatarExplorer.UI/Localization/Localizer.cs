@@ -19,15 +19,15 @@ internal class Localizer
     {
         if (!File.Exists(path)) return;
 
-        var json = File.ReadAllText(path);
+        string json = File.ReadAllText(path);
         _map.Clear();
 
-        var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
-        if (dict != null)
+        var dictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+        if (dictionary != null)
         {
-            foreach (var kv in dict)
+            foreach (var localizationMap in dictionary)
             {
-                _map[kv.Key] = kv.Value;
+                _map[localizationMap.Key] = localizationMap.Value;
             }
         }
     }
@@ -37,24 +37,24 @@ internal class Localizer
 
     internal string GetDisplayName(string localizationKey, string[] args)
     {
-        var localizedText = _map.TryGetValue(localizationKey, out var value) ? value : localizationKey;
+        string localizedText = _map.TryGetValue(localizationKey, out var value) ? value : localizationKey;
         return args.Length > 0 ? string.Format(localizedText, args) : localizedText;
     }
 
     internal string GetDisplayName(string localizationKey, string arg)
     {
-        var localizedText = _map.TryGetValue(localizationKey, out var value) ? value : localizationKey;
+        string localizedText = _map.TryGetValue(localizationKey, out var value) ? value : localizationKey;
         return string.Format(localizedText, arg);
     }
 
     internal string this[string key]
-        => _map.TryGetValue(key, out var value) ? value : key;
+        => _map.TryGetValue(key, out string? value) ? value : key;
 
     internal string? GetLocalizationKey(string displayName)
     {
-        foreach (var kv in _map)
+        foreach (var localizationMap in _map)
         {
-            if (kv.Value == displayName) return kv.Key;
+            if (localizationMap.Value == displayName) return localizationMap.Key;
         }
 
         return null;

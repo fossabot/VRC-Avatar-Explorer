@@ -16,13 +16,13 @@ public static partial class ItemUtils
 
     internal static string GetAvatarNameFromDictionary(Dictionary<string, string> avatarNamesDictionary, string avatarPath)
     {
-        avatarNamesDictionary.TryGetValue(avatarPath, out var avatarName);
+        avatarNamesDictionary.TryGetValue(avatarPath, out string? avatarName);
         return avatarName ?? "";
     }
 
     internal static AvatarStatus GetAvatarStatus(string? avatarPath, Item item, List<CommonAvatar> commonAvatars)
     {
-        var avatarStatus = new AvatarStatus();
+        AvatarStatus avatarStatus = new();
         if (string.IsNullOrEmpty(avatarPath)) return avatarStatus;
         
         if (item.SupportedAvatars.Count == 0 || item.SupportedAvatars.Contains(avatarPath))
@@ -30,15 +30,15 @@ public static partial class ItemUtils
 
         if (item.Type != ItemType.Clothing) return avatarStatus;
 
-        var groupsForPath = commonAvatars
+        CommonAvatar[] groupsForPath = commonAvatars
             .Where(x => x.Avatars.Contains(avatarPath))
             .ToArray();
 
         if (groupsForPath.Length == 0) return avatarStatus;
 
-        foreach (var supportedAvatar in item.SupportedAvatars)
+        foreach (string supportedAvatar in item.SupportedAvatars)
         {
-            var group = groupsForPath.FirstOrDefault(g => g.Avatars.Contains(supportedAvatar));
+            CommonAvatar? group = groupsForPath.FirstOrDefault(g => g.Avatars.Contains(supportedAvatar));
             if (group != null)
             {
                 avatarStatus.IsCommon = true;
@@ -62,8 +62,8 @@ public static partial class ItemUtils
     public static string? GetSafeTitle(string itemTitle)
     {
         // パスに使用しても大丈夫な文字だけ残す
-        var safeTitle = itemTitle;
-        foreach (var invalidChar in FileSystemUtils.InvalidChars)
+        string safeTitle = itemTitle;
+        foreach (char invalidChar in FileSystemUtils.InvalidChars)
         {
             safeTitle = safeTitle.Replace(invalidChar, '_');
         }

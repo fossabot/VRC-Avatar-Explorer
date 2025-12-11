@@ -19,35 +19,35 @@ internal static partial class SearchUtils
 
     internal static List<RawSearchToken> ParseSearchText(string text)
     {
-        var matches = SearchFilterRegex().Matches(text);
-        var tokens = new List<RawSearchToken>();
+        MatchCollection matches = SearchFilterRegex().Matches(text);
+        List<RawSearchToken> rawSearchTokens = new();
 
-        foreach (GroupCollection gc in matches.Select(m => m.Groups))
+        foreach (GroupCollection groupCollection in matches.Select(m => m.Groups))
         {
-            if (gc["key"].Success && gc["value"].Success)
+            if (groupCollection["key"].Success && groupCollection["value"].Success)
             {
-                tokens.Add(new RawSearchToken
+                rawSearchTokens.Add(new RawSearchToken
                 {
-                    Key = gc["key"].Value,
-                    Value = gc["value"].Value
+                    Key = groupCollection["key"].Value,
+                    Value = groupCollection["value"].Value
                 });
             }
-            else if (gc["word"].Success)
+            else if (groupCollection["word"].Success)
             {
-                tokens.Add(new RawSearchToken
+                rawSearchTokens.Add(new RawSearchToken
                 {
                     Key = "FreeWord",
-                    Value = gc["word"].Value
+                    Value = groupCollection["word"].Value
                 });
             }
         }
 
-        return tokens;
+        return rawSearchTokens;
     }
 
     internal static string ParseCategory(string text)
     {
-        var parsedResult = Localizer.Instance.GetLocalizationKey(text);
+        string? parsedResult = Localizer.Instance.GetLocalizationKey(text);
         if (parsedResult == null || !CategoryLocalizationKeys.Contains(parsedResult)) return text;
 
         return parsedResult;
@@ -55,57 +55,57 @@ internal static partial class SearchUtils
 
     internal static SearchFilter BuildFilter(string searchText)
     {
-        var rawTokens = ParseSearchText(searchText);
-        var filter = new SearchFilter();
+        List<RawSearchToken> rawSearchTokens = ParseSearchText(searchText);
+        SearchFilter filter = new();
 
-        foreach (var t in rawTokens)
+        foreach (RawSearchToken token in rawSearchTokens)
         {
-            switch (t.Key)
+            switch (token.Key)
             {
                 case "Title":
-                    filter.Titles.Add(t.Value);
+                    filter.Titles.Add(token.Value);
                     break;
                 case "Author":
-                    filter.Authors.Add(t.Value);
+                    filter.Authors.Add(token.Value);
                     break;
                 case "Booth":
-                    filter.BoothIds.Add(t.Value);
+                    filter.BoothIds.Add(token.Value);
                     break;
                 case "Avatar":
-                    filter.SupportedAvatars.Add(t.Value);
+                    filter.SupportedAvatars.Add(token.Value);
                     break;
                 case "Category":
-                    filter.Categories.Add(ParseCategory(t.Value));
+                    filter.Categories.Add(ParseCategory(token.Value));
                     break;
                 case "Memo":
-                    filter.ItemMemos.Add(t.Value);
+                    filter.ItemMemos.Add(token.Value);
                     break;
                 case "Folder":
-                    filter.FolderNames.Add(t.Value);
+                    filter.FolderNames.Add(token.Value);
                     break;
                 case "File":
-                    filter.FileNames.Add(t.Value);
+                    filter.FileNames.Add(token.Value);
                     break;
                 case "Implemented":
-                    filter.ImplementedAvatars.Add(t.Value);
+                    filter.ImplementedAvatars.Add(token.Value);
                     break;
                 case "NotImplemented":
-                    filter.NotImplementedAvatars.Add(t.Value);
+                    filter.NotImplementedAvatars.Add(token.Value);
                     break;
                 case "Tag":
-                    filter.Tags.Add(t.Value);
+                    filter.Tags.Add(token.Value);
                     break;
                 case "Common":
-                    filter.CommonAvatars.Add(t.Value);
+                    filter.CommonAvatars.Add(token.Value);
                     break;
                 case "OR":
-                    filter.IsOrSearch = t.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase);
+                    filter.IsOrSearch = token.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase);
                     break;
                 case "BrokenItems":
-                    filter.BrokenItems = t.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase);
+                    filter.BrokenItems = token.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase);
                     break;
                 case "FreeWord":
-                    filter.SearchWords.Add(t.Value);
+                    filter.SearchWords.Add(token.Value);
                     break;
             }
         }

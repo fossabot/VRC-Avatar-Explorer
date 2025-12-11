@@ -9,32 +9,32 @@ namespace AvatarExplorer.UI.Utils;
 
 internal static class AvaloniaLauncherUtils
 {
-    internal async static Task OpenFile(Visual visual, string filePath)
+    internal static async Task OpenFile(Visual visual, string filePath)
     {
-        var launcher = GetLauncher(visual);
+        ILauncher? launcher = GetLauncher(visual);
         if (launcher == null) return;
 
-        var fileInfo = new FileInfo(filePath);
+        FileInfo fileInfo = new(filePath);
 
         await launcher.LaunchFileInfoAsync(fileInfo);
     }
 
-    internal async static Task OpenFolder(Visual visual, string folderPath)
+    internal static async Task OpenFolder(Visual visual, string folderPath)
     {
-        var launcher = GetLauncher(visual);
+        ILauncher? launcher = GetLauncher(visual);
         if (launcher == null) return;
 
-        var folderInfo = new DirectoryInfo(folderPath);
+        DirectoryInfo folderInfo = new(folderPath);
 
         await launcher.LaunchDirectoryInfoAsync(folderInfo);
     }
 
-    internal async static Task OpenLink(Visual visual, string itemLink)
+    internal static async Task OpenLink(Visual visual, string itemLink)
     {
-        var launcher = GetLauncher(visual);
+        ILauncher? launcher = GetLauncher(visual);
         if (launcher == null) return;
 
-        var itemLinkUri = new Uri(itemLink);
+        Uri itemLinkUri = new(itemLink);
 
         await launcher.LaunchUriAsync(itemLinkUri);
     }

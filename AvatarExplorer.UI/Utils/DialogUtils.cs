@@ -11,7 +11,7 @@ namespace AvatarExplorer.UI.Utils;
 
 internal static class DialogUtils
 {
-    internal async static Task<string[]?> OpenFileDialog(Visual visual, string titleKey, bool allowMultiple = false)
+    internal static async Task<string[]?> OpenFileDialog(Visual visual, string titleKey, bool allowMultiple = false)
     {
         IStorageProvider? storageProvider = GetStorageProvider(visual);
         if (storageProvider == null) return [];
@@ -30,7 +30,7 @@ internal static class DialogUtils
         return filePaths.Length == 0 ? null : filePaths;
     }
 
-    internal async static Task<string[]?> OpenFolderDialog(Visual visual, string titleKey, bool allowMultiple = false)
+    internal static async Task<string[]?> OpenFolderDialog(Visual visual, string titleKey, bool allowMultiple = false)
     {
         IStorageProvider? storageProvider = GetStorageProvider(visual);
         if (storageProvider == null) return [];
@@ -49,7 +49,7 @@ internal static class DialogUtils
         return FolderPaths.Length == 0 ? null : FolderPaths;
     }
 
-    internal async static Task<string?> SaveFileDialog(Visual visual, string titleKey, string defaultExtension)
+    internal static async Task<string?> SaveFileDialog(Visual visual, string titleKey, string defaultExtension)
     {
         IStorageProvider? storageProvider = GetStorageProvider(visual);
         if (storageProvider == null) return null;
@@ -62,7 +62,6 @@ internal static class DialogUtils
 
         return file?.TryGetLocalPath();
     }
-
     
     private static IStorageProvider? GetStorageProvider(Visual visual)
         => TopLevel.GetTopLevel(visual)?.StorageProvider;

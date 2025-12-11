@@ -42,8 +42,8 @@ internal static partial class BoothUtils
     {
         try
         {
-            var url = string.Format(BoothLink.ItemJsonURLFormat, boothId);
-            var response = await HttpClient.GetStringAsync(url);
+            string url = string.Format(BoothLink.ItemJsonURLFormat, boothId);
+            string response = await HttpClient.GetStringAsync(url);
 
             BoothItem? boothItem = JsonSerializer.Deserialize<BoothItem>(response, JsonSerializerOptions);
             if (boothItem == null) return null;
@@ -61,16 +61,16 @@ internal static partial class BoothUtils
 
     private static string GetAuthorIdFromUrl(string url)
     {
-        var match = BoothAuthorURLRegex().Match(url);
+        Match match = BoothAuthorURLRegex().Match(url);
         return match.Success ? match.Groups[1].Value : string.Empty;
     }
 
     private static ItemType SuggestItemType(string title, string type)
     {
-        if (!BoothCategoryMappings.TryGetValue(type, out var categorySuggestedType))
+        if (!BoothCategoryMappings.TryGetValue(type, out ItemType categorySuggestedType))
             categorySuggestedType = ItemType.Unknown;
         
-        var titleMatchedType = BoothTitleMappings.FirstOrDefault(mapping => mapping.Key.Any(title.Contains)).Value;
+        ItemType titleMatchedType = BoothTitleMappings.FirstOrDefault(mapping => mapping.Key.Any(title.Contains)).Value;
         return titleMatchedType != ItemType.Unknown && titleMatchedType != default ? titleMatchedType : categorySuggestedType;
     }
 }

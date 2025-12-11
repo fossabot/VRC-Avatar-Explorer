@@ -13,7 +13,7 @@ internal static class SettingsUtils
             if (!File.Exists(path)) return new();
 
             string json = File.ReadAllText(path);
-            var userUiPreferences = JsonSerializer.Deserialize<UserUiPreferences>(json) ?? new();
+            UserUiPreferences userUiPreferences = JsonSerializer.Deserialize<UserUiPreferences>(json) ?? new();
 
             return userUiPreferences;
         }

@@ -216,7 +216,7 @@ public partial class MainWindow : Window
         if (RightPanel == null) return;
         RightPanel.Children.Clear();
 
-        var items = _avatarExplorer.GetItemsForCurrentState();
+        IReadOnlyList<ItemCountInfo> items = _avatarExplorer.GetItemsForCurrentState();
 
         if (items.Count == 0) ShowNoItemsLabel();
         else HideNoItemsLabel();
@@ -272,7 +272,7 @@ public partial class MainWindow : Window
     }
     private async Task OpenUnitypackageInternalAsync(string itemPath)
     {
-        var selectedItem = _avatarExplorer.GetSelectedItem();
+        Item? selectedItem = _avatarExplorer.GetSelectedItem();
         if (selectedItem == null)
         {
             await AvaloniaLauncherUtils.OpenFile(this, itemPath);
@@ -404,7 +404,7 @@ public partial class MainWindow : Window
         }
 
         List<SelectionNode> selectionNodes = new();
-        foreach (var node in currentSelectionNodes)
+        foreach (SelectionNode node in currentSelectionNodes)
         {
             if (node.State == ItemTagState.SearchItem) selectionNodes.Clear();
             selectionNodes.Add(node);
@@ -479,7 +479,7 @@ public partial class MainWindow : Window
     private async void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
     {
         //チェックボックスでやる
-        var filePath = await DialogUtils.SaveFileDialog(this, "保存先を選択してください", ".csv");
+        string? filePath = await DialogUtils.SaveFileDialog(this, "保存先を選択してください", ".csv");
         if (filePath == null) return;
 
         var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
@@ -509,45 +509,45 @@ public partial class MainWindow : Window
     }
     private Item? ContextMenu_GetItemByPath(string itemPath)
     {
-        var item = _avatarExplorer.GetItemByPath(itemPath);
-        if (item == null) ShowDialog("エラー", "アイテムが見つかりませんでした");
+        Item? item = _avatarExplorer.GetItemByPath(itemPath);
+        if (item == null) ShowDialog("エラー", "アイテムが見つかりませんでした"); //TODO: Localizeする
 
         return item;
     }
     private async Task ContextMenu_OpenItemFolder(string itemPath)
     {
-        var item = ContextMenu_GetItemByPath(itemPath);
+        Item? item = ContextMenu_GetItemByPath(itemPath);
         if (item == null) return;
 
         await AvaloniaLauncherUtils.OpenFolder(this, ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath));
     }
     private async Task ContextMenu_CopyBoothLink(string itemPath)
     {
-        var item = ContextMenu_GetItemByPath(itemPath);
+        Item? item = ContextMenu_GetItemByPath(itemPath);
         if (item == null) return;
 
-        var boothLink = item.GetBoothLink();
+        string boothLink = item.GetBoothLink();
 
         try
         {
             await ClipboardUtils.SetTextToClipboard(boothLink);
-            ShowDialog("成功", "クリップボードにリンクをコピーしました。");
+            ShowDialog("成功", "クリップボードにリンクをコピーしました。"); //TODO: Localizeする
         }
         catch
         {
-            ShowDialog("エラー", "クリップボードにリンクをコピー出来ませんでした。");
+            ShowDialog("エラー", "クリップボードにリンクをコピー出来ませんでした。"); //TODO: Localizeする
         }
     }
     private async Task ContextMenu_OpenBoothLink(string itemPath)
     {
-        var item = ContextMenu_GetItemByPath(itemPath);
+        Item? item = ContextMenu_GetItemByPath(itemPath);
         if (item == null) return;
 
         await AvaloniaLauncherUtils.OpenLink(this, item.GetBoothLink());
     }
     private Task ContextMenu_ShowOtherItemsByAuthor(string itemPath)
     {
-        var item = ContextMenu_GetItemByPath(itemPath);
+        Item? item = ContextMenu_GetItemByPath(itemPath);
         if (item == null) return Task.CompletedTask;
 
         if (SearchTextBox != null) SearchTextBox.Text = string.Format("Author=\"{0}\"", item.Author);
@@ -562,7 +562,7 @@ public partial class MainWindow : Window
     }
     private Task ContextMenu_EditItem(string itemPath)
     {
-        var item = ContextMenu_GetItemByPath(itemPath);
+        Item? item = ContextMenu_GetItemByPath(itemPath);
         if (item == null) return Task.CompletedTask;
 
         ShowEditItemWindow(item);
@@ -671,7 +671,7 @@ public partial class MainWindow : Window
     
     private async void AddItemOverlay_AddFolder_Click(object? sender, RoutedEventArgs e)
     {
-        var folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", true);
+        string[]? folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", true);
         if (folders == null || folders.Length == 0) return;
 
         _addItemWindowValues.Folders.Clear();
@@ -690,7 +690,7 @@ public partial class MainWindow : Window
         if (_addItemWindowValues == null) return;
         if (!ValidateAddItemWindowValues()) return;
 
-        var itemCreationContext = new ItemCreationContext();
+        ItemCreationContext itemCreationContext = new();
         itemCreationContext.Folders.AddRange(_addItemWindowValues.Folders);
         itemCreationContext.MaterialFolder = _addItemWindowValues.MaterialFolder;
         itemCreationContext.Title = _addItemWindowValues.Title;
@@ -738,9 +738,9 @@ public partial class MainWindow : Window
     {
         AddItemOverlay_ItemTypeComboBox.Items.Clear();
 
-        foreach (var category in _avatarExplorer.GetCategories())
+        foreach (ItemCountInfo itemCountInfo in _avatarExplorer.GetCategories())
         {
-            AddItemOverlay_ItemTypeComboBox.Items.Add(Localizer.Instance[((Category)category.Item).ToString()]);
+            AddItemOverlay_ItemTypeComboBox.Items.Add(Localizer.Instance[((Category)itemCountInfo.Item).ToString()]);
         }
     }
     private (ItemType, string) GetCategoryFromItemWindow()
@@ -773,7 +773,7 @@ public partial class MainWindow : Window
 
     private async void SettingsOverlay_OpenFolder_Click(object? sender, RoutedEventArgs e)
     {
-        var folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false);
+        string[]? folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false);
         if (folders == null || folders.Length == 0) return;
 
         SettingsOverlay_ItemsFolderPathTextBox.Text = folders[0];
@@ -790,8 +790,8 @@ public partial class MainWindow : Window
     
     private void SetUiValueFromCurrentSettings() // 設定画面を読み込んだ時に値をセットするための関数
     {
-        var runtimeSettings = _avatarExplorer.GetRuntimeSettings();
-        var userUiPreferences = _userUiPreferences;
+        RuntimeSettings runtimeSettings = _avatarExplorer.GetRuntimeSettings();
+        UserUiPreferences userUiPreferences = _userUiPreferences;
 
         SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory;
         SettingsOverlay_RemoveBracketsCheckBox.IsChecked = runtimeSettings.RemoveBrackets;
@@ -821,7 +821,7 @@ public partial class MainWindow : Window
     
     private void ApplyPreferenceSettingsToUi()
     {
-        var currentApplication = Application.Current;
+        Application? currentApplication = Application.Current;
         if (currentApplication != null)
         {
             /*
@@ -869,10 +869,10 @@ public partial class MainWindow : Window
         => DataImportInternal(DataImportType.KonoAsset);
     private async void DataImportInternal(DataImportType dataImportType)
     {
-        var folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false); // TODO: Localizeする
+        string[]? folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false); // TODO: Localizeする
         if (folders == null || folders.Length == 0) return;
 
-        var selectedFolder = folders[0];
+        string selectedFolder = folders[0];
         
         SelectImportTypeOverlay.IsVisible = false;
 
@@ -912,7 +912,7 @@ public partial class MainWindow : Window
     {
         List<ItemTagState> selectedItemTagStates = new();
 
-        foreach (var selectionNode in _avatarExplorer.GetCurrentPaths())
+        foreach (SelectionNode selectionNode in _avatarExplorer.GetCurrentPaths())
         {
             if (!selectedItemTagStates.Contains(selectionNode.State))
                 selectedItemTagStates.Add(selectionNode.State);

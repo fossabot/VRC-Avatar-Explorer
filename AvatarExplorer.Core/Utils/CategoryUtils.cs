@@ -9,7 +9,7 @@ public static class CategoryUtils
 
     public static IReadOnlyList<ItemCountInfo> GetCategories(IReadOnlyList<Item> items)
     {
-        var categories = new List<ItemCountInfo>();
+        List<ItemCountInfo> categories = new();
 
         categories.AddRange(
             Enum.GetValues<ItemType>()

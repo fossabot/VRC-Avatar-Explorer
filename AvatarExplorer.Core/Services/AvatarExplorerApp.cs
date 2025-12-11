@@ -31,7 +31,7 @@ public class AvatarExplorerApp
     #region Database
     public void LoadItemDatabase(bool fromV1 = false)
     {
-        var database = fromV1 ? DatabaseUtils.LoadItemsDataFromV1(SystemPath.ItemDatabasePath) : DatabaseUtils.LoadItemsData(SystemPath.ItemDatabasePath);
+        List<Item> database = fromV1 ? DatabaseUtils.LoadItemsDataFromV1(SystemPath.ItemDatabasePath) : DatabaseUtils.LoadItemsData(SystemPath.ItemDatabasePath);
 
         _items.Clear();
         _items.AddRange(database);
@@ -39,7 +39,7 @@ public class AvatarExplorerApp
 
     public void LoadCommonAvatarDatabase(bool fromV1 = false)
     {
-        var database = fromV1 ? DatabaseUtils.LoadCommonAvatarsDataFromV1(SystemPath.CommonAvatarDatabasePath) :  DatabaseUtils.LoadCommonAvatarsData(SystemPath.CommonAvatarDatabasePath);
+        List<CommonAvatar> database = fromV1 ? DatabaseUtils.LoadCommonAvatarsDataFromV1(SystemPath.CommonAvatarDatabasePath) :  DatabaseUtils.LoadCommonAvatarsData(SystemPath.CommonAvatarDatabasePath);
 
         _commonAvatars.Clear();
         _commonAvatars.AddRange(database);
@@ -47,7 +47,7 @@ public class AvatarExplorerApp
 
     public void LoadItemDatabase(string path, bool fromV1 = false)
     {
-        var database = fromV1 ? DatabaseUtils.LoadItemsDataFromV1(path) : DatabaseUtils.LoadItemsData(path);
+        List<Item> database = fromV1 ? DatabaseUtils.LoadItemsDataFromV1(path) : DatabaseUtils.LoadItemsData(path);
 
         _items.Clear();
         _items.AddRange(database);
@@ -55,7 +55,7 @@ public class AvatarExplorerApp
 
     public void LoadCommonAvatarDatabase(string path, bool fromV1 = false)
     {
-        var database = fromV1 ? DatabaseUtils.LoadCommonAvatarsDataFromV1(path) :  DatabaseUtils.LoadCommonAvatarsData(path);
+        List<CommonAvatar> database = fromV1 ? DatabaseUtils.LoadCommonAvatarsDataFromV1(path) :  DatabaseUtils.LoadCommonAvatarsData(path);
 
         _commonAvatars.Clear();
         _commonAvatars.AddRange(database);
@@ -65,13 +65,13 @@ public class AvatarExplorerApp
     #region Runtime Settings
     public void LoadRuntimeSettings()
     {
-        var runtimeSettings = SettingsUtils.LoadRuntimeSettings(SystemPath.RuntimeSettingsFilePath);
+        RuntimeSettings runtimeSettings = SettingsUtils.LoadRuntimeSettings(SystemPath.RuntimeSettingsFilePath);
         SetRuntimeSettingsInternal(runtimeSettings);
         _runtimeSettings.Save();
     }
     public void LoadRuntimeSettings(string path)
     {
-        var runtimeSettings = SettingsUtils.LoadRuntimeSettings(path);
+        RuntimeSettings runtimeSettings = SettingsUtils.LoadRuntimeSettings(path);
         SetRuntimeSettingsInternal(runtimeSettings);
         _runtimeSettings.Save();
     }
@@ -241,17 +241,17 @@ public class AvatarExplorerApp
         List<ItemCountInfo> categoryItems = new();
 
         FileCategory[] extensionFilters = Enum.GetValues<FileCategory>();
-        foreach (var filter in extensionFilters)
+        foreach (FileCategory filter in extensionFilters)
         {
-            var filters = filter.GetExtensionFilters();
+            string[]? filters = filter.GetExtensionFilters();
             if (filters == null) continue;
 
-            var categoryItem = new FileCategoryItem
+            FileCategoryItem categoryItem = new()
             {
                 FileCategory = filter
             };
 
-            foreach (var file in FileSystemUtils.EnumerateFiles(itemPath))
+            foreach (string file in FileSystemUtils.EnumerateFiles(itemPath))
             {
                 string fileExtension = Path.GetExtension(file);
                 if (filters.Contains(fileExtension))
@@ -278,7 +278,7 @@ public class AvatarExplorerApp
         string[]? filters = fileCategory.GetExtensionFilters();
         if (filters == null) return new();
 
-        foreach (var file in FileSystemUtils.EnumerateFiles(itemPath))
+        foreach (string file in FileSystemUtils.EnumerateFiles(itemPath))
         {
             string fileExtension = Path.GetExtension(file);
             if (filters.Contains(fileExtension))
@@ -335,10 +335,10 @@ public class AvatarExplorerApp
     #region Add API
     public async Task<(Item? newItem, List<string> processingFailedPaths)> AddItem(ItemCreationContext itemCreationContext)
     {
-        var newItem = await Item.FromItemCreationContext(itemCreationContext, _runtimeSettings);
-        if (newItem.Item1 != null) _items.Add(newItem.Item1); // アイテムの追加に失敗していなければここで追加してあげる
+        var addItemResult = await Item.FromItemCreationContext(itemCreationContext, _runtimeSettings);
+        if (addItemResult.newItem != null) _items.Add(addItemResult.newItem); // アイテムの追加に失敗していなければここで追加してあげる
 
-        return newItem;
+        return addItemResult;
     }
 
     public Item EditItem(Item item, ItemCreationContext itemCreationContext)
@@ -355,7 +355,7 @@ public class AvatarExplorerApp
         if (string.IsNullOrEmpty(boothUrl)) return null;
         if (IsApiCooldownNow) return null;
 
-        var boothId = boothUrl.Split('/')[^1];
+        string boothId = boothUrl.Split('/')[^1];
 
         _lastBoothApiGetTime = DateTime.Now; // 時間を更新する
         return await BoothUtils.GetBoothItemAsync(boothId);

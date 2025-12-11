@@ -120,9 +120,9 @@ public static class FileSystemUtils
     private static async Task<int> CountTarEntriesAsync(string filePath)
     {
         int count = 0;
-        await using var fileStream = File.OpenRead(filePath);
-        await using var gzipStream = new GZipStream(fileStream, CompressionMode.Decompress);
-        await using var tarReader = new TarReader(gzipStream);
+        await using Stream fileStream = File.OpenRead(filePath);
+        await using GZipStream gzipStream = new GZipStream(fileStream, CompressionMode.Decompress);
+        await using TarReader tarReader = new TarReader(gzipStream);
         while (await tarReader.GetNextEntryAsync() is { })
             count++;
         return count;
@@ -131,9 +131,9 @@ public static class FileSystemUtils
     {
         int processedEntries = 0;
 
-        await using var fileStream = File.OpenRead(tarGzFilePath);
-        await using var gzipStream = new GZipStream(fileStream, CompressionMode.Decompress);
-        await using var tarReader = new TarReader(gzipStream);
+        await using Stream fileStream = File.OpenRead(tarGzFilePath);
+        await using GZipStream gzipStream = new(fileStream, CompressionMode.Decompress);
+        await using TarReader tarReader = new(gzipStream);
 
         int lastProgress = -1;
 
@@ -141,7 +141,7 @@ public static class FileSystemUtils
         {
             if (Path.GetFileName(entry.Name) == "pathname" && entry.DataStream != null)
             {
-                using var reader = new StreamReader(entry.DataStream);
+                using StreamReader reader = new(entry.DataStream);
                 string assetPath = await reader.ReadToEndAsync();
 
                 // 親フォルダがAssetsのものだけ変更するようにする (Packagesフォルダは変更しない)
@@ -160,7 +160,7 @@ public static class FileSystemUtils
             {
                 entry.DataStream ??= new MemoryStream();
                 Directory.CreateDirectory(Path.GetDirectoryName(entryPath)!);
-                await using var entryStream = File.Create(entryPath);
+                await using Stream entryStream = File.Create(entryPath);
                 await entry.DataStream.CopyToAsync(entryStream);
             }
 
@@ -178,7 +178,7 @@ public static class FileSystemUtils
     {
         if (!Directory.Exists(sourceFolder)) throw new DirectoryNotFoundException(sourceFolder);
 
-        using var archive = TarArchive.Create();
+        using TarArchive archive = TarArchive.Create();
 
         foreach (string filePath in EnumerateFiles(sourceFolder))
         {
@@ -186,7 +186,7 @@ public static class FileSystemUtils
             archive.AddEntry(relativePath, filePath);
         }
 
-        using var fileStream = new FileStream(outputTarFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 1024 * 1024, FileOptions.SequentialScan);
+        using FileStream fileStream = new(outputTarFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 1024 * 1024, FileOptions.SequentialScan);
         archive.SaveTo(fileStream, new WriterOptions(CompressionType.None));
     }
 
@@ -202,7 +202,7 @@ public static class FileSystemUtils
         {
             try
             {
-                var extractedFolderPath = await ProcessExtractItemFoldersInternal(
+                string extractedFolderPath = await ProcessExtractItemFoldersInternal(
                     itemCreationContext.Folders[i],
                     string.IsNullOrEmpty(parentFolder) ? destinationDirectory : othersFolder,
                     string.IsNullOrEmpty(parentFolder) ? (ItemUtils.GetSafeTitle(itemCreationContext.Title) ?? Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i])) : Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i]), // 親フォルダだけフォルダ名をタイトルに変換する
@@ -253,7 +253,7 @@ public static class FileSystemUtils
         var (extractedDestinationFolderPath, isDirectory) = FileExtractorInternal(filePath, destinationFolderPath, folderName, removeOriginal);
         if (isDirectory)
         {
-            var copiedFolderPath = PrepareDestinationDirectoryInternal(destinationFolderPath, folderName);
+            string copiedFolderPath = PrepareDestinationDirectoryInternal(destinationFolderPath, folderName);
             await CopyDirectory(filePath, copiedFolderPath); // フォルダが返された場合は、フォルダにコピーする
             extractedDestinationFolderPath = copiedFolderPath;
         }
@@ -262,7 +262,7 @@ public static class FileSystemUtils
     }
     internal static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, IProgress<(string, int, string)>? progress = null, int maxDegreeOfParallelism = 4)
     {
-        var allFiles = EnumerateFiles(sourceDirectory).ToList();
+        List<string> allFiles = EnumerateFiles(sourceDirectory).ToList();
         int totalFiles = allFiles.Count;
 
         int copiedFiles = 0;
@@ -279,8 +279,8 @@ public static class FileSystemUtils
                     string destPath = Path.Combine(destinationDirectory, relativePath);
                     Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
 
-                    using var sourceStream = File.OpenRead(file);
-                    using var destStream = File.Create(destPath);
+                    using Stream sourceStream = File.OpenRead(file);
+                    using Stream destStream = File.Create(destPath);
                     sourceStream.CopyTo(destStream, BufferSize);
 
                     copiedFiles++;
@@ -332,7 +332,7 @@ public static class FileSystemUtils
     }
     private static string ZipExtractor(string filePath, string extractDirectory, string folderName)
     {
-        var extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
 
         using (var archive = SharpCompress.Archives.Zip.ZipArchive.Open(filePath))
         EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
@@ -341,7 +341,7 @@ public static class FileSystemUtils
     }
     private static string RarExtractor(string filePath, string extractDirectory, string folderName)
     {
-        var extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.Rar.RarArchive.Open(filePath))
         EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
@@ -350,7 +350,7 @@ public static class FileSystemUtils
     }
     private static string SevenZipExtractor(string filePath, string extractDirectory, string folderName)
     {
-        var extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.SevenZip.SevenZipArchive.Open(filePath))
         EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
@@ -359,7 +359,7 @@ public static class FileSystemUtils
     }
     private static string GzipExtractor(string filePath, string extractDirectory, string folderName)
     {
-        var extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.GZip.GZipArchive.Open(filePath))
         EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
@@ -368,7 +368,7 @@ public static class FileSystemUtils
     }
     private static string PrepareDestinationDirectoryInternal(string extractDirectory, string folderName)
     {
-        var extractDirectoryFolder = Path.Combine(extractDirectory, folderName);
+        string extractDirectoryFolder = Path.Combine(extractDirectory, folderName);
 
         if (Directory.Exists(extractDirectoryFolder))
         {
@@ -386,15 +386,15 @@ public static class FileSystemUtils
     {
         byte[] buffer = new byte[BufferSize];
 
-        foreach (var entry in entries)
+        foreach (T entry in entries)
         {
             if (!entry.IsDirectory)
             {
                 string fullPath = Path.Combine(extractDirectoryFolder, entry.Key!);
                 Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
 
-                using var inStream = entry.OpenEntryStream();
-                using var outStream = File.Create(fullPath);
+                using Stream inStream = entry.OpenEntryStream();
+                using Stream outStream = File.Create(fullPath);
 
                 int read;
                 while ((read = inStream.Read(buffer, 0, buffer.Length)) > 0)

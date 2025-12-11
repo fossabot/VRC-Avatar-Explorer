@@ -23,7 +23,7 @@ internal static class UIUtils
 
     internal static void AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
-        var itemButton = new Button()
+        Button itemButton = new()
         {
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Top,
@@ -31,13 +31,13 @@ internal static class UIUtils
             Tag = item.Tag
         };
 
-        var contentPanel = new StackPanel()
+        StackPanel contentPanel = new()
         {
             Orientation = Orientation.Horizontal,
             Spacing = 10
         };
 
-        var itemIcon = new Image()
+        Image itemIcon = new()
         {
             Source = IconUtils.GetIcon(item.ImageFileName, item.IconType),
             Width = 70,
@@ -59,7 +59,7 @@ internal static class UIUtils
         }
         contentPanel.Children.Add(itemIcon);
 
-        var textPanel = new StackPanel
+        StackPanel textPanel = new()
         {
             Orientation = Orientation.Vertical
         };
@@ -80,7 +80,7 @@ internal static class UIUtils
         });
 
         // TODO: タグパネルが横に無限に伸びてしまっているのを修正する
-        var tagPanel = new WrapPanel()
+        WrapPanel tagPanel = new()
         {
             Orientation = Orientation.Horizontal,
             ItemSpacing = 10,
@@ -90,7 +90,7 @@ internal static class UIUtils
 
         if (!string.IsNullOrEmpty(item.CommonAvatarName))
         {
-            var commonAvatarButton = GenerateTagButton(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, item.CommonAvatarName));
+            Button commonAvatarButton = GenerateTagButton(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, item.CommonAvatarName));
             commonAvatarButton.FontWeight = FontWeight.Bold;
             commonAvatarButton.Background = new SolidColorBrush(Colors.Green);
             tagPanel.Children.Add(commonAvatarButton);
@@ -127,7 +127,7 @@ internal static class UIUtils
     }
     private static string? GetTooltipForItem(UISelectableItem item)
     {
-        var toolTipTextBuilder = new StringBuilder();
+        StringBuilder toolTipTextBuilder = new();
 
         // AppendLine()1つだとシンプルな改行になるので1行空けたければ2ついる
         toolTipTextBuilder.Append(item.Title);
@@ -170,14 +170,14 @@ internal static class UIUtils
         bool renderNextButton = currentPageValue < totalPages - 1;
         bool renderLastButton = currentPageValue < totalPages - 1;
 
-        var pageGrid = new Grid()
+        Grid pageGrid = new()
         {
             ColumnDefinitions = new ColumnDefinitions("*,*,*,*"),
             ColumnSpacing = 10,
             Margin = new Thickness(30, 0, 30, 0)
         };
 
-        var pageInfoStackPanel = new StackPanel()
+        StackPanel pageInfoStackPanel = new()
         {
             Orientation = Orientation.Vertical,
             HorizontalAlignment = HorizontalAlignment.Center,
@@ -188,7 +188,7 @@ internal static class UIUtils
         Grid.SetColumnSpan(pageInfoStackPanel, 4);
 
         // TODO: Localizeする
-        var pageTextBlock = new TextBlock()
+        TextBlock pageTextBlock = new()
         {
             Text = $"{currentPageValue + 1}/{totalPages}ページ",
             FontSize = 15,
@@ -197,7 +197,7 @@ internal static class UIUtils
         };
         pageInfoStackPanel.Children.Add(pageTextBlock);
 
-        var itemsCountTextBlock = new TextBlock()
+        TextBlock itemsCountTextBlock = new()
         {
             Text = $"{start} - {end} / {totalItemCount}個の項目",
             FontSize = 15,
@@ -210,7 +210,7 @@ internal static class UIUtils
 
         if (renderFirstButton)
         {
-            var firstButton = new Button()
+            Button firstButton = new()
             {
                 Content = "<<",
                 FontSize = 15,
@@ -228,7 +228,7 @@ internal static class UIUtils
 
         if (renderBackButton)
         {
-            var backButton = new Button()
+            Button backButton = new()
             {
                 Content = "<",
                 FontSize = 15,
@@ -245,7 +245,7 @@ internal static class UIUtils
 
         if (renderNextButton)
         {
-            var nextButton = new Button()
+            Button nextButton = new()
             {
                 Content = ">",
                 FontSize = 15,
@@ -262,7 +262,7 @@ internal static class UIUtils
 
         if (renderLastButton)
         {
-            var lastButton = new Button()
+            Button lastButton = new()
             {
                 Content = ">>",
                 FontSize = 15,

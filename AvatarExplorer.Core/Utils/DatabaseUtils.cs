@@ -35,7 +35,7 @@ public static class DatabaseUtils
         if (!File.Exists(path)) throw new FileNotFoundException();
 
         string json = File.ReadAllText(path);
-        var items = JsonSerializer.Deserialize<List<Item>>(json) ?? [];
+        List<Item> items = JsonSerializer.Deserialize<List<Item>>(json) ?? [];
 
         return items;
     }
@@ -45,7 +45,7 @@ public static class DatabaseUtils
         if (!File.Exists(path)) throw new FileNotFoundException();
 
         string json = File.ReadAllText(path);
-        var commonAvatars = JsonSerializer.Deserialize<List<CommonAvatar>>(json) ?? [];
+        List<CommonAvatar> commonAvatars = JsonSerializer.Deserialize<List<CommonAvatar>>(json) ?? [];
 
         return commonAvatars;
     }
@@ -55,7 +55,7 @@ public static class DatabaseUtils
         if (!File.Exists(path)) throw new FileNotFoundException();
 
         string json = File.ReadAllText(path);
-        var items = JsonSerializer.Deserialize<List<ItemV1>>(json) ?? [];
+        List<ItemV1> items = JsonSerializer.Deserialize<List<ItemV1>>(json) ?? [];
 
         return MigrateItemsFromV1(items);
     }
@@ -65,7 +65,7 @@ public static class DatabaseUtils
         if (!File.Exists(path)) throw new FileNotFoundException();
 
         string json = File.ReadAllText(path);
-        var commonAvatars = JsonSerializer.Deserialize<List<CommonAvatarV1>>(json) ?? [];
+        List<CommonAvatarV1> commonAvatars = JsonSerializer.Deserialize<List<CommonAvatarV1>>(json) ?? [];
 
         return MigrateCommonAvatarsFromV1(commonAvatars);
     }

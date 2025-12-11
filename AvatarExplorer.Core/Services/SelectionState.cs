@@ -12,7 +12,7 @@ internal class SelectionState
     {
         if (state == ItemTagState.SearchItem && Search(ItemTagState.SearchItem) != null)
         {
-            foreach (var itemTagState in _stack.Select(i => i.State).ToArray())
+            foreach (ItemTagState itemTagState in _stack.Select(i => i.State).ToArray())
             {
                 Pop();
                 if (itemTagState == ItemTagState.SearchItem) break;
