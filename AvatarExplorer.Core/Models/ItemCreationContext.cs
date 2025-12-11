@@ -1,5 +1,3 @@
-using AvatarExplorer.Core.Utils;
-
 namespace AvatarExplorer.Core.Models;
 
 public class ItemCreationContext
@@ -13,6 +11,6 @@ public class ItemCreationContext
     public int BoothId { get; set; } = -1;
     public ItemType ItemType { get; set; } = ItemType.Avatar;
     public string CustomCategory { get; set; } = string.Empty;
-    public string LocalizedCategoryName { get; set; } = string.Empty;
+    public string LocalizedItemTypeName { get; set; } = string.Empty;
     public List<string> SupportedAvatars { get; set; } = new();
 }

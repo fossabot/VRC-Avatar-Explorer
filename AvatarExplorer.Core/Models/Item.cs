@@ -174,7 +174,7 @@ public class Item : ISelectableItem
 
     internal async static Task<(Item? newItem, List<string> processingFailedPaths)> FromItemCreationContext(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
     {
-        string extractDestinationFolderPath = Path.Combine(runtimeSettings.DataRootDirectory, itemCreationContext.LocalizedCategoryName);
+        string extractDestinationFolderPath = Path.Combine(runtimeSettings.DataRootDirectory, itemCreationContext.LocalizedItemTypeName);
         var (itemPath, materialPath, processingFailedPaths) = await FileSystemUtils.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, extractDestinationFolderPath, runtimeSettings.RemoveOriginal);
         
         if (string.IsNullOrEmpty(itemPath))

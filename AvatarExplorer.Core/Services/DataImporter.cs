@@ -5,9 +5,9 @@ using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Services;
 
-public static class DataImporter
+internal static class DataImporter
 {
-    public static async Task<(List<Item>, List<CommonAvatar>)> FromV1(string dataFolderPath, RuntimeSettings runtimeSettings, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
+    internal static async Task<(List<Item>, List<CommonAvatar>)> FromV1(string dataFolderPath, RuntimeSettings runtimeSettings, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
     {
         progress?.Report((LocalizationKey.Processing.Import.Copying, 0, string.Empty));
 
@@ -48,7 +48,7 @@ public static class DataImporter
         return (items, commonAvatars);
     }
 
-    public static async Task<List<Item>> FromKonoAsset(string dataFolderPath, RuntimeSettings runtimeSettings, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
+    internal static async Task<List<Item>> FromKonoAsset(string dataFolderPath, RuntimeSettings runtimeSettings, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
     {
         throw new NotImplementedException();
     }

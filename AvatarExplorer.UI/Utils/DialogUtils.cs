@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -9,34 +11,59 @@ namespace AvatarExplorer.UI.Utils;
 
 internal static class DialogUtils
 {
-    internal async static Task<IReadOnlyList<IStorageFile>> OpenFileDialog(Visual visual, string titleKey, bool allowMultiple = false)
+    internal async static Task<string[]?> OpenFileDialog(Visual visual, string titleKey, bool allowMultiple = false)
     {
-        var storageProvider = GetStorageProvider(visual);
+        IStorageProvider? storageProvider = GetStorageProvider(visual);
         if (storageProvider == null) return [];
 
-        var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        IReadOnlyList<IStorageFile> files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = Localizer.Instance[titleKey],
             AllowMultiple = allowMultiple
         });
 
-        return files;
+        string[] filePaths = files
+            .Select(i => i.TryGetLocalPath())
+            .Where(i => !string.IsNullOrEmpty(i) && File.Exists(i))
+            .ToArray()!;
+
+        return filePaths.Length == 0 ? null : filePaths;
     }
 
-    internal async static Task<IReadOnlyList<IStorageFolder>> OpenFolderDialog(Visual visual, string titleKey, bool allowMultiple = false)
+    internal async static Task<string[]?> OpenFolderDialog(Visual visual, string titleKey, bool allowMultiple = false)
     {
-        var storageProvider = GetStorageProvider(visual);
+        IStorageProvider? storageProvider = GetStorageProvider(visual);
         if (storageProvider == null) return [];
 
-        var folders = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        IReadOnlyList<IStorageFolder> folders = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
             Title = Localizer.Instance[titleKey],
             AllowMultiple = allowMultiple
         });
 
-        return folders;
+        string[] FolderPaths = folders
+            .Select(i => i.TryGetLocalPath())
+            .Where(i => !string.IsNullOrEmpty(i) && Directory.Exists(i))
+            .ToArray()!;
+
+        return FolderPaths.Length == 0 ? null : FolderPaths;
     }
 
+    internal async static Task<string?> SaveFileDialog(Visual visual, string titleKey, string defaultExtension)
+    {
+        IStorageProvider? storageProvider = GetStorageProvider(visual);
+        if (storageProvider == null) return null;
+
+        IStorageFile? file = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = Localizer.Instance[titleKey],
+            DefaultExtension = defaultExtension
+        });
+
+        return file?.TryGetLocalPath();
+    }
+
+    
     private static IStorageProvider? GetStorageProvider(Visual visual)
         => TopLevel.GetTopLevel(visual)?.StorageProvider;
 }

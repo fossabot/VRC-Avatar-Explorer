@@ -431,6 +431,13 @@ public class AvatarExplorerApp
 
     #endregion
 
+    #region Data Exporter API
+    public async Task ExportToCsv(string filePath, Dictionary<ItemType, string> localizedItemTypesMapping, bool includeImplementedToSupported)
+    {
+        await DataExporter.ExportToCsv(_items, _commonAvatars, localizedItemTypesMapping, filePath, includeImplementedToSupported);
+    }
+    #endregion
+
     #region Ececute Context Menu Command
     public async Task ExecuteContextMenuItemCommand(ContextMenuAction contextMenuAction)
     {

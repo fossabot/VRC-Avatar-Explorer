@@ -19,7 +19,7 @@
             <Border DockPanel.Dock="Bottom" Padding="10">
                 <Grid ColumnDefinitions="*,20,*,20,*,20,*,20,120,20,120,20,*" Height="60" Margin="10,0,10,0">
 
-                    <Button Grid.Column="0" Content="CSVに出力" Tag="UI.OutputToCSV" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="40"/>
+                    <Button Grid.Column="0" Content="CSVに出力" Tag="UI.ExportDataToCsv" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="40" Click="Main_ExportDataToCsv_Click"/>
                     <Button Grid.Column="2" Content="バックアップの作成" Tag="UI.MakeBackup" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="40"/>
                     <Button Grid.Column="4" Content="共通素体の管理" Tag="UI.ManageCommonAvatar" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="40"/>
                     <Button Grid.Column="6" Content="データを読み込む" Tag="UI.LoadData" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="40" Click="Main_ImportData_Click"/>

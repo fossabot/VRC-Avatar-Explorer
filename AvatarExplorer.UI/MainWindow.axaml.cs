@@ -60,7 +60,7 @@ public partial class MainWindow : Window
         TODO: 下のボタンの処理を実装する
         TODO: SCHEMEに対応する
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるように変更
-        TODO: 詳細検索用の画面を追加する
+        TODO: 詳細検索用の画面を追加する（右のアイテム画面の右側に縦長に別ウィンドウみたいな感じで表示するのはありかも？）
         TODO: スクロール位置を保存するようにしたいね
         TODO: ソフト終了時にTempを削除したい
         */
@@ -471,6 +471,22 @@ public partial class MainWindow : Window
         _avatarExplorer.SetItemsSortOrder((SortOrder)comboBox.SelectedIndex);
         ReloadCurrentWindow();
     }
+    private void Main_ImportData_Click(object? sender, RoutedEventArgs e)
+    {
+        SelectImportTypeOverlay.IsVisible = true;
+    }
+
+    private async void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
+    {
+        //チェックボックスでやる
+        var filePath = await DialogUtils.SaveFileDialog(this, "保存先を選択してください", ".csv");
+        if (filePath == null) return;
+
+        var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
+        await _avatarExplorer.ExportToCsv(filePath, localizedItemTypesMapping, true);
+
+        ShowDialog("成功", "データの出力が完了しました。");
+    }
     private async void ItemButton_ContextMenuItem_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is MenuItem menuItem && menuItem.Tag is ContextMenuAction contextMenuAction)
@@ -656,8 +672,10 @@ public partial class MainWindow : Window
     private async void AddItemOverlay_AddFolder_Click(object? sender, RoutedEventArgs e)
     {
         var folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", true);
+        if (folders == null || folders.Length == 0) return;
+
         _addItemWindowValues.Folders.Clear();
-        _addItemWindowValues.Folders.AddRange(folders.Select(i => i.TryGetLocalPath() ?? ""));
+        _addItemWindowValues.Folders.AddRange(folders); // TODO: 存在してるフォルダのみ追加する
         // TODO: フォルダ追加時に右がとこかに、現在選択されているフォルダを [ファイル | フォルダ名] [削除]みたいにリストで表示して編集しやすくしたいよね
     }
     
@@ -669,7 +687,6 @@ public partial class MainWindow : Window
 
     private async void AddItemOverlay_ConfirmButton_Click(object? sender, RoutedEventArgs e)
     {
-        Console.WriteLine(GetCategoryFromItemWindow());
         if (_addItemWindowValues == null) return;
         if (!ValidateAddItemWindowValues()) return;
 
@@ -687,16 +704,16 @@ public partial class MainWindow : Window
         if (categoryInfo.Item1 == ItemType.Custom) itemCreationContext.CustomCategory = categoryInfo.Item2;
 
         itemCreationContext.SupportedAvatars.AddRange(_addItemWindowValues.SupportedAvatars);
-        itemCreationContext.LocalizedCategoryName = categoryInfo.Item1 == ItemType.Custom ? categoryInfo.Item2 : Localizer.Instance[categoryInfo.Item1.GetLocalizationKey() ?? ""];
+        itemCreationContext.LocalizedItemTypeName = categoryInfo.Item1 == ItemType.Custom ? categoryInfo.Item2 : Localizer.Instance[categoryInfo.Item1.GetLocalizationKey() ?? ""];
 
         if (_selectedItem == null)
         {
-            var itemAddResult = await _avatarExplorer.AddItem(itemCreationContext);
-            if (itemAddResult.processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
+            var (_, processingFailedPaths) = await _avatarExplorer.AddItem(itemCreationContext);
+            if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
             {
                 ShowDialog(
                     Localizer.Instance[LocalizationKey.Error.Default],
-                    Localizer.Instance.GetDisplayName(LocalizationKey.Error.ItemFolderProcessingFailedPaths, "\n" + string.Join('\n', itemAddResult.processingFailedPaths.Select(i => $"- {i}")))
+                    Localizer.Instance.GetDisplayName(LocalizationKey.Error.ItemFolderProcessingFailedPaths, "\n" + string.Join('\n', processingFailedPaths.Select(i => $"- {i}")))
                 );
             }
         }
@@ -756,8 +773,10 @@ public partial class MainWindow : Window
 
     private async void SettingsOverlay_OpenFolder_Click(object? sender, RoutedEventArgs e)
     {
-        var folder = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false); // TODO: Localizeする
-        SettingsOverlay_ItemsFolderPathTextBox.Text = folder.Count > 0 ? (folder[0]?.TryGetLocalPath() ?? "") : "";
+        var folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false);
+        if (folders == null || folders.Length == 0) return;
+
+        SettingsOverlay_ItemsFolderPathTextBox.Text = folders[0];
     }
     private void SettingsOverlay_CloseButton_Click(object? sender, RoutedEventArgs e)
     {
@@ -839,6 +858,47 @@ public partial class MainWindow : Window
     }
     #endregion
 
+    #region Data Import Overlay
+    private void SelectImportTypeOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
+    {
+        SelectImportTypeOverlay.IsVisible = false;
+    }
+    private void SelectImportTypeOverlay_FromV1_Click(object? sender, RoutedEventArgs e)
+        => DataImportInternal(DataImportType.V1);
+    private void SelectImportTypeOverlay_FromKonoAsset_Click(object? sender, RoutedEventArgs e)
+        => DataImportInternal(DataImportType.KonoAsset);
+    private async void DataImportInternal(DataImportType dataImportType)
+    {
+        var folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false); // TODO: Localizeする
+        if (folders == null || folders.Length == 0) return;
+
+        var selectedFolder = folders[0];
+        
+        SelectImportTypeOverlay.IsVisible = false;
+
+        var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
+
+        var progress = new Progress<(string, int, string)>(tuple =>
+        {
+            if (tuple.Item2 == 100)
+            {
+                HideProgress();
+            }
+            else
+            {
+                ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
+                UpdateProgress(tuple.Item2);
+            }
+        });
+
+        if (dataImportType == DataImportType.V1) await _avatarExplorer.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
+        else if (dataImportType == DataImportType.KonoAsset)  await _avatarExplorer.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progress);
+
+        ReloadCurrentWindow();
+    }
+    #endregion
+    
+    #region Main UI Methods
     private void ReloadCurrentWindow()
     {
         RenderLeftPanel();
@@ -864,52 +924,5 @@ public partial class MainWindow : Window
                 _currentPageStates[pageInfo.Key] = 0;
         }
     }
-
-    private async void Main_ImportData_Click(object? sender, RoutedEventArgs e)
-    {
-        SelectImportTypeOverlay.IsVisible = true;
-    }
-
-    private void SelectImportTypeOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
-    {
-        SelectImportTypeOverlay.IsVisible = false;
-    }
-
-    private void SelectImportTypeOverlay_FromV1_Click(object? sender, RoutedEventArgs e)
-        => DataImportInternal(DataImportType.V1);
-    private void SelectImportTypeOverlay_FromKonoAsset_Click(object? sender, RoutedEventArgs e)
-        => DataImportInternal(DataImportType.KonoAsset);
-    private async void DataImportInternal(DataImportType dataImportType)
-    {
-        var folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false); // TODO: Localizeする
-        var selectedFolder = folders.Count > 0 ? (folders[0]?.TryGetLocalPath() ?? "") : "";
-
-        if (selectedFolder == "" || !Directory.Exists(selectedFolder))
-        {
-            ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.Default]);
-            return;
-        }
-        
-        SelectImportTypeOverlay.IsVisible = false;
-
-        var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
-
-        var progress = new Progress<(string, int, string)>(tuple =>
-        {
-            if (tuple.Item2 == 100)
-            {
-                HideProgress();
-            }
-            else
-            {
-                ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
-                UpdateProgress(tuple.Item2);
-            }
-        });
-
-        if (dataImportType == DataImportType.V1) await _avatarExplorer.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
-        else if (dataImportType == DataImportType.KonoAsset)  await _avatarExplorer.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progress);
-
-        ReloadCurrentWindow();
-    }
+    #endregion
 }
