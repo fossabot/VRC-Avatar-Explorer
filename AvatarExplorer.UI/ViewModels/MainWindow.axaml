@@ -3,6 +3,7 @@
         TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
         WindowStartupLocation="CenterScreen"
+        DragDrop.AllowDrop="True"
         Width="1280"
         Height="720">
 

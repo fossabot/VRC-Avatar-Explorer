@@ -675,7 +675,7 @@ public partial class MainWindow : Window
         if (folders == null || folders.Length == 0) return;
 
         _addItemWindowValues.Folders.Clear();
-        _addItemWindowValues.Folders.AddRange(folders); // TODO: 存在してるフォルダのみ追加する
+        _addItemWindowValues.Folders.AddRange(folders);
         // TODO: フォルダ追加時に右がとこかに、現在選択されているフォルダを [ファイル | フォルダ名] [削除]みたいにリストで表示して編集しやすくしたいよね
     }
     
