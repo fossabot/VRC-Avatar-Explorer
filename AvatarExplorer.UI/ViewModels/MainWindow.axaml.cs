@@ -84,8 +84,8 @@ public partial class MainWindow : Window
         InitializeNoItemsLabel();
         InitializeUserUiPreferences();
 
-        RenderLeftPanel();
-        RenderRightPanel();
+        Main_RenderLeftPanel();
+        Main_RenderRightPanel();
     }
 
     #region Initializing
@@ -159,10 +159,10 @@ public partial class MainWindow : Window
     #region Left Panel
     private void LeftFilter_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        RenderLeftPanel();
+        Main_RenderLeftPanel();
     }
 
-    private void RenderLeftPanel()
+    private void Main_RenderLeftPanel()
     {
         if (LeftPanel == null) return;
         LeftPanel.Children.Clear();
@@ -216,20 +216,20 @@ public partial class MainWindow : Window
             Main_CheckPageStates();
             Main_ResetAllScrollViewerOffset(); // 左のパネルのボタンは全てRootのため、スクロール状況を全てリセットしてしまう
 
-            RenderRightPanel();
+            Main_RenderRightPanel();
         }
 
         if (button.Tag is PageButtonInfo pageButtonInfo)
         {
             _currentPageStates[pageButtonInfo.ItemTagState] = pageButtonInfo.NextPageValue;
             Main_ResetScrollViewerOffset(pageButtonInfo.ItemTagState); // 今のStateのページをリセットしてあげる
-            RenderLeftPanel();
+            Main_RenderLeftPanel();
         }
     }
     #endregion
 
     #region Right Panel
-    private void RenderRightPanel()
+    private void Main_RenderRightPanel()
     {
         if (RightPanel == null) return;
         RightPanel.Children.Clear();
@@ -267,7 +267,7 @@ public partial class MainWindow : Window
             if (itemTagInfo.State == ItemTagState.ItemFileCategoryOpen) // ファイルを押されると、アイテムを開く処理に移行する
             {
                 string itemPath = itemTagInfo.Value; // ItemFileCategoryOpenのValueはファイルのパスになっている
-                await OpenFileInternalAsync(itemPath);
+                await Main_OpenFileInternalAsync(itemPath);
             }
             else
             {
@@ -275,7 +275,7 @@ public partial class MainWindow : Window
                 Main_CheckPageStates();
                 Main_SaveScrollViewerOffset(Main_RightPanelScrollViewer, itemTagInfo.State); // 次の画面に行くため、今のStateのスクロール位置を保存する
 
-                RenderRightPanel();
+                Main_RenderRightPanel();
             }
         }
 
@@ -284,18 +284,18 @@ public partial class MainWindow : Window
             _currentPageStates[pageButtonInfo.ItemTagState] = pageButtonInfo.NextPageValue;
             Main_ResetScrollViewerOffset(pageButtonInfo.ItemTagState); // ページは今のStateをリセットしてあげる
 
-            if (pageButtonInfo.ItemTagState == ItemTagState.SearchItem) ExecuteSearchItems();
-            else RenderRightPanel();
+            if (pageButtonInfo.ItemTagState == ItemTagState.SearchItem) Main_ExecuteSearchItems();
+            else Main_RenderRightPanel();
         }
     }
-    private async Task OpenFileInternalAsync(string filePath)
+    private async Task Main_OpenFileInternalAsync(string filePath)
     {
         bool isUnitypackage = filePath.ToLower().EndsWith(".unitypackage");
         
-        if (isUnitypackage) await OpenUnitypackageInternalAsync(filePath); // Unitypackageだと自動展開処理に移る
+        if (isUnitypackage) await Main_OpenUnitypackageInternalAsync(filePath); // Unitypackageだと自動展開処理に移る
         else await AvaloniaLauncherUtils.OpenFile(this, filePath);
     }
-    private async Task OpenUnitypackageInternalAsync(string itemPath)
+    private async Task Main_OpenUnitypackageInternalAsync(string itemPath)
     {
         Item? selectedItem = _avatarExplorer.GetSelectedItem();
         if (selectedItem == null)
@@ -304,7 +304,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var progress = new Progress<(string, int, string)>(tuple =>
+        var progress = new Progress<(string, int, string)>(async tuple =>
         {
             if (tuple.Item2 == 100)
             {
@@ -314,7 +314,7 @@ public partial class MainWindow : Window
                 // 空白の場合はないということだからスキップする
                 if (!string.IsNullOrEmpty(tuple.Item3))
                 {
-                    _ = AvaloniaLauncherUtils.OpenFile(this, tuple.Item3);
+                    await AvaloniaLauncherUtils.OpenFile(this, tuple.Item3);
                 }
             }
             else
@@ -324,7 +324,7 @@ public partial class MainWindow : Window
             }
         });
 
-        AvatarExplorerApp.ModifyUnityPackageFilePath(itemPath, Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? ""], progress: progress);
+        await AvatarExplorerApp.ModifyUnityPackageFilePath(itemPath, Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? ""], progress: progress);
     }
     #endregion
 
@@ -333,23 +333,23 @@ public partial class MainWindow : Window
     private void Main_SearchTextBox_TextChanged(object? sender, TextChangedEventArgs e)
     {
         _searchTimer.Stop();
-        _searchTimer.Tick -= OnSearchTimerTick;
-        _searchTimer.Tick += OnSearchTimerTick;
+        _searchTimer.Tick -= Main_OnSearchTimerTick;
+        _searchTimer.Tick += Main_OnSearchTimerTick;
         _searchTimer.Start();
     }
-    private void OnSearchTimerTick(object? sender, EventArgs e)
+    private void Main_OnSearchTimerTick(object? sender, EventArgs e)
     {
         _searchTimer.Stop();
         _searchTextCache = SearchTextBox.Text ?? "";
-        ExecuteSearchItems();
+        Main_ExecuteSearchItems();
     }
-    private void ExecuteSearchItems(string searchText = "")
+    private void Main_ExecuteSearchItems(string searchText = "")
     {
         if (!string.IsNullOrEmpty(searchText)) _searchTextCache = searchText;
 
         if (string.IsNullOrEmpty(_searchTextCache))
         {
-            RenderRightPanel();
+            Main_RenderRightPanel();
             return;
         }
 
@@ -483,8 +483,8 @@ public partial class MainWindow : Window
         Main_CheckPageStates(); // SelectUndoより前にやってあげないと、戻った先の画面のページ情報がリセットされる
         if (!_isLastWindowSearch) _avatarExplorer.SelectUndo(); // 最後の画面が検索画面だったら、検索だけやめて戻るようにする
 
-        if (isCurrentSearchNode) ExecuteSearchItems();
-        else RenderRightPanel();
+        if (isCurrentSearchNode) Main_ExecuteSearchItems();
+        else Main_RenderRightPanel();
     }
     private void Main_SortOrderComboBox_Changed(object? sender, RoutedEventArgs e)
     {
@@ -524,7 +524,7 @@ public partial class MainWindow : Window
         AddItemOverlay_ShowAddItemWindow(storageItemPaths);
     }
     
-    private void Main_Closing(object? sender, RoutedEventArgs e)
+    private void Main_Closing(object? sender, WindowClosingEventArgs e)
     {
         AvatarExplorerApp.ClearTemp();
     }
@@ -1073,11 +1073,11 @@ public partial class MainWindow : Window
     #region Main UI Methods
     private void Main_ReloadCurrentWindow()
     {
-        RenderLeftPanel();
+        Main_RenderLeftPanel();
 
         // 最後に表示されていた画面が検索画面だったら、キャッシュを元にもう一度検索してあげる
-        if (_isLastWindowSearch) ExecuteSearchItems();
-        else RenderRightPanel();
+        if (_isLastWindowSearch) Main_ExecuteSearchItems();
+        else Main_RenderRightPanel();
     }
 
     private void Main_CheckPageStates()

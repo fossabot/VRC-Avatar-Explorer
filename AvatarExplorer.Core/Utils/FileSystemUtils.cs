@@ -62,12 +62,12 @@ public static class FileSystemUtils
         }
     }
 
-    internal static void ModifyUnityPackageFilePathAsync(string itemPath, string itemCategoryName = "", IProgress<(string, int, string)>? progress = null)
+    internal static async Task ModifyUnityPackageFilePathAsync(string itemPath, string itemCategoryName = "", IProgress<(string, int, string)>? progress = null)
     {
         bool isUnitypackage = itemPath.ToLower().EndsWith(".unitypackage");
         if (!isUnitypackage) return;
 
-        _ = ModifyUnityPackageFilePathAsyncInternal(itemPath, itemCategoryName, progress);
+        await ModifyUnityPackageFilePathAsyncInternal(itemPath, itemCategoryName, progress);
     }
 
     private static async Task ModifyUnityPackageFilePathAsyncInternal(string itemPath, string itemCategoryName, IProgress<(string, int, string)>? progress = null)

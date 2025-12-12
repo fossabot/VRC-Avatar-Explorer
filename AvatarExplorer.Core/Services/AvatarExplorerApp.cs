@@ -363,9 +363,9 @@ public class AvatarExplorerApp
     #endregion
 
     #region File API
-    public static void ModifyUnityPackageFilePath(string itemPath, string itemCategoryName = "", IProgress<(string, int, string)>? progress = null)
+    public static async Task ModifyUnityPackageFilePath(string itemPath, string itemCategoryName = "", IProgress<(string, int, string)>? progress = null)
     {
-        FileSystemUtils.ModifyUnityPackageFilePathAsync(itemPath, itemCategoryName, progress);
+        await FileSystemUtils.ModifyUnityPackageFilePathAsync(itemPath, itemCategoryName, progress);
     }
     #endregion
 
@@ -425,7 +425,7 @@ public class AvatarExplorerApp
 
     public Task ImportFromKonoAsset(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
     {
-        // TODO: KonoAsset Importerを作る。IKonoAssetItemみたいなINterfaceで全部読み込んでしまうのが良さそ
+        // TODO: KonoAsset Importerを作る。IKonoAssetItemみたいなInterfaceで全部読み込んでしまうのが良さそ
         throw new NotImplementedException();
     }
 
