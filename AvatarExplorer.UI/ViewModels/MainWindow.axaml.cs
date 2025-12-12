@@ -116,11 +116,11 @@ public partial class MainWindow : Window
     }
     private void InitializeNoItemsLabel()
     {
-        if (RightPanelParent == null) return;
+        if (Main_RightPanelParent == null) return;
 
-        RightPanelParent.Children.Clear();
+        Main_RightPanelParent.Children.Clear();
 
-        RightPanelParent.Children.Add(new Image
+        Main_RightPanelParent.Children.Add(new Image
         {
             Source = IconUtils.GetIcon(SystemIcon.NothingIcon),
             Width = 150,
@@ -129,7 +129,7 @@ public partial class MainWindow : Window
             VerticalAlignment = VerticalAlignment.Center
         });
 
-        RightPanelParent.Children.Add(new TextBlock
+        Main_RightPanelParent.Children.Add(new TextBlock
         {
             Text = Localizer.Instance[LocalizationKey.Error.Nothing],
             HorizontalAlignment = HorizontalAlignment.Center,
@@ -164,8 +164,8 @@ public partial class MainWindow : Window
 
     private void Main_RenderLeftPanel()
     {
-        if (LeftPanel == null) return;
-        LeftPanel.Children.Clear();
+        if (Main_LeftPanel == null) return;
+        Main_LeftPanel.Children.Clear();
 
         List<ItemCountInfo> items = new();
 
@@ -200,10 +200,10 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            UIUtils.AddItemButton(LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings.RemoveBrackets, itemContextMenu, LeftPanel_ItemButton_Clicked);
+            UIUtils.AddItemButton(Main_LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings.RemoveBrackets, itemContextMenu, LeftPanel_ItemButton_Clicked);
         }
 
-        if (currentPage != -1 && items.Count != 0) UIUtils.AddPageButton(LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Clicked);
+        if (currentPage != -1 && items.Count != 0) UIUtils.AddPageButton(Main_LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Clicked);
     }
     private void LeftPanel_ItemButton_Clicked(object? sender, RoutedEventArgs e)
     {
@@ -231,8 +231,8 @@ public partial class MainWindow : Window
     #region Right Panel
     private void Main_RenderRightPanel()
     {
-        if (RightPanel == null) return;
-        RightPanel.Children.Clear();
+        if (Main_RightPanel == null) return;
+        Main_RightPanel.Children.Clear();
 
         IReadOnlyList<ItemCountInfo> items = _avatarExplorer.GetItemsForCurrentState();
 
@@ -251,10 +251,10 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            UIUtils.AddItemButton(RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
+            UIUtils.AddItemButton(Main_RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
         }
 
-        if (currentPage != -1 && items.Count != 0) UIUtils.AddPageButton(RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Clicked);
+        if (currentPage != -1 && items.Count != 0) UIUtils.AddPageButton(Main_RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Clicked);
         _isLastWindowSearch = false;
         Main_LoadCurrentPath();
     }
@@ -340,7 +340,7 @@ public partial class MainWindow : Window
     private void Main_OnSearchTimerTick(object? sender, EventArgs e)
     {
         _searchTimer.Stop();
-        _searchTextCache = SearchTextBox.Text ?? "";
+        _searchTextCache = Main_SearchTextBox.Text ?? "";
         Main_ExecuteSearchItems();
     }
     private void Main_ExecuteSearchItems(string searchText = "")
@@ -356,7 +356,7 @@ public partial class MainWindow : Window
         // 検索画面に切り替わる時に、前の画面のスクロール位置を保存してあげる
         if (!_isLastWindowSearch) Main_SaveScrollViewerOffset(Main_RightPanelScrollViewer, _lastRightPanelItemTagState);
 
-        RightPanel.Children.Clear();
+        Main_RightPanel.Children.Clear();
 
         SearchFilter searchFilter = SearchUtils.BuildFilter(_searchTextCache);
         IReadOnlyList<Item> items = _avatarExplorer.SearchItems(searchFilter);
@@ -380,13 +380,13 @@ public partial class MainWindow : Window
         foreach (Item item in items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage))
         {
             ContextMenu itemContextMenu = ContextMenuUtils.GetContextMenu(ContextMenuCreator.CreateContextMenu(item), ItemButton_ContextMenuItem_Click);
-            UIUtils.AddItemButton(RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
+            UIUtils.AddItemButton(Main_RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
         }
 
-        if (items.Count != 0) UIUtils.AddPageButton(RightPanel, ItemTagState.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Clicked);
+        if (items.Count != 0) UIUtils.AddPageButton(Main_RightPanel, ItemTagState.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Clicked);
         _isLastWindowSearch = true;
         
-        PathBox.Text = searchFilter.ToPathString();
+        Main_PathTextBox.Text = searchFilter.ToPathString();
     }
     #endregion
 
@@ -431,12 +431,12 @@ public partial class MainWindow : Window
     #region Path
     private void Main_LoadCurrentPath()
     {
-        if (PathBox == null) return;
+        if (Main_PathTextBox == null) return;
 
         IEnumerable<SelectionNode> currentSelectionNodes = _avatarExplorer.GetCurrentPaths();
         if (!currentSelectionNodes.Any())
         {
-            PathBox.Text = Localizer.Instance[LocalizationKey.Path.Default];
+            Main_PathTextBox.Text = Localizer.Instance[LocalizationKey.Path.Default];
             return;
         }
 
@@ -447,7 +447,7 @@ public partial class MainWindow : Window
             selectionNodes.Add(node);
         }
 
-        PathBox.Text = string.Join(" > ", selectionNodes.Select(Main_BuildPathTextInternal));
+        Main_PathTextBox.Text = string.Join(" > ", selectionNodes.Select(Main_BuildPathTextInternal));
     }
     private string Main_BuildPathTextInternal(SelectionNode selectionNode)
     {
@@ -591,7 +591,7 @@ public partial class MainWindow : Window
         Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
         if (item == null) return Task.CompletedTask;
 
-        if (SearchTextBox != null) SearchTextBox.Text = string.Format("Author=\"{0}\"", item.Author);
+        if (Main_SearchTextBox != null) Main_SearchTextBox.Text = string.Format("Author=\"{0}\"", item.Author);
 
         return Task.CompletedTask;
     }
@@ -1120,13 +1120,13 @@ public partial class MainWindow : Window
 
     private void Main_ShowNoItemsLabel()
     {
-        if (RightPanelParent == null) return;
-        RightPanelParent.IsVisible = true;
+        if (Main_RightPanelParent == null) return;
+        Main_RightPanelParent.IsVisible = true;
     }
     private void Main_HideNoItemsLabel()
     {
-        if (RightPanelParent == null) return;
-        RightPanelParent.IsVisible = false;
+        if (Main_RightPanelParent == null) return;
+        Main_RightPanelParent.IsVisible = false;
     }
     #endregion
 }
