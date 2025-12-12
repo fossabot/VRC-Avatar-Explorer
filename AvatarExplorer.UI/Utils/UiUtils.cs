@@ -187,10 +187,9 @@ internal static class UIUtils
         Grid.SetColumn(pageInfoStackPanel, 0);
         Grid.SetColumnSpan(pageInfoStackPanel, 4);
 
-        // TODO: Localizeする
         TextBlock pageTextBlock = new()
         {
-            Text = $"{currentPageValue + 1}/{totalPages}ページ",
+            Text = Localizer.Instance.GetDisplayName(LocalizationKey.UI.ItemWindow.Page, [(currentPageValue + 1).ToString(), totalPages.ToString()]),
             FontSize = 15,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center
@@ -199,7 +198,7 @@ internal static class UIUtils
 
         TextBlock itemsCountTextBlock = new()
         {
-            Text = $"{start} - {end} / {totalItemCount}個の項目",
+            Text = Localizer.Instance.GetDisplayName(LocalizationKey.UI.ItemWindow.PageItemCount, [start.ToString(), end.ToString(), totalItemCount.ToString()]),
             FontSize = 15,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center

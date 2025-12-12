@@ -5,9 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
+using Avalonia.Layout;
+using Avalonia.Media;
 using Avalonia.Threading;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
@@ -37,9 +40,21 @@ public partial class MainWindow : Window
         { ItemTagState.RootSelectedItem, 0 },
         { ItemTagState.ItemFileCategoryOpen, 0 }
     };
+    private readonly Dictionary<ItemTagState, Vector> _currentScrollValues = new()
+    {
+        { ItemTagState.SearchItem, new() },
+        { ItemTagState.RootAvatar, new() },
+        { ItemTagState.RootAuthor, new() },
+        { ItemTagState.RootCategory, new() },
+        { ItemTagState.RootSelectedCategory, new() },
+        { ItemTagState.RootSelectedItem, new() },
+        { ItemTagState.ItemFileCategory, new() },
+        { ItemTagState.ItemFileCategoryOpen, new() }
+    };
     private string _lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
     private string _searchTextCache = string.Empty;
     private bool _isLastWindowSearch = false;
+    private ItemTagState _lastRightPanelItemTagState = ItemTagState.Unknown;
     private readonly UserUiPreferences _userUiPreferences = new();
     
     private int ItemsPerPage => _userUiPreferences.ItemsPerPage;
@@ -56,13 +71,11 @@ public partial class MainWindow : Window
         TODO: 言語変更を実装する (UIが完成したらやる)
         TODO: 右クリックメニューの処理を作る
         TODO: UIのタグを使った翻訳機能を追加する
-        TODO: 実装やタグは新しくUIを作って上げることで実装する。右クリックメニューでは扱わない（チェックとかでメモリリークする可能性があるため）
+        TODO: 対応アバター、実装やタグは新しくUIを作って上げることで実装する。右クリックメニューでは扱わない（チェックとかでメモリリークする可能性があるため）
         TODO: 下のボタンの処理を実装する
         TODO: SCHEMEに対応する
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるように変更
         TODO: 詳細検索用の画面を追加する（右のアイテム画面の右側に縦長に別ウィンドウみたいな感じで表示するのはありかも？）
-        TODO: スクロール位置を保存するようにしたいね
-        TODO: ソフト終了時にTempを削除したい
         */
 
         InitializeComponent();
@@ -112,15 +125,15 @@ public partial class MainWindow : Window
             Source = IconUtils.GetIcon(SystemIcon.NothingIcon),
             Width = 150,
             Height = 150,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
         });
 
         RightPanelParent.Children.Add(new TextBlock
         {
             Text = Localizer.Instance[LocalizationKey.Error.Nothing],
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
             FontWeight = Avalonia.Media.FontWeight.Bold,
             FontSize = 25
         });
@@ -129,16 +142,16 @@ public partial class MainWindow : Window
     {
         _contextMenuHandlers = new()
         {
-            { ActionKey.OpenItemFolder, ContextMenu_OpenItemFolder },
-            { ActionKey.CopyBoothLink, ContextMenu_CopyBoothLink },
-            { ActionKey.OpenBoothLink, ContextMenu_OpenBoothLink },
-            { ActionKey.ShowOtherItemsByAuthor, ContextMenu_ShowOtherItemsByAuthor },
-            { ActionKey.ChangeThumbnail, ContextMenu_ChangeThumbnail },
-            { ActionKey.EditItem, ContextMenu_EditItem },
-            { ActionKey.AddItemMemo, ContextMenu_AddMemo},
-            { ActionKey.AddItemFolder, ContextMenu_AddItemFolder },
-            { ActionKey.EditImplementedAvatar, ContextMenu_EditImplementedAvatar },
-            { ActionKey.EditItemTag, ContextMenu_EditItemTag }
+            { ActionKey.OpenItemFolder, ItemButton_ContextMenu_OpenItemFolder },
+            { ActionKey.CopyBoothLink, ItemButton_ContextMenu_CopyBoothLink },
+            { ActionKey.OpenBoothLink, ItemButton_ContextMenu_OpenBoothLink },
+            { ActionKey.ShowOtherItemsByAuthor, ItemButton_ContextMenu_ShowOtherItemsByAuthor },
+            { ActionKey.ChangeThumbnail, ItemButton_ContextMenu_ChangeThumbnail },
+            { ActionKey.EditItem, ItemButton_ContextMenu_EditItem },
+            { ActionKey.AddItemMemo, ItemButton_ContextMenu_AddMemo},
+            { ActionKey.AddItemFolder, ItemButton_ContextMenu_AddItemFolder },
+            { ActionKey.EditImplementedAvatar, ItemButton_ContextMenu_EditImplementedAvatar },
+            { ActionKey.EditItemTag, ItemButton_ContextMenu_EditItemTag }
         };
     }
     #endregion
@@ -179,6 +192,9 @@ public partial class MainWindow : Window
                 }
         }
 
+        // スクロール位置をDictionaryから復元してあげる
+        Main_RestoreScrollViewerOffset(Main_LeftPanelScrollViewer, customState);
+
         int currentPage = GetPage(customState); // -1が返された場合は対応していないStateのため、全てのアイテムを表示してあげる
 
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
@@ -197,7 +213,8 @@ public partial class MainWindow : Window
         {
             _avatarExplorer.SelectClear();
             _avatarExplorer.Select(itemTagInfo.State, itemTagInfo.Value);
-            CheckPageStates();
+            Main_CheckPageStates();
+            Main_ResetAllScrollViewerOffset(); // 左のパネルのボタンは全てRootのため、スクロール状況を全てリセットしてしまう
 
             RenderRightPanel();
         }
@@ -205,6 +222,7 @@ public partial class MainWindow : Window
         if (button.Tag is PageButtonInfo pageButtonInfo)
         {
             _currentPageStates[pageButtonInfo.ItemTagState] = pageButtonInfo.NextPageValue;
+            Main_ResetScrollViewerOffset(pageButtonInfo.ItemTagState); // 今のStateのページをリセットしてあげる
             RenderLeftPanel();
         }
     }
@@ -218,11 +236,15 @@ public partial class MainWindow : Window
 
         IReadOnlyList<ItemCountInfo> items = _avatarExplorer.GetItemsForCurrentState();
 
-        if (items.Count == 0) ShowNoItemsLabel();
-        else HideNoItemsLabel();
+        if (items.Count == 0) Main_ShowNoItemsLabel();
+        else Main_HideNoItemsLabel();
 
         ItemTagState itemTagState = ItemTagState.Unknown;
         if (items.Count > 0) itemTagState = new UISelectableItem(items[0]).Tag.State;
+        _lastRightPanelItemTagState = itemTagState;
+        
+        // スクロール位置をDictionaryから復元してあげる
+        Main_RestoreScrollViewerOffset(Main_RightPanelScrollViewer, itemTagState);
 
         int currentPage = GetPage(itemTagState); // -1が返された場合は対応していないStateのため、全てのアイテムを表示してあげる
 
@@ -234,7 +256,7 @@ public partial class MainWindow : Window
 
         if (currentPage != -1 && items.Count != 0) UIUtils.AddPageButton(RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Clicked);
         _isLastWindowSearch = false;
-        LoadCurrentPath();
+        Main_LoadCurrentPath();
     }
     private async void RightPanel_ItemButton_Clicked(object? sender, RoutedEventArgs e)
     {
@@ -250,7 +272,8 @@ public partial class MainWindow : Window
             else
             {
                 _avatarExplorer.Select(itemTagInfo.State, itemTagInfo.Value);
-                CheckPageStates();
+                Main_CheckPageStates();
+                Main_SaveScrollViewerOffset(Main_RightPanelScrollViewer, itemTagInfo.State); // 次の画面に行くため、今のStateのスクロール位置を保存する
 
                 RenderRightPanel();
             }
@@ -259,6 +282,8 @@ public partial class MainWindow : Window
         if (button.Tag is PageButtonInfo pageButtonInfo)
         {
             _currentPageStates[pageButtonInfo.ItemTagState] = pageButtonInfo.NextPageValue;
+            Main_ResetScrollViewerOffset(pageButtonInfo.ItemTagState); // ページは今のStateをリセットしてあげる
+
             if (pageButtonInfo.ItemTagState == ItemTagState.SearchItem) ExecuteSearchItems();
             else RenderRightPanel();
         }
@@ -283,7 +308,7 @@ public partial class MainWindow : Window
         {
             if (tuple.Item2 == 100)
             {
-                HideProgress();
+                Main_HideProgress();
 
                 // Unitypackage展開後は自動で引数3にUnitypackageのパスが来る
                 // 空白の場合はないということだからスキップする
@@ -294,8 +319,8 @@ public partial class MainWindow : Window
             }
             else
             {
-                ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
-                UpdateProgress(tuple.Item2);
+                Main_ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
+                Main_UpdateProgress(tuple.Item2);
             }
         });
 
@@ -318,25 +343,37 @@ public partial class MainWindow : Window
         _searchTextCache = SearchTextBox.Text ?? "";
         ExecuteSearchItems();
     }
-    private void ExecuteSearchItems()
+    private void ExecuteSearchItems(string searchText = "")
     {
+        if (!string.IsNullOrEmpty(searchText)) _searchTextCache = searchText;
+
         if (string.IsNullOrEmpty(_searchTextCache))
         {
             RenderRightPanel();
             return;
         }
 
+        // 検索画面に切り替わる時に、前の画面のスクロール位置を保存してあげる
+        if (!_isLastWindowSearch) Main_SaveScrollViewerOffset(Main_RightPanelScrollViewer, _lastRightPanelItemTagState);
+
         RightPanel.Children.Clear();
 
         SearchFilter searchFilter = SearchUtils.BuildFilter(_searchTextCache);
         IReadOnlyList<Item> items = _avatarExplorer.SearchItems(searchFilter);
         
-        // 検索文字列が前回と違う場合はページをリセットする
-        if (_searchTextCache != _lastSearchTextCache) _currentPageStates[ItemTagState.SearchItem] = 0;
+        // 検索文字列が前回と違う場合はページ、スクロール位置をリセットする
+        if (_searchTextCache != _lastSearchTextCache)
+        {
+            _currentPageStates[ItemTagState.SearchItem] = 0;
+            _currentScrollValues[ItemTagState.SearchItem] = new();
+        }
         _lastSearchTextCache = _searchTextCache;
 
-        if (items.Count == 0) ShowNoItemsLabel();
-        else HideNoItemsLabel();
+        if (items.Count == 0) Main_ShowNoItemsLabel();
+        else Main_HideNoItemsLabel();
+
+        // スクロール位置をDictionaryから復元してあげる
+        Main_RestoreScrollViewerOffset(Main_RightPanelScrollViewer, ItemTagState.SearchItem);
 
         int currentPage = GetPage(ItemTagState.SearchItem); // SearchItemは必ずページが存在しているため
 
@@ -372,18 +409,18 @@ public partial class MainWindow : Window
     #endregion
 
     #region Progress Dialog
-    private void ShowProgress(string title)
+    private void Main_ShowProgress(string title)
     {
         if (ProgressBarTitle == null || ProgressOverlay == null) return;
         ProgressBarTitle.Text = title;
         ProgressOverlay.IsVisible = true;
     }
-    private void HideProgress()
+    private void Main_HideProgress()
     {
         if (ProgressOverlay == null) return;
         ProgressOverlay.IsVisible = false;
     }
-    private void UpdateProgress(int value)
+    private void Main_UpdateProgress(int value)
     {
         if (ProgressOverlay == null) return;
         ProgressBar.Value = Math.Clamp(value, 0, 100);
@@ -392,7 +429,7 @@ public partial class MainWindow : Window
     #endregion
 
     #region Path
-    private void LoadCurrentPath()
+    private void Main_LoadCurrentPath()
     {
         if (PathBox == null) return;
 
@@ -410,10 +447,9 @@ public partial class MainWindow : Window
             selectionNodes.Add(node);
         }
 
-        PathBox.Text = string.Join(" > ", selectionNodes.Select(BuildPathTextInternal));
+        PathBox.Text = string.Join(" > ", selectionNodes.Select(Main_BuildPathTextInternal));
     }
-
-    private string BuildPathTextInternal(SelectionNode selectionNode)
+    private string Main_BuildPathTextInternal(SelectionNode selectionNode)
     {
         ItemTagState state = selectionNode.State;
         string value = selectionNode.Key;
@@ -438,29 +474,14 @@ public partial class MainWindow : Window
     }
     #endregion
 
-    #region No Items Label
-    private void ShowNoItemsLabel()
-    {
-        if (RightPanelParent == null) return;
-
-        RightPanelParent.IsVisible = true;
-    }
-    private void HideNoItemsLabel()
-    {
-        if (RightPanelParent == null) return;
-
-        RightPanelParent.IsVisible = false;
-    }
-    #endregion
-
     #region Main UI Event Handler
     private void Main_UndoButton_Click(object? sender, RoutedEventArgs e)
     {
         // 選択されていたアイテムが検索結果時のものだったら、キャッシュを元にもう一度検索してあげる
         bool isCurrentSearchNode = _avatarExplorer.GetCurrentPathState()?.State == ItemTagState.SearchItem;
         
-        CheckPageStates(); // SelectUndoより前にやってあげないと、戻った先の画面のページ情報がリセットされる
-        _avatarExplorer.SelectUndo();
+        Main_CheckPageStates(); // SelectUndoより前にやってあげないと、戻った先の画面のページ情報がリセットされる
+        if (!_isLastWindowSearch) _avatarExplorer.SelectUndo(); // 最後の画面が検索画面だったら、検索だけやめて戻るようにする
 
         if (isCurrentSearchNode) ExecuteSearchItems();
         else RenderRightPanel();
@@ -469,33 +490,54 @@ public partial class MainWindow : Window
     {
         if (sender is not ComboBox comboBox) return;
         _avatarExplorer.SetItemsSortOrder((SortOrder)comboBox.SelectedIndex);
-        ReloadCurrentWindow();
+        Main_ReloadCurrentWindow();
+    }
+    private void Main_AddItem_Click(object? sender, RoutedEventArgs e)
+    {
+        AddItemOverlay_ShowAddItemWindow();
     }
     private void Main_ImportData_Click(object? sender, RoutedEventArgs e)
     {
         SelectImportTypeOverlay.IsVisible = true;
     }
-
     private async void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
     {
-        //チェックボックスでやる
-        string? filePath = await DialogUtils.SaveFileDialog(this, "保存先を選択してください", ".csv");
+        // TODO: チェックボックスで共通素体を含めるかどうかのチェックをする
+        string? filePath = await DialogUtils.SaveFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectSaveFilePath], ".csv");
         if (filePath == null) return;
 
         var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
         await _avatarExplorer.ExportToCsv(filePath, localizedItemTypesMapping, true);
 
-        ShowDialog("成功", "データの出力が完了しました。");
+        ShowDialog(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Export]);
     }
+    private void Main_DragDrop_Enter(object? sender, DragEventArgs e)
+    {
+        e.DragEffects = DragDropEffects.Copy;
+    }
+    private void Main_DragDrop_Drop(object? sender, DragEventArgs e)
+    {
+        IEnumerable<IStorageItem>? storageItems = e.Data.GetFiles();
+        if (storageItems == null) return;
+
+        string[] storageItemPaths = storageItems.Select(i => i.TryGetLocalPath()).Where(i => !string.IsNullOrEmpty(i) && (Directory.Exists(i) || File.Exists(i))).ToArray()!;
+        AddItemOverlay_ShowAddItemWindow(storageItemPaths);
+    }
+    
+    private void Main_Closing(object? sender, RoutedEventArgs e)
+    {
+        AvatarExplorerApp.ClearTemp();
+    }
+    
     private async void ItemButton_ContextMenuItem_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is MenuItem menuItem && menuItem.Tag is ContextMenuAction contextMenuAction)
-            await ExecuteContextMenuItemCommand(contextMenuAction);
+            await ItemButton_ExecuteContextMenuItemCommand(contextMenuAction);
     }
     #endregion
 
-    #region ContextMenu
-    private async Task ExecuteContextMenuItemCommand(ContextMenuAction contextMenuAction)
+    #region Item Button Event Handler
+    private async Task ItemButton_ExecuteContextMenuItemCommand(ContextMenuAction contextMenuAction)
     {
         if (contextMenuAction.ActionLayer == ActionLayer.UI)
         {
@@ -507,23 +549,23 @@ public partial class MainWindow : Window
             await _avatarExplorer.ExecuteContextMenuItemCommand(contextMenuAction);
         }
     }
-    private Item? ContextMenu_GetItemByPath(string itemPath)
+    private Item? ItemButton_ContextMenu_GetItemByPath(string itemPath)
     {
         Item? item = _avatarExplorer.GetItemByPath(itemPath);
-        if (item == null) ShowDialog("エラー", "アイテムが見つかりませんでした"); //TODO: Localizeする
+        if (item == null) ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemNotFound]);
 
         return item;
     }
-    private async Task ContextMenu_OpenItemFolder(string itemPath)
+    private async Task ItemButton_ContextMenu_OpenItemFolder(string itemPath)
     {
-        Item? item = ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
         if (item == null) return;
 
         await AvaloniaLauncherUtils.OpenFolder(this, ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath));
     }
-    private async Task ContextMenu_CopyBoothLink(string itemPath)
+    private async Task ItemButton_ContextMenu_CopyBoothLink(string itemPath)
     {
-        Item? item = ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
         if (item == null) return;
 
         string boothLink = item.GetBoothLink();
@@ -531,95 +573,111 @@ public partial class MainWindow : Window
         try
         {
             await ClipboardUtils.SetTextToClipboard(boothLink);
-            ShowDialog("成功", "クリップボードにリンクをコピーしました。"); //TODO: Localizeする
         }
         catch
         {
-            ShowDialog("エラー", "クリップボードにリンクをコピー出来ませんでした。"); //TODO: Localizeする
+            // Ignored
         }
     }
-    private async Task ContextMenu_OpenBoothLink(string itemPath)
+    private async Task ItemButton_ContextMenu_OpenBoothLink(string itemPath)
     {
-        Item? item = ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
         if (item == null) return;
 
         await AvaloniaLauncherUtils.OpenLink(this, item.GetBoothLink());
     }
-    private Task ContextMenu_ShowOtherItemsByAuthor(string itemPath)
+    private Task ItemButton_ContextMenu_ShowOtherItemsByAuthor(string itemPath)
     {
-        Item? item = ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
         if (item == null) return Task.CompletedTask;
 
         if (SearchTextBox != null) SearchTextBox.Text = string.Format("Author=\"{0}\"", item.Author);
-        ExecuteSearchItems();
 
         return Task.CompletedTask;
     }
-    private Task ContextMenu_ChangeThumbnail(string itemPath)
+    private Task ItemButton_ContextMenu_ChangeThumbnail(string itemPath)
     {
         ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
         return Task.CompletedTask;
     }
-    private Task ContextMenu_EditItem(string itemPath)
+    private Task ItemButton_ContextMenu_EditItem(string itemPath)
     {
-        Item? item = ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
         if (item == null) return Task.CompletedTask;
 
-        ShowEditItemWindow(item);
+        AddItemOverlay_ShowEditItemWindow(item);
         return Task.CompletedTask;
     }
-    private Task ContextMenu_AddMemo(string itemPath)
+    private Task ItemButton_ContextMenu_AddMemo(string itemPath)
     {
         ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
         return Task.CompletedTask;
     }
-    private Task ContextMenu_AddItemFolder(string itemPath)
+    private Task ItemButton_ContextMenu_AddItemFolder(string itemPath)
     {
         ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
         return Task.CompletedTask;
     }
-    private Task ContextMenu_EditImplementedAvatar(string itemPath)
+    private Task ItemButton_ContextMenu_EditImplementedAvatar(string itemPath)
     {
         ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
         return Task.CompletedTask;
     }
-    private Task ContextMenu_EditItemTag(string itemPath)
+    private Task ItemButton_ContextMenu_EditItemTag(string itemPath)
     {
         ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
         return Task.CompletedTask;
     }
     #endregion
 
-    #region Add / Edit Item Menu
+    #region Add / Edit Item Overlay
     private Item? _selectedItem = null;
     private readonly AddItemOverlayWindowValues _addItemWindowValues = new();
 
-    private void AddItem_Click(object? sender, RoutedEventArgs e)
+    private void AddItemOverlay_ShowEditItemWindow(Item item)
     {
-        ShowAddItemWindow();
-    }
-
-    private void ShowEditItemWindow(Item item)
-    {
-        InitializeAddItemWindowCategories();
+        AddItemOverlay_InitializeAddItemWindowCategories();
 
         _selectedItem = item;
         _addItemWindowValues.FromItem(item);
-        SetAddItemWindowValues(_addItemWindowValues);
+        AddItemOverlay_SetValuesToUi(_addItemWindowValues);
         AddItemOverlay_BoothLinkTextBox.Text = item.GetBoothLink();
         AddItemOverlay.IsVisible = true;
     }
-    private void ShowAddItemWindow()
+    private void AddItemOverlay_ShowAddItemWindow(IEnumerable<string>? filePaths = null)
     {
-        InitializeAddItemWindowCategories();
+        // もし表示されてる状態でD&Dされたら、フォルダ追加だけしてあげる
+        if (AddItemOverlay.IsVisible && filePaths != null)
+        {
+            _addItemWindowValues.Folders.AddRange(filePaths);
+            EditFoldersOverlay_UpdateFolderList();
+            return;
+        }
+
+        AddItemOverlay_InitializeAddItemWindowCategories();
 
         _selectedItem = null;
         _addItemWindowValues.Reset();
-        SetAddItemWindowValues(_addItemWindowValues);
+        AddItemOverlay_SetValuesToUi(_addItemWindowValues);
         AddItemOverlay_BoothLinkTextBox.Text = string.Empty;
         AddItemOverlay.IsVisible = true;
+
+        if (filePaths != null) _addItemWindowValues.Folders.AddRange(filePaths);
+        EditFoldersOverlay_UpdateFolderList();
     }
     
+    private void AddItemOverlay_InitializeAddItemWindowCategories()
+    {
+        AddItemOverlay_ItemTypeComboBox.Items.Clear();
+
+        foreach (ItemCountInfo itemCountInfo in _avatarExplorer.GetCategories())
+        {
+            AddItemOverlay_ItemTypeComboBox.Items.Add(Localizer.Instance[((Category)itemCountInfo.Item).ToString()]);
+        }
+
+        if (AddItemOverlay_ItemTypeComboBox.Items.Count > 0) AddItemOverlay_ItemTypeComboBox.SelectedIndex = 0;
+    }
+
     private async void AddItemOverlay_GetBoothItemData_Click(object? sender, RoutedEventArgs e)
     {
         if (_addItemWindowValues == null) return;
@@ -631,11 +689,11 @@ public partial class MainWindow : Window
             return;
         }
         
-        ShowProgress(Localizer.Instance[LocalizationKey.Processing.Booth.Status.Fetching]);
-        UpdateProgress(0);
+        Main_ShowProgress(Localizer.Instance[LocalizationKey.Processing.Booth.Status.Fetching]);
+        Main_UpdateProgress(0);
         
         BoothItem? boothItem = await _avatarExplorer.GetBoothItem(boothUrl);
-        HideProgress();
+        Main_HideProgress();
 
         if (boothItem == null)
         {
@@ -652,7 +710,7 @@ public partial class MainWindow : Window
 
         AddItemOverlay_ResetBoothItemDataButton.IsVisible = true;
 
-        SetAddItemWindowValues(_addItemWindowValues);
+        AddItemOverlay_SetValuesToUi(_addItemWindowValues);
     }
     private void AddItemOverlay_ResetBoothItemData_Click(object? sender, RoutedEventArgs e)
     {
@@ -666,19 +724,14 @@ public partial class MainWindow : Window
 
         AddItemOverlay_ResetBoothItemDataButton.IsVisible = false;
 
-        SetAddItemWindowValues(_addItemWindowValues);
+        AddItemOverlay_SetValuesToUi(_addItemWindowValues);
     }
-    
-    private async void AddItemOverlay_AddFolder_Click(object? sender, RoutedEventArgs e)
-    {
-        string[]? folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", true);
-        if (folders == null || folders.Length == 0) return;
 
-        _addItemWindowValues.Folders.Clear();
-        _addItemWindowValues.Folders.AddRange(folders);
-        // TODO: フォルダ追加時に右がとこかに、現在選択されているフォルダを [ファイル | フォルダ名] [削除]みたいにリストで表示して編集しやすくしたいよね
+    private async void AddItemOverlay_EditFolder_Click(object? sender, RoutedEventArgs e)
+    {
+        EditFoldersOverlay_UpdateFolderList();
+        EditFoldersOverlay.IsVisible = true;
     }
-    
     private void AddItemOverlay_AddCustomCategory_Click(object? sender, RoutedEventArgs e)
     {
         AddCustomCategory_CustomCategoryTextBox.Text = string.Empty;
@@ -688,7 +741,10 @@ public partial class MainWindow : Window
     private async void AddItemOverlay_ConfirmButton_Click(object? sender, RoutedEventArgs e)
     {
         if (_addItemWindowValues == null) return;
-        if (!ValidateAddItemWindowValues()) return;
+
+        AddItemOverlay_SetValuesFromUi(_addItemWindowValues);
+
+        if (!AddItemOverlay_ValidateAddItemWindowValues()) return;
 
         ItemCreationContext itemCreationContext = new();
         itemCreationContext.Folders.AddRange(_addItemWindowValues.Folders);
@@ -699,7 +755,7 @@ public partial class MainWindow : Window
         itemCreationContext.ThumbnailUrl = _addItemWindowValues.BoothThumbnailUrl;
         itemCreationContext.BoothId = _addItemWindowValues.BoothId;
 
-        var categoryInfo = GetCategoryFromItemWindow();
+        var categoryInfo = AddItemOverlay_GetCategoryFromItemWindow();
         itemCreationContext.ItemType = categoryInfo.Item1;
         if (categoryInfo.Item1 == ItemType.Custom) itemCreationContext.CustomCategory = categoryInfo.Item2;
 
@@ -708,7 +764,11 @@ public partial class MainWindow : Window
 
         if (_selectedItem == null)
         {
-            var (_, processingFailedPaths) = await _avatarExplorer.AddItem(itemCreationContext);
+            Main_ShowProgress(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]); // TODO Localize
+            Main_UpdateProgress(0);
+            var (newItem, processingFailedPaths) = await _avatarExplorer.AddItem(itemCreationContext);
+            Main_HideProgress();
+
             if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
             {
                 ShowDialog(
@@ -716,11 +776,19 @@ public partial class MainWindow : Window
                     Localizer.Instance.GetDisplayName(LocalizationKey.Error.ItemFolderProcessingFailedPaths, "\n" + string.Join('\n', processingFailedPaths.Select(i => $"- {i}")))
                 );
             }
+
+            if (newItem != null) ShowDialog(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemAdd]);
+            else ShowDialog(Localizer.Instance[LocalizationKey.UI.Dialog.Failed.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Failed.ItemAdd]);
         }
         else
         {
             _avatarExplorer.EditItem(_selectedItem, itemCreationContext);
+            ShowDialog(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemEdit]);
         }
+
+        _selectedItem = null;
+        _addItemWindowValues.Reset();
+        AddItemOverlay.IsVisible = false;
     }
     private void AddItemOverlay_CloseButton_Click(object? sender, RoutedEventArgs e)
     {
@@ -728,34 +796,30 @@ public partial class MainWindow : Window
         _addItemWindowValues.Reset();
         AddItemOverlay.IsVisible = false;
     }
-    private void SetAddItemWindowValues(AddItemOverlayWindowValues addItemWindowValues)
+    
+    private void AddItemOverlay_SetValuesToUi(AddItemOverlayWindowValues addItemWindowValues)
     {
         AddItemOverlay_BoothItemTitleTextBox.Text = addItemWindowValues.Title;
         AddItemOverlay_BoothItemAuthorTextBox.Text = addItemWindowValues.Author;
-        AddItemOverlay_ItemTypeComboBox.SelectedIndex = (int)addItemWindowValues.ItemType;
     }
-    private void InitializeAddItemWindowCategories()
+    private void AddItemOverlay_SetValuesFromUi(AddItemOverlayWindowValues addItemWindowValues)
     {
-        AddItemOverlay_ItemTypeComboBox.Items.Clear();
-
-        foreach (ItemCountInfo itemCountInfo in _avatarExplorer.GetCategories())
-        {
-            AddItemOverlay_ItemTypeComboBox.Items.Add(Localizer.Instance[((Category)itemCountInfo.Item).ToString()]);
-        }
+        addItemWindowValues.Title = AddItemOverlay_BoothItemTitleTextBox.Text ?? "";
+        addItemWindowValues.Author = AddItemOverlay_BoothItemAuthorTextBox.Text ?? "";
     }
-    private (ItemType, string) GetCategoryFromItemWindow()
+    private (ItemType, string) AddItemOverlay_GetCategoryFromItemWindow()
     {
         int selectedIndex = AddItemOverlay_ItemTypeComboBox.SelectedIndex;
 
         // カスタムカテゴリかどうかのチェック(式: ItemTypeの数 - 無効なItemType数 - カスタムカテゴリ)
-        if (selectedIndex >= (Enum.GetValues(typeof(ItemType)).Length - CategoryUtils.InvalidItemTypes.Length - 1)) // ここの1はカスタムカテゴリ分
+        if (selectedIndex >= (Enum.GetValues<ItemType>().Length - CategoryUtils.InvalidItemTypes.Length - 1)) // ここの1はカスタムカテゴリ分
         {
             return (ItemType.Custom, AddItemOverlay_ItemTypeComboBox.SelectedItem?.ToString() ?? "");
         }
 
         return ((ItemType)selectedIndex, string.Empty);
     }
-    private bool ValidateAddItemWindowValues()
+    private bool AddItemOverlay_ValidateAddItemWindowValues()
     {
         var validationResult = _addItemWindowValues.Validate();
         if (!validationResult.Item1) ShowDialog(LocalizationKey.Error.Default, Localizer.Instance[validationResult.Item2]);
@@ -764,7 +828,130 @@ public partial class MainWindow : Window
     }
     #endregion
 
-    #region Settings Menu
+    #region Edit Folder Overlay
+    private async void EditFoldersOverlay_AddFolder_Click(object? sender, RoutedEventArgs e)
+    {
+        string[]? folders = await DialogUtils.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
+        if (folders == null || folders.Length == 0) return;
+
+        _addItemWindowValues.Folders.AddRange(folders);
+        EditFoldersOverlay_UpdateFolderList();
+    }
+    private async void EditFoldersOverlay_AddFile_Click(object? sender, RoutedEventArgs e)
+    {
+        string[]? files = await DialogUtils.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
+        if (files == null || files.Length == 0) return;
+
+        _addItemWindowValues.Folders.AddRange(files);
+        EditFoldersOverlay_UpdateFolderList();
+    }
+    private void EditFoldersOverlay_ConfirmButton_Click(object? sender, RoutedEventArgs e)
+    {
+        EditFoldersOverlay.IsVisible = false;
+    }
+    
+    private void EditFoldersOverlay_UpdateFolderList()
+    {
+        EditFoldersOverlay_FolderList.Children.Clear();
+        EditFoldersOverlay_FolderList.RowDefinitions.Clear();
+
+        for (int i = 0; i < _addItemWindowValues.Folders.Count; i++)
+        {
+            string folder = _addItemWindowValues.Folders[i];
+            EditFoldersOverlay_AddFolderRow(EditFoldersOverlay_FolderList, i, folder, EditFoldersOverlay_RemoveButton_Click);
+        }
+
+        if (_addItemWindowValues.Folders.Count > 0)
+        {
+            AddItemOverlay_FolderNamesTextBlock.Text = string.Format("{0}個: {1}", _addItemWindowValues.Folders.Count, Path.GetFileName(_addItemWindowValues.Folders[0]));
+        } else
+        {
+            AddItemOverlay_FolderNamesTextBlock.Text = "何も選択されていません";
+        }
+    }
+    private void EditFoldersOverlay_RemoveButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is string folderPath)
+        {
+            _addItemWindowValues.Folders.RemoveAll(i => i == folderPath);
+            EditFoldersOverlay_UpdateFolderList();
+        }
+    }
+    private void EditFoldersOverlay_AddFolderRow(Grid folderListPanel, int index, string folder, EventHandler<RoutedEventArgs> onRemoveClick)
+    {
+        Border rowBorder = new()
+        {
+            BorderBrush = Brushes.Gray,
+            BorderThickness = new Thickness(0, 0, 0, 1),
+            Padding = new Thickness(8, 6)
+        };
+
+        Grid folderPanel = new()
+        {
+            ColumnDefinitions = new ColumnDefinitions("30,10,*,Auto,5"),
+            ColumnSpacing = 6
+        };
+        rowBorder.Child = folderPanel;
+
+        TextBlock indexLabel = new()
+        {
+            Text = (index + 1).ToString(),
+            FontSize = 16,
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            FontWeight = FontWeight.Bold
+        };
+        Grid.SetColumn(indexLabel, 0);
+        folderPanel.Children.Add(indexLabel);
+
+        TextBlock folderLabel = new()
+        {
+            Text = Path.GetFileName(folder),
+            FontSize = 16,
+            VerticalAlignment = VerticalAlignment.Center,
+            FontWeight = FontWeight.Medium,
+            TextTrimming = TextTrimming.CharacterEllipsis
+        };
+        Grid.SetColumn(folderLabel, 2);
+        folderPanel.Children.Add(folderLabel);
+
+        Button folderRemoveButton = new()
+        {
+            Content = Localizer.Instance[LocalizationKey.UI.Overlay.EditFolder.RemoveFolder],
+            FontSize = 14,
+            Padding = new Thickness(10, 4),
+            Background = new SolidColorBrush(Color.FromRgb(210, 0, 0)),
+            Foreground = Brushes.White,
+            BorderBrush = Brushes.DarkRed,
+            BorderThickness = new Thickness(1),
+            Tag = folder
+        };
+        Grid.SetColumn(folderRemoveButton, 3);
+        folderRemoveButton.Click += EditFoldersOverlay_RemoveButton_Click;
+        folderPanel.Children.Add(folderRemoveButton);
+
+        Grid.SetRow(rowBorder, folderListPanel.RowDefinitions.Count);
+        folderListPanel.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        folderListPanel.Children.Add(rowBorder);
+    }
+    #endregion
+    
+    #region Add CustomCategory Overlay
+    private void AddCustomCategory_AddButton_Click(object? sender, RoutedEventArgs e)
+    {
+        AddCustomCategoryOverlay.IsVisible = false;
+
+        if (string.IsNullOrEmpty(AddCustomCategory_CustomCategoryTextBox.Text)) return;
+        int index = AddItemOverlay_ItemTypeComboBox.Items.Add(AddCustomCategory_CustomCategoryTextBox.Text);
+        AddItemOverlay_ItemTypeComboBox.SelectedIndex = index;
+    }
+    private void AddCustomCategory_CancelButton_Click(object? sender, RoutedEventArgs e)
+    {
+        AddCustomCategoryOverlay.IsVisible = false;
+    }
+    #endregion
+
+    #region Settings Overlay
     private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e)
     {
         SetUiValueFromCurrentSettings();
@@ -785,7 +972,7 @@ public partial class MainWindow : Window
     private void SettingsOverlay_ApplyButton_Click(object? sender, RoutedEventArgs e)
     {
         ApplySettingsValues();
-        ReloadCurrentWindow();
+        Main_ReloadCurrentWindow();
     }
     
     private void SetUiValueFromCurrentSettings() // 設定画面を読み込んだ時に値をセットするための関数
@@ -843,21 +1030,6 @@ public partial class MainWindow : Window
     }
     #endregion
 
-    #region Add CustomCategory Overlay
-    private void AddCustomCategory_AddButton_Click(object? sender, RoutedEventArgs e)
-    {
-        AddCustomCategoryOverlay.IsVisible = false;
-
-        if (string.IsNullOrEmpty(AddCustomCategory_CustomCategoryTextBox.Text)) return;
-        int index = AddItemOverlay_ItemTypeComboBox.Items.Add(AddCustomCategory_CustomCategoryTextBox.Text);
-        AddItemOverlay_ItemTypeComboBox.SelectedIndex = index;
-    }
-    private void AddCustomCategory_CancelButton_Click(object? sender, RoutedEventArgs e)
-    {
-        AddCustomCategoryOverlay.IsVisible = false;
-    }
-    #endregion
-
     #region Data Import Overlay
     private void SelectImportTypeOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
     {
@@ -869,7 +1041,7 @@ public partial class MainWindow : Window
         => DataImportInternal(DataImportType.KonoAsset);
     private async void DataImportInternal(DataImportType dataImportType)
     {
-        string[]? folders = await DialogUtils.OpenFolderDialog(this, "フォルダを選択してください", false); // TODO: Localizeする
+        string[]? folders = await DialogUtils.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], false);
         if (folders == null || folders.Length == 0) return;
 
         string selectedFolder = folders[0];
@@ -882,24 +1054,24 @@ public partial class MainWindow : Window
         {
             if (tuple.Item2 == 100)
             {
-                HideProgress();
+                Main_HideProgress();
             }
             else
             {
-                ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
-                UpdateProgress(tuple.Item2);
+                Main_ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
+                Main_UpdateProgress(tuple.Item2);
             }
         });
 
         if (dataImportType == DataImportType.V1) await _avatarExplorer.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
         else if (dataImportType == DataImportType.KonoAsset)  await _avatarExplorer.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progress);
 
-        ReloadCurrentWindow();
+        Main_ReloadCurrentWindow();
     }
     #endregion
     
     #region Main UI Methods
-    private void ReloadCurrentWindow()
+    private void Main_ReloadCurrentWindow()
     {
         RenderLeftPanel();
 
@@ -908,7 +1080,7 @@ public partial class MainWindow : Window
         else RenderRightPanel();
     }
 
-    private void CheckPageStates()
+    private void Main_CheckPageStates()
     {
         List<ItemTagState> selectedItemTagStates = new();
 
@@ -923,6 +1095,38 @@ public partial class MainWindow : Window
             if (!selectedItemTagStates.Contains(pageInfo.Key))
                 _currentPageStates[pageInfo.Key] = 0;
         }
+    }
+    
+    private void Main_RestoreScrollViewerOffset(ScrollViewer scrollViewer, ItemTagState itemTagState)
+    {
+        if (_currentScrollValues.TryGetValue(itemTagState, out Vector scrollValue))
+            scrollViewer.Offset = scrollValue;
+    }
+    private void Main_SaveScrollViewerOffset(ScrollViewer scrollViewer, ItemTagState itemTagState)
+    {
+        if (!_currentScrollValues.ContainsKey(itemTagState)) return;
+        _currentScrollValues[itemTagState] = scrollViewer.Offset;
+    }
+    private void Main_ResetScrollViewerOffset(ItemTagState itemTagState)
+    {
+        if (!_currentScrollValues.ContainsKey(itemTagState)) return;
+        _currentScrollValues[itemTagState] = new();
+    }
+    private void Main_ResetAllScrollViewerOffset()
+    {
+        foreach (ItemTagState key in _currentScrollValues.Keys)
+            _currentScrollValues[key] = new();
+    }
+
+    private void Main_ShowNoItemsLabel()
+    {
+        if (RightPanelParent == null) return;
+        RightPanelParent.IsVisible = true;
+    }
+    private void Main_HideNoItemsLabel()
+    {
+        if (RightPanelParent == null) return;
+        RightPanelParent.IsVisible = false;
     }
     #endregion
 }

@@ -44,6 +44,44 @@ public static class LocalizationKey
                 public const string UpdatedDate = "UI.Button.ToolTip.UpdatedDate";
             }
         }
+
+        public static class ItemWindow
+        {
+            public const string Page = "UI.ItemWindow.Page";
+            public const string PageItemCount = "UI.ItemWindow.PageItemCount";
+        }
+
+        public static class Dialog
+        {
+            public static class Success
+            {
+                public const string Default = "UI.Dialog.Success.Default";
+                public const string Import = "UI.Dialog.Success.Import";
+                public const string Export = "UI.Dialog.Success.Export";
+                public const string ItemAdd = "UI.Dialog.Success.ItemAdd";
+                public const string ItemEdit = "UI.Dialog.Success.ItemEdit";
+            }
+
+            public static class Failed
+            {
+                public const string Default = "UI.Dialog.Failed.Default";
+                public const string Import = "UI.Dialog.Faileds.Import";
+                public const string Export = "UI.Dialog.Failed.Export";
+                public const string ItemAdd = "UI.Dialog.Failed.ItemAdd";
+                public const string ItemEdit = "UI.Dialog.Failed.ItemEdit";
+            }
+
+            public const string SelectSaveFilePath = "UI.Dialog.SelectSaveFilePath";
+            public const string SelectFolderPath = "UI.Dialog.SelectFolderPath";
+        }
+
+        public static class Overlay
+        {
+            public static class EditFolder
+            {
+                public const string RemoveFolder = "UI.Overlay.EditFolder.RemoveFolder";
+            }
+        }
     }
 
     public static class FileCategory
@@ -84,6 +122,11 @@ public static class LocalizationKey
         public static class Import
         {
             public const string Copying = "Processing.Import.Copying";
+        }
+
+        public static class ItemAdd
+        {
+            public const string Copying = "Processing.ItemAdd.Copying";
         }
     }
 
@@ -126,7 +169,7 @@ public static class LocalizationKey
         public const string Nothing = "Error.Nothing";
         public const string BoothItemNotFound = "Error.BoothItemNotFound";
         public const string BoothApiCooldown = "Error.BoothApiCooldown";
-        public const string InvalidPath = "Error.InvalidPath";
+        public const string ItemNotFound = "Error.ItemNotFound";
 
         public static class Validation
         {

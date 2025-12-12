@@ -437,7 +437,22 @@ public class AvatarExplorerApp
         await DataExporter.ExportToCsv(_items, _commonAvatars, localizedItemTypesMapping, filePath, includeImplementedToSupported);
     }
     #endregion
-
+    
+    #region Clear API
+    public static void ClearTemp()
+    {
+        try
+        {
+            if (!Directory.Exists(SystemPath.TempFolderPath)) return;
+            Directory.Delete(SystemPath.TempFolderPath, true);
+        }
+        catch
+        {
+            // Ignored
+        }
+    }
+    #endregion
+    
     #region Ececute Context Menu Command
     public async Task ExecuteContextMenuItemCommand(ContextMenuAction contextMenuAction)
     {
