@@ -764,7 +764,7 @@ public partial class MainWindow : Window
 
         if (_selectedItem == null)
         {
-            Main_ShowProgress(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]); // TODO Localize
+            Main_ShowProgress(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
             Main_UpdateProgress(0);
             var (newItem, processingFailedPaths) = await _avatarExplorer.AddItem(itemCreationContext);
             Main_HideProgress();
