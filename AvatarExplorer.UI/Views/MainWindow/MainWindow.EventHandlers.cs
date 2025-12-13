@@ -11,6 +11,7 @@ using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
 using AvatarExplorer.UI.Localization;
+using AvatarExplorer.UI.Services;
 
 namespace AvatarExplorer.UI;
 
