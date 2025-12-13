@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using AvatarExplorer.Core.Utils;
+using AvatarExplorer.Core.Data.Paths;
 
 namespace AvatarExplorer.Core.Models;
 
@@ -17,45 +17,16 @@ public class RuntimeSettings
     
     [JsonInclude]
     public bool RemoveBrackets { get; private set; } = false;
+    
+    internal void SetDataRootDirectory(string path)
+        => DataRootDirectory = path;
 
     internal void SetSortOrder(SortOrder sortOrder)
-    {
-        ItemSortOrder = sortOrder;
-    }
-
-    internal bool SetDataRootDirectory(string path)
-    {
-        if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
-        {
-            DataRootDirectory = SystemPath.DefaultItemsFolderPath;
-            return false;
-        }
-        else
-        {
-            DataRootDirectory = Path.GetFullPath(path);
-            return true;
-        }
-    }
+        => ItemSortOrder = sortOrder;
 
     internal void SetRemoveOriginal(bool value)
-    {
-        RemoveOriginal = value;
-    }
+        => RemoveOriginal = value;
 
     internal void SetRemoveBrackets(bool value)
-    {
-        RemoveBrackets = value;
-    }
-
-    internal void Save()
-    {
-        try
-        {
-            FileSystemUtils.SerializeClass(this, SystemPath.RuntimeSettingsFilePath);
-        }
-        catch
-        {
-            // Ignored
-        }
-    }
+        => RemoveBrackets = value;
 }

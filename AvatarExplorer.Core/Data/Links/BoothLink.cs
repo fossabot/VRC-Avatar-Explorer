@@ -1,4 +1,4 @@
-namespace AvatarExplorer.Core.Models;
+namespace AvatarExplorer.Core.Data.Links;
 
 public static class BoothLink
 {

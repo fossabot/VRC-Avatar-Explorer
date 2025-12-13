@@ -7,9 +7,9 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using AvatarExplorer.UI.Localization;
 
-namespace AvatarExplorer.UI.Utils;
+namespace AvatarExplorer.UI.Services;
 
-internal static class DialogUtils
+internal static class StorageService
 {
     internal static async Task<string[]?> OpenFileDialog(Visual visual, string titleKey, bool allowMultiple = false)
     {

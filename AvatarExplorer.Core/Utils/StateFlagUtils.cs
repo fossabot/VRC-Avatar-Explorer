@@ -6,4 +6,7 @@ public static class StateFlagUtils
 {
     public static readonly ItemTagState ItemsFlag = ItemTagState.SearchItem | ItemTagState.RootAvatar | ItemTagState.RootSelectedItem;
     public static readonly ItemTagState CategoriesFlag = ItemTagState.RootCategory | ItemTagState.RootSelectedCategory | ItemTagState.ItemFileCategory;
+
+    public static bool IsItemState(ItemTagState itemTagState) => ItemsFlag.HasFlag(itemTagState);
+    public static bool IsCategoryState(ItemTagState itemTagState) => CategoriesFlag.HasFlag(itemTagState);
 }

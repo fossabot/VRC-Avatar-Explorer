@@ -10,17 +10,13 @@ using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
+using AvatarExplorer.UI.Utils;
 
-namespace AvatarExplorer.UI.Utils;
+namespace AvatarExplorer.UI.Factories;
 
-internal static class UIUtils
+internal static class ItemButtonFactory
 {
-    private static bool IsItemState(ItemTagState itemTagState)
-        => StateFlagUtils.ItemsFlag.HasFlag(itemTagState);
-
-    private static bool IsCategoryState(ItemTagState itemTagState)
-        => StateFlagUtils.CategoriesFlag.HasFlag(itemTagState);
-
+    
     internal static void AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
         Button itemButton = new()
@@ -64,8 +60,8 @@ internal static class UIUtils
             Orientation = Orientation.Vertical
         };
 
-        string itemTitle = IsCategoryState(item.Tag.State) ? Localizer.Instance[item.Title] : item.Title;
-        if (removeBrackets && IsItemState(item.Tag.State)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
+        string itemTitle = StateFlagUtils.IsCategoryState(item.Tag.State) ? Localizer.Instance[item.Title] : item.Title;
+        if (removeBrackets && StateFlagUtils.IsItemState(item.Tag.State)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
 
         textPanel.Children.Add(new TextBlock()
         {
@@ -106,7 +102,7 @@ internal static class UIUtils
         contentPanel.Children.Add(textPanel);
 
         itemButton.Content = contentPanel;
-        if (IsItemState(item.Tag.State)) ToolTip.SetTip(itemButton, GetTooltipForItem(item));
+        if (StateFlagUtils.IsItemState(item.Tag.State)) ToolTip.SetTip(itemButton, GetTooltipForItem(item));
 
         if (contextMenu != null && contextMenu.ItemCount > 0) itemButton.ContextMenu = contextMenu;
         if (onClick != null) itemButton.Click += onClick;
@@ -129,7 +125,7 @@ internal static class UIUtils
     {
         StringBuilder toolTipTextBuilder = new();
 
-        // AppendLine()1つだとシンプルな改行になるので1行空けたければ2ついる
+        // AppendLine()1つだとシンプルな改行になるので、1行空けたければ2ついる
         toolTipTextBuilder.Append(item.Title);
 
         toolTipTextBuilder.AppendLine();

@@ -1,11 +1,12 @@
-﻿using AvatarExplorer.Core.Extensions;
+﻿using AvatarExplorer.Core.Data.Paths;
+using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Models.Booth;
 using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Services;
 
-public class AvatarExplorerApp
+public partial class AvatarExplorerApp
 {
     private readonly List<Item> _items = new();
     private readonly List<CommonAvatar> _commonAvatars = new();
@@ -31,7 +32,7 @@ public class AvatarExplorerApp
     #region Database
     public void LoadItemDatabase(bool fromV1 = false)
     {
-        List<Item> database = fromV1 ? DatabaseUtils.LoadItemsDataFromV1(SystemPath.ItemDatabasePath) : DatabaseUtils.LoadItemsData(SystemPath.ItemDatabasePath);
+        List<Item> database = fromV1 ? ItemDatabaseService.LoadItemsDataFromV1(SystemPath.ItemDatabasePath) : ItemDatabaseService.LoadItemsData(SystemPath.ItemDatabasePath);
 
         _items.Clear();
         _items.AddRange(database);
@@ -39,7 +40,7 @@ public class AvatarExplorerApp
 
     public void LoadCommonAvatarDatabase(bool fromV1 = false)
     {
-        List<CommonAvatar> database = fromV1 ? DatabaseUtils.LoadCommonAvatarsDataFromV1(SystemPath.CommonAvatarDatabasePath) :  DatabaseUtils.LoadCommonAvatarsData(SystemPath.CommonAvatarDatabasePath);
+        List<CommonAvatar> database = fromV1 ? CommonAvatarDatabaseService.LoadCommonAvatarsDataFromV1(SystemPath.CommonAvatarDatabasePath) :  CommonAvatarDatabaseService.LoadCommonAvatarsData(SystemPath.CommonAvatarDatabasePath);
 
         _commonAvatars.Clear();
         _commonAvatars.AddRange(database);
@@ -47,7 +48,7 @@ public class AvatarExplorerApp
 
     public void LoadItemDatabase(string path, bool fromV1 = false)
     {
-        List<Item> database = fromV1 ? DatabaseUtils.LoadItemsDataFromV1(path) : DatabaseUtils.LoadItemsData(path);
+        List<Item> database = fromV1 ? ItemDatabaseService.LoadItemsDataFromV1(path) : ItemDatabaseService.LoadItemsData(path);
 
         _items.Clear();
         _items.AddRange(database);
@@ -55,7 +56,7 @@ public class AvatarExplorerApp
 
     public void LoadCommonAvatarDatabase(string path, bool fromV1 = false)
     {
-        List<CommonAvatar> database = fromV1 ? DatabaseUtils.LoadCommonAvatarsDataFromV1(path) :  DatabaseUtils.LoadCommonAvatarsData(path);
+        List<CommonAvatar> database = fromV1 ? CommonAvatarDatabaseService.LoadCommonAvatarsDataFromV1(path) :  CommonAvatarDatabaseService.LoadCommonAvatarsData(path);
 
         _commonAvatars.Clear();
         _commonAvatars.AddRange(database);
@@ -65,19 +66,19 @@ public class AvatarExplorerApp
     #region Runtime Settings
     public void LoadRuntimeSettings()
     {
-        RuntimeSettings runtimeSettings = SettingsUtils.LoadRuntimeSettings(SystemPath.RuntimeSettingsFilePath);
+        RuntimeSettings runtimeSettings = RuntimeSettingsService.LoadRuntimeSettings(SystemPath.RuntimeSettingsFilePath);
         SetRuntimeSettingsInternal(runtimeSettings);
-        _runtimeSettings.Save();
+        RuntimeSettingsService.Save(_runtimeSettings);
     }
     public void LoadRuntimeSettings(string path)
     {
-        RuntimeSettings runtimeSettings = SettingsUtils.LoadRuntimeSettings(path);
+        RuntimeSettings runtimeSettings = RuntimeSettingsService.LoadRuntimeSettings(path);
         SetRuntimeSettingsInternal(runtimeSettings);
-        _runtimeSettings.Save();
+        RuntimeSettingsService.Save(_runtimeSettings);
     }
     private void SetRuntimeSettingsInternal(RuntimeSettings runtimeSettings)
     {
-        _runtimeSettings.SetDataRootDirectory(runtimeSettings.DataRootDirectory);
+        RuntimeSettingsService.TrySetDataRootDirectory(_runtimeSettings, runtimeSettings.DataRootDirectory);
         _runtimeSettings.SetSortOrder(runtimeSettings.ItemSortOrder);
         _runtimeSettings.SetRemoveOriginal(runtimeSettings.RemoveOriginal);
         _runtimeSettings.SetRemoveBrackets(runtimeSettings.RemoveBrackets);
@@ -87,7 +88,7 @@ public class AvatarExplorerApp
     #region Update API
     public void UpdateSearchIndex()
     {
-        var avatarNameMaps = DatabaseUtils.GetAvatarNameMaps(_items);
+        var avatarNameMaps = ItemUtils.GetAvatarNameMaps(_items);
         _items.ForEach(i => i.BuildSearchIndex(avatarNameMaps));
     }
     #endregion
@@ -134,7 +135,7 @@ public class AvatarExplorerApp
     }
     public IReadOnlyList<ItemCountInfo> GetCategories()
     {
-        return CategoryUtils.GetCategories(_items).ToList();
+        return ItemCategoryAggregator.Aggregate(_items).ToList();
     }
     public IReadOnlyList<Item> GetAllItems()
     {
@@ -164,7 +165,7 @@ public class AvatarExplorerApp
     #region Current State Internal Handler
     private IReadOnlyList<ItemCountInfo> HandleRootAvatar(SelectionNode selectionNode)
     {
-        return GetCategoriesFromItemsInternal(_items.Where(i => ItemUtils.GetAvatarStatus(selectionNode.Key, i, _commonAvatars).IsSupportedOrCommon));
+        return GetCategoriesFromItemsInternal(_items.Where(i => AvatarStatusResolver.Resolve(selectionNode.Key, i, _commonAvatars).IsSupportedOrCommon));
     }
     private IReadOnlyList<ItemCountInfo> HandleRootAuthor(SelectionNode selectionNode)
     {
@@ -191,10 +192,10 @@ public class AvatarExplorerApp
             {
                 if (!CategoryUtils.IsCategoryMatch(item, selectionNode.Key)) continue;
 
-                AvatarStatus avatarStatus = ItemUtils.GetAvatarStatus(rootSelectionNode.Key, item, _commonAvatars);
+                AvatarStatus avatarStatus = AvatarStatusResolver.Resolve(rootSelectionNode.Key, item, _commonAvatars);
                 if (!avatarStatus.IsSupportedOrCommon) continue;
                 
-                filteredResult.Add(new ItemCountInfo(item, 0, avatarStatus.OnlyCommon ? avatarStatus.CommonAvatarName : string.Empty));
+                filteredResult.Add(new ItemCountInfo(item, 0, avatarStatus.IsOnlyCommon ? avatarStatus.CommonAvatarName : string.Empty));
             }
 
             return filteredResult
@@ -251,7 +252,7 @@ public class AvatarExplorerApp
                 FileCategory = filter
             };
 
-            foreach (string file in FileSystemUtils.EnumerateFiles(itemPath))
+            foreach (string file in FileSystemService.EnumerateFiles(itemPath))
             {
                 string fileExtension = Path.GetExtension(file);
                 if (filters.Contains(fileExtension))
@@ -278,7 +279,7 @@ public class AvatarExplorerApp
         string[]? filters = fileCategory.GetExtensionFilters();
         if (filters == null) return new();
 
-        foreach (string file in FileSystemUtils.EnumerateFiles(itemPath))
+        foreach (string file in FileSystemService.EnumerateFiles(itemPath))
         {
             string fileExtension = Path.GetExtension(file);
             if (filters.Contains(fileExtension))
@@ -316,7 +317,7 @@ public class AvatarExplorerApp
     public bool SetDataRootDirectory(string path)
     {
         // このパスをアイテムフォルダの親フォルダとして見るようになる（アイテムの相対パスの親がこのフォルダであると設定する）
-        return _runtimeSettings.SetDataRootDirectory(path);
+        return RuntimeSettingsService.TrySetDataRootDirectory(_runtimeSettings, path);
     }
     public void SetItemsSortOrder(SortOrder sortOrder)
     {
@@ -335,7 +336,7 @@ public class AvatarExplorerApp
     #region Add API
     public async Task<(Item? newItem, List<string> processingFailedPaths)> AddItem(ItemCreationContext itemCreationContext)
     {
-        var addItemResult = await Item.FromItemCreationContext(itemCreationContext, _runtimeSettings);
+        var addItemResult = await ItemCreator.FromItemCreationContext(itemCreationContext, _runtimeSettings);
         if (addItemResult.newItem != null) _items.Add(addItemResult.newItem); // アイテムの追加に失敗していなければここで追加してあげる
 
         return addItemResult;
@@ -344,6 +345,35 @@ public class AvatarExplorerApp
     public Item EditItem(Item item, ItemCreationContext itemCreationContext)
     {
         return item.SetValuesFromCreationContext(itemCreationContext);
+    }
+    #endregion
+
+    #region Update API
+    public async Task<Item?> UpdateItemThumbnail(Item item, string imageFilePath)
+    {
+        string? newFileFullPath = await FileSystemService.CopyFile(imageFilePath, Path.Combine(SystemPath.ItemThumbnailsPath, Path.GetFileName(imageFilePath)), true);
+        if (newFileFullPath == null) return null;
+
+        item.ThumbnmailFileName = Path.GetFileName(newFileFullPath);
+
+        return item;
+    }
+    public async Task<Item?> UpdateAuthorThumbnail(Item item, string imageFilePath)
+    {
+        string? newFileFullPath = await FileSystemService.CopyFile(imageFilePath, Path.Combine(SystemPath.AuthorThumbnailsPath, Path.GetFileName(imageFilePath)), true);
+        if (newFileFullPath == null) return null;
+
+        item.ThumbnmailFileName = Path.GetFileName(newFileFullPath);
+
+        return item;
+    }
+    #endregion
+
+    #region Add API
+    public async Task<List<string>> AddFolders(Item item, string[] folders)
+    {
+        List<string> processingFailedPaths = await FileSystemService.ExtractItemFolders(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), folders);
+        return processingFailedPaths;
     }
     #endregion
 
@@ -358,14 +388,14 @@ public class AvatarExplorerApp
         string boothId = boothUrl.Split('/')[^1];
 
         _lastBoothApiGetTime = DateTime.Now; // 時間を更新する
-        return await BoothUtils.GetBoothItemAsync(boothId);
+        return await BoothService.GetBoothItemAsync(boothId);
     }
     #endregion
 
     #region File API
     public static async Task ModifyUnityPackageFilePath(string itemPath, string itemCategoryName = "", IProgress<(string, int, string)>? progress = null)
     {
-        await FileSystemUtils.ModifyUnityPackageFilePathAsync(itemPath, itemCategoryName, progress);
+        await FileSystemService.ModifyUnityPackageFilePathAsync(itemPath, itemCategoryName, progress);
     }
     #endregion
 
@@ -395,10 +425,10 @@ public class AvatarExplorerApp
     #region Search API
     public IReadOnlyList<Item> SearchItems(SearchFilter filter)
     {
-        var avatarNameMaps = DatabaseUtils.GetAvatarNameMaps(_items);
+        var avatarNameMaps = ItemUtils.GetAvatarNameMaps(_items);
 
         return _items
-            .Where(i => SearchUtils.Matches(filter, avatarNameMaps, _commonAvatars, i, _runtimeSettings.DataRootDirectory))
+            .Where(i => SearchService.Matches(filter, avatarNameMaps, _commonAvatars, i, _runtimeSettings.DataRootDirectory))
             .OrderByDescending(i => SearchUtils.GetScore(i, filter.SearchWords))
             .ToList();
     }
@@ -407,7 +437,7 @@ public class AvatarExplorerApp
     #region Save API
     public void SaveRuntimeSettings()
     {
-        _runtimeSettings.Save();
+        RuntimeSettingsService.Save(_runtimeSettings);
     }
     #endregion
 

@@ -1,6 +1,7 @@
+using AvatarExplorer.Core.Data.Paths;
+using AvatarExplorer.Core.Data.Paths.V1;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
-using AvatarExplorer.Core.Models.V1;
 using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Services;
@@ -11,14 +12,14 @@ internal static class DataImporter
     {
         progress?.Report((LocalizationKey.Processing.Import.Copying, 0, string.Empty));
 
-        List<Item> items = DatabaseUtils.LoadItemsDataFromV1(SystemPathV1.ItemDatabasePath(dataFolderPath));
-        List<CommonAvatar> commonAvatars = DatabaseUtils.LoadCommonAvatarsDataFromV1(SystemPathV1.CommonAvatarDatabasePath(dataFolderPath));
+        List<Item> items = ItemDatabaseService.LoadItemsDataFromV1(SystemPathV1.ItemDatabasePath(dataFolderPath));
+        List<CommonAvatar> commonAvatars = CommonAvatarDatabaseService.LoadCommonAvatarsDataFromV1(SystemPathV1.CommonAvatarDatabasePath(dataFolderPath));
 
         progress?.Report((LocalizationKey.Processing.Import.Copying, 10, string.Empty));
-        await FileSystemUtils.CopyDirectory(SystemPathV1.AuthorThumbnailsPath(dataFolderPath), SystemPath.AuthorThumbnailsPath);
+        await FileSystemService.CopyDirectory(SystemPathV1.AuthorThumbnailsPath(dataFolderPath), SystemPath.AuthorThumbnailsPath);
 
         progress?.Report((LocalizationKey.Processing.Import.Copying, 20, string.Empty));
-        await FileSystemUtils.CopyDirectory(SystemPathV1.ItemThumbnailsPath(dataFolderPath), SystemPath.ItemThumbnailsPath);
+        await FileSystemService.CopyDirectory(SystemPathV1.ItemThumbnailsPath(dataFolderPath), SystemPath.ItemThumbnailsPath);
 
         // データ移行処理
         int lastPercent = -1;
@@ -30,8 +31,8 @@ internal static class DataImporter
             string newItemPath = Path.Combine(runtimeSettings.DataRootDirectory, LocalizedCategoryName, safeItemTitle);
             string newItemMaterialPath = Path.Combine(newItemPath, "AE_Materials");
 
-            await FileSystemUtils.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), item.ItemPath), newItemPath);
-            if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemUtils.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), item.MaterialPath), newItemMaterialPath);
+            await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), item.ItemPath), newItemPath);
+            if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), item.MaterialPath), newItemMaterialPath);
 
             item.ItemPath = newItemPath;
 

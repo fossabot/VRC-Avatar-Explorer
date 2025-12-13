@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 
-namespace AvatarExplorer.UI.Utils;
+namespace AvatarExplorer.UI.Services;
 
-internal static class ClipboardUtils
+internal static class ClipboardService
 {
     internal static async Task SetTextToClipboard(string text)
     {

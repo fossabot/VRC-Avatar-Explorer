@@ -62,7 +62,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0" RowDefinitions="Auto,*">
-                    <ComboBox Grid.Row="0" HorizontalAlignment="Stretch" SelectedIndex="0" Margin="20,0,20,10" x:Name="LeftFilter" SelectionChanged="LeftFilter_SelectionChanged">
+                    <ComboBox Grid.Row="0" HorizontalAlignment="Stretch" SelectedIndex="0" Margin="20,0,20,10" x:Name="Main_LeftFilter" SelectionChanged="Main_LeftFilter_SelectionChanged">
                         <ComboBoxItem Content="アバター" Tag="Filter.Avatar"/>
                         <ComboBoxItem Content="作者" Tag="Filter.Author"/>
                         <ComboBoxItem Content="カテゴリ" Tag="Filter.Category"/>
@@ -84,7 +84,7 @@
             </Grid>
         </DockPanel>
 
-        <Border x:Name="AddItemOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False">
+        <Border x:Name="AddItemOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="AddItemOverlay_Border_Click">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel Spacing="10">
 
@@ -129,14 +129,14 @@
                     </Grid>
 
                     <Grid ColumnDefinitions="Auto,*,Auto" Margin="10,20,10,0">
-                        <Button Grid.Column="0" Click="AddItemOverlay_CloseButton_Click" Content="閉じる" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" Padding="10" MinWidth="100"/>
-                        <Button Grid.Column="2" Click="AddItemOverlay_ConfirmButton_Click" Content="追加" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" Padding="10" MinWidth="100"/>
+                        <Button Grid.Column="0" Content="閉じる" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" Padding="10" MinWidth="100" Click="AddItemOverlay_Close_Click"/>
+                        <Button Grid.Column="2" Content="追加" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" Padding="10" MinWidth="100" Click="AddItemOverlay_Confirm_Click"/>
                     </Grid>
                 </StackPanel>
             </Border>
         </Border>
 
-        <Border x:Name="EditFoldersOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False">
+        <Border x:Name="EditFoldersOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="EditFoldersOverlay_Border_Click">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20" Width="450" Height="600">
                 <Grid RowDefinitions="50,20,*,10,50" ColumnSpacing="10">
                     <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,10,0,10" ColumnSpacing="10" VerticalAlignment="Center">
@@ -154,7 +154,7 @@
             </Border>
         </Border>
 
-        <Border x:Name="AddCustomCategoryOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False">
+        <Border x:Name="AddCustomCategoryOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="AddCustomCategory_Border_Click">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel Spacing="10">
                     <Grid RowDefinitions="Auto,20,Auto,20,Auto" Margin="0,10,0,10">
@@ -162,15 +162,15 @@
                         <TextBox x:Name="AddCustomCategory_CustomCategoryTextBox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Watermark="カスタムカテゴリ名" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
 
                         <Grid ColumnDefinitions="200,*,200" Grid.Row="4" Margin="10,0,10,0">
-                            <Button Grid.Row="4" Grid.Column="0" Content="キャンセル" VerticalAlignment="Center" HorizontalAlignment="Left"  HorizontalContentAlignment="Center" FontSize="15" FontWeight="Bold" Click="AddCustomCategory_CancelButton_Click"/>
-                            <Button Grid.Row="4" Grid.Column="2" Content="追加" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Center" FontSize="15" FontWeight="Bold" Click="AddCustomCategory_AddButton_Click"/>
+                            <Button Grid.Row="4" Grid.Column="0" Content="キャンセル" VerticalAlignment="Center" HorizontalAlignment="Left"  HorizontalContentAlignment="Center" FontSize="15" FontWeight="Bold" Click="AddCustomCategory_Cancel_Click"/>
+                            <Button Grid.Row="4" Grid.Column="2" Content="追加" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Center" FontSize="15" FontWeight="Bold" Click="AddCustomCategory_Add_Click"/>
                         </Grid>
                     </Grid>
                 </StackPanel>
             </Border>
         </Border>
 
-        <Border x:Name="SettingsOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False">
+        <Border x:Name="SettingsOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="SettingsOverlay_Border_Click">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel Spacing="10">
                     <ScrollViewer MaxHeight="500">
@@ -244,14 +244,14 @@
                     </ScrollViewer>
 
                     <Grid ColumnDefinitions="Auto,*,Auto" Margin="10,50,10,0">
-                        <Button CornerRadius="20" Grid.Column="0" Click="SettingsOverlay_CloseButton_Click" Content="閉じる" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" Padding="10" MinWidth="200"/>
-                        <Button CornerRadius="20" Grid.Column="2" Click="SettingsOverlay_ApplyButton_Click" Content="適用" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" Padding="10" MinWidth="200"/>
+                        <Button CornerRadius="20" Grid.Column="0" Content="閉じる" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" Padding="10" MinWidth="200" Click="SettingsOverlay_Close_Click" />
+                        <Button CornerRadius="20" Grid.Column="2" Content="適用" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" Padding="10" MinWidth="200" Click="SettingsOverlay_Apply_Click" />
                     </Grid>
                 </StackPanel>
             </Border>
         </Border>
 
-        <Border x:Name="SelectImportTypeOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False">
+        <Border x:Name="SelectImportTypeOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="SelectImportTypeOverlay_Border_Click">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel Spacing="10" Orientation="Vertical" MinWidth="300">
                     <Grid RowDefinitions="Auto,20,Auto" Margin="0,10,0,0">

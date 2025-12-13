@@ -1,4 +1,4 @@
-namespace AvatarExplorer.Core.Models.V1;
+namespace AvatarExplorer.Core.Data.Paths.V1;
 
 public static class SystemPathV1
 {

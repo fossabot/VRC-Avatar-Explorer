@@ -5,10 +5,13 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 
-namespace AvatarExplorer.UI.Utils;
+namespace AvatarExplorer.UI.Services;
 
-internal static class AvaloniaLauncherUtils
+internal static class LauncherService
 {
+    private static ILauncher? GetLauncher(Visual visual)
+        => TopLevel.GetTopLevel(visual)?.Launcher;
+        
     internal static async Task OpenFile(Visual visual, string filePath)
     {
         ILauncher? launcher = GetLauncher(visual);
@@ -38,7 +41,4 @@ internal static class AvaloniaLauncherUtils
 
         await launcher.LaunchUriAsync(itemLinkUri);
     }
-
-    private static ILauncher? GetLauncher(Visual visual)
-        => TopLevel.GetTopLevel(visual)?.Launcher;
 }

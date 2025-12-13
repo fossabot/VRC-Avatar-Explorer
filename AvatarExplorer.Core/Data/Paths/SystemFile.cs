@@ -1,6 +1,6 @@
-namespace AvatarExplorer.Core.Models;
+namespace AvatarExplorer.Core.Data.Paths;
 
-public static class SystemFile
+public static class SystemFileName
 {
     public static class Database
     {

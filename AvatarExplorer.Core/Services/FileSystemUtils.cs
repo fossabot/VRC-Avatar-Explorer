@@ -2,16 +2,18 @@ using System.Formats.Tar;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
+using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Utils;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Common;
 using SharpCompress.Writers;
 
-namespace AvatarExplorer.Core.Utils;
+namespace AvatarExplorer.Core.Services;
 
-public static class FileSystemUtils
+public static class FileSystemService
 {
     public static readonly char[] InvalidChars = Path.GetInvalidFileNameChars();
     private static readonly JsonSerializerOptions jsonSerializerOptions = new()
@@ -21,9 +23,7 @@ public static class FileSystemUtils
     
     public static void SerializeClass<T>(T values, string filePath)
     {
-        string? directory = Path.GetDirectoryName(filePath);
-        if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
-
+        PrepareDirectory(filePath);
         string json = JsonSerializer.Serialize(values, jsonSerializerOptions);
         File.WriteAllText(filePath, json);
     }
@@ -247,6 +247,32 @@ public static class FileSystemUtils
         return ($"<sys>{Path.GetRelativePath(dataRootDirectory, parentFolder)}", $"<sys>{Path.GetRelativePath(dataRootDirectory, materialsFolder)}", processingFailedPaths);
     }
 
+    internal static async Task<List<string>> ExtractItemFolders(string parentFolderPath, string[] folders, bool removeOriginal = false)
+    {
+        List<string> processingFailedPaths = new();
+
+        string destinationDirectory = Path.Combine(parentFolderPath, "AE_Others");
+
+        foreach (string folder in folders)
+        {
+            try
+            {
+                await ProcessExtractItemFoldersInternal(
+                    folder,
+                    destinationDirectory,
+                    Path.GetFileNameWithoutExtension(folder),
+                    removeOriginal
+                );
+            }
+            catch
+            {
+                processingFailedPaths.Add(folder);
+            }
+        }
+
+        return processingFailedPaths;
+    }
+
     private const int BufferSize = 1024 * 1024;
     private static async Task<string> ProcessExtractItemFoldersInternal(string filePath, string destinationFolderPath, string folderName, bool removeOriginal)
     {
@@ -259,44 +285,6 @@ public static class FileSystemUtils
         }
 
         return extractedDestinationFolderPath;
-    }
-    internal static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, IProgress<(string, int, string)>? progress = null, int maxDegreeOfParallelism = 4)
-    {
-        List<string> allFiles = EnumerateFiles(sourceDirectory).ToList();
-        int totalFiles = allFiles.Count;
-
-        int copiedFiles = 0;
-        int lastPercent = -1;
-
-        await Task.Run(async () =>
-        {
-            Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },
-            file =>
-            {
-                try
-                {
-                    string relativePath = Path.GetRelativePath(sourceDirectory, file);
-                    string destPath = Path.Combine(destinationDirectory, relativePath);
-                    Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
-
-                    using Stream sourceStream = File.OpenRead(file);
-                    using Stream destStream = File.Create(destPath);
-                    sourceStream.CopyTo(destStream, BufferSize);
-
-                    copiedFiles++;
-                    int percent = (int)(copiedFiles / (double)totalFiles * 100);
-                    if (percent != lastPercent)
-                    {
-                        lastPercent = percent;
-                        progress?.Report((LocalizationKey.Processing.DirectoryCopy.Copying, percent, string.Empty));
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-            });
-        });
     }
     private static (string extractedFolderPath, bool isDirectory) FileExtractorInternal(string filePath, string extractDirectory, string folderName, bool removeOriginalFile)
     {
@@ -391,7 +379,7 @@ public static class FileSystemUtils
             if (!entry.IsDirectory)
             {
                 string fullPath = Path.Combine(extractDirectoryFolder, entry.Key!);
-                Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+                PrepareDirectory(fullPath);
 
                 using Stream inStream = entry.OpenEntryStream();
                 using Stream outStream = File.Create(fullPath);
@@ -406,6 +394,97 @@ public static class FileSystemUtils
             {
                 Directory.CreateDirectory(Path.Combine(extractDirectoryFolder, entry.Key));
             }
+        }
+    }
+
+    public static void PrepareDirectory(string filePath)
+    {
+        string? directory = Path.GetDirectoryName(filePath);
+        if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
+    }
+
+    internal static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, IProgress<(string, int, string)>? progress = null, int maxDegreeOfParallelism = 4)
+    {
+        if (sourceDirectory == destinationDirectory) return; // sourceとdestinationが同じ場合は無視
+
+        List<string> allFiles = EnumerateFiles(sourceDirectory).ToList();
+        int totalFiles = allFiles.Count;
+
+        int copiedFiles = 0;
+        int lastPercent = -1;
+
+        await Task.Run(async () =>
+        {
+            Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },
+            file =>
+            {
+                try
+                {
+                    string relativePath = Path.GetRelativePath(sourceDirectory, file);
+                    string destPath = Path.Combine(destinationDirectory, relativePath);
+                    PrepareDirectory(destPath);
+
+                    using Stream sourceStream = File.OpenRead(file);
+                    using Stream destStream = File.Create(destPath);
+                    sourceStream.CopyTo(destStream, BufferSize);
+
+                    copiedFiles++;
+                    int percent = (int)(copiedFiles / (double)totalFiles * 100);
+                    if (percent != lastPercent)
+                    {
+                        lastPercent = percent;
+                        progress?.Report((LocalizationKey.Processing.DirectoryCopy.Copying, percent, string.Empty));
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+            });
+        });
+    }
+    internal static async Task<string?> CopyFile(string sourceFile, string destinationFile, bool unique = false)
+    {
+        try
+        {
+            string? uniqueFilePath = unique ? GetUniqueFilePath(Path.GetDirectoryName(destinationFile), Path.GetFileName(destinationFile)) : destinationFile;
+            if (uniqueFilePath == null) return null;
+
+            using Stream sourceStream = File.OpenRead(sourceFile);
+            using Stream destStream = File.Create(uniqueFilePath);
+            await sourceStream.CopyToAsync(destStream, BufferSize);
+
+            return uniqueFilePath;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    internal static string? GetUniqueFilePath(string? directory, string? fileName)
+    {
+        if (string.IsNullOrEmpty(directory) || string.IsNullOrEmpty(fileName)) return null;
+
+        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+        string extension = Path.GetExtension(fileName);
+
+        string path = Path.Combine(directory, fileName);
+
+        if (!File.Exists(path) && !Directory.Exists(path))
+            return path;
+
+        int index = 1;
+
+        while (true)
+        {
+            string newName = $"{fileNameWithoutExtension} - {index}{extension}";
+            string newPath = Path.Combine(directory, newName);
+
+            if (!File.Exists(newPath) && !Directory.Exists(newPath))
+                return newPath;
+
+            index++;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Services;
 
 namespace AvatarExplorer.Core.Utils;
 
@@ -20,36 +21,6 @@ public static partial class ItemUtils
         return avatarName ?? "";
     }
 
-    internal static AvatarStatus GetAvatarStatus(string? avatarPath, Item item, List<CommonAvatar> commonAvatars)
-    {
-        AvatarStatus avatarStatus = new();
-        if (string.IsNullOrEmpty(avatarPath)) return avatarStatus;
-        
-        if (item.SupportedAvatars.Count == 0 || item.SupportedAvatars.Contains(avatarPath))
-            avatarStatus.IsSupported = true;
-
-        if (item.Type != ItemType.Clothing) return avatarStatus;
-
-        CommonAvatar[] groupsForPath = commonAvatars
-            .Where(x => x.Avatars.Contains(avatarPath))
-            .ToArray();
-
-        if (groupsForPath.Length == 0) return avatarStatus;
-
-        foreach (string supportedAvatar in item.SupportedAvatars)
-        {
-            CommonAvatar? group = groupsForPath.FirstOrDefault(g => g.Avatars.Contains(supportedAvatar));
-            if (group != null)
-            {
-                avatarStatus.IsCommon = true;
-                avatarStatus.CommonAvatarName = group.GroupName;
-                break;
-            }
-        }
-
-        return avatarStatus;
-    }
-
     public static string GetItemPath(string parentFolder, string itemPath)
     {
         // <sys>で始まっていないものはフルパスと認識する
@@ -63,11 +34,21 @@ public static partial class ItemUtils
     {
         // パスに使用しても大丈夫な文字だけ残す
         string safeTitle = itemTitle;
-        foreach (char invalidChar in FileSystemUtils.InvalidChars)
+        foreach (char invalidChar in FileSystemService.InvalidChars)
         {
             safeTitle = safeTitle.Replace(invalidChar, '_');
         }
 
         return string.IsNullOrEmpty(safeTitle) ? null : safeTitle;
+    }
+    
+    internal static Dictionary<string, string> GetAvatarNameMaps(List<Item> items)
+    {
+        return items
+            .Where(i => i.Type == ItemType.Avatar)
+            .ToDictionary(
+                i => i.ItemPath,
+                i => GetAvatarNameFromPath(items, i.ItemPath)
+            );
     }
 }

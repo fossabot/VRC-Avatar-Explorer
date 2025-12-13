@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Avalonia.Media.Imaging;
+using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Models;
 
 namespace AvatarExplorer.UI.Utils;
@@ -9,9 +10,9 @@ internal static class IconUtils
 {
     private static readonly Dictionary<string, Bitmap?> systemIcons = new()
     {
-        { SystemIcon.FolderIcon, LoadImage("Assets/FolderIcon.png") },
-        { SystemIcon.FileIcon, LoadImage("Assets/FileIcon.png") },
-        { SystemIcon.NothingIcon, LoadImage("Assets/NothingIcon.png") },
+        { SystemIconKey.FolderIcon, LoadImage("Assets/FolderIcon.png") },
+        { SystemIconKey.FileIcon, LoadImage("Assets/FileIcon.png") },
+        { SystemIconKey.NothingIcon, LoadImage("Assets/NothingIcon.png") },
     };
     internal static bool IsSystemFileIcons(string fileName) => systemIcons.ContainsKey(fileName);
 

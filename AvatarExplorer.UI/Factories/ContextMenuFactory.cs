@@ -5,9 +5,9 @@ using Avalonia.Interactivity;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.UI.Localization;
 
-namespace AvatarExplorer.UI.Utils;
+namespace AvatarExplorer.UI.Factories;
 
-internal static class ContextMenuUtils
+internal static class ContextMenuFactory
 {
     internal static ContextMenu GetContextMenu(List<ContextMenuAction> contextMenuActions, EventHandler<RoutedEventArgs>? onClick = null)
     {

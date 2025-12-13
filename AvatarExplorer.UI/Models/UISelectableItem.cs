@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Interfaces;
 using AvatarExplorer.Core.Localization;
@@ -77,7 +78,7 @@ internal class UISelectableItem
     {
         Title = category.ToString();
         Description = (LocalizationKey.UI.Button.Description.Item.Count, [ItemCount.ToString()]);
-        ImageFileName = SystemIcon.FolderIcon;
+        ImageFileName = SystemIconKey.FolderIcon;
         
         Tag = new(ItemTagState.RootSelectedCategory, category.Type.GetLocalizationKey() ?? category.CustomCategory);
         IconType = IconType.Author;
@@ -87,7 +88,7 @@ internal class UISelectableItem
     {
         Title = fileCategoryItem.FileCategory.GetLocalizationKey() ?? "";
         Description = (LocalizationKey.UI.Button.Description.Item.Count, [ItemCount.ToString()]);
-        ImageFileName = SystemIcon.FolderIcon;
+        ImageFileName = SystemIconKey.FolderIcon;
         Tag = new(ItemTagState.ItemFileCategory, fileCategoryItem.FileCategory.GetLocalizationKey() ?? "");
         IconType = IconType.Author;
     }
@@ -96,7 +97,7 @@ internal class UISelectableItem
     {
         Title = itemFile.FileName;
         Description = (LocalizationKey.UI.Button.Description.File.Extension, [itemFile.Extension]);
-        ImageFileName = SystemIcon.FileIcon;
+        ImageFileName = SystemIconKey.FileIcon;
         Tag = new(ItemTagState.ItemFileCategoryOpen, itemFile.FullPath);
         IconType = IconType.Author;
     }

@@ -73,6 +73,7 @@ public static class LocalizationKey
 
             public const string SelectSaveFilePath = "UI.Dialog.SelectSaveFilePath";
             public const string SelectFolderPath = "UI.Dialog.SelectFolderPath";
+            public const string SelectFilePath = "UI.Dialog.SelectFilePath";
         }
 
         public static class Overlay

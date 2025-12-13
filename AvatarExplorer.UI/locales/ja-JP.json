@@ -36,6 +36,7 @@
 
     "UI.Dialog.SelectSaveFilePath": "ファイルの保存先を選択してください",
     "UI.Dialog.SelectFolderPath": "フォルダを選択してください",
+    "UI.Dialog.SelectFilePath": "ファイルを選択してください",
 
     "UI.Overlay.EditFolder.RemoveFolder": "削除",
 

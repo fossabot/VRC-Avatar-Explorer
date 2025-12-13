@@ -1,6 +1,6 @@
 using AvatarExplorer.Core.Utils;
 
-namespace AvatarExplorer.Core.Models;
+namespace AvatarExplorer.Core.Data.Paths;
 
 public static class SystemPath
 {
@@ -16,9 +16,9 @@ public static class SystemPath
     public static readonly string AuthorThumbnailsPath = DatabaseUtils.GetAuthorThumbnailsFolderPath(SoftwareDataPath);
     public static readonly string ItemThumbnailsPath = DatabaseUtils.GetItemThumbnailsFolderPath(SoftwareDataPath);
 
-    public static readonly string ItemDatabasePath = Path.Join(DatabaseFolderPath, SystemFile.Database.Items);
-    public static readonly string CommonAvatarDatabasePath = Path.Join(DatabaseFolderPath, SystemFile.Database.CommonAvatars);
+    public static readonly string ItemDatabasePath = Path.Join(DatabaseFolderPath, SystemFileName.Database.Items);
+    public static readonly string CommonAvatarDatabasePath = Path.Join(DatabaseFolderPath, SystemFileName.Database.CommonAvatars);
 
-    public static readonly string RuntimeSettingsFilePath = Path.Join(SettingsFolderPath, SystemFile.Settings.Runtime);
-    public static readonly string UserPreferencesFilePath = Path.Join(SettingsFolderPath, SystemFile.Settings.Preferences);
+    public static readonly string RuntimeSettingsFilePath = Path.Join(SettingsFolderPath, SystemFileName.Settings.Runtime);
+    public static readonly string UserPreferencesFilePath = Path.Join(SettingsFolderPath, SystemFileName.Settings.Preferences);
 }

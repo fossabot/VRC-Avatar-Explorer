@@ -1,6 +1,6 @@
-namespace AvatarExplorer.Core.Models;
+namespace AvatarExplorer.Core.Data.Paths;
 
-public static class SystemIcon
+public static class SystemIconKey
 {
     public static readonly string FolderIcon = "System.Icon.Folder";
     public static readonly string FileIcon = "System.Icon.File";

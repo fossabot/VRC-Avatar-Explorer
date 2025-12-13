@@ -1,7 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 using AvatarExplorer.Core.Interfaces;
-using AvatarExplorer.Core.Models.V1;
 using AvatarExplorer.Core.Utils;
+using AvatarExplorer.Core.Data.Links;
+using AvatarExplorer.Core.Models.V1;
 
 namespace AvatarExplorer.Core.Models;
 
@@ -92,21 +93,15 @@ public class Item : ISelectableItem
     public string UpdatedDate { get; set; } = string.Empty;
 
     public string GetBoothLink()
-    {
-        return string.Format(BoothLink.ItemURLFormat, AuthorId, BoothId);
-    }
+        => string.Format(BoothLink.ItemURLFormat, AuthorId, BoothId);
 
     public string GetBoothJsonLink()
-    {
-        // 強制で日本のBoothにアクセスするJsonのURLです。
-        // これは、カテゴリ名などを使って内部でアイテムカテゴリを判別するためです。
-        return string.Format(BoothLink.ItemJsonURLFormat, BoothId);
-    }
+        => string.Format(BoothLink.ItemJsonURLFormat, BoothId);
 
     [JsonIgnore]
-    public string SearchIndex { get; private set; } = string.Empty;
+    internal string SearchIndex { get; private set; } = string.Empty;
 
-    public void BuildSearchIndex(Dictionary<string, string> avatarMap)
+    internal void BuildSearchIndex(Dictionary<string, string> avatarMap)
     {
         IEnumerable<string> avatars = SupportedAvatars
             .Concat(ImplementedAvatars)
@@ -122,8 +117,23 @@ public class Item : ISelectableItem
             string.Join(" ", avatars)
         ).ToLowerInvariant();
     }
+    
+    internal Item SetValuesFromCreationContext(ItemCreationContext itemCreationContext)
+    {
+        Title = itemCreationContext.Title;
+        Author = itemCreationContext.Author;
+        AuthorId = itemCreationContext.AuthorId;
+        BoothId = itemCreationContext.BoothId;
+        Type = itemCreationContext.ItemType;
+        CustomCategory = itemCreationContext.CustomCategory;
 
-    public static Item FromV1(ItemV1 item)
+        SupportedAvatars.Clear();
+        SupportedAvatars.AddRange(itemCreationContext.SupportedAvatars);
+
+        return this;
+    }
+
+    internal static Item FromV1(ItemV1 item)
     {
         Item migratedItem = new()
         {
@@ -155,48 +165,5 @@ public class Item : ISelectableItem
         MigrateUtils.MigrateItemPaths(migratedItem.ImplementedAvatars);
 
         return migratedItem;
-    }
-    
-    internal Item SetValuesFromCreationContext(ItemCreationContext itemCreationContext)
-    {
-        Title = itemCreationContext.Title;
-        Author = itemCreationContext.Author;
-        AuthorId = itemCreationContext.AuthorId;
-        BoothId = itemCreationContext.BoothId;
-        Type = itemCreationContext.ItemType;
-        CustomCategory = itemCreationContext.CustomCategory;
-
-        SupportedAvatars.Clear();
-        SupportedAvatars.AddRange(itemCreationContext.SupportedAvatars);
-
-        return this;
-    }
-
-    internal static async Task<(Item? newItem, List<string> processingFailedPaths)> FromItemCreationContext(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
-    {
-        string extractDestinationFolderPath = Path.Combine(runtimeSettings.DataRootDirectory, itemCreationContext.LocalizedItemTypeName);
-        var (itemPath, materialPath, processingFailedPaths) = await FileSystemUtils.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, extractDestinationFolderPath, runtimeSettings.RemoveOriginal);
-        
-        if (string.IsNullOrEmpty(itemPath))
-        {
-            return (null, processingFailedPaths);
-        }
-        
-        Item newItem = new()
-        {
-            Title = itemCreationContext.Title,
-            Author = itemCreationContext.Author,
-            AuthorId = itemCreationContext.AuthorId,
-            BoothId = itemCreationContext.BoothId,
-            ItemPath = itemPath,
-            MaterialPath = materialPath,
-            Type = itemCreationContext.ItemType,
-            CustomCategory = itemCreationContext.CustomCategory
-        };
-
-        newItem.SupportedAvatars.Clear();
-        newItem.SupportedAvatars.AddRange(itemCreationContext.SupportedAvatars);
-
-        return (newItem, processingFailedPaths);
     }
 }
