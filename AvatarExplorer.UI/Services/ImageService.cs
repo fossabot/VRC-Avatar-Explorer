@@ -21,7 +21,5 @@ internal static class ImageService
     }
 
     internal static Bitmap? LoadImage(string filePath)
-    {
-        return File.Exists(filePath) ? new Bitmap(filePath) : null;
-    }
+        => File.Exists(filePath) ? new Bitmap(filePath) : null;
 }
