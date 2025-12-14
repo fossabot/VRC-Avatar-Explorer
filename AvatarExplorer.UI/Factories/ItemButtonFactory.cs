@@ -16,7 +16,6 @@ namespace AvatarExplorer.UI.Factories;
 
 internal static class ItemButtonFactory
 {
-    
     internal static void AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
         Button itemButton = new()
@@ -86,7 +85,7 @@ internal static class ItemButtonFactory
 
         if (!string.IsNullOrEmpty(item.CommonAvatarName))
         {
-            Button commonAvatarButton = GenerateTagButton(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, item.CommonAvatarName));
+            Button commonAvatarButton = GetTagButton(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, item.CommonAvatarName));
             commonAvatarButton.FontWeight = FontWeight.Bold;
             commonAvatarButton.Background = new SolidColorBrush(Colors.Green);
             tagPanel.Children.Add(commonAvatarButton);
@@ -94,7 +93,7 @@ internal static class ItemButtonFactory
 
         foreach (string itemTag in item.ItemTags)
         {
-            tagPanel.Children.Add(GenerateTagButton(itemTag));
+            tagPanel.Children.Add(GetTagButton(itemTag));
         }
 
         textPanel.Children.Add(tagPanel);
@@ -102,14 +101,14 @@ internal static class ItemButtonFactory
         contentPanel.Children.Add(textPanel);
 
         itemButton.Content = contentPanel;
-        if (StateFlagUtils.IsItemState(item.Tag.State)) ToolTip.SetTip(itemButton, GetTooltipForItem(item));
+        if (StateFlagUtils.IsItemState(item.Tag.State)) ToolTip.SetTip(itemButton, GetTooltipTextFromItem(item));
 
         if (contextMenu != null && contextMenu.ItemCount > 0) itemButton.ContextMenu = contextMenu;
         if (onClick != null) itemButton.Click += onClick;
 
         parent.Children.Add(itemButton);
     }
-    private static Button GenerateTagButton(string text)
+    private static Button GetTagButton(string text)
     {
         return new Button()
         {
@@ -121,7 +120,7 @@ internal static class ItemButtonFactory
             VerticalContentAlignment = VerticalAlignment.Center,
         };
     }
-    private static string? GetTooltipForItem(UISelectableItem item)
+    private static string? GetTooltipTextFromItem(UISelectableItem item)
     {
         StringBuilder toolTipTextBuilder = new();
 
