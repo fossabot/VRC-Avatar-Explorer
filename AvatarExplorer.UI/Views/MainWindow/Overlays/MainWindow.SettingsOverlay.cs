@@ -31,14 +31,14 @@ public partial class MainWindow
     private void SetUiValueFromCurrentSettings() // 設定画面を読み込んだ時に値をセットするための関数
     {
         RuntimeSettings runtimeSettings = _avatarExplorer.GetRuntimeSettings();
-        UserPreferences userUiPreferences = _userPreferences;
+        UserPreferences userPreferences = _userPreferences;
 
         SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory;
         SettingsOverlay_RemoveBracketsCheckBox.IsChecked = runtimeSettings.RemoveBrackets;
         SettingsOverlay_RemoveOriginalCheckBox.IsChecked = runtimeSettings.RemoveOriginal;
-        SettingsOverlay_ItemsPerPageTextBox.Text = userUiPreferences.ItemsPerPage.ToString();
-        SettingsOverlay_ThemeComboBox.SelectedIndex = (int)userUiPreferences.Theme;
-        SettingsOverlay_DefaultLanguageComboBox.SelectedIndex = userUiPreferences.DefaultLanguage;
+        SettingsOverlay_ItemsPerPageTextBox.Text = userPreferences.ItemsPerPage.ToString();
+        SettingsOverlay_ThemeComboBox.SelectedIndex = (int)userPreferences.Theme;
+        SettingsOverlay_DefaultLanguageComboBox.SelectedIndex = userPreferences.DefaultLanguage;
         SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex = (int)runtimeSettings.ItemSortOrder;
     }
     private void ApplySettingsValues() // 設定の適用ボタンが押されたときのみ

@@ -76,7 +76,7 @@ public partial class MainWindow : Window
         InitializeAvatarExplorer();
         InitializeContextMenuHandlers();
         InitializeNoItemsLabel();
-        InitializeUserUiPreferences();
+        InitializeUserPreferences();
 
         Main_RenderLeftPanel();
         Main_RenderRightPanel();

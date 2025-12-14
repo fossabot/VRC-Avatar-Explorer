@@ -15,9 +15,9 @@ internal static class UserPreferencesService
             if (!File.Exists(path)) return new();
 
             string json = File.ReadAllText(path);
-            UserPreferences userUiPreferences = JsonSerializer.Deserialize<UserPreferences>(json) ?? new();
+            UserPreferences userPreferences = JsonSerializer.Deserialize<UserPreferences>(json) ?? new();
 
-            return userUiPreferences;
+            return userPreferences;
         }
         catch
         {

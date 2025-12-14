@@ -19,14 +19,14 @@ public partial class MainWindow
             _avatarExplorer.LoadCommonAvatarDatabase(true);
             _avatarExplorer.LoadRuntimeSettings();
             ApplyRuntimeSettingsToUi(); // 並び替え順をセットするため
-            Localizer.Instance.LoadFromFile("locales/ja-JP.json");
+            Localizer.Instance.LoadFromFile("Locales/ja-JP.json"); // TODO: これは動的に変更する。デバッグの時のみ
         }
         catch
         {
             // Ignored
         }
     }
-    private void InitializeUserUiPreferences()
+    private void InitializeUserPreferences()
     {
         var userPreferences = UserPreferencesService.LoadUserPreferences(SystemPath.UserPreferencesFilePath);
         _userPreferences.FromOther(userPreferences);
