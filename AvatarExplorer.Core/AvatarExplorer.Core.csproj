@@ -12,6 +12,18 @@
 
 	<ItemGroup>
 		<PackageReference Include="SharpCompress" Version="0.42.0" />
+
+		<Content Include="../THIRD_PARTY_LICENSES.txt">
+			<Link>THIRD_PARTY_LICENSES.txt</Link>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+		</Content>
+
+		<Content Include="../LICENSE.txt">
+			<Link>LICENSE.txt</Link>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+		</Content>
 	</ItemGroup>
 
 </Project>

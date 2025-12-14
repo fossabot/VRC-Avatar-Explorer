@@ -82,8 +82,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Icons Lisence
+- Icon Licenses
 
-- Empty icons created by Ghozi Muhtarom - Flaticon (https://www.flaticon.com/free-icon/box_14906200?term=nothing&page=1&position=21&origin=search&related_id=14906200)
-- Files and folders icons created by juicy_fish - Flaticon (https://www.flaticon.com/free-icon/folder_11471391?term=folder&page=1&position=11&origin=search&related_id=11471391)
-- Document icons created by Neveraemje - Flaticon (https://www.flaticon.com/free-icon/new-document_3047411?term=file&page=3&position=46&origin=search&related_id=3047411)
+Empty icons created by Ghozi Muhtarom - Flaticon (https://www.flaticon.com/free-icon/box_14906200)
+Files and folders icons created by juicy_fish - Flaticon (https://www.flaticon.com/free-icon/folder_11471391)
+Document icons created by Neveraemje - Flaticon (https://www.flaticon.com/free-icon/new-document_3047411)
