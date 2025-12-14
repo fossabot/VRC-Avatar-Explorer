@@ -5,12 +5,12 @@ public static class SystemFileName
     public static class Database
     {
         public const string Items = "items.json";
-        public const string CommonAvatars = "commonavatars.json";
+        public const string CommonAvatars = "commonCvatars.json";
     }
 
     public static class Settings
     {
-        public const string Runtime = "runtimesettings.json";
-        public const string Preferences = "preferencesettings.json";
+        public const string Runtime = "runtimeSettings.json";
+        public const string Preferences = "preferenceSettings.json";
     }
 }
