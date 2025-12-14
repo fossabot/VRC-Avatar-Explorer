@@ -20,7 +20,7 @@ public static class FileSystemService
     {
         WriteIndented = true
     };
-    
+
     public static void SerializeClass<T>(T values, string filePath)
     {
         PrepareDirectory(filePath);

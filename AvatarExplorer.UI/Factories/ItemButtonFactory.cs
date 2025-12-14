@@ -10,6 +10,7 @@ using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
+using AvatarExplorer.UI.Services;
 using AvatarExplorer.UI.Utils;
 
 namespace AvatarExplorer.UI.Factories;
@@ -34,11 +35,11 @@ internal static class ItemButtonFactory
 
         Image itemIcon = new()
         {
-            Source = IconUtils.GetIcon(item.ImageFileName, item.IconType),
+            Source = ImageService.GetImage(item.ImageFileName, item.IconType),
             Width = 70,
             Height = 70
         };
-        if (!IconUtils.IsSystemFileIcons(item.ImageFileName))
+        if (!IconUtils.IsSystemFileIcon(item.ImageFileName))
         {
             itemIcon.PointerEntered += (s, e) =>
             {

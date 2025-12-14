@@ -1,35 +1,19 @@
 using System.Collections.Generic;
-using System.IO;
 using Avalonia.Media.Imaging;
 using AvatarExplorer.Core.Data.Paths;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.UI.Services;
 
 namespace AvatarExplorer.UI.Utils;
 
 internal static class IconUtils
 {
-    private static readonly Dictionary<string, Bitmap?> systemIcons = new()
+    internal static readonly Dictionary<string, Bitmap?> SystemIcons = new()
     {
-        { SystemIconKey.FolderIcon, LoadImage("Assets/FolderIcon.png") },
-        { SystemIconKey.FileIcon, LoadImage("Assets/FileIcon.png") },
-        { SystemIconKey.NothingIcon, LoadImage("Assets/NothingIcon.png") },
+        { SystemIconKey.FolderIcon, ImageService.LoadImage("Assets/FolderIcon.png") },
+        { SystemIconKey.FileIcon, ImageService.LoadImage("Assets/FileIcon.png") },
+        { SystemIconKey.NothingIcon, ImageService.LoadImage("Assets/NothingIcon.png") },
     };
-    internal static bool IsSystemFileIcons(string fileName) => systemIcons.ContainsKey(fileName);
 
-    internal static Bitmap? GetIcon(string fileName, IconType iconType = IconType.None)
-    {
-        if (IsSystemFileIcons(fileName)) return systemIcons[fileName];
-
-        return iconType switch
-        {
-            IconType.Item => LoadImage(Path.Join(SystemPath.ItemThumbnailsPath, fileName)),
-            IconType.Author => LoadImage(Path.Join(SystemPath.AuthorThumbnailsPath, fileName)),
-            _ => LoadImage(fileName),
-        };
-    }
-
-    private static Bitmap? LoadImage(string filePath)
-    {
-        return File.Exists(filePath) ? new Bitmap(filePath) : null;
-    }
+    internal static bool IsSystemFileIcon(string fileName)
+        => SystemIcons.ContainsKey(fileName);
 }

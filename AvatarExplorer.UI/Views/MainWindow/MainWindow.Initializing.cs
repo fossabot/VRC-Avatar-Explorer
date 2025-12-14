@@ -5,7 +5,6 @@ using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Services;
-using AvatarExplorer.UI.Utils;
 
 namespace AvatarExplorer.UI;
 
@@ -43,7 +42,7 @@ public partial class MainWindow
 
         Main_RightPanelParent.Children.Add(new Image
         {
-            Source = IconUtils.GetIcon(SystemIconKey.NothingIcon),
+            Source = ImageService.GetImage(SystemIconKey.NothingIcon),
             Width = 150,
             Height = 150,
             HorizontalAlignment = HorizontalAlignment.Center,
