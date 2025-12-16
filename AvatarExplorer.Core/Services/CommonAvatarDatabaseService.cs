@@ -9,21 +9,13 @@ internal static class CommonAvatarDatabaseService
     internal static List<CommonAvatar> LoadCommonAvatarsData(string path)
     {
         if (!File.Exists(path)) throw new FileNotFoundException();
-
-        string json = File.ReadAllText(path);
-        List<CommonAvatar> commonAvatars = JsonSerializer.Deserialize<List<CommonAvatar>>(json) ?? [];
-
-        return commonAvatars;
+        return FileSystemService.DeserializeClass<List<CommonAvatar>>(path) ?? [];
     }
 
     internal static List<CommonAvatar> LoadCommonAvatarsDataFromV1(string path)
     {
         if (!File.Exists(path)) throw new FileNotFoundException();
-
-        string json = File.ReadAllText(path);
-        List<CommonAvatarV1> commonAvatars = JsonSerializer.Deserialize<List<CommonAvatarV1>>(json) ?? [];
-
-        return MigrateCommonAvatarsFromV1(commonAvatars);
+        return MigrateCommonAvatarsFromV1(FileSystemService.DeserializeClass<List<CommonAvatarV1>>(path) ?? []);
     }
 
     private static List<CommonAvatar> MigrateCommonAvatarsFromV1(List<CommonAvatarV1> commonAvatars)

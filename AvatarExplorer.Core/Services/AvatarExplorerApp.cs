@@ -94,9 +94,9 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Select API
-    public void Select(ItemTagState type, string key)
+    public void Select(ItemTagState state, string key)
     {
-        _selectionState.Push(type, key);
+        _selectionState.Push(state, key);
     }
 
     public void SelectUndo()
@@ -113,25 +113,11 @@ public partial class AvatarExplorerApp
     #region Get API
     public IReadOnlyList<ItemCountInfo> GetAuthors()
     {
-        return _items
-            .GroupBy(item => new { item.Author, item.AuthorThumbnmailFileName })
-            .Select(g => new ItemCountInfo(
-                new Author
-                {
-                    Name = g.Key.Author,
-                    AuthorThumbnailFileName = g.Key.AuthorThumbnmailFileName
-                },
-                g.Count()
-            ))
-            .ToList();
+        return ItemAuthorAggregator.Aggregate(_items);
     }
     public IReadOnlyList<ItemCountInfo> GetAvatars()
     {
-        return _items
-            .Where(i => i.Type == ItemType.Avatar)
-            .GetSortedItems(_runtimeSettings)
-            .Select(i => new ItemCountInfo(i, 0))
-            .ToList();
+        return ItemAvatarAggregator.Aggregate(_items, _runtimeSettings);
     }
     public IReadOnlyList<ItemCountInfo> GetCategories()
     {

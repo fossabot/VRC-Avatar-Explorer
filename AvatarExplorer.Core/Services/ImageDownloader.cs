@@ -6,10 +6,10 @@ internal static class ImageDownloader
 
     internal static async Task DownloadImageAsync(string url, string filePath, bool overwrite = false)
     {
+        if ((!overwrite && File.Exists(filePath)) || string.IsNullOrEmpty(url)) return;
+
         try
         {
-            if (!overwrite && File.Exists(filePath)) return;
-
             byte[] imageBytes = await GetBytes(url);
             FileSystemService.PrepareDirectory(filePath);
             await File.WriteAllBytesAsync(filePath, imageBytes);

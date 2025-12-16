@@ -28,6 +28,12 @@ public static class FileSystemService
         File.WriteAllText(filePath, json);
     }
 
+    public static T? DeserializeClass<T>(string filePath)
+    {
+        string json = File.ReadAllText(filePath);
+        return JsonSerializer.Deserialize<T>(json);
+    }
+
     public static IEnumerable<string> EnumerateFiles(string rootDirectory)
     {
         if (!Directory.Exists(rootDirectory))

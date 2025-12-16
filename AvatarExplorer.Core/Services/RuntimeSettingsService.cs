@@ -1,4 +1,3 @@
-using System.Text.Json;
 using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Models;
 
@@ -11,11 +10,7 @@ internal static class RuntimeSettingsService
         try
         {
             if (!File.Exists(path)) return new();
-
-            string json = File.ReadAllText(path);
-            var runtimeSettings = JsonSerializer.Deserialize<RuntimeSettings>(json) ?? new();
-
-            return runtimeSettings;
+            return FileSystemService.DeserializeClass<RuntimeSettings>(path) ?? new();
         }
         catch
         {

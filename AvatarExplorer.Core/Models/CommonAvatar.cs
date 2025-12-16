@@ -19,9 +19,11 @@ public class CommonAvatar
     {
         CommonAvatar migratedCommonAvatar = new()
         {
-            GroupName = commonAvatar.Name,
-            Avatars = new List<string>(commonAvatar.Avatars),
+            GroupName = commonAvatar.Name
         };
+        
+        migratedCommonAvatar.Avatars.Clear();
+        migratedCommonAvatar.Avatars.AddRange(commonAvatar.Avatars);
 
         MigrateUtils.MigrateItemPaths(migratedCommonAvatar.Avatars);
 

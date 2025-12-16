@@ -1,4 +1,3 @@
-using System.Text.Json;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Models.V1;
 
@@ -9,21 +8,13 @@ internal static class ItemDatabaseService
     internal static List<Item> LoadItemsData(string path)
     {
         if (!File.Exists(path)) throw new FileNotFoundException();
-
-        string json = File.ReadAllText(path);
-        List<Item> items = JsonSerializer.Deserialize<List<Item>>(json) ?? [];
-
-        return items;
+        return FileSystemService.DeserializeClass<List<Item>>(path) ?? [];
     }
     
     internal static List<Item> LoadItemsDataFromV1(string path)
     {
         if (!File.Exists(path)) throw new FileNotFoundException();
-
-        string json = File.ReadAllText(path);
-        List<ItemV1> items = JsonSerializer.Deserialize<List<ItemV1>>(json) ?? [];
-
-        return MigrateItemsFromV1(items);
+        return MigrateItemsFromV1(FileSystemService.DeserializeClass<List<ItemV1>>(path) ?? []);
     }
     
     private static List<Item> MigrateItemsFromV1(List<ItemV1> items)

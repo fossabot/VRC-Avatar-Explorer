@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
+using AvatarExplorer.Core.Services;
 
 namespace AvatarExplorer.UI.Localization;
 
@@ -19,10 +19,9 @@ internal class Localizer
     {
         if (!File.Exists(path)) return;
 
-        string json = File.ReadAllText(path);
         _map.Clear();
 
-        var dictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+        var dictionary = FileSystemService.DeserializeClass<Dictionary<string, string>>(path);
         if (dictionary != null)
         {
             foreach (var localizationMap in dictionary)

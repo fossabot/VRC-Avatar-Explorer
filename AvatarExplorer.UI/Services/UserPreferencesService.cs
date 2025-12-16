@@ -13,11 +13,7 @@ internal static class UserPreferencesService
         try
         {
             if (!File.Exists(path)) return new();
-
-            string json = File.ReadAllText(path);
-            UserPreferences userPreferences = JsonSerializer.Deserialize<UserPreferences>(json) ?? new();
-
-            return userPreferences;
+            return FileSystemService.DeserializeClass<UserPreferences>(path) ?? new();
         }
         catch
         {
