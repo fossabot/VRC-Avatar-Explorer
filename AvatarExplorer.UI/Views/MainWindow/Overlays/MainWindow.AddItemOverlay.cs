@@ -68,7 +68,7 @@ public partial class MainWindow
 
         if (_avatarExplorer.IsApiCooldownNow)
         {
-            ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.BoothApiCooldown]);
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.BoothApiCooldown]);
             return;
         }
         
@@ -80,7 +80,7 @@ public partial class MainWindow
 
         if (boothItem == null)
         {
-            ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.BoothItemNotFound]);
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.BoothItemNotFound]);
             return;
         }
 
@@ -157,28 +157,28 @@ public partial class MainWindow
 
             if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
             {
-                ShowDialog(
+                Dialog_Show(
                     Localizer.Instance[LocalizationKey.Error.Default],
                     Localizer.Instance.GetDisplayName(LocalizationKey.Error.ItemFolderProcessingFailedPaths, "\n" + string.Join('\n', processingFailedPaths.Select(i => $"- {i}")))
                 );
             }
 
-            if (newItem != null) ShowDialog(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemAdd]);
-            else ShowDialog(Localizer.Instance[LocalizationKey.UI.Dialog.Failed.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Failed.ItemAdd]);
+            if (newItem != null) Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemAdd]);
+            else Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Failed.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Failed.ItemAdd]);
         }
         else
         {
             _avatarExplorer.EditItem(_selectedItem, itemCreationContext);
-            ShowDialog(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemEdit]);
+            Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemEdit]);
         }
 
         _selectedItem = null;
         _addItemWindowValues.Reset();
         AddItemOverlay.IsVisible = false;
     }
+    
     private void AddItemOverlay_Close_Click(object? sender, RoutedEventArgs e)
         => AddItemOverlay_CloseInternal();
-
     private void AddItemOverlay_Border_Click(object? sender, RoutedEventArgs e)
         => AddItemOverlay_CloseInternal();
 
@@ -216,7 +216,7 @@ public partial class MainWindow
     private bool AddItemOverlay_ValidateAddItemWindowValues()
     {
         var validationResult = _addItemWindowValues.Validate();
-        if (!validationResult.Item1) ShowDialog(LocalizationKey.Error.Default, Localizer.Instance[validationResult.Item2]);
+        if (!validationResult.Item1) Dialog_Show(LocalizationKey.Error.Default, Localizer.Instance[validationResult.Item2]);
 
         return validationResult.Item1;
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
+    internal Dictionary<ActionKey, Func<string, Task>>? _contextMenuHandlers;
+
     private async void ItemButton_ContextMenuItem_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is MenuItem menuItem && menuItem.Tag is ContextMenuAction contextMenuAction)
@@ -22,7 +25,7 @@ public partial class MainWindow
     {
         if (contextMenuAction.ActionLayer == ActionLayer.UI)
         {
-            if (_contextMenuHandlers != null && _contextMenuHandlers.TryGetValue(contextMenuAction.ActionKey, out var handler))
+            if (_contextMenuHandlers!.TryGetValue(contextMenuAction.ActionKey, out var handler))
                 await handler(contextMenuAction.Tag);
         }
         else if (contextMenuAction.ActionLayer == ActionLayer.Core)
@@ -35,7 +38,7 @@ public partial class MainWindow
     private Item? ItemButton_ContextMenu_GetItemByPath(string itemPath)
     {
         Item? item = _avatarExplorer.GetItemByPath(itemPath);
-        if (item == null) ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemNotFound]);
+        if (item == null) Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemNotFound]);
 
         return item;
     }
@@ -100,7 +103,7 @@ public partial class MainWindow
     }
     private Task ItemButton_ContextMenu_AddMemo(string itemPath)
     {
-        ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
+        Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
         return Task.CompletedTask;
     }
     private async Task ItemButton_ContextMenu_AddItemFolder(string itemPath)
@@ -118,7 +121,7 @@ public partial class MainWindow
 
         if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
         {
-            ShowDialog(
+            Dialog_Show(
                 Localizer.Instance[LocalizationKey.Error.Default],
                 Localizer.Instance.GetDisplayName(LocalizationKey.Error.ItemFolderProcessingFailedPaths, "\n" + string.Join('\n', processingFailedPaths.Select(i => $"- {i}")))
             );
@@ -126,18 +129,12 @@ public partial class MainWindow
     }
     private Task ItemButton_ContextMenu_EditImplementedAvatar(string itemPath)
     {
-        ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
+        Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
         return Task.CompletedTask;
     }
     private Task ItemButton_ContextMenu_EditItemTag(string itemPath)
     {
-        ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
-        return Task.CompletedTask;
-    }
-
-    private Task ItemButton_ContextMenu_ChangeAuthorThumbnail(string itemPath)
-    {
-        ShowDialog(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
+        Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
         return Task.CompletedTask;
     }
     #endregion

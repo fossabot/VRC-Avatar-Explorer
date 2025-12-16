@@ -5,7 +5,7 @@ public static class SystemFileName
     public static class Database
     {
         public const string Items = "items.json";
-        public const string CommonAvatars = "commonCvatars.json";
+        public const string CommonAvatars = "commonAvatars.json";
     }
 
     public static class Settings

@@ -9,11 +9,11 @@ using Avalonia.Threading;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
+using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
 using AvatarExplorer.UI.Services;
-using AvatarExplorer.UI.Utils;
 
 namespace AvatarExplorer.UI;
 
@@ -21,7 +21,6 @@ public partial class MainWindow : Window
 {
     internal readonly AvatarExplorerApp _avatarExplorer = new();
 
-    internal Dictionary<ActionKey, Func<string, Task>>? _contextMenuHandlers;
     internal readonly Dictionary<ItemTagState, int> _currentPageStates = new()
     {
         { ItemTagState.SearchItem, 0 },
@@ -43,19 +42,22 @@ public partial class MainWindow : Window
         { ItemTagState.ItemFileCategory, new() },
         { ItemTagState.ItemFileCategoryOpen, new() }
     };
+
     internal string _lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
     internal string _searchTextCache = string.Empty;
     internal bool _isLastWindowSearch = false;
+
     internal ItemTagState _lastRightPanelItemTagState = ItemTagState.Unknown;
+
     internal readonly UserPreferences _userPreferences = new();
-    
     internal int ItemsPerPage => _userPreferences.ItemsPerPage;
-    internal RuntimeSettings RuntimeSettings => _avatarExplorer.GetRuntimeSettings();
 
     private bool IsPageSupported(ItemTagState itemTagState)
         => _currentPageStates.ContainsKey(itemTagState);
     private int GetPage(ItemTagState itemTagState)
         => IsPageSupported(itemTagState) ? _currentPageStates[itemTagState] : -1;
+
+    internal RuntimeSettings RuntimeSettings => _avatarExplorer.GetRuntimeSettings();
 
     public MainWindow()
     {
@@ -69,7 +71,6 @@ public partial class MainWindow : Window
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるように変更
         TODO: 詳細検索用の画面を追加する（右のアイテム画面の右側に縦長に別ウィンドウみたいな感じで表示するのはありかも？）
         TODO: EventHandlerとCommandsを分ける。EventHandler内に処理は書きたくない
-        TODO: 分け過ぎはダメ！もうちょっと整理しよう！
         */
 
         InitializeComponent();

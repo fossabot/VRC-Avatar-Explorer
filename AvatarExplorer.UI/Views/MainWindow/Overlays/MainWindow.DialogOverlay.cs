@@ -4,19 +4,16 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    private void ShowDialog(string title, string content)
+    private void Dialog_Show(string title, string content)
     {
-        if (DialogTitle == null || DialogContent == null) return;
-
         DialogTitle.Text = title;
         DialogContent.Text = content;
 
         DialogOverlay.IsVisible = true;
     }
-    private void Dialog_OKButton_Click(object? sender, RoutedEventArgs e)
-    {
-        if (DialogOverlay == null) return;
+    private void Dialog_OK_Click(object? sender, RoutedEventArgs e)
+        => Dialog_CloseInternal();
 
-        DialogOverlay.IsVisible = false;
-    }
+    private void Dialog_CloseInternal()
+        =>  DialogOverlay.IsVisible = false;
 }

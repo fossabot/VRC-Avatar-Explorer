@@ -75,7 +75,7 @@ internal static class ItemButtonFactory
             FontSize = 13
         });
 
-        // TODO: タグパネルが横に無限に伸びてしまっているのを修正する
+        // タグパネルが横に無限に伸びてしまっているのを修正したいが、StackPanelを使っていると難しいため、いつかはGridに移行したい
         WrapPanel tagPanel = new()
         {
             Orientation = Orientation.Horizontal,

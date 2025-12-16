@@ -40,8 +40,11 @@ public partial class MainWindow
     }
 
     private void EditFoldersOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => EditFoldersOverlay.IsVisible = false;
+        => EditFoldersOverlay_CloseInternal();
     private void EditFoldersOverlay_ConfirmButton_Click(object? sender, RoutedEventArgs e)
+        => EditFoldersOverlay_CloseInternal();
+    
+    private void EditFoldersOverlay_CloseInternal()
         => EditFoldersOverlay.IsVisible = false;
     
     #region Methods

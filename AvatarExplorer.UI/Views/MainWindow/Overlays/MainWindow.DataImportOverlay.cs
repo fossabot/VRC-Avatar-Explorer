@@ -13,9 +13,13 @@ namespace AvatarExplorer.UI;
 public partial class MainWindow
 {
     private void SelectImportTypeOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => SelectImportTypeOverlay.IsVisible = false;
+        => SelectImportTypeOverlay_CloseInternal();
     private void SelectImportTypeOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
+        => SelectImportTypeOverlay_CloseInternal();
+        
+    private void SelectImportTypeOverlay_CloseInternal()
         => SelectImportTypeOverlay.IsVisible = false;
+        
     private void SelectImportTypeOverlay_FromV1_Click(object? sender, RoutedEventArgs e)
         => DataImportInternal(DataImportType.V1);
     private void SelectImportTypeOverlay_FromKonoAsset_Click(object? sender, RoutedEventArgs e)

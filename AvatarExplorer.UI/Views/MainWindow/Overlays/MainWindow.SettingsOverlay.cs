@@ -18,9 +18,13 @@ public partial class MainWindow
     }
     
     private void SettingsOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => SettingsOverlay.IsVisible = false;
+        => SettingsOverlay_CloseInternal();
     private void SettingsOverlay_Close_Click(object? sender, RoutedEventArgs e)
+        => SettingsOverlay_CloseInternal();
+    
+    private void SettingsOverlay_CloseInternal()
         => SettingsOverlay.IsVisible = false;
+        
     private void SettingsOverlay_Apply_Click(object? sender, RoutedEventArgs e)
     {
         ApplySettingsValues();
@@ -79,7 +83,7 @@ public partial class MainWindow
     }
     private void ApplyRuntimeSettingsToUi()
     {
-        Main_SortOrderComboBox.SelectedIndex = (int)_avatarExplorer.GetRuntimeSettings().ItemSortOrder;
+        Main_SortOrderComboBox.SelectedIndex = (int)RuntimeSettings.ItemSortOrder;
     }
     #endregion
 }

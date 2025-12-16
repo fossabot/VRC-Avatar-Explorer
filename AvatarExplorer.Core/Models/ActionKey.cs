@@ -14,6 +14,5 @@ public enum ActionKey
     AddItemFolder,
     EditImplementedAvatar,
     EditItemTag,
-    RemoveItem,
-    ChangeAuthorThumbnail,
+    RemoveItem
 }

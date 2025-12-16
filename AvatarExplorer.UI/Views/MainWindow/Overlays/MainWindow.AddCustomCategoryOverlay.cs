@@ -16,7 +16,10 @@ public partial class MainWindow
     }
 
     private void AddCustomCategory_Border_Click(object? sender, RoutedEventArgs e)
-        => AddCustomCategoryOverlay.IsVisible = false;
+        => AddCustomCategory_CloseInternal();
     private void AddCustomCategory_Cancel_Click(object? sender, RoutedEventArgs e)
+        => AddCustomCategory_CloseInternal();
+    
+    private void AddCustomCategory_CloseInternal()
         => AddCustomCategoryOverlay.IsVisible = false;
 }

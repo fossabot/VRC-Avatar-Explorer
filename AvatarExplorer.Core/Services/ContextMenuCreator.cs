@@ -9,9 +9,7 @@ public static class ContextMenuCreator
     public static List<ContextMenuAction> CreateContextMenu(ISelectableItem selectableItem)
     {
         if (selectableItem is Item item) return CreateContextMenuFromItemInternal(item);
-        else if (selectableItem is Author author) return CreateContextMenuFromAuthorInternal(author);
-
-        return new List<ContextMenuAction>();
+        else return new List<ContextMenuAction>();
     }
 
     private static List<ContextMenuAction> CreateContextMenuFromItemInternal(Item item)
@@ -30,16 +28,6 @@ public static class ContextMenuCreator
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Implemented, ActionKey.EditImplementedAvatar, ActionLayer.UI, item.ItemPath),
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Tag, ActionKey.EditItemTag, ActionLayer.UI, item.ItemPath),
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Remove, ActionKey.RemoveItem, ActionLayer.Core, item.ItemPath, true),
-        ];
-
-        return contextMenuActions;
-    }
-
-    private static List<ContextMenuAction> CreateContextMenuFromAuthorInternal(Author author)
-    {
-        List<ContextMenuAction> contextMenuActions =
-        [
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Thumbnail.Change, ActionKey.ChangeAuthorThumbnail, ActionLayer.UI, author.AuthorThumbnailFileName),
         ];
 
         return contextMenuActions;

@@ -279,7 +279,7 @@
                 <StackPanel Spacing="10">
                     <TextBlock x:Name="DialogTitle" Text="Dialog Title" Foreground="white" FontSize="24" Margin="0,0,0,10" FontWeight="Bold"/>
                     <TextBlock x:Name="DialogContent" Text="Content" Foreground="white" FontSize="17" Margin="0,0,0,10" MinWidth="300"/>
-                    <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,0,0" Click="Dialog_OKButton_Click" Width="60" HorizontalContentAlignment="Center" FontWeight="Bold"/>
+                    <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,0,0" Click="Dialog_OK_Click" Width="60" HorizontalContentAlignment="Center" FontWeight="Bold"/>
                 </StackPanel>
             </Border>
         </Border>

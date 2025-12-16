@@ -18,7 +18,7 @@ public partial class MainWindow
             _avatarExplorer.LoadCommonAvatarDatabase(true);
             _avatarExplorer.LoadRuntimeSettings();
             ApplyRuntimeSettingsToUi(); // 並び替え順をセットするため
-            Localizer.Instance.LoadFromFile("Locales/ja-JP.json"); // TODO: これは動的に変更する。デバッグの時のみ
+            Localizer.Instance.LoadFromFile("locales/ja-JP.json"); // TODO: これは動的に変更する。デバッグの時のみ
         }
         catch
         {
@@ -71,8 +71,7 @@ public partial class MainWindow
             { ActionKey.AddItemMemo, ItemButton_ContextMenu_AddMemo},
             { ActionKey.AddItemFolder, ItemButton_ContextMenu_AddItemFolder },
             { ActionKey.EditImplementedAvatar, ItemButton_ContextMenu_EditImplementedAvatar },
-            { ActionKey.EditItemTag, ItemButton_ContextMenu_EditItemTag },
-            { ActionKey.ChangeAuthorThumbnail, ItemButton_ContextMenu_ChangeAuthorThumbnail }
+            { ActionKey.EditItemTag, ItemButton_ContextMenu_EditItemTag }
         };
     }
 }
