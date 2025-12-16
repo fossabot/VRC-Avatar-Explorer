@@ -1,5 +1,4 @@
 using System.IO;
-using System.Text.Json;
 using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Services;
 using AvatarExplorer.UI.Models;
