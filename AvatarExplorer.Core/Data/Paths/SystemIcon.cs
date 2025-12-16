@@ -4,5 +4,5 @@ public static class SystemIconKey
 {
     public static readonly string FolderIcon = "System.Icon.Folder";
     public static readonly string FileIcon = "System.Icon.File";
-    public static readonly string NothingIcon = "System.Icon.Nothing";
+    public static readonly string EmptyIcon = "System.Icon.Empty";
 }

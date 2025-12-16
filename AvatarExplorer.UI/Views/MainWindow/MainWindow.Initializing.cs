@@ -42,7 +42,7 @@ public partial class MainWindow
 
         Main_RightPanelParent.Children.Add(new Image
         {
-            Source = ImageService.GetImage(SystemIconKey.NothingIcon),
+            Source = ImageService.GetImage(SystemIconKey.EmptyIcon),
             Width = 150,
             Height = 150,
             HorizontalAlignment = HorizontalAlignment.Center,
