@@ -82,6 +82,8 @@ internal static class DataImporter
 
                 if (boothItem != null)
                 {
+                    item.AuthorId = boothItem.AuthorId;
+
                     string itemThumbnailFileName = item.BoothId + ".png";
                     await ImageDownloader.DownloadImageAsync(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), false);
                     item.ThumbnmailFileName = itemThumbnailFileName;
