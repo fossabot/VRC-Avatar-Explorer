@@ -73,6 +73,7 @@ public partial class MainWindow : Window
         */
 
         InitializeComponent();
+        InitializeLanguageBox();
         InitializeAvatarExplorer();
         InitializeContextMenuHandlers();
         InitializeNoItemsLabel();

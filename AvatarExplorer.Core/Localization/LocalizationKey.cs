@@ -2,6 +2,8 @@ namespace AvatarExplorer.Core.Localization;
 
 public static class LocalizationKey
 {
+    public const string LanguageName = "LanguageName";
+    
     public static class ItemCategory
     {
         public const string Avatar = "ItemCategory.Avatar";

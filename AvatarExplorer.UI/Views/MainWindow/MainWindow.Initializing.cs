@@ -18,7 +18,6 @@ public partial class MainWindow
             _avatarExplorer.LoadCommonAvatarDatabase(true);
             _avatarExplorer.LoadRuntimeSettings();
             ApplyRuntimeSettingsToUi(); // 並び替え順をセットするため
-            Localizer.Instance.LoadFromFile("locales/ja-JP.json"); // TODO: これは動的に変更する。デバッグの時のみ
         }
         catch
         {
@@ -73,5 +72,18 @@ public partial class MainWindow
             { ActionKey.EditImplementedAvatar, ItemButton_ContextMenu_EditImplementedAvatar },
             { ActionKey.EditItemTag, ItemButton_ContextMenu_EditItemTag }
         };
+    }
+    private void InitializeLanguageBox()
+    {
+        Localizer.Instance.LoadFromFolder("locales");
+
+        Main_LanguageComboBox.Items.Clear();
+        SettingsOverlay_DefaultLanguageComboBox.Items.Clear();
+
+        foreach (string language in Localizer.Instance.GetLanguageList())
+        {
+            Main_LanguageComboBox.Items.Add(language);
+            SettingsOverlay_DefaultLanguageComboBox.Items.Add(language);
+        }
     }
 }

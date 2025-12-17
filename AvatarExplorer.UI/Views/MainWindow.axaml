@@ -30,11 +30,7 @@
 
                     <StackPanel Grid.Column="8" Orientation="Vertical">
                         <TextBlock Text="言語 / Language" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                        <ComboBox x:Name="Main_LanguageComboBox" SelectedIndex="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                            <ComboBoxItem Content="日本語"/>
-                            <ComboBoxItem Content="英語"/>
-                            <ComboBoxItem Content="韓国語"/>
-                        </ComboBox>
+                        <ComboBox x:Name="Main_LanguageComboBox" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="Main_LanguageComboBox_Changed"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="10" Orientation="Vertical">
@@ -243,11 +239,7 @@
                             <Grid ColumnDefinitions="200,*" RowDefinitions="*,20,*">
                                 <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="言語" Margin="0,0,10,0" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
                                 
-                                <ComboBox x:Name="SettingsOverlay_DefaultLanguageComboBox" Grid.Row="0" Grid.Column="1" SelectedIndex="0" Margin="10,0,0,0" MinWidth="150" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                    <ComboBoxItem Content="日本語"/>
-                                    <ComboBoxItem Content="英語"/>
-                                    <ComboBoxItem Content="韓国語"/>
-                                </ComboBox>
+                                <ComboBox x:Name="SettingsOverlay_DefaultLanguageComboBox" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" MinWidth="150" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                             </Grid>
 
                             <Grid ColumnDefinitions="200,*" RowDefinitions="*">

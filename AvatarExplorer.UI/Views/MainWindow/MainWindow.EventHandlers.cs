@@ -45,6 +45,15 @@ public partial class MainWindow
 
     #region Main Bottom Buttons
     // TODO: あとはバックアップと共通素体管理画面だけかも
+    private void Main_LanguageComboBox_Changed(object? sender, RoutedEventArgs e)
+    {
+        if (Main_LanguageComboBox == null) return;
+
+        Localizer.Instance.SetLanguage(Main_LanguageComboBox.SelectedIndex);
+
+        InitializeNoItemsLabel();
+        Main_ReloadCurrentWindow();
+    }
     private void Main_SortOrderComboBox_Changed(object? sender, RoutedEventArgs e)
     {
         if (sender is not ComboBox comboBox) return;
