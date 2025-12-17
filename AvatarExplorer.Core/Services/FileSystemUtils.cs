@@ -314,6 +314,7 @@ public static class FileSystemService
         else if (filePath.ToLower().EndsWith(".rar")) extractedFolderPath = RarExtractor(filePath, extractDirectory, folderName);
         else if (filePath.ToLower().EndsWith(".7z")) extractedFolderPath = SevenZipExtractor(filePath, extractDirectory, folderName);
         else if (filePath.ToLower().EndsWith(".gz")) extractedFolderPath = GzipExtractor(filePath, extractDirectory, folderName);
+        else if (filePath.ToLower().EndsWith(".tar")) extractedFolderPath = TarExtractor(filePath, extractDirectory, folderName);
         else throw new NotImplementedException();
 
         if (removeOriginalFile)
@@ -356,6 +357,15 @@ public static class FileSystemService
         string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.GZip.GZipArchive.Open(filePath))
+        EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
+
+        return extractDirectoryFolder;
+    }
+    private static string TarExtractor(string filePath, string extractDirectory, string folderName)
+    {
+        string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        
+        using (var archive = SharpCompress.Archives.Tar.TarArchive.Open(filePath))
         EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
 
         return extractDirectoryFolder;
