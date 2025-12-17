@@ -6,15 +6,15 @@ namespace AvatarExplorer.Core.Services;
 
 public static class ContextMenuCreator
 {
-    public static List<ContextMenuAction> CreateContextMenu(ISelectableItem selectableItem)
+    public static ContextMenuAction[] CreateContextMenu(ISelectableItem selectableItem)
     {
         if (selectableItem is Item item) return CreateContextMenuFromItemInternal(item);
-        else return new List<ContextMenuAction>();
+        else return [];
     }
 
-    private static List<ContextMenuAction> CreateContextMenuFromItemInternal(Item item)
+    private static ContextMenuAction[] CreateContextMenuFromItemInternal(Item item)
     {
-        List<ContextMenuAction> contextMenuActions =
+        ContextMenuAction[] contextMenuActions =
         [
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.OpenFolder, ActionKey.OpenItemFolder, ActionLayer.UI, item.ItemPath),
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Booth.Copy, ActionKey.CopyBoothLink, ActionLayer.UI, item.ItemPath),

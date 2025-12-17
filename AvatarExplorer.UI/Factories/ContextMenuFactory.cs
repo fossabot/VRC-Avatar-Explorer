@@ -9,7 +9,7 @@ namespace AvatarExplorer.UI.Factories;
 
 internal static class ContextMenuFactory
 {
-    internal static ContextMenu GetContextMenu(List<ContextMenuAction> contextMenuActions, EventHandler<RoutedEventArgs>? onClick = null)
+    internal static ContextMenu GetContextMenu(ContextMenuAction[] contextMenuActions, EventHandler<RoutedEventArgs>? onClick = null)
     {
         ContextMenu contextMenu = new();
 
