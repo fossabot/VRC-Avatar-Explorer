@@ -5,7 +5,7 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class ItemCategoryAggregator
 {
-    internal static IReadOnlyList<ItemCountInfo> Aggregate(IReadOnlyList<Item> items)
+    internal static IReadOnlyList<ItemCountInfo> Aggregate(IEnumerable<Item> items)
     {
         List<ItemCountInfo> categories = new();
 

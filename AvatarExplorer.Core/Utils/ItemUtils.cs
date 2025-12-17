@@ -34,7 +34,7 @@ public static partial class ItemUtils
     {
         // パスに使用しても大丈夫な文字だけ残す
         string safeTitle = itemTitle;
-        foreach (char invalidChar in FileSystemService.InvalidChars)
+        foreach (char invalidChar in FileSystemUtils.InvalidChars)
         {
             safeTitle = safeTitle.Replace(invalidChar, '_');
         }

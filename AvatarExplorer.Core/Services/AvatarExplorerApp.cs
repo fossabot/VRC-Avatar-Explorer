@@ -151,11 +151,11 @@ public partial class AvatarExplorerApp
     #region Current State Internal Handler
     private IReadOnlyList<ItemCountInfo> HandleRootAvatar(SelectionNode selectionNode)
     {
-        return GetCategoriesFromItemsInternal(_items.Where(i => AvatarStatusResolver.Resolve(selectionNode.Key, i, _commonAvatars).IsSupportedOrCommon));
+        return ItemCategoryAggregator.Aggregate(_items.Where(i => AvatarStatusResolver.Resolve(selectionNode.Key, i, _commonAvatars).IsSupportedOrCommon));
     }
     private IReadOnlyList<ItemCountInfo> HandleRootAuthor(SelectionNode selectionNode)
     {
-        return GetCategoriesFromItemsInternal(_items.Where(i => i.Author == selectionNode.Key));
+        return ItemCategoryAggregator.Aggregate(_items.Where(i => i.Author == selectionNode.Key));
     }
     private IReadOnlyList<ItemCountInfo> HandleRootCategory(SelectionNode selectionNode)
     {
@@ -276,22 +276,6 @@ public partial class AvatarExplorerApp
 
         return categoryItems;
     }
-    private static List<ItemCountInfo> GetCategoriesFromItemsInternal(IEnumerable<Item> items)
-    {
-        IEnumerable<ItemCountInfo> itemCategories = items
-            .Where(i => i.Type != ItemType.Custom)
-            .Select(i => i.Type)
-            .Distinct()
-            .Select(i => new ItemCountInfo(new Category(i), items.Count(item => item.Type == i)));
-
-        IEnumerable<ItemCountInfo> itemCustomCategories = items
-            .Where(i => i.Type == ItemType.Custom)
-            .Select(i => i.CustomCategory)
-            .Distinct()
-            .Select(i => new ItemCountInfo(new Category(i), items.Count(item => item.CustomCategory == i)));
-
-        return itemCategories.Concat(itemCustomCategories).ToList();
-    }
 
     public RuntimeSettings GetRuntimeSettings()
     {
@@ -409,14 +393,9 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Search API
-    public IReadOnlyList<Item> SearchItems(SearchFilter filter)
+    public IReadOnlyList<Item> SearchItems(SearchFilter searchFilter)
     {
-        var avatarNameMaps = ItemUtils.GetAvatarNameMaps(_items);
-
-        return _items
-            .Where(i => SearchService.Matches(filter, avatarNameMaps, _commonAvatars, i, _runtimeSettings.DataRootDirectory))
-            .OrderByDescending(i => SearchUtils.GetScore(i, filter.SearchWords))
-            .ToList();
+        return SearchService.ExecuteSearch(_items, _commonAvatars, _runtimeSettings, searchFilter);
     }
     #endregion
 
@@ -457,15 +436,7 @@ public partial class AvatarExplorerApp
     #region Clear API
     public static void ClearTemp()
     {
-        try
-        {
-            if (!Directory.Exists(SystemPath.TempFolderPath)) return;
-            Directory.Delete(SystemPath.TempFolderPath, true);
-        }
-        catch
-        {
-            // Ignored
-        }
+        FileSystemService.DeleteDirectory(SystemPath.TempFolderPath);
     }
     #endregion
     

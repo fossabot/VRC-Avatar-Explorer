@@ -15,24 +15,20 @@ namespace AvatarExplorer.Core.Services;
 
 public static class FileSystemService
 {
-    public static readonly char[] InvalidChars = Path.GetInvalidFileNameChars();
-    private static readonly JsonSerializerOptions jsonSerializerOptions = new()
-    {
-        WriteIndented = true
-    };
-
+    #region Serialize / Deserialize
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true };
     public static void SerializeClass<T>(T values, string filePath)
     {
         PrepareDirectory(filePath);
-        string json = JsonSerializer.Serialize(values, jsonSerializerOptions);
+        string json = JsonSerializer.Serialize(values, JsonSerializerOptions);
         File.WriteAllText(filePath, json);
     }
-
     public static T? DeserializeClass<T>(string filePath)
     {
         string json = File.ReadAllText(filePath);
         return JsonSerializer.Deserialize<T>(json);
     }
+    #endregion
 
     public static IEnumerable<string> EnumerateFiles(string rootDirectory)
     {
@@ -68,6 +64,7 @@ public static class FileSystemService
         }
     }
 
+    #region Unitypackage Modifier
     internal static async Task ModifyUnityPackageFilePathAsync(string itemPath, string itemCategoryName = "", IProgress<(string, int, string)>? progress = null)
     {
         bool isUnitypackage = itemPath.ToLower().EndsWith(".unitypackage");
@@ -75,7 +72,6 @@ public static class FileSystemService
 
         await ModifyUnityPackageFilePathAsyncInternal(itemPath, itemCategoryName, progress);
     }
-
     private static async Task ModifyUnityPackageFilePathAsyncInternal(string itemPath, string itemCategoryName, IProgress<(string, int, string)>? progress = null)
     {
         await Task.Run(async () =>
@@ -195,7 +191,9 @@ public static class FileSystemService
         using FileStream fileStream = new(outputTarFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 1024 * 1024, FileOptions.SequentialScan);
         archive.SaveTo(fileStream, new WriterOptions(CompressionType.None));
     }
+    #endregion
 
+    #region Extract Item Folders
     internal static async Task<(string, string, List<string>)> ExtractItemFolders(ItemCreationContext itemCreationContext, string dataRootDirectory, string destinationDirectory, bool removeOriginal = false)
     {
         List<string> processingFailedPaths = new();
@@ -208,7 +206,7 @@ public static class FileSystemService
         {
             try
             {
-                string extractedFolderPath = await ProcessExtractItemFoldersInternal(
+                string extractedFolderPath = await ExtractItemFoldersInternal(
                     itemCreationContext.Folders[i],
                     string.IsNullOrEmpty(parentFolder) ? destinationDirectory : othersFolder,
                     string.IsNullOrEmpty(parentFolder) ? (ItemUtils.GetSafeTitle(itemCreationContext.Title) ?? Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i])) : Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i]), // 親フォルダだけフォルダ名をタイトルに変換する
@@ -232,7 +230,7 @@ public static class FileSystemService
         {
             if (!string.IsNullOrEmpty(parentFolder) && !string.IsNullOrEmpty(itemCreationContext.MaterialFolder))
             {
-                await ProcessExtractItemFoldersInternal(
+                await ExtractItemFoldersInternal(
                     itemCreationContext.MaterialFolder,
                     materialsFolder,
                     Path.GetFileNameWithoutExtension(itemCreationContext.MaterialFolder),
@@ -252,7 +250,6 @@ public static class FileSystemService
 
         return ($"<sys>{Path.GetRelativePath(dataRootDirectory, parentFolder)}", $"<sys>{Path.GetRelativePath(dataRootDirectory, materialsFolder)}", processingFailedPaths);
     }
-
     internal static async Task<List<string>> ExtractItemFolders(string parentFolderPath, string[] folders, bool removeOriginal = false)
     {
         List<string> processingFailedPaths = new();
@@ -263,7 +260,7 @@ public static class FileSystemService
         {
             try
             {
-                await ProcessExtractItemFoldersInternal(
+                await ExtractItemFoldersInternal(
                     folder,
                     destinationDirectory,
                     Path.GetFileNameWithoutExtension(folder),
@@ -278,20 +275,21 @@ public static class FileSystemService
 
         return processingFailedPaths;
     }
-
-    private const int BufferSize = 1024 * 1024;
-    private static async Task<string> ProcessExtractItemFoldersInternal(string filePath, string destinationFolderPath, string folderName, bool removeOriginal)
+    private static async Task<string> ExtractItemFoldersInternal(string filePath, string destinationFolderPath, string folderName, bool removeOriginal)
     {
         var (extractedDestinationFolderPath, isDirectory) = FileExtractorInternal(filePath, destinationFolderPath, folderName, removeOriginal);
         if (isDirectory)
         {
             string copiedFolderPath = PrepareDestinationDirectoryInternal(destinationFolderPath, folderName);
-            await CopyDirectory(filePath, copiedFolderPath); // フォルダが返された場合は、フォルダにコピーする
+            await CopyDirectory(filePath, copiedFolderPath);
             extractedDestinationFolderPath = copiedFolderPath;
         }
 
         return extractedDestinationFolderPath;
     }
+    #endregion
+    
+    #region Extractor
     private static (string extractedFolderPath, bool isDirectory) FileExtractorInternal(string filePath, string extractDirectory, string folderName, bool removeOriginalFile)
     {
         if (string.IsNullOrEmpty(filePath))
@@ -325,12 +323,14 @@ public static class FileSystemService
 
         return (extractedFolderPath, false);
     }
+
+    private const int BufferSize = 1024 * 1024;
     private static string ZipExtractor(string filePath, string extractDirectory, string folderName)
     {
         string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
 
         using (var archive = SharpCompress.Archives.Zip.ZipArchive.Open(filePath))
-        EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
+        ExtractEntries(extractDirectoryFolder, archive.Entries);
 
         return extractDirectoryFolder;
     }
@@ -339,7 +339,7 @@ public static class FileSystemService
         string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.Rar.RarArchive.Open(filePath))
-        EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
+        ExtractEntries(extractDirectoryFolder, archive.Entries);
 
         return extractDirectoryFolder;
     }
@@ -348,7 +348,7 @@ public static class FileSystemService
         string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.SevenZip.SevenZipArchive.Open(filePath))
-        EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
+        ExtractEntries(extractDirectoryFolder, archive.Entries);
 
         return extractDirectoryFolder;
     }
@@ -357,7 +357,7 @@ public static class FileSystemService
         string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.GZip.GZipArchive.Open(filePath))
-        EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
+        ExtractEntries(extractDirectoryFolder, archive.Entries);
 
         return extractDirectoryFolder;
     }
@@ -366,26 +366,11 @@ public static class FileSystemService
         string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.Tar.TarArchive.Open(filePath))
-        EntriesProcessorInternal(extractDirectoryFolder, archive.Entries);
+        ExtractEntries(extractDirectoryFolder, archive.Entries);
 
         return extractDirectoryFolder;
     }
-    private static string PrepareDestinationDirectoryInternal(string extractDirectory, string folderName)
-    {
-        string extractDirectoryFolder = Path.Combine(extractDirectory, folderName);
-
-        if (Directory.Exists(extractDirectoryFolder))
-        {
-            int i = 1;
-            while (Directory.Exists(extractDirectoryFolder + " - " + i)) i++;
-            extractDirectoryFolder += " - " + i;
-        }
-
-        Directory.CreateDirectory(extractDirectoryFolder);
-
-        return extractDirectoryFolder;
-    }
-    private static void EntriesProcessorInternal<T>(string extractDirectoryFolder, ICollection<T> entries)
+    private static void ExtractEntries<T>(string extractDirectoryFolder, ICollection<T> entries)
         where T: Entry, IArchiveEntry
     {
         byte[] buffer = new byte[BufferSize];
@@ -412,6 +397,23 @@ public static class FileSystemService
             }
         }
     }
+    #endregion
+
+    private static string PrepareDestinationDirectoryInternal(string extractDirectory, string folderName)
+    {
+        string extractDirectoryFolder = Path.Combine(extractDirectory, folderName);
+
+        if (Directory.Exists(extractDirectoryFolder))
+        {
+            int i = 1;
+            while (Directory.Exists(extractDirectoryFolder + " - " + i)) i++;
+            extractDirectoryFolder += " - " + i;
+        }
+
+        Directory.CreateDirectory(extractDirectoryFolder);
+
+        return extractDirectoryFolder;
+    }
 
     public static void PrepareDirectory(string filePath)
     {
@@ -419,6 +421,7 @@ public static class FileSystemService
         if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
     }
 
+    #region Copy
     internal static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, IProgress<(string, int, string)>? progress = null, int maxDegreeOfParallelism = 4)
     {
         if (sourceDirectory == destinationDirectory) return; // sourceとdestinationが同じ場合は無視
@@ -477,6 +480,7 @@ public static class FileSystemService
             return null;
         }
     }
+    #endregion
 
     internal static string? GetUniqueFilePath(string? directory, string? fileName)
     {
@@ -501,6 +505,20 @@ public static class FileSystemService
                 return newPath;
 
             index++;
+        }
+    }
+
+    internal static bool DeleteDirectory(string path, bool recursive = true)
+    {
+        try
+        {
+            if (!Directory.Exists(path)) return false;
+            Directory.Delete(path, recursive);
+            return true;
+        }
+        catch
+        {
+            return false;
         }
     }
 }

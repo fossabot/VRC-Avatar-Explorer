@@ -6,6 +6,15 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class SearchService
 {
+    internal static List<Item> ExecuteSearch(List<Item> items, List<CommonAvatar> commonAvatars, RuntimeSettings runtimeSettings, SearchFilter searchFilter)
+    {
+        var avatarNameMaps = ItemUtils.GetAvatarNameMaps(items);
+
+        return items
+            .Where(i => Matches(searchFilter, avatarNameMaps, commonAvatars, i, runtimeSettings.DataRootDirectory))
+            .OrderByDescending(i => SearchUtils.GetScore(i, searchFilter.SearchWords))
+            .ToList();
+    }
     internal static bool Matches(SearchFilter searchFilter, Dictionary<string, string> avatarNameMaps, List<CommonAvatar> commonAvatars, Item item, string parentFolder)
     {
         bool matchTitle = searchFilter.Titles.Count == 0 || SearchUtils.MatchesFilter(
