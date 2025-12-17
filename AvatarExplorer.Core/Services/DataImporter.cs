@@ -82,7 +82,7 @@ internal static class DataImporter
 
                 if (boothItem != null)
                 {
-                    item.AuthorId = boothItem.AuthorId; // IKonoAsset.ToItem()ではAuthorIdは移行されないためここで設定する必要がある。
+                    item.AuthorId = boothItem.AuthorId; // IKonoAssetItem.ToItem()ではAuthorIdは移行されないためここで設定する必要がある。
 
                     string itemThumbnailFileName = item.BoothId + ".png";
                     await ImageDownloader.DownloadImageAsync(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), false);
