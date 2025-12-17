@@ -17,7 +17,7 @@ namespace AvatarExplorer.UI.Factories;
 
 internal static class ItemButtonFactory
 {
-    internal static void AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
+    internal static Button AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
         Button itemButton = new()
         {
@@ -108,6 +108,8 @@ internal static class ItemButtonFactory
         if (onClick != null) itemButton.Click += onClick;
 
         parent.Children.Add(itemButton);
+
+        return itemButton;
     }
     private static Button GetTagButton(string text)
     {

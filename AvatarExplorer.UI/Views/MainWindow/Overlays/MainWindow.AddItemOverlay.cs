@@ -14,16 +14,16 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    internal Item? _selectedItem = null;
-    internal readonly AddItemOverlayWindowValues _addItemWindowValues = new();
+    internal Item? _addItemOverlay_selectedItem = null;
+    internal readonly AddItemOverlayWindowValues _addItemOverlay_addItemWindowValues = new();
 
     private void AddItemOverlay_ShowEditItemWindow(Item item)
     {
         AddItemOverlay_InitializeAddItemWindowCategories();
 
-        _selectedItem = item;
-        _addItemWindowValues.FromItem(item);
-        AddItemOverlay_SetValuesToUi(_addItemWindowValues);
+        _addItemOverlay_selectedItem = item;
+        _addItemOverlay_addItemWindowValues.FromItem(item);
+        AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
         AddItemOverlay_BoothLinkTextBox.Text = item.GetBoothLink();
         AddItemOverlay.IsVisible = true;
     }
@@ -32,20 +32,20 @@ public partial class MainWindow
         // もし表示されてる状態でD&Dされたら、フォルダ追加だけしてあげる
         if (AddItemOverlay.IsVisible && filePaths != null)
         {
-            _addItemWindowValues.Folders.AddRange(filePaths);
+            _addItemOverlay_addItemWindowValues.Folders.AddRange(filePaths);
             EditFoldersOverlay_UpdateFolderList();
             return;
         }
 
         AddItemOverlay_InitializeAddItemWindowCategories();
 
-        _selectedItem = null;
-        _addItemWindowValues.Reset();
-        AddItemOverlay_SetValuesToUi(_addItemWindowValues);
+        _addItemOverlay_selectedItem = null;
+        _addItemOverlay_addItemWindowValues.Reset();
+        AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
         AddItemOverlay_BoothLinkTextBox.Text = string.Empty;
         AddItemOverlay.IsVisible = true;
 
-        if (filePaths != null) _addItemWindowValues.Folders.AddRange(filePaths);
+        if (filePaths != null) _addItemOverlay_addItemWindowValues.Folders.AddRange(filePaths);
         EditFoldersOverlay_UpdateFolderList();
     }
     
@@ -63,7 +63,6 @@ public partial class MainWindow
 
     private async void AddItemOverlay_GetBoothItemData_Click(object? sender, RoutedEventArgs e)
     {
-        if (_addItemWindowValues == null) return;
         string boothUrl = AddItemOverlay_BoothLinkTextBox.Text ?? "";
 
         if (_avatarExplorer.IsApiCooldownNow)
@@ -84,32 +83,32 @@ public partial class MainWindow
             return;
         }
 
-        _addItemWindowValues.Title = boothItem.Title;
-        _addItemWindowValues.Author = boothItem.Shop.Name;
-        _addItemWindowValues.BoothAuthorId = boothItem.AuthorId;
-        _addItemWindowValues.BoothId = boothItem.BoothId;
-        _addItemWindowValues.BoothThumbnailUrl = boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty;
-        _addItemWindowValues.BoothAuthorThumbnailUrl = boothItem.Shop.ThumbnailUrl;
-        _addItemWindowValues.ItemType = (boothItem.EstimatedCategory != ItemType.None && boothItem.EstimatedCategory != ItemType.Unknown) ? boothItem.EstimatedCategory : ItemType.Avatar;
+        _addItemOverlay_addItemWindowValues.Title = boothItem.Title;
+        _addItemOverlay_addItemWindowValues.Author = boothItem.Shop.Name;
+        _addItemOverlay_addItemWindowValues.BoothAuthorId = boothItem.AuthorId;
+        _addItemOverlay_addItemWindowValues.BoothId = boothItem.BoothId;
+        _addItemOverlay_addItemWindowValues.BoothThumbnailUrl = boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty;
+        _addItemOverlay_addItemWindowValues.BoothAuthorThumbnailUrl = boothItem.Shop.ThumbnailUrl;
+        _addItemOverlay_addItemWindowValues.ItemType = (boothItem.EstimatedCategory != ItemType.None && boothItem.EstimatedCategory != ItemType.Unknown) ? boothItem.EstimatedCategory : ItemType.Avatar;
 
         AddItemOverlay_ResetBoothItemDataButton.IsVisible = true;
 
-        AddItemOverlay_SetValuesToUi(_addItemWindowValues);
+        AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
     }
     private void AddItemOverlay_ResetBoothItemData_Click(object? sender, RoutedEventArgs e)
     {
-        if (_addItemWindowValues == null) return;
+        if (_addItemOverlay_addItemWindowValues == null) return;
 
-        _addItemWindowValues.Title = string.Empty;
-        _addItemWindowValues.Author = string.Empty;
-        _addItemWindowValues.BoothAuthorId = string.Empty;
-        _addItemWindowValues.BoothId = -1;
-        _addItemWindowValues.BoothThumbnailUrl = string.Empty;
-        _addItemWindowValues.BoothAuthorThumbnailUrl = string.Empty;
+        _addItemOverlay_addItemWindowValues.Title = string.Empty;
+        _addItemOverlay_addItemWindowValues.Author = string.Empty;
+        _addItemOverlay_addItemWindowValues.BoothAuthorId = string.Empty;
+        _addItemOverlay_addItemWindowValues.BoothId = -1;
+        _addItemOverlay_addItemWindowValues.BoothThumbnailUrl = string.Empty;
+        _addItemOverlay_addItemWindowValues.BoothAuthorThumbnailUrl = string.Empty;
 
         AddItemOverlay_ResetBoothItemDataButton.IsVisible = false;
 
-        AddItemOverlay_SetValuesToUi(_addItemWindowValues);
+        AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
     }
 
     private async void AddItemOverlay_EditFolder_Click(object? sender, RoutedEventArgs e)
@@ -122,33 +121,37 @@ public partial class MainWindow
         AddCustomCategory_CustomCategoryTextBox.Text = string.Empty;
         AddCustomCategoryOverlay.IsVisible = true;
     }
+    private void AddItemOverlay_EditSupportedAvatars_Click(object? sender, RoutedEventArgs e)
+    {
+        EditSupportedAvatarsOverlay_Show(_addItemOverlay_addItemWindowValues.SupportedAvatars);
+    }
 
     private async void AddItemOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
-        if (_addItemWindowValues == null) return;
+        if (_addItemOverlay_addItemWindowValues == null) return;
 
-        AddItemOverlay_SetValuesFromUi(_addItemWindowValues);
+        AddItemOverlay_SetValuesFromUi(_addItemOverlay_addItemWindowValues);
 
         if (!AddItemOverlay_ValidateAddItemWindowValues()) return;
 
         ItemCreationContext itemCreationContext = new();
-        itemCreationContext.Folders.AddRange(_addItemWindowValues.Folders);
-        itemCreationContext.MaterialFolder = _addItemWindowValues.MaterialFolder;
-        itemCreationContext.Title = _addItemWindowValues.Title;
-        itemCreationContext.Author = _addItemWindowValues.Author;
-        itemCreationContext.AuthorId = _addItemWindowValues.BoothAuthorId;
-        itemCreationContext.ThumbnailUrl = _addItemWindowValues.BoothThumbnailUrl;
-        itemCreationContext.AuthorThumbnailUrl = _addItemWindowValues.BoothAuthorThumbnailUrl;
-        itemCreationContext.BoothId = _addItemWindowValues.BoothId;
+        itemCreationContext.Folders.AddRange(_addItemOverlay_addItemWindowValues.Folders);
+        itemCreationContext.MaterialFolder = _addItemOverlay_addItemWindowValues.MaterialFolder;
+        itemCreationContext.Title = _addItemOverlay_addItemWindowValues.Title;
+        itemCreationContext.Author = _addItemOverlay_addItemWindowValues.Author;
+        itemCreationContext.AuthorId = _addItemOverlay_addItemWindowValues.BoothAuthorId;
+        itemCreationContext.ThumbnailUrl = _addItemOverlay_addItemWindowValues.BoothThumbnailUrl;
+        itemCreationContext.AuthorThumbnailUrl = _addItemOverlay_addItemWindowValues.BoothAuthorThumbnailUrl;
+        itemCreationContext.BoothId = _addItemOverlay_addItemWindowValues.BoothId;
 
         var categoryInfo = AddItemOverlay_GetCategoryFromItemWindow();
         itemCreationContext.ItemType = categoryInfo.Item1;
         if (categoryInfo.Item1 == ItemType.Custom) itemCreationContext.CustomCategory = categoryInfo.Item2;
 
-        itemCreationContext.SupportedAvatars.AddRange(_addItemWindowValues.SupportedAvatars);
+        itemCreationContext.SupportedAvatars.AddRange(_addItemOverlay_addItemWindowValues.SupportedAvatars);
         itemCreationContext.LocalizedItemTypeName = categoryInfo.Item1 == ItemType.Custom ? categoryInfo.Item2 : Localizer.Instance[categoryInfo.Item1.GetLocalizationKey() ?? ""];
 
-        if (_selectedItem == null)
+        if (_addItemOverlay_selectedItem == null)
         {
             Main_ShowProgress(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
             Main_UpdateProgress(0);
@@ -168,12 +171,12 @@ public partial class MainWindow
         }
         else
         {
-            _avatarExplorer.EditItem(_selectedItem, itemCreationContext);
+            _avatarExplorer.EditItem(_addItemOverlay_selectedItem, itemCreationContext);
             Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemEdit]);
         }
 
-        _selectedItem = null;
-        _addItemWindowValues.Reset();
+        _addItemOverlay_selectedItem = null;
+        _addItemOverlay_addItemWindowValues.Reset();
         AddItemOverlay.IsVisible = false;
     }
     
@@ -184,8 +187,8 @@ public partial class MainWindow
 
     private void AddItemOverlay_CloseInternal()
     {
-        _selectedItem = null;
-        _addItemWindowValues.Reset();
+        _addItemOverlay_selectedItem = null;
+        _addItemOverlay_addItemWindowValues.Reset();
         AddItemOverlay.IsVisible = false;
     }
 
@@ -215,7 +218,7 @@ public partial class MainWindow
     }
     private bool AddItemOverlay_ValidateAddItemWindowValues()
     {
-        var validationResult = _addItemWindowValues.Validate();
+        var validationResult = _addItemOverlay_addItemWindowValues.Validate();
         if (!validationResult.Item1) Dialog_Show(LocalizationKey.Error.Default, Localizer.Instance[validationResult.Item2]);
 
         return validationResult.Item1;

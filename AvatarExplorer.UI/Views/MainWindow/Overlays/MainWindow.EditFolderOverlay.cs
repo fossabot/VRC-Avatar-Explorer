@@ -18,7 +18,7 @@ public partial class MainWindow
         string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
         if (folders == null || folders.Length == 0) return;
 
-        _addItemWindowValues.Folders.AddRange(folders);
+        _addItemOverlay_addItemWindowValues.Folders.AddRange(folders);
         EditFoldersOverlay_UpdateFolderList();
     }
     private async void EditFoldersOverlay_AddFile_Click(object? sender, RoutedEventArgs e)
@@ -26,7 +26,7 @@ public partial class MainWindow
         string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
         if (files == null || files.Length == 0) return;
 
-        _addItemWindowValues.Folders.AddRange(files);
+        _addItemOverlay_addItemWindowValues.Folders.AddRange(files);
         EditFoldersOverlay_UpdateFolderList();
     }
 
@@ -34,7 +34,7 @@ public partial class MainWindow
     {
         if (sender is Button button && button.Tag is string folderPath)
         {
-            _addItemWindowValues.Folders.RemoveAll(i => i == folderPath);
+            _addItemOverlay_addItemWindowValues.Folders.RemoveAll(i => i == folderPath);
             EditFoldersOverlay_UpdateFolderList();
         }
     }
@@ -53,15 +53,15 @@ public partial class MainWindow
         EditFoldersOverlay_FolderList.Children.Clear();
         EditFoldersOverlay_FolderList.RowDefinitions.Clear();
 
-        for (int i = 0; i < _addItemWindowValues.Folders.Count; i++)
+        for (int i = 0; i < _addItemOverlay_addItemWindowValues.Folders.Count; i++)
         {
-            string folder = _addItemWindowValues.Folders[i];
+            string folder = _addItemOverlay_addItemWindowValues.Folders[i];
             EditFoldersOverlay_AddFolderRow(EditFoldersOverlay_FolderList, i, folder, EditFoldersOverlay_RemoveButton_Click);
         }
 
-        if (_addItemWindowValues.Folders.Count > 0)
+        if (_addItemOverlay_addItemWindowValues.Folders.Count > 0)
         {
-            AddItemOverlay_FolderNamesTextBlock.Text = string.Format("{0}個: {1}", _addItemWindowValues.Folders.Count, Path.GetFileName(_addItemWindowValues.Folders[0]));
+            AddItemOverlay_FolderNamesTextBlock.Text = string.Format("{0}個: {1}", _addItemOverlay_addItemWindowValues.Folders.Count, Path.GetFileName(_addItemOverlay_addItemWindowValues.Folders[0]));
         } else
         {
             AddItemOverlay_FolderNamesTextBlock.Text = "何も選択されていません";

@@ -31,7 +31,7 @@ public partial class MainWindow
         bool isCurrentSearchNode = _avatarExplorer.GetCurrentPathState()?.State == ItemTagState.SearchItem;
         
         Main_CheckPageStates(); // SelectUndoより前にやってあげないと、戻った先の画面のページ情報がリセットされる
-        if (!_isLastWindowSearch) _avatarExplorer.SelectUndo(); // 最後の画面が検索画面だったら、検索だけやめて戻るようにする
+        if (!_main_isLastWindowSearch) _avatarExplorer.SelectUndo(); // 最後の画面が検索画面だったら、検索だけやめて戻るようにする
 
         if (isCurrentSearchNode) Main_ExecuteSearchItems();
         else Main_RenderRightPanel();

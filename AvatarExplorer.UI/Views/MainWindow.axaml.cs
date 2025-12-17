@@ -21,7 +21,7 @@ public partial class MainWindow : Window
 {
     internal readonly AvatarExplorerApp _avatarExplorer = new();
 
-    internal readonly Dictionary<ItemTagState, int> _currentPageStates = new()
+    internal readonly Dictionary<ItemTagState, int> _main_currentPageStates = new()
     {
         { ItemTagState.SearchItem, 0 },
         { ItemTagState.RootAvatar, 0 },
@@ -31,7 +31,7 @@ public partial class MainWindow : Window
         { ItemTagState.RootSelectedItem, 0 },
         { ItemTagState.ItemFileCategoryOpen, 0 }
     };
-    internal readonly Dictionary<ItemTagState, Vector> _currentScrollValues = new()
+    internal readonly Dictionary<ItemTagState, Vector> _main_currentScrollValues = new()
     {
         { ItemTagState.SearchItem, new() },
         { ItemTagState.RootAvatar, new() },
@@ -43,19 +43,19 @@ public partial class MainWindow : Window
         { ItemTagState.ItemFileCategoryOpen, new() }
     };
 
-    internal string _lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
-    internal string _searchTextCache = string.Empty;
-    internal bool _isLastWindowSearch = false;
+    internal string _main_lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
+    internal string _main_searchTextCache = string.Empty;
+    internal bool _main_isLastWindowSearch = false;
 
-    internal ItemTagState _lastRightPanelItemTagState = ItemTagState.Unknown;
+    internal ItemTagState _main_lastRightPanelItemTagState = ItemTagState.Unknown;
 
     internal readonly UserPreferences _userPreferences = new();
     internal int ItemsPerPage => _userPreferences.ItemsPerPage;
 
     private bool IsPageSupported(ItemTagState itemTagState)
-        => _currentPageStates.ContainsKey(itemTagState);
+        => _main_currentPageStates.ContainsKey(itemTagState);
     private int GetPage(ItemTagState itemTagState)
-        => IsPageSupported(itemTagState) ? _currentPageStates[itemTagState] : -1;
+        => IsPageSupported(itemTagState) ? _main_currentPageStates[itemTagState] : -1;
 
     internal RuntimeSettings RuntimeSettings => _avatarExplorer.GetRuntimeSettings();
 
@@ -65,12 +65,11 @@ public partial class MainWindow : Window
         TODO: 言語変更を実装する (UIが完成したらやる)
         TODO: 右クリックメニューの処理を作る (メモ、未実装、タグ)
         TODO: UIのタグを使った翻訳機能を追加する
-        TODO: 対応アバター、実装やタグは新しくUIを作って上げることで実装する。右クリックメニューでは扱わない（チェックとかでメモリリークする可能性があるため）
+        TODO: 実装やタグのUIを作る
         TODO: 下のボタンの処理を実装する
         TODO: SCHEMEに対応する
-        TODO: アイテムのカテゴリを変更したときにフォルダを移行できるように変更
+        TODO: アイテムのカテゴリを変更したときにフォルダを移行できるようにしたい
         TODO: 詳細検索用の画面を追加する（右のアイテム画面の右側に縦長に別ウィンドウみたいな感じで表示するのはありかも？）
-        TODO: EventHandlerとCommandsを分ける。EventHandler内に処理は書きたくない
         */
 
         InitializeComponent();
@@ -122,12 +121,12 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            ItemButtonFactory.AddItemButton(Main_LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings.RemoveBrackets, itemContextMenu, LeftPanel_ItemButton_Clicked);
+            ItemButtonFactory.AddItemButton(Main_LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings.RemoveBrackets, itemContextMenu, LeftPanel_ItemButton_Click);
         }
 
-        if (currentPage != -1 && items.Count != 0) ItemButtonFactory.AddPageButton(Main_LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Clicked);
+        if (currentPage != -1 && items.Count != 0) ItemButtonFactory.AddPageButton(Main_LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Click);
     }
-    private void LeftPanel_ItemButton_Clicked(object? sender, RoutedEventArgs e)
+    private void LeftPanel_ItemButton_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
         
@@ -143,7 +142,7 @@ public partial class MainWindow : Window
 
         if (button.Tag is PageButtonInfo pageButtonInfo)
         {
-            _currentPageStates[pageButtonInfo.ItemTagState] = pageButtonInfo.NextPageValue;
+            _main_currentPageStates[pageButtonInfo.ItemTagState] = pageButtonInfo.NextPageValue;
             Main_ResetScrollViewerOffset(pageButtonInfo.ItemTagState); // 今のStateのページをリセットしてあげる
             Main_RenderLeftPanel();
         }
@@ -163,7 +162,7 @@ public partial class MainWindow : Window
 
         ItemTagState itemTagState = ItemTagState.Unknown;
         if (items.Count > 0) itemTagState = new UISelectableItem(items[0]).Tag.State;
-        _lastRightPanelItemTagState = itemTagState;
+        _main_lastRightPanelItemTagState = itemTagState;
         
         // スクロール位置をDictionaryから復元してあげる
         Main_RestoreScrollViewerOffset(Main_RightPanelScrollViewer, itemTagState);
@@ -173,14 +172,14 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
+            ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Click);
         }
 
-        if (currentPage != -1 && items.Count != 0) ItemButtonFactory.AddPageButton(Main_RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Clicked);
-        _isLastWindowSearch = false;
+        if (currentPage != -1 && items.Count != 0) ItemButtonFactory.AddPageButton(Main_RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
+        _main_isLastWindowSearch = false;
         Main_LoadCurrentPath();
     }
-    private async void RightPanel_ItemButton_Clicked(object? sender, RoutedEventArgs e)
+    private async void RightPanel_ItemButton_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
 
@@ -203,7 +202,7 @@ public partial class MainWindow : Window
 
         if (button.Tag is PageButtonInfo pageButtonInfo)
         {
-            _currentPageStates[pageButtonInfo.ItemTagState] = pageButtonInfo.NextPageValue;
+            _main_currentPageStates[pageButtonInfo.ItemTagState] = pageButtonInfo.NextPageValue;
             Main_ResetScrollViewerOffset(pageButtonInfo.ItemTagState); // ページは今のStateをリセットしてあげる
 
             if (pageButtonInfo.ItemTagState == ItemTagState.SearchItem) Main_ExecuteSearchItems();
@@ -224,34 +223,34 @@ public partial class MainWindow : Window
     private void Main_OnSearchTimerTick(object? sender, EventArgs e)
     {
         _searchTimer.Stop();
-        _searchTextCache = Main_SearchTextBox.Text ?? "";
+        _main_searchTextCache = Main_SearchTextBox.Text ?? "";
         Main_ExecuteSearchItems();
     }
     private void Main_ExecuteSearchItems(string searchText = "")
     {
-        if (!string.IsNullOrEmpty(searchText)) _searchTextCache = searchText;
+        if (!string.IsNullOrEmpty(searchText)) _main_searchTextCache = searchText;
 
-        if (string.IsNullOrEmpty(_searchTextCache))
+        if (string.IsNullOrEmpty(_main_searchTextCache))
         {
             Main_RenderRightPanel();
             return;
         }
 
         // 検索画面に切り替わる時に、前の画面のスクロール位置を保存してあげる
-        if (!_isLastWindowSearch) Main_SaveScrollViewerOffset(Main_RightPanelScrollViewer, _lastRightPanelItemTagState);
+        if (!_main_isLastWindowSearch) Main_SaveScrollViewerOffset(Main_RightPanelScrollViewer, _main_lastRightPanelItemTagState);
 
         Main_RightPanel.Children.Clear();
 
-        SearchFilter searchFilter = SearchFilterBuilder.BuildFromSearchText(_searchTextCache);
+        SearchFilter searchFilter = SearchFilterBuilder.BuildFromSearchText(_main_searchTextCache);
         IReadOnlyList<Item> items = _avatarExplorer.SearchItems(searchFilter);
         
         // 検索文字列が前回と違う場合はページ、スクロール位置をリセットする
-        if (_searchTextCache != _lastSearchTextCache)
+        if (_main_searchTextCache != _main_lastSearchTextCache)
         {
-            _currentPageStates[ItemTagState.SearchItem] = 0;
-            _currentScrollValues[ItemTagState.SearchItem] = new();
+            _main_currentPageStates[ItemTagState.SearchItem] = 0;
+            _main_currentScrollValues[ItemTagState.SearchItem] = new();
         }
-        _lastSearchTextCache = _searchTextCache;
+        _main_lastSearchTextCache = _main_searchTextCache;
 
         if (items.Count == 0) Main_ShowNoItemsLabel();
         else Main_HideNoItemsLabel();
@@ -264,11 +263,11 @@ public partial class MainWindow : Window
         foreach (Item item in items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage))
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.CreateContextMenu(item), ItemButton_ContextMenuItem_Click);
-            ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Clicked);
+            ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Click);
         }
 
-        if (items.Count != 0) ItemButtonFactory.AddPageButton(Main_RightPanel, ItemTagState.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Clicked);
-        _isLastWindowSearch = true;
+        if (items.Count != 0) ItemButtonFactory.AddPageButton(Main_RightPanel, ItemTagState.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
+        _main_isLastWindowSearch = true;
         
         Main_PathTextBox.Text = searchFilter.ToPathString();
     }
@@ -304,7 +303,7 @@ public partial class MainWindow : Window
         Main_RenderLeftPanel();
 
         // 最後に表示されていた画面が検索画面だったら、キャッシュを元にもう一度検索してあげる
-        if (_isLastWindowSearch) Main_ExecuteSearchItems();
+        if (_main_isLastWindowSearch) Main_ExecuteSearchItems();
         else Main_RenderRightPanel();
     }
 
@@ -318,32 +317,32 @@ public partial class MainWindow : Window
                 selectedItemTagStates.Add(selectionNode.State);
         }
 
-        foreach (var pageInfo in _currentPageStates)
+        foreach (var pageInfo in _main_currentPageStates)
         {
             if (!selectedItemTagStates.Contains(pageInfo.Key))
-                _currentPageStates[pageInfo.Key] = 0;
+                _main_currentPageStates[pageInfo.Key] = 0;
         }
     }
     
     private void Main_RestoreScrollViewerOffset(ScrollViewer scrollViewer, ItemTagState itemTagState)
     {
-        if (_currentScrollValues.TryGetValue(itemTagState, out Vector scrollValue))
+        if (_main_currentScrollValues.TryGetValue(itemTagState, out Vector scrollValue))
             scrollViewer.Offset = scrollValue;
     }
     private void Main_SaveScrollViewerOffset(ScrollViewer scrollViewer, ItemTagState itemTagState)
     {
-        if (!_currentScrollValues.ContainsKey(itemTagState)) return;
-        _currentScrollValues[itemTagState] = scrollViewer.Offset;
+        if (!_main_currentScrollValues.ContainsKey(itemTagState)) return;
+        _main_currentScrollValues[itemTagState] = scrollViewer.Offset;
     }
     private void Main_ResetScrollViewerOffset(ItemTagState itemTagState)
     {
-        if (!_currentScrollValues.ContainsKey(itemTagState)) return;
-        _currentScrollValues[itemTagState] = new();
+        if (!_main_currentScrollValues.ContainsKey(itemTagState)) return;
+        _main_currentScrollValues[itemTagState] = new();
     }
     private void Main_ResetAllScrollViewerOffset()
     {
-        foreach (ItemTagState key in _currentScrollValues.Keys)
-            _currentScrollValues[key] = new();
+        foreach (ItemTagState key in _main_currentScrollValues.Keys)
+            _main_currentScrollValues[key] = new();
     }
 
     private void Main_ShowNoItemsLabel()
