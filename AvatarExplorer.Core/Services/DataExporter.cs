@@ -6,7 +6,7 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class DataExporter
 {
-    internal static async Task ExportToCsv(List<Item> items, List<CommonAvatar> commonAvatars, Dictionary<ItemType, string> localizedItemTypesMapping, string filePath, bool includeImplementedToSupported)
+    internal static async Task ToCsv(List<Item> items, List<CommonAvatar> commonAvatars, Dictionary<ItemType, string> localizedItemTypesMapping, string filePath, bool includeImplementedToSupported)
     {
         using StreamWriter sw = new(filePath, false, Encoding.UTF8);
         await sw.WriteLineAsync("Title,AuthorName,AuthorImageFilePath,ImagePath,Type,Memo,SupportedAvatars,ImplementedAvatars,BoothId,ItemPath,Tags");

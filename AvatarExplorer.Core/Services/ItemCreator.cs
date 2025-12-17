@@ -1,5 +1,6 @@
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Data.Paths;
+using AvatarExplorer.Core.Models.KonoAsset;
 
 namespace AvatarExplorer.Core.Services;
 
@@ -42,5 +43,23 @@ internal static class ItemCreator
     {
         string extractDestinationFolderPath = Path.Combine(runtimeSettings.DataRootDirectory, itemCreationContext.LocalizedItemTypeName);
         return await FileSystemService.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, extractDestinationFolderPath, runtimeSettings.RemoveOriginal);
+    }
+
+    internal static Item FromKonoAssetDescription(KonoAssetDescription konoAssetDescription)
+    {
+        Item newItem = new()
+        {
+            Title = konoAssetDescription.Name,
+            Author = konoAssetDescription.Creator,
+            ThumbnmailFileName = konoAssetDescription.ImageFilename,
+            ItemMemo = konoAssetDescription.Memo ?? string.Empty,
+            BoothId = konoAssetDescription.BoothItemId ?? -1,
+            CreatedDate = konoAssetDescription.CreatedAt.ToString(),
+            UpdatedDate = konoAssetDescription.CreatedAt.ToString()
+        };
+
+        newItem.Tags.AddRange(konoAssetDescription.Tags);
+
+        return newItem;
     }
 }

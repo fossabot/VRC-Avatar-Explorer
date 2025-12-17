@@ -418,10 +418,14 @@ public partial class AvatarExplorerApp
         _commonAvatars.AddRange(result.Item2);
     }
 
-    public Task ImportFromKonoAsset(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
+    public async Task ImportFromKonoAsset(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
     {
-        // TODO: KonoAsset Importerを作る。IKonoAssetItemみたいなInterfaceで全部読み込んでしまうのが良さそ
-        throw new NotImplementedException();
+        List<Item> items = await DataImporter.FromKonoAsset(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, progress);
+        
+        _items.Clear();
+        _items.AddRange(items);
+
+        _commonAvatars.Clear();
     }
 
     #endregion
@@ -429,7 +433,7 @@ public partial class AvatarExplorerApp
     #region Data Exporter API
     public async Task ExportToCsv(string filePath, Dictionary<ItemType, string> localizedItemTypesMapping, bool includeImplementedToSupported)
     {
-        await DataExporter.ExportToCsv(_items, _commonAvatars, localizedItemTypesMapping, filePath, includeImplementedToSupported);
+        await DataExporter.ToCsv(_items, _commonAvatars, localizedItemTypesMapping, filePath, includeImplementedToSupported);
     }
     #endregion
     

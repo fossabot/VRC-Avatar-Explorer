@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using AvatarExplorer.Core.Interfaces.KonoAsset;
+using AvatarExplorer.Core.Services;
 
 namespace AvatarExplorer.Core.Models.KonoAsset.Items;
 
@@ -16,4 +17,15 @@ public class KonoAssetWearableItem : IKonoAssetItem
 
     [JsonPropertyName("supportedAvatars")]
     public List<string> SupportedAvatars { get; set; } = new List<string>();
+
+    public Item ToItem()
+    {
+        Item migratedItem = ItemCreator.FromKonoAssetDescription(Description);
+        migratedItem.ItemPath = $"<sys>{Id}";
+        migratedItem.Type = ItemType.Custom;
+        migratedItem.CustomCategory = string.IsNullOrEmpty(Category) ? "Wearables" : Category;
+        migratedItem.SupportedAvatars.AddRange(SupportedAvatars);
+
+        return migratedItem;
+    }
 }
