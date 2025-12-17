@@ -59,14 +59,25 @@ public partial class MainWindow
     {
         SelectImportTypeOverlay.IsVisible = true;
     }
-    private async void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
+
+    private void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: チェックボックスで共通素体を含めるかどうかのチェックをする
+        YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation], Localizer.Instance[LocalizationKey.UI.Overlay.ExportToCsv.IncludeImplementedToSupported]);
+
+        _yesNoDialog_onYesClick = Main_ExportDataToCsv_DialogYes_Click;
+        _yesNoDialog_onNoClick = Main_ExportDataToCsv_DialogNo_Click;
+    }
+    private void Main_ExportDataToCsv_DialogYes_Click(object? sender, RoutedEventArgs e)
+        => Main_ExportDataToCsvInternal(true);
+    private void Main_ExportDataToCsv_DialogNo_Click(object? sender, RoutedEventArgs e)
+        => Main_ExportDataToCsvInternal(false);
+    private async void Main_ExportDataToCsvInternal(bool includeImplementedToSupported)
+    {
         string? filePath = await StorageService.SaveFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectSaveFilePath], ".csv");
         if (filePath == null) return;
 
         var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
-        await _avatarExplorer.ExportToCsv(filePath, localizedItemTypesMapping, true);
+        await _avatarExplorer.ExportToCsv(filePath, localizedItemTypesMapping, includeImplementedToSupported);
 
         Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Export]);
     }

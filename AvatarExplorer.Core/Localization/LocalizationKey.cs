@@ -53,6 +53,8 @@ public static class LocalizationKey
 
         public static class Dialog
         {
+            public const string Confirmation = "UI.Dialog.Confirmation";
+
             public static class Success
             {
                 public const string Default = "UI.Dialog.Success.Default";
@@ -81,6 +83,11 @@ public static class LocalizationKey
             public static class EditFolder
             {
                 public const string RemoveFolder = "UI.Overlay.EditFolder.RemoveFolder";
+            }
+
+            public static class ExportToCsv
+            {
+                public const string IncludeImplementedToSupported = "UI.Overlay.ExportToCsv.IncludeImplementedToSupported";
             }
         }
     }

@@ -84,7 +84,7 @@
             </Grid>
         </DockPanel>
 
-        <Border x:Name="AddItemOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="AddItemOverlay_Border_Click">
+        <Border x:Name="AddItemOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel Spacing="10">
 
@@ -136,7 +136,7 @@
             </Border>
         </Border>
 
-        <Border x:Name="EditFoldersOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="EditFoldersOverlay_Border_Click">
+        <Border x:Name="EditFoldersOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20" Width="450" Height="600">
                 <Grid RowDefinitions="50,20,*,10,50" ColumnSpacing="10">
                     <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,10,0,10" ColumnSpacing="10" VerticalAlignment="Center">
@@ -154,7 +154,7 @@
             </Border>
         </Border>
 
-        <Border x:Name="AddCustomCategoryOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="AddCustomCategory_Border_Click">
+        <Border x:Name="AddCustomCategoryOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel Spacing="10">
                     <Grid RowDefinitions="Auto,20,Auto,20,Auto" Margin="0,10,0,10">
@@ -170,7 +170,7 @@
             </Border>
         </Border>
 
-        <Border x:Name="EditSupportedAvatarsOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="EditSupportedAvatarsOverlay_Border_Click">
+        <Border x:Name="EditSupportedAvatarsOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20" Width="800">
                 <StackPanel Spacing="10">
                     <Grid RowDefinitions="Auto,20,Auto,10,Auto,20,Auto" Margin="0,10,0,10">
@@ -192,7 +192,7 @@
             </Border>
         </Border>
 
-        <Border x:Name="SettingsOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="SettingsOverlay_Border_Click">
+        <Border x:Name="SettingsOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel Spacing="10">
                     <ScrollViewer MaxHeight="500">
@@ -273,7 +273,7 @@
             </Border>
         </Border>
 
-        <Border x:Name="SelectImportTypeOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="SelectImportTypeOverlay_Border_Click">
+        <Border x:Name="SelectImportTypeOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="">
             <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel Spacing="10" Orientation="Vertical" MinWidth="300">
                     <Grid RowDefinitions="Auto,20,Auto" Margin="0,10,0,0">
@@ -301,7 +301,21 @@
                 <StackPanel Spacing="10">
                     <TextBlock x:Name="DialogTitle" Text="Dialog Title" Foreground="white" FontSize="24" Margin="0,0,0,10" FontWeight="Bold"/>
                     <TextBlock x:Name="DialogContent" Text="Content" Foreground="white" FontSize="17" Margin="0,0,0,10" MinWidth="300"/>
-                    <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,0,0" Click="Dialog_OK_Click" Width="60" HorizontalContentAlignment="Center" FontWeight="Bold"/>
+                    <Button Content="OK" HorizontalAlignment="Right" Click="Dialog_OK_Click" Width="60" HorizontalContentAlignment="Center" FontWeight="Bold"/>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <Border x:Name="YesNoDialogOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False">
+            <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
+                <StackPanel Spacing="10">
+                    <TextBlock x:Name="YesNoDialogTitle" Text="Dialog Title" Foreground="white" FontSize="24" Margin="0,0,0,10" FontWeight="Bold"/>
+                    <TextBlock x:Name="YesNoDialogContent" Text="Content" Foreground="white" FontSize="17" Margin="0,0,0,10" MinWidth="300"/>
+                    
+                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="20,0,20,0">
+                        <Button Content="はい" Grid.Column="0" HorizontalAlignment="Center" Click="YesNoDialog_Yes_Click" Width="60" HorizontalContentAlignment="Center" FontWeight="Bold"/>
+                        <Button Content="いいえ" Grid.Column="2" HorizontalAlignment="Center" Click="YesNoDialog_No_Click" Width="60" HorizontalContentAlignment="Center" FontWeight="Bold"/>
+                    </Grid>
                 </StackPanel>
             </Border>
         </Border>

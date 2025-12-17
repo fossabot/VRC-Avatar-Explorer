@@ -22,6 +22,8 @@
     "UI.ItemWindow.Page": "{0} / {1}ページ",
     "UI.ItemWindow.PageItemCount": "{0} - {1} / {2}個の項目",
 
+    "UI.Dialog.Confirmation": "確認",
+
     "UI.Dialog.Success.Default": "成功",
     "UI.Dialog.Success.Import": "データのインポートに成功しました",
     "UI.Dialog.Success.Export": "データのエクスポートに成功しました",
@@ -39,6 +41,8 @@
     "UI.Dialog.SelectFilePath": "ファイルを選択してください",
 
     "UI.Overlay.EditFolder.RemoveFolder": "削除",
+
+    "UI.Overlay.ExportToCsv.IncludeImplementedToSupported": "対応アバターの欄に共通素体アバターを含めますか？",
 
     "FileCategory.Modification": "改変用ファイル",
     "FileCategory.Texture": "テクスチャ",
