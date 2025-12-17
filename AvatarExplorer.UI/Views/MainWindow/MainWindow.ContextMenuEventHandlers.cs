@@ -31,6 +31,7 @@ public partial class MainWindow
         else if (contextMenuAction.ActionLayer == ActionLayer.Core)
         {
             await _avatarExplorer.ExecuteContextMenuItemCommand(contextMenuAction);
+            Main_ReloadCurrentWindow();
         }
     }
     

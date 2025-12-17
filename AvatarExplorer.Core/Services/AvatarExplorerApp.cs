@@ -13,6 +13,7 @@ public partial class AvatarExplorerApp
 
     private readonly SelectionState _selectionState = new();
     private readonly Dictionary<ItemTagState, Func<SelectionNode, IReadOnlyList<ItemCountInfo>>> _stateHandlers;
+    private readonly Dictionary<ActionKey, Func<string, Task>> _contextMenuHandlers;
     private readonly RuntimeSettings _runtimeSettings = new();
 
     public AvatarExplorerApp()
@@ -26,6 +27,11 @@ public partial class AvatarExplorerApp
             { ItemTagState.RootSelectedCategory, HandleRootSelectedCategory },
             { ItemTagState.RootSelectedItem, HandleRootSelectedItem },
             { ItemTagState.ItemFileCategory, HandleItemFileCategory }
+        };
+
+        _contextMenuHandlers = new()
+        {
+            { ActionKey.FetchThumbnail, ItemButton_ContextMenu_FetchThumbnail}
         };
     }
 
@@ -447,12 +453,20 @@ public partial class AvatarExplorerApp
     #region Ececute Context Menu Command
     public async Task ExecuteContextMenuItemCommand(ContextMenuAction contextMenuAction)
     {
-        ActionKey actionKey = contextMenuAction.ActionKey;
+        if (_contextMenuHandlers.TryGetValue(contextMenuAction.ActionKey, out var handler))
+            await handler(contextMenuAction.Tag);
+    }
+    private async Task ItemButton_ContextMenu_FetchThumbnail(string itemPath)
+    {
+        Item? item = GetItemByPath(itemPath);
+        if (item == null || item.BoothId == -1) return;
 
-        switch (actionKey)
-        {
-            case ActionKey.FetchThumbnail: throw new NotImplementedException();
-        }
+        BoothItem? boothItem = await BoothService.GetBoothItemAsync(item.BoothId.ToString());
+        if (boothItem == null) return;
+
+        string itemThumbnailFileName = item.BoothId + ".png";
+        await ImageDownloader.DownloadImageAsync(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);
+        item.ThumbnmailFileName = itemThumbnailFileName;
     }
     #endregion
 }
