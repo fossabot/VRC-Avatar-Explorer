@@ -277,14 +277,24 @@ public partial class AvatarExplorerApp
     public async Task<(Item? newItem, List<string> processingFailedPaths)> AddItem(ItemCreationContext itemCreationContext)
     {
         var addItemResult = await ItemCreator.FromItemCreationContext(itemCreationContext, _runtimeSettings);
-        if (addItemResult.newItem != null) _items.Add(addItemResult.newItem); // アイテムの追加に失敗していなければここで追加してあげる
+        if (addItemResult.newItem != null)
+        {
+            string currentUnixTime = DatetimeUtils.GetCurrentUnixTime();
+            addItemResult.newItem.CreatedDate = currentUnixTime;
+            addItemResult.newItem.UpdatedDate = currentUnixTime;
+            
+            _items.Add(addItemResult.newItem); // アイテムの追加に失敗していなければここで追加してあげる
+        }
 
         return addItemResult;
     }
 
     public Item EditItem(Item item, ItemCreationContext itemCreationContext)
     {
-        return item.SetValuesFromCreationContext(itemCreationContext);
+        item.SetValuesFromCreationContext(itemCreationContext);
+        item.UpdatedDate = DatetimeUtils.GetCurrentUnixTime();
+
+        return item;
     }
     #endregion
 
