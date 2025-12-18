@@ -35,11 +35,11 @@ internal static class ItemButtonFactory
 
         Image itemIcon = new()
         {
-            Source = ImageService.GetImage(item.ImageFileName, item.IconType),
+            Source = ImageService.Get(item.ImageFileName, item.IconType),
             Width = 70,
             Height = 70
         };
-        if (!IconUtils.IsSystemFileIcon(item.ImageFileName))
+        if (!IconUtils.IsSystemIcon(item.ImageFileName))
         {
             itemIcon.PointerEntered += (s, e) =>
             {

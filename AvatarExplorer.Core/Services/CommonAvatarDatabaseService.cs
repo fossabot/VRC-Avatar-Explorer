@@ -5,13 +5,13 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class CommonAvatarDatabaseService
 {
-    internal static List<CommonAvatar> LoadCommonAvatarsData(string path)
+    internal static List<CommonAvatar> Load(string path)
     {
         if (!File.Exists(path)) throw new FileNotFoundException();
         return FileSystemService.DeserializeClass<List<CommonAvatar>>(path) ?? [];
     }
 
-    internal static List<CommonAvatar> LoadCommonAvatarsDataFromV1(string path)
+    internal static List<CommonAvatar> LoadFromV1(string path)
     {
         if (!File.Exists(path)) throw new FileNotFoundException();
         return MigrateCommonAvatarsFromV1(FileSystemService.DeserializeClass<List<CommonAvatarV1>>(path) ?? []);

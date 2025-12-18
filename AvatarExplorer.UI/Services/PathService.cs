@@ -10,7 +10,7 @@ namespace AvatarExplorer.UI.Services;
 
 internal class PathService
 {
-    internal static string BuildPathTextFromSelectionNode(IEnumerable<Item> items, SelectionNode selectionNode)
+    internal static string BuildPath(IEnumerable<Item> items, SelectionNode selectionNode)
     {
         ItemTagState state = selectionNode.State;
         string value = selectionNode.Key;

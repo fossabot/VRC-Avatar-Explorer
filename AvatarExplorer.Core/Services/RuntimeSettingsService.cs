@@ -5,7 +5,7 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class RuntimeSettingsService
 {
-    internal static RuntimeSettings LoadRuntimeSettings(string path)
+    internal static RuntimeSettings Load(string path)
     {
         try
         {
@@ -18,7 +18,7 @@ internal static class RuntimeSettingsService
         }
     }
 
-    public static void Save(RuntimeSettings settings)
+    internal static void Save(RuntimeSettings settings)
     {
         try
         {
@@ -30,7 +30,7 @@ internal static class RuntimeSettingsService
         }
     }
 
-    public static bool TrySetDataRootDirectory(RuntimeSettings settings, string path)
+    internal static bool TrySetDataRootDirectory(RuntimeSettings settings, string path)
     {
         if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
         {

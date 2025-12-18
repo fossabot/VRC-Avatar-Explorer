@@ -13,10 +13,7 @@ internal partial class SearchFilterBuilder
     [GeneratedRegex(@"(?<key>Title|Author|Booth|Avatar|Category|Memo|Folder|File|Implemented|NotImplemented|Tag|Common|OR|BrokenItems)=(?:""(?<value>.*?)""|(?<value>[^\s]+))|(?<word>[^\s]+)")]
     private static partial Regex SearchFilterTextRegex();
 
-    internal static SearchFilter BuildFromSearchText(string text)
-        => BuildFilterInternal(text);
-
-    private static List<RawSearchToken> ParseSearchText(string text)
+    private static List<RawSearchToken> Parse(string text)
     {
         MatchCollection matches = SearchFilterTextRegex().Matches(text);
         List<RawSearchToken> rawSearchTokens = new();
@@ -44,9 +41,9 @@ internal partial class SearchFilterBuilder
         return rawSearchTokens;
     }
     
-    private static SearchFilter BuildFilterInternal(string searchText)
+    internal static SearchFilter Build(string searchText)
     {
-        List<RawSearchToken> rawSearchTokens = ParseSearchText(searchText);
+        List<RawSearchToken> rawSearchTokens = Parse(searchText);
         SearchFilter filter = new();
 
         foreach (RawSearchToken token in rawSearchTokens)

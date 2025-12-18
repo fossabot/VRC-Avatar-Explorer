@@ -8,18 +8,18 @@ namespace AvatarExplorer.UI.Services;
 
 internal static class ImageService
 {
-    internal static Bitmap? GetImage(string fileName, IconType iconType = IconType.None)
+    internal static Bitmap? Get(string fileName, IconType iconType = IconType.None)
     {
-        if (IconUtils.IsSystemFileIcon(fileName)) return IconUtils.SystemIcons[fileName];
+        if (IconUtils.IsSystemIcon(fileName)) return IconUtils.SystemIcons[fileName];
 
         return iconType switch
         {
-            IconType.Item => LoadImage(Path.Join(SystemPath.ItemThumbnailsPath, fileName)),
-            IconType.Author => LoadImage(Path.Join(SystemPath.AuthorThumbnailsPath, fileName)),
-            _ => LoadImage(fileName),
+            IconType.Item => Load(Path.Join(SystemPath.ItemThumbnailsPath, fileName)),
+            IconType.Author => Load(Path.Join(SystemPath.AuthorThumbnailsPath, fileName)),
+            _ => Load(fileName),
         };
     }
 
-    internal static Bitmap? LoadImage(string filePath)
+    internal static Bitmap? Load(string filePath)
         => File.Exists(filePath) ? new Bitmap(filePath) : null;
 }

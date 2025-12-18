@@ -16,8 +16,8 @@ internal static class DataImporter
     {
         progress?.Report((LocalizationKey.Processing.Import.Copying, 0, string.Empty));
 
-        List<Item> items = ItemDatabaseService.LoadItemsDataFromV1(SystemPathV1.ItemDatabasePath(dataFolderPath));
-        List<CommonAvatar> commonAvatars = CommonAvatarDatabaseService.LoadCommonAvatarsDataFromV1(SystemPathV1.CommonAvatarDatabasePath(dataFolderPath));
+        List<Item> items = ItemDatabaseService.LoadFromV1(SystemPathV1.ItemDatabasePath(dataFolderPath));
+        List<CommonAvatar> commonAvatars = CommonAvatarDatabaseService.LoadFromV1(SystemPathV1.CommonAvatarDatabasePath(dataFolderPath));
 
         progress?.Report((LocalizationKey.Processing.Import.Copying, 10, string.Empty));
         await FileSystemService.CopyDirectory(SystemPathV1.AuthorThumbnailsPath(dataFolderPath), SystemPath.AuthorThumbnailsPath);
@@ -78,18 +78,18 @@ internal static class DataImporter
 
             if (item.BoothId != -1)
             {
-                BoothItem? boothItem = await BoothService.GetBoothItemAsync(item.BoothId.ToString()); // もう一度取得してあげる
+                BoothItem? boothItem = await BoothService.GetItem(item.BoothId.ToString()); // もう一度取得してあげる
 
                 if (boothItem != null)
                 {
                     item.AuthorId = boothItem.AuthorId; // IKonoAssetItem.ToItem()ではAuthorIdは移行されないためここで設定する必要がある。
 
                     string itemThumbnailFileName = item.BoothId + ".png";
-                    await ImageDownloader.DownloadImageAsync(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), false);
+                    await ImageDownloader.Download(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), false);
                     item.ThumbnmailFileName = itemThumbnailFileName;
 
                     string authorThumbnailFileName = item.AuthorId + ".png";
-                    await ImageDownloader.DownloadImageAsync(boothItem.Shop.ThumbnailUrl, Path.Combine(SystemPath.AuthorThumbnailsPath, authorThumbnailFileName), false);
+                    await ImageDownloader.Download(boothItem.Shop.ThumbnailUrl, Path.Combine(SystemPath.AuthorThumbnailsPath, authorThumbnailFileName), false);
                     item.AuthorThumbnmailFileName = authorThumbnailFileName;
                 }
 

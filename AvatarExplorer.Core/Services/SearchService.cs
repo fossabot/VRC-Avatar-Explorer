@@ -15,7 +15,7 @@ internal static class SearchService
             .OrderByDescending(i => SearchUtils.GetScore(i, searchFilter.SearchWords))
             .ToList();
     }
-    internal static bool Matches(SearchFilter searchFilter, Dictionary<string, string> avatarNameMaps, List<CommonAvatar> commonAvatars, Item item, string parentFolder)
+    private static bool Matches(SearchFilter searchFilter, Dictionary<string, string> avatarNameMaps, List<CommonAvatar> commonAvatars, Item item, string parentFolder)
     {
         bool matchTitle = searchFilter.Titles.Count == 0 || SearchUtils.MatchesFilter(
             [item.Title], searchFilter.Titles,

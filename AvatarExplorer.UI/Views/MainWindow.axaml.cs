@@ -119,7 +119,7 @@ public partial class MainWindow : Window
 
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
-            ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
+            ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
             ItemButtonFactory.AddItemButton(Main_LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings.RemoveBrackets, itemContextMenu, LeftPanel_ItemButton_Click);
         }
 
@@ -170,7 +170,7 @@ public partial class MainWindow : Window
 
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
-            ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.CreateContextMenu(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
+            ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
             ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Click);
         }
 
@@ -240,7 +240,7 @@ public partial class MainWindow : Window
 
         Main_RightPanel.Children.Clear();
 
-        SearchFilter searchFilter = SearchFilterBuilder.BuildFromSearchText(_main_searchTextCache);
+        SearchFilter searchFilter = SearchFilterBuilder.Build(_main_searchTextCache);
         IReadOnlyList<Item> items = _avatarExplorerApp.SearchItems(searchFilter);
         
         // 検索文字列が前回と違う場合はページ、スクロール位置をリセットする
@@ -261,7 +261,7 @@ public partial class MainWindow : Window
 
         foreach (Item item in items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage))
         {
-            ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.CreateContextMenu(item), ItemButton_ContextMenuItem_Click);
+            ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(item), ItemButton_ContextMenuItem_Click);
             ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Click);
         }
 
@@ -292,7 +292,7 @@ public partial class MainWindow : Window
         }
 
         IReadOnlyList<Item> items = _avatarExplorerApp.GetAllItems();
-        Main_PathTextBox.Text = string.Join(" > ", selectionNodes.Select(i => PathService.BuildPathTextFromSelectionNode(items, i)));
+        Main_PathTextBox.Text = string.Join(" > ", selectionNodes.Select(i => PathService.BuildPath(items, i)));
     }
     #endregion
     
@@ -366,7 +366,7 @@ public partial class MainWindow : Window
     {
         Item? selectedItem = _avatarExplorerApp.GetSelectedItem();
 
-        await UnitypackageService.OpenUnityPackageAsync(this, itemPath, selectedItem,
+        await UnitypackageService.Open(this, itemPath, selectedItem,
             onProgress: async (name, percent) =>
             {
                 Main_ShowProgress(Localizer.Instance.GetDisplayName(name, percent.ToString()));

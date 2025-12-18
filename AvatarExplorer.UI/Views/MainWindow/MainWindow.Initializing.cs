@@ -26,12 +26,12 @@ public partial class MainWindow
     }
     private void InitializeUserPreferences()
     {
-        var userPreferences = UserPreferencesService.LoadUserPreferences(SystemPath.UserPreferencesFilePath);
+        var userPreferences = UserPreferencesService.Load(SystemPath.UserPreferencesFilePath);
         _userPreferences.FromOther(userPreferences);
 
         ApplyPreferenceSettingsToUi();
 
-        UserPreferencesService.SaveUserPreferences(_userPreferences);
+        UserPreferencesService.Save(_userPreferences);
     }
     private void InitializeNoItemsLabel()
     {
@@ -41,7 +41,7 @@ public partial class MainWindow
 
         Main_RightPanelParent.Children.Add(new Image
         {
-            Source = ImageService.GetImage(SystemIconKey.EmptyIcon),
+            Source = ImageService.Get(SystemIconKey.EmptyIcon),
             Width = 150,
             Height = 150,
             HorizontalAlignment = HorizontalAlignment.Center,

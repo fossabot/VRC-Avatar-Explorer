@@ -59,7 +59,7 @@ public partial class MainWindow
 
         try
         {
-            await ClipboardService.SetTextToClipboard(boothLink);
+            await ClipboardService.Set(boothLink);
         }
         catch
         {

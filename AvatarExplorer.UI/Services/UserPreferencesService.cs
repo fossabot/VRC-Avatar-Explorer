@@ -7,7 +7,7 @@ namespace AvatarExplorer.UI.Services;
 
 internal static class UserPreferencesService
 {
-    internal static UserPreferences LoadUserPreferences(string path)
+    internal static UserPreferences Load(string path)
     {
         try
         {
@@ -20,7 +20,7 @@ internal static class UserPreferencesService
         }
     }
 
-    internal static void SaveUserPreferences(UserPreferences userPreferences)
+    internal static void Save(UserPreferences userPreferences)
     {
         try
         {

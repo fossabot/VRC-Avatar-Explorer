@@ -4,7 +4,7 @@ internal static class ImageDownloader
 {
     private static readonly HttpClient HttpClient = new();
 
-    internal static async Task DownloadImageAsync(string url, string filePath, bool overwrite = false)
+    internal static async Task Download(string url, string filePath, bool overwrite = false)
     {
         if ((!overwrite && File.Exists(filePath)) || string.IsNullOrEmpty(url)) return;
 
@@ -20,7 +20,5 @@ internal static class ImageDownloader
         }
     }
     private static async Task<byte[]> GetBytes(string url)
-    {
-        return await HttpClient.GetByteArrayAsync(url);
-    }
+        => await HttpClient.GetByteArrayAsync(url);
 }

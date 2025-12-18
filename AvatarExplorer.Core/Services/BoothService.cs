@@ -10,12 +10,9 @@ namespace AvatarExplorer.Core.Services;
 internal static class BoothService
 {
     private static readonly HttpClient HttpClient = new();
-    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
-    internal static async Task<BoothItem?> GetBoothItemAsync(string boothId)
+    internal static async Task<BoothItem?> GetItem(string boothId)
     {
         try
         {
@@ -25,7 +22,7 @@ internal static class BoothService
             BoothItem? boothItem = JsonSerializer.Deserialize<BoothItem>(response, JsonSerializerOptions);
             if (boothItem == null) return null;
             
-            boothItem.EstimatedCategory = SuggestItemTypeFromTitle(boothItem.Title, boothItem.Category.Name);
+            boothItem.EstimatedCategory = SuggestItemType(boothItem.Title, boothItem.Category.Name);
             boothItem.AuthorId = BoothUtils.GetAuthorIdFromUrl(boothItem.Shop.Url);
 
             return boothItem;
@@ -35,8 +32,7 @@ internal static class BoothService
             return null;
         }
     }
-
-    private static ItemType SuggestItemTypeFromTitle(string title, string type)
+    private static ItemType SuggestItemType(string title, string type)
     {
         if (!BoothMapping.CategoryMappings.TryGetValue(type, out ItemType categorySuggestedType))
             categorySuggestedType = ItemType.Unknown;

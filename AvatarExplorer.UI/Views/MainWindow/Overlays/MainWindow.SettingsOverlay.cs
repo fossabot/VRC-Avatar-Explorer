@@ -60,7 +60,7 @@ public partial class MainWindow
 
         // 適用時は自動で保存する
         _avatarExplorerApp.SaveRuntimeSettings();
-        UserPreferencesService.SaveUserPreferences(_userPreferences);
+        UserPreferencesService.Save(_userPreferences);
     }
     
     private void ApplyPreferenceSettingsToUi()

@@ -2,8 +2,8 @@ using AvatarExplorer.Core.Interfaces;
 
 namespace AvatarExplorer.Core.Models;
 
-public class FileCategoryItem : ISelectableItem
+public class FileCategoryItem(FileCategory fileCategory = FileCategory.None) : ISelectableItem
 {
-    public FileCategory FileCategory { get; set; } = FileCategory.None;
+    public FileCategory FileCategory { get; set; } = fileCategory;
     public List<string> FilePaths { get; set; } = new();
 }

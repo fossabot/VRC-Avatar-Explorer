@@ -9,7 +9,7 @@ namespace AvatarExplorer.UI.Services;
 
 internal static class ClipboardService
 {
-    internal static async Task SetTextToClipboard(string text)
+    internal static async Task Set(string text)
     {
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || desktop.MainWindow?.Clipboard is not { } provider) return;
         await provider.SetTextAsync(text);
