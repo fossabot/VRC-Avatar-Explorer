@@ -6,6 +6,6 @@ public enum SortOrder
     Author,
     Created,
     Updated,
-    Implemented,
+    Implemented, // TODO: これを作る
     NotImplemented
 }

@@ -28,7 +28,7 @@ public partial class MainWindow
     internal void EditSupportedAvatarsOverlay_RefleshList()
     {
         EditSupportedAvatarsOverlay_AvatarsList.Children.Clear();
-        var avatars = _avatarExplorer.GetAvatars().Where(i => string.IsNullOrEmpty(EditSupportedAvatarsOverlay_SearchTextBox.Text) || ((Item)i.Item).Title.Contains(EditSupportedAvatarsOverlay_SearchTextBox.Text));
+        IEnumerable<ItemCountInfo> avatars = _avatarExplorerApp.GetAvatars().Where(i => string.IsNullOrEmpty(EditSupportedAvatarsOverlay_SearchTextBox.Text) || ((Item)i.Item).Title.Contains(EditSupportedAvatarsOverlay_SearchTextBox.Text));
 
         foreach (ItemCountInfo itemCountInfo in avatars)
         {

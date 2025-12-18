@@ -30,15 +30,15 @@ public partial class MainWindow
         }
         else if (contextMenuAction.ActionLayer == ActionLayer.Core)
         {
-            await _avatarExplorer.ExecuteContextMenuItemCommand(contextMenuAction);
-            Main_ReloadCurrentWindow();
+            await _avatarExplorerApp.ExecuteContextMenuItemCommand(contextMenuAction);
+            if (contextMenuAction.ReloadRequired) Main_ReloadCurrentWindow();
         }
     }
     
     #region Context Menu Commands
     private Item? ItemButton_ContextMenu_GetItemByPath(string itemPath)
     {
-        Item? item = _avatarExplorer.GetItemByPath(itemPath);
+        Item? item = _avatarExplorerApp.GetItemByPath(itemPath);
         if (item == null) Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemNotFound]);
 
         return item;
@@ -91,7 +91,7 @@ public partial class MainWindow
         if (files == null || files.Length == 0) return;
 
         string selectedFile = files[0];
-        await _avatarExplorer.UpdateItemThumbnail(item, selectedFile);
+        await _avatarExplorerApp.UpdateItemThumbnail(item, selectedFile);
         Main_ReloadCurrentWindow();
     }
     private Task ItemButton_ContextMenu_EditItem(string itemPath)
@@ -104,7 +104,13 @@ public partial class MainWindow
     }
     private Task ItemButton_ContextMenu_AddMemo(string itemPath)
     {
-        Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
+        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        if (item == null) return Task.CompletedTask;
+
+        _contextMenu_selectedItem = item;
+
+        AddMemoOverlay_Show(item.ItemMemo);
+
         return Task.CompletedTask;
     }
     private async Task ItemButton_ContextMenu_AddItemFolder(string itemPath)
@@ -117,7 +123,7 @@ public partial class MainWindow
 
         Main_ShowProgress(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
         Main_UpdateProgress(0);
-        List<string> processingFailedPaths = await _avatarExplorer.AddFolders(item, folders);
+        List<string> processingFailedPaths = await _avatarExplorerApp.AddFolders(item, folders);
         Main_HideProgress();
 
         if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
@@ -128,15 +134,50 @@ public partial class MainWindow
             );
         }
     }
+
+    internal Item? _contextMenu_selectedItem = null;
     private Task ItemButton_ContextMenu_EditImplementedAvatar(string itemPath)
     {
-        Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
+        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        if (item == null) return Task.CompletedTask;
+
+        _contextMenu_selectedItem = item;
+
+        EditImplementedAvatarsOverlay_Show(item.ImplementedAvatars);
+
         return Task.CompletedTask;
     }
     private Task ItemButton_ContextMenu_EditItemTag(string itemPath)
     {
-        Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.NotImplemented]);
+        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        if (item == null) return Task.CompletedTask;
+
+        _contextMenu_selectedItem = item;
+
+        EditTagsOverlay_Show(item.Tags);
+
         return Task.CompletedTask;
+    }
+    private Task ItemButton_ContextMenu_RemoveItem(string itemPath)
+    {
+        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        if (item == null) return Task.CompletedTask;
+
+        _contextMenu_selectedItem = item;
+
+        _yesNoDialog_onYesClick = ItemButton_ContextMenu_RemoveItem_DialogYes_Click;
+        _yesNoDialog_onNoClick = null;
+
+        YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Remove]); // TODO: Localize
+        return Task.CompletedTask;
+    }
+    private void ItemButton_ContextMenu_RemoveItem_DialogYes_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_contextMenu_selectedItem == null) return;
+        _avatarExplorerApp.RemoveItem(_contextMenu_selectedItem.ItemPath, true); // TODO: ここのtrueもYesNoダイアログでまた分岐しても良いかも
+
+        Main_ReloadCurrentWindow();
+        Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Remove]);
     }
     #endregion
 }

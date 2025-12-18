@@ -19,7 +19,7 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow : Window
 {
-    internal readonly AvatarExplorerApp _avatarExplorer = new();
+    internal readonly AvatarExplorerApp _avatarExplorerApp = new();
 
     internal readonly Dictionary<ItemTagState, int> _main_currentPageStates = new()
     {
@@ -43,11 +43,11 @@ public partial class MainWindow : Window
         { ItemTagState.ItemFileCategoryOpen, new() }
     };
 
-    internal string _main_lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
-    internal string _main_searchTextCache = string.Empty;
+    private string _main_lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
+    private string _main_searchTextCache = string.Empty;
     internal bool _main_isLastWindowSearch = false;
 
-    internal ItemTagState _main_lastRightPanelItemTagState = ItemTagState.Unknown;
+    private ItemTagState _main_lastRightPanelItemTagState = ItemTagState.Unknown;
 
     internal readonly UserPreferences _userPreferences = new();
     internal int ItemsPerPage => _userPreferences.ItemsPerPage;
@@ -57,19 +57,18 @@ public partial class MainWindow : Window
     private int GetPage(ItemTagState itemTagState)
         => IsPageSupported(itemTagState) ? _main_currentPageStates[itemTagState] : -1;
 
-    internal RuntimeSettings RuntimeSettings => _avatarExplorer.GetRuntimeSettings();
+    internal RuntimeSettings RuntimeSettings => _avatarExplorerApp.GetRuntimeSettings();
 
     public MainWindow()
     {
         /* プロジェクトTODO
         TODO: 言語変更を実装する (UIが完成したらやる)
-        TODO: 右クリックメニューの処理を作る (メモ、未実装、タグ)
         TODO: UIのタグを使った翻訳機能を追加する
-        TODO: 実装やタグのUIを作る
-        TODO: 下のボタンの処理を実装する
+        TODO: タグのUIを作る
         TODO: SCHEMEに対応する
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるようにしたい
         TODO: 詳細検索用の画面を追加する（右のアイテム画面の右側に縦長に別ウィンドウみたいな感じで表示するのはありかも？）
+        TODO: アップデータを作る
         */
 
         InitializeComponent();
@@ -96,19 +95,19 @@ public partial class MainWindow : Window
         {
             case 0:
                 {
-                    items.AddRange(_avatarExplorer.GetAvatars());
+                    items.AddRange(_avatarExplorerApp.GetAvatars());
                     customState = ItemTagState.RootAvatar;
                     break;
                 }
             case 1:
                 {
-                    items.AddRange(_avatarExplorer.GetAuthors());
+                    items.AddRange(_avatarExplorerApp.GetAuthors());
                     customState = ItemTagState.RootAuthor;
                     break;
                 }
             case 2:
                 {
-                    items.AddRange(_avatarExplorer.GetCategories());
+                    items.AddRange(_avatarExplorerApp.GetCategories());
                     customState = ItemTagState.RootCategory;
                     break;
                 }
@@ -133,8 +132,8 @@ public partial class MainWindow : Window
         
         if (button.Tag is ItemTagInfo itemTagInfo)
         {
-            _avatarExplorer.SelectClear();
-            _avatarExplorer.Select(itemTagInfo.State, itemTagInfo.Value);
+            _avatarExplorerApp.SelectClear();
+            _avatarExplorerApp.Select(itemTagInfo.State, itemTagInfo.Value);
             Main_CheckPageStates();
             Main_ResetAllScrollViewerOffset(); // 左のパネルのボタンは全てRootのため、スクロール状況を全てリセットしてしまう
 
@@ -156,7 +155,7 @@ public partial class MainWindow : Window
         if (Main_RightPanel == null) return;
         Main_RightPanel.Children.Clear();
 
-        IReadOnlyList<ItemCountInfo> items = _avatarExplorer.GetItemsForCurrentState();
+        IReadOnlyList<ItemCountInfo> items = _avatarExplorerApp.GetItemsForCurrentState();
 
         if (items.Count == 0) Main_ShowNoItemsLabel();
         else Main_HideNoItemsLabel();
@@ -193,7 +192,7 @@ public partial class MainWindow : Window
             }
             else
             {
-                _avatarExplorer.Select(itemTagInfo.State, itemTagInfo.Value);
+                _avatarExplorerApp.Select(itemTagInfo.State, itemTagInfo.Value);
                 Main_CheckPageStates();
                 Main_SaveScrollViewerOffset(Main_RightPanelScrollViewer, itemTagInfo.State); // 次の画面に行くため、今のStateのスクロール位置を保存する
 
@@ -243,7 +242,7 @@ public partial class MainWindow : Window
         Main_RightPanel.Children.Clear();
 
         SearchFilter searchFilter = SearchFilterBuilder.BuildFromSearchText(_main_searchTextCache);
-        IReadOnlyList<Item> items = _avatarExplorer.SearchItems(searchFilter);
+        IReadOnlyList<Item> items = _avatarExplorerApp.SearchItems(searchFilter);
         
         // 検索文字列が前回と違う場合はページ、スクロール位置をリセットする
         if (_main_searchTextCache != _main_lastSearchTextCache)
@@ -279,7 +278,7 @@ public partial class MainWindow : Window
     {
         if (Main_PathTextBox == null) return;
 
-        IEnumerable<SelectionNode> currentSelectionNodes = _avatarExplorer.GetCurrentPaths();
+        IEnumerable<SelectionNode> currentSelectionNodes = _avatarExplorerApp.GetCurrentPaths();
         if (!currentSelectionNodes.Any())
         {
             Main_PathTextBox.Text = Localizer.Instance[LocalizationKey.Path.Default];
@@ -293,7 +292,7 @@ public partial class MainWindow : Window
             selectionNodes.Add(node);
         }
 
-        IReadOnlyList<Item> items = _avatarExplorer.GetAllItems();
+        IReadOnlyList<Item> items = _avatarExplorerApp.GetAllItems();
         Main_PathTextBox.Text = string.Join(" > ", selectionNodes.Select(i => PathService.BuildPathTextFromSelectionNode(items, i)));
     }
     #endregion
@@ -312,7 +311,7 @@ public partial class MainWindow : Window
     {
         List<ItemTagState> selectedItemTagStates = new();
 
-        foreach (SelectionNode selectionNode in _avatarExplorer.GetCurrentPaths())
+        foreach (SelectionNode selectionNode in _avatarExplorerApp.GetCurrentPaths())
         {
             if (!selectedItemTagStates.Contains(selectionNode.State))
                 selectedItemTagStates.Add(selectionNode.State);
@@ -366,7 +365,7 @@ public partial class MainWindow : Window
     }
     private async Task Main_OpenUnitypackageInternalAsync(string itemPath)
     {
-        Item? selectedItem = _avatarExplorer.GetSelectedItem();
+        Item? selectedItem = _avatarExplorerApp.GetSelectedItem();
 
         await UnitypackageService.OpenUnityPackageAsync(this, itemPath, selectedItem,
             onProgress: async (name, percent) =>

@@ -53,7 +53,7 @@ public partial class MainWindow
     {
         AddItemOverlay_ItemTypeComboBox.Items.Clear();
 
-        foreach (ItemCountInfo itemCountInfo in _avatarExplorer.GetCategories())
+        foreach (ItemCountInfo itemCountInfo in _avatarExplorerApp.GetCategories())
         {
             AddItemOverlay_ItemTypeComboBox.Items.Add(Localizer.Instance[((Category)itemCountInfo.Item).ToString()]);
         }
@@ -65,7 +65,7 @@ public partial class MainWindow
     {
         string boothUrl = AddItemOverlay_BoothLinkTextBox.Text ?? "";
 
-        if (_avatarExplorer.IsApiCooldownNow)
+        if (_avatarExplorerApp.IsApiCooldownNow)
         {
             Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.BoothApiCooldown]);
             return;
@@ -74,7 +74,7 @@ public partial class MainWindow
         Main_ShowProgress(Localizer.Instance[LocalizationKey.Processing.Booth.Status.Fetching]);
         Main_UpdateProgress(0);
         
-        BoothItem? boothItem = await _avatarExplorer.GetBoothItem(boothUrl);
+        BoothItem? boothItem = await _avatarExplorerApp.GetBoothItem(boothUrl);
         Main_HideProgress();
 
         if (boothItem == null)
@@ -155,7 +155,7 @@ public partial class MainWindow
         {
             Main_ShowProgress(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
             Main_UpdateProgress(0);
-            var (newItem, processingFailedPaths) = await _avatarExplorer.AddItem(itemCreationContext);
+            var (newItem, processingFailedPaths) = await _avatarExplorerApp.AddItem(itemCreationContext);
             Main_HideProgress();
 
             if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
@@ -171,7 +171,7 @@ public partial class MainWindow
         }
         else
         {
-            _avatarExplorer.EditItem(_addItemOverlay_selectedItem, itemCreationContext);
+            _avatarExplorerApp.EditItem(_addItemOverlay_selectedItem, itemCreationContext);
             Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemEdit]);
         }
 

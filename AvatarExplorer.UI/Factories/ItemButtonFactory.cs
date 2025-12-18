@@ -17,7 +17,7 @@ namespace AvatarExplorer.UI.Factories;
 
 internal static class ItemButtonFactory
 {
-    internal static Button AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
+    internal static Button AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null, EventHandler<RoutedEventArgs>? onTagClick = null)
     {
         Button itemButton = new()
         {
@@ -94,7 +94,7 @@ internal static class ItemButtonFactory
 
         foreach (string itemTag in item.ItemTags)
         {
-            tagPanel.Children.Add(GetTagButton(itemTag));
+            tagPanel.Children.Add(GetTagButton(itemTag, onTagClick));
         }
 
         textPanel.Children.Add(tagPanel);
@@ -111,9 +111,10 @@ internal static class ItemButtonFactory
 
         return itemButton;
     }
-    private static Button GetTagButton(string text)
+
+    internal static Button GetTagButton(string text, EventHandler<RoutedEventArgs>? onClick = null)
     {
-        return new Button()
+        Button tagButton = new Button()
         {
             Content = text,
             CornerRadius = new CornerRadius(15),
@@ -122,7 +123,11 @@ internal static class ItemButtonFactory
             HorizontalContentAlignment = HorizontalAlignment.Center,
             VerticalContentAlignment = VerticalAlignment.Center,
         };
+
+        if (onClick != null) tagButton.Click += onClick;
+        return tagButton;
     }
+
     private static string? GetTooltipTextFromItem(UISelectableItem item)
     {
         StringBuilder toolTipTextBuilder = new();

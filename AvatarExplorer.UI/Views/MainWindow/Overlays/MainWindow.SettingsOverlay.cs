@@ -34,7 +34,7 @@ public partial class MainWindow
     #region Methods
     private void SetUiValueFromCurrentSettings() // 設定画面を読み込んだ時に値をセットするための関数
     {
-        RuntimeSettings runtimeSettings = _avatarExplorer.GetRuntimeSettings();
+        RuntimeSettings runtimeSettings = _avatarExplorerApp.GetRuntimeSettings();
         UserPreferences userPreferences = _userPreferences;
 
         SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory;
@@ -47,19 +47,19 @@ public partial class MainWindow
     }
     private void ApplySettingsValues() // 設定の適用ボタンが押されたときのみ
     {
-        _avatarExplorer.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? "");
-        _avatarExplorer.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
-        _avatarExplorer.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
+        _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? "");
+        _avatarExplorerApp.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
+        _avatarExplorerApp.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
         _userPreferences.SetItemsPerPage(int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var result) ? result : 30);
         _userPreferences.SetTheme((Theme)SettingsOverlay_ThemeComboBox.SelectedIndex);
         _userPreferences.SetLanguage(SettingsOverlay_DefaultLanguageComboBox.SelectedIndex);
-        _avatarExplorer.SetItemsSortOrder((SortOrder)SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex);
+        _avatarExplorerApp.SetItemsSortOrder((SortOrder)SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex);
 
         ApplyPreferenceSettingsToUi();
         ApplyRuntimeSettingsToUi();
 
         // 適用時は自動で保存する
-        _avatarExplorer.SaveRuntimeSettings();
+        _avatarExplorerApp.SaveRuntimeSettings();
         UserPreferencesService.SaveUserPreferences(_userPreferences);
     }
     

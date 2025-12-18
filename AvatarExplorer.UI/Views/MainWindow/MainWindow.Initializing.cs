@@ -14,9 +14,9 @@ public partial class MainWindow
     {
         try
         {
-            _avatarExplorer.LoadItemDatabase(true);
-            _avatarExplorer.LoadCommonAvatarDatabase(true);
-            _avatarExplorer.LoadRuntimeSettings();
+            _avatarExplorerApp.LoadItemDatabase(true); // TODO: V1のデータを読み込む設定になっているのでリリース時に直す
+            _avatarExplorerApp.LoadCommonAvatarDatabase(true);
+            _avatarExplorerApp.LoadRuntimeSettings();
             ApplyRuntimeSettingsToUi(); // 並び替え順をセットするため
         }
         catch
@@ -70,7 +70,8 @@ public partial class MainWindow
             { ActionKey.AddItemMemo, ItemButton_ContextMenu_AddMemo},
             { ActionKey.AddItemFolder, ItemButton_ContextMenu_AddItemFolder },
             { ActionKey.EditImplementedAvatar, ItemButton_ContextMenu_EditImplementedAvatar },
-            { ActionKey.EditItemTag, ItemButton_ContextMenu_EditItemTag }
+            { ActionKey.EditItemTag, ItemButton_ContextMenu_EditItemTag },
+            { ActionKey.RemoveItem, ItemButton_ContextMenu_RemoveItem }
         };
     }
     private void InitializeLanguageBox()

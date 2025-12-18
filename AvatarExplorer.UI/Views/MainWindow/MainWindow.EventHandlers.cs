@@ -28,10 +28,10 @@ public partial class MainWindow
     private void Main_UndoButton_Click(object? sender, RoutedEventArgs e)
     {
         // 選択されていたアイテムが検索結果時のものだったら、キャッシュを元にもう一度検索してあげる
-        bool isCurrentSearchNode = _avatarExplorer.GetCurrentPathState()?.State == ItemTagState.SearchItem;
+        bool isCurrentSearchNode = _avatarExplorerApp.GetCurrentPathState()?.State == ItemTagState.SearchItem;
         
         Main_CheckPageStates(); // SelectUndoより前にやってあげないと、戻った先の画面のページ情報がリセットされる
-        if (!_main_isLastWindowSearch) _avatarExplorer.SelectUndo(); // 最後の画面が検索画面だったら、検索だけやめて戻るようにする
+        if (!_main_isLastWindowSearch) _avatarExplorerApp.SelectUndo(); // 最後の画面が検索画面だったら、検索だけやめて戻るようにする
 
         if (isCurrentSearchNode) Main_ExecuteSearchItems();
         else Main_RenderRightPanel();
@@ -57,7 +57,7 @@ public partial class MainWindow
     private void Main_SortOrderComboBox_Changed(object? sender, RoutedEventArgs e)
     {
         if (sender is not ComboBox comboBox) return;
-        _avatarExplorer.SetItemsSortOrder((SortOrder)comboBox.SelectedIndex);
+        _avatarExplorerApp.SetItemsSortOrder((SortOrder)comboBox.SelectedIndex);
         Main_ReloadCurrentWindow();
     }
     private void Main_AddItem_Click(object? sender, RoutedEventArgs e)
@@ -71,7 +71,7 @@ public partial class MainWindow
 
     private void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
     {
-        YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation], Localizer.Instance[LocalizationKey.UI.Overlay.ExportToCsv.IncludeImplementedToSupported]);
+        YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Overlay.ExportToCsv.IncludeImplementedToSupported]);
 
         _yesNoDialog_onYesClick = Main_ExportDataToCsv_DialogYes_Click;
         _yesNoDialog_onNoClick = Main_ExportDataToCsv_DialogNo_Click;
@@ -86,7 +86,7 @@ public partial class MainWindow
         if (filePath == null) return;
 
         var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
-        await _avatarExplorer.ExportToCsv(filePath, localizedItemTypesMapping, includeImplementedToSupported);
+        await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, includeImplementedToSupported);
 
         Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Export]);
     }

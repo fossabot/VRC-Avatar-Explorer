@@ -48,8 +48,8 @@ public partial class MainWindow
             }
         });
 
-        if (dataImportType == DataImportType.V1) await _avatarExplorer.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
-        else if (dataImportType == DataImportType.KonoAsset)  await _avatarExplorer.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progress);
+        if (dataImportType == DataImportType.V1) await _avatarExplorerApp.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
+        else if (dataImportType == DataImportType.KonoAsset)  await _avatarExplorerApp.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progress);
 
         Main_ReloadCurrentWindow();
     }

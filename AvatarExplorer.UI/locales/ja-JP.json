@@ -24,13 +24,15 @@
     "UI.ItemWindow.Page": "{0} / {1}ページ",
     "UI.ItemWindow.PageItemCount": "{0} - {1} / {2}個の項目",
 
-    "UI.Dialog.Confirmation": "確認",
+    "UI.Dialog.Confirmation.Default": "確認",
+    "UI.Dialog.Confirmation.Remove": "本当にこのアイテムを削除しますか？",
 
     "UI.Dialog.Success.Default": "成功",
     "UI.Dialog.Success.Import": "データのインポートに成功しました",
     "UI.Dialog.Success.Export": "データのエクスポートに成功しました",
     "UI.Dialog.Success.ItemAdd": "アイテムの追加に成功しました",
     "UI.Dialog.Success.ItemEdit": "アイテムの編集に成功しました",
+    "UI.Dialog.Success.Remove": "アイテムの削除に成功しました",
 
     "UI.Dialog.Failed.Default": "失敗",
     "UI.Dialog.Failed.Import": "データのインポートに失敗しました",

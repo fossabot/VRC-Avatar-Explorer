@@ -30,40 +30,6 @@ public static class FileSystemService
     }
     #endregion
 
-    public static IEnumerable<string> EnumerateFiles(string rootDirectory)
-    {
-        if (!Directory.Exists(rootDirectory))
-            yield break;
-
-        Stack<string> directories = new();
-        directories.Push(rootDirectory);
-
-        while (directories.Count > 0)
-        {
-            string directory = directories.Pop();
-
-            string[] subDirectories;
-
-            try { subDirectories = Directory.GetDirectories(directory); }
-            catch { continue; }
-
-            foreach (string subDirectory in subDirectories)
-            {
-                directories.Push(subDirectory);
-            }
-
-            string[] files;
-
-            try { files = Directory.GetFiles(directory); }
-            catch { continue; }
-
-            foreach (string file in files)
-            {
-                yield return file;
-            }
-        }
-    }
-
     #region Unitypackage Modifier
     internal static async Task ModifyUnityPackageFilePathAsync(string itemPath, string itemCategoryName = "", IProgress<(string, int, string)>? progress = null)
     {
@@ -280,7 +246,7 @@ public static class FileSystemService
         var (extractedDestinationFolderPath, isDirectory) = FileExtractorInternal(filePath, destinationFolderPath, folderName, removeOriginal);
         if (isDirectory)
         {
-            string copiedFolderPath = PrepareDestinationDirectoryInternal(destinationFolderPath, folderName);
+            string copiedFolderPath = PrepareUniqueDestinationDirectoryPathInternal(destinationFolderPath, folderName);
             await CopyDirectory(filePath, copiedFolderPath);
             extractedDestinationFolderPath = copiedFolderPath;
         }
@@ -327,7 +293,7 @@ public static class FileSystemService
     private const int BufferSize = 1024 * 1024;
     private static string ZipExtractor(string filePath, string extractDirectory, string folderName)
     {
-        string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        string extractDirectoryFolder = PrepareUniqueDestinationDirectoryPathInternal(extractDirectory, folderName);
 
         using (var archive = SharpCompress.Archives.Zip.ZipArchive.Open(filePath))
         ExtractEntries(extractDirectoryFolder, archive.Entries);
@@ -336,7 +302,7 @@ public static class FileSystemService
     }
     private static string RarExtractor(string filePath, string extractDirectory, string folderName)
     {
-        string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        string extractDirectoryFolder = PrepareUniqueDestinationDirectoryPathInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.Rar.RarArchive.Open(filePath))
         ExtractEntries(extractDirectoryFolder, archive.Entries);
@@ -345,7 +311,7 @@ public static class FileSystemService
     }
     private static string SevenZipExtractor(string filePath, string extractDirectory, string folderName)
     {
-        string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        string extractDirectoryFolder = PrepareUniqueDestinationDirectoryPathInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.SevenZip.SevenZipArchive.Open(filePath))
         ExtractEntries(extractDirectoryFolder, archive.Entries);
@@ -354,7 +320,7 @@ public static class FileSystemService
     }
     private static string GzipExtractor(string filePath, string extractDirectory, string folderName)
     {
-        string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        string extractDirectoryFolder = PrepareUniqueDestinationDirectoryPathInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.GZip.GZipArchive.Open(filePath))
         ExtractEntries(extractDirectoryFolder, archive.Entries);
@@ -363,7 +329,7 @@ public static class FileSystemService
     }
     private static string TarExtractor(string filePath, string extractDirectory, string folderName)
     {
-        string extractDirectoryFolder = PrepareDestinationDirectoryInternal(extractDirectory, folderName);
+        string extractDirectoryFolder = PrepareUniqueDestinationDirectoryPathInternal(extractDirectory, folderName);
         
         using (var archive = SharpCompress.Archives.Tar.TarArchive.Open(filePath))
         ExtractEntries(extractDirectoryFolder, archive.Entries);
@@ -399,30 +365,8 @@ public static class FileSystemService
     }
     #endregion
 
-    private static string PrepareDestinationDirectoryInternal(string extractDirectory, string folderName)
-    {
-        string extractDirectoryFolder = Path.Combine(extractDirectory, folderName);
-
-        if (Directory.Exists(extractDirectoryFolder))
-        {
-            int i = 1;
-            while (Directory.Exists(extractDirectoryFolder + " - " + i)) i++;
-            extractDirectoryFolder += " - " + i;
-        }
-
-        Directory.CreateDirectory(extractDirectoryFolder);
-
-        return extractDirectoryFolder;
-    }
-
-    public static void PrepareDirectory(string filePath)
-    {
-        string? directory = Path.GetDirectoryName(filePath);
-        if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
-    }
-
     #region Copy
-    internal static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, IProgress<(string, int, string)>? progress = null, int maxDegreeOfParallelism = 4)
+    public static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, IProgress<(string, int, string)>? progress = null, int maxDegreeOfParallelism = 4)
     {
         if (sourceDirectory == destinationDirectory) return; // sourceとdestinationが同じ場合は無視
 
@@ -462,7 +406,7 @@ public static class FileSystemService
             });
         });
     }
-    internal static async Task<string?> CopyFile(string sourceFile, string destinationFile, bool unique = false)
+    public static async Task<string?> CopyFile(string sourceFile, string destinationFile, bool unique = false)
     {
         try
         {
@@ -481,8 +425,64 @@ public static class FileSystemService
         }
     }
     #endregion
+    
+    private static string PrepareUniqueDestinationDirectoryPathInternal(string extractDirectory, string folderName)
+    {
+        string extractDirectoryFolder = Path.Combine(extractDirectory, folderName);
 
-    internal static string? GetUniqueFilePath(string? directory, string? fileName)
+        if (Directory.Exists(extractDirectoryFolder))
+        {
+            int i = 1;
+            while (Directory.Exists(extractDirectoryFolder + " - " + i)) i++;
+            extractDirectoryFolder += " - " + i;
+        }
+
+        Directory.CreateDirectory(extractDirectoryFolder);
+
+        return extractDirectoryFolder;
+    }
+
+    public static void PrepareDirectory(string filePath)
+    {
+        string? directory = Path.GetDirectoryName(filePath);
+        if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
+    }
+
+    public static IEnumerable<string> EnumerateFiles(string rootDirectory)
+    {
+        if (!Directory.Exists(rootDirectory))
+            yield break;
+
+        Stack<string> directories = new();
+        directories.Push(rootDirectory);
+
+        while (directories.Count > 0)
+        {
+            string directory = directories.Pop();
+
+            string[] subDirectories;
+
+            try { subDirectories = Directory.GetDirectories(directory); }
+            catch { continue; }
+
+            foreach (string subDirectory in subDirectories)
+            {
+                directories.Push(subDirectory);
+            }
+
+            string[] files;
+
+            try { files = Directory.GetFiles(directory); }
+            catch { continue; }
+
+            foreach (string file in files)
+            {
+                yield return file;
+            }
+        }
+    }
+
+    public static string? GetUniqueFilePath(string? directory, string? fileName)
     {
         if (string.IsNullOrEmpty(directory) || string.IsNullOrEmpty(fileName)) return null;
 
@@ -508,7 +508,7 @@ public static class FileSystemService
         }
     }
 
-    internal static bool DeleteDirectory(string path, bool recursive = true)
+    public static bool DeleteDirectory(string path, bool recursive = true)
     {
         try
         {

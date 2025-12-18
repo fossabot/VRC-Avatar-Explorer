@@ -55,7 +55,11 @@ public static class LocalizationKey
 
         public static class Dialog
         {
-            public const string Confirmation = "UI.Dialog.Confirmation";
+            public static class Confirmation
+            {
+                public const string Default = "UI.Dialog.Confirmation.Default";
+                public const string Remove = "UI.Dialog.Confirmation.Remove";
+            }
 
             public static class Success
             {
@@ -64,6 +68,7 @@ public static class LocalizationKey
                 public const string Export = "UI.Dialog.Success.Export";
                 public const string ItemAdd = "UI.Dialog.Success.ItemAdd";
                 public const string ItemEdit = "UI.Dialog.Success.ItemEdit";
+                public const string Remove = "UI.Dialog.Success.Remove";
             }
 
             public static class Failed

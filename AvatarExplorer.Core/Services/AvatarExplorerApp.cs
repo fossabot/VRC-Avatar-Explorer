@@ -31,7 +31,7 @@ public partial class AvatarExplorerApp
 
         _contextMenuHandlers = new()
         {
-            { ActionKey.FetchThumbnail, ItemButton_ContextMenu_FetchThumbnail}
+            { ActionKey.FetchThumbnail, ItemButton_ContextMenu_FetchThumbnail }
         };
     }
 

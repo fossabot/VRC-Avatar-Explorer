@@ -5,14 +5,7 @@ namespace AvatarExplorer.Core.Models;
 
 public class CommonAvatar
 {
-    /// <summary>
-    /// 共通素体グループの名前を取得または設定します。
-    /// </summary>
     public string GroupName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 共通素体のアバターのパスを取得または設定します。
-    /// </summary>
     public List<string> Avatars { get; set; } = new List<string>();
 
     public static CommonAvatar FromV1(CommonAvatarV1 commonAvatar)
@@ -21,10 +14,8 @@ public class CommonAvatar
         {
             GroupName = commonAvatar.Name
         };
-        
-        migratedCommonAvatar.Avatars.Clear();
-        migratedCommonAvatar.Avatars.AddRange(commonAvatar.Avatars);
 
+        migratedCommonAvatar.Avatars.AddRange(commonAvatar.Avatars);
         MigrateUtils.MigrateItemPaths(migratedCommonAvatar.Avatars);
 
         return migratedCommonAvatar;

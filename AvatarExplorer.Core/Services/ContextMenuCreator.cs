@@ -27,7 +27,7 @@ public static class ContextMenuCreator
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Add.Folder, ActionKey.AddItemFolder, ActionLayer.UI, item.ItemPath),
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Implemented, ActionKey.EditImplementedAvatar, ActionLayer.UI, item.ItemPath),
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Tag, ActionKey.EditItemTag, ActionLayer.UI, item.ItemPath),
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Remove, ActionKey.RemoveItem, ActionLayer.Core, item.ItemPath, true),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Remove, ActionKey.RemoveItem, ActionLayer.UI, item.ItemPath),
         ];
 
         return contextMenuActions;
