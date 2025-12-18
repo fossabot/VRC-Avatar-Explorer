@@ -64,7 +64,6 @@ public partial class MainWindow : Window
         /* プロジェクトTODO
         TODO: 言語変更を実装する (UIが完成したらやる)
         TODO: UIのタグを使った翻訳機能を追加する
-        TODO: タグのUIを作る
         TODO: SCHEMEに対応する
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるようにしたい
         TODO: 詳細検索用の画面を追加する（右のアイテム画面の右側に縦長に別ウィンドウみたいな感じで表示するのはありかも？）
