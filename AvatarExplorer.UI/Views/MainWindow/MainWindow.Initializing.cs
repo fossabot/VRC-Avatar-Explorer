@@ -17,7 +17,7 @@ public partial class MainWindow
             _avatarExplorerApp.LoadItemDatabase(true); // TODO: V1のデータを読み込む設定になっているのでリリース時に直す
             _avatarExplorerApp.LoadCommonAvatarDatabase(true);
             _avatarExplorerApp.LoadRuntimeSettings();
-            ApplyRuntimeSettingsToUi(); // 並び替え順をセットするため
+            SettingsOverlay_ApplyRuntimeSettingsToUi(); // 並び替え順をセットするため
         }
         catch
         {
@@ -29,7 +29,7 @@ public partial class MainWindow
         var userPreferences = UserPreferencesService.Load(SystemPath.UserPreferencesFilePath);
         _userPreferences.FromOther(userPreferences);
 
-        ApplyPreferenceSettingsToUi();
+        SettingsOverlay_ApplyPreferenceSettingsToUi();
 
         UserPreferencesService.Save(_userPreferences);
     }

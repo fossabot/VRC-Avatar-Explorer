@@ -12,19 +12,12 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    private void SelectImportTypeOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => SelectImportTypeOverlay_CloseInternal();
-    private void SelectImportTypeOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
-        => SelectImportTypeOverlay_CloseInternal();
-        
-    private void SelectImportTypeOverlay_CloseInternal()
+    private void SelectImportTypeOverlay_Show()
+        => SelectImportTypeOverlay.IsVisible = true;
+    private void SelectImportTypeOverlay_Hide()
         => SelectImportTypeOverlay.IsVisible = false;
-        
-    private void SelectImportTypeOverlay_FromV1_Click(object? sender, RoutedEventArgs e)
-        => DataImportInternal(DataImportType.V1);
-    private void SelectImportTypeOverlay_FromKonoAsset_Click(object? sender, RoutedEventArgs e)
-        => DataImportInternal(DataImportType.KonoAsset);
-    private async void DataImportInternal(DataImportType dataImportType)
+
+    private async void SelectImportTypeOverlay_DataImportInternal(DataImportType dataImportType)
     {
         string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], false);
         if (folders == null || folders.Length == 0) return;
@@ -39,12 +32,12 @@ public partial class MainWindow
         {
             if (tuple.Item2 == 100)
             {
-                Main_HideProgress();
+                ProgressOverlay_Hide();
             }
             else
             {
-                Main_ShowProgress(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
-                Main_UpdateProgress(tuple.Item2);
+                ProgressOverlay_Show(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
+                ProgressOverlay_Update(tuple.Item2);
             }
         });
 
@@ -53,4 +46,15 @@ public partial class MainWindow
 
         Main_ReloadCurrentWindow();
     }
+
+    #region Event Handler
+    private void SelectImportTypeOverlay_Border_Click(object? sender, RoutedEventArgs e)
+        => SelectImportTypeOverlay_Hide();
+    private void SelectImportTypeOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
+        => SelectImportTypeOverlay_Hide();
+    private void SelectImportTypeOverlay_FromV1_Click(object? sender, RoutedEventArgs e)
+        => SelectImportTypeOverlay_DataImportInternal(DataImportType.V1);
+    private void SelectImportTypeOverlay_FromKonoAsset_Click(object? sender, RoutedEventArgs e)
+        => SelectImportTypeOverlay_DataImportInternal(DataImportType.KonoAsset);
+    #endregion
 }

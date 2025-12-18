@@ -369,12 +369,12 @@ public partial class MainWindow : Window
         await UnitypackageService.Open(this, itemPath, selectedItem,
             onProgress: async (name, percent) =>
             {
-                Main_ShowProgress(Localizer.Instance.GetDisplayName(name, percent.ToString()));
-                Main_UpdateProgress(percent);
+                ProgressOverlay_Show(Localizer.Instance.GetDisplayName(name, percent.ToString()));
+                ProgressOverlay_Update(percent);
             },
             onCompleted: async (resultPath) =>
             {
-                Main_HideProgress();
+                ProgressOverlay_Hide();
 
                 if (!string.IsNullOrEmpty(resultPath))
                     await LauncherService.OpenFile(this, resultPath);

@@ -9,13 +9,14 @@ public partial class MainWindow
         AddMemoOverlay.IsVisible = true;
         if (!string.IsNullOrEmpty(initialMemo)) AddMemoOverlay_MemoTextBox.Text = initialMemo;
     }
-    internal void AddMemoOverlay_CloseInternal()
+    internal void AddMemoOverlay_Hide()
         => AddMemoOverlay.IsVisible = false;
 
+    #region Event Handler
     private void AddMemoOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
-        => AddMemoOverlay_CloseInternal();
+        => AddMemoOverlay_Hide();
     private void AddMemoOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => AddMemoOverlay_CloseInternal();
+        => AddMemoOverlay_Hide();
     private void AddMemoOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
         if (_contextMenu_selectedItem != null)
@@ -23,7 +24,8 @@ public partial class MainWindow
             _contextMenu_selectedItem.ItemMemo = AddMemoOverlay_MemoTextBox.Text ?? string.Empty;
         }
 
-        AddMemoOverlay_CloseInternal();
+        AddMemoOverlay_Hide();
         Main_ReloadCurrentWindow();
     }
+    #endregion
 }

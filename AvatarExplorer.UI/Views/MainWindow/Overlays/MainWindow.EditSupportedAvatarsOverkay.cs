@@ -19,6 +19,9 @@ public partial class MainWindow
         EditSupportedAvatarsOverlay.IsVisible = true;
         EditSupportedAvatarsOverlay_InitializeList(avatars);
     }
+    internal void EditSupportedAvatarsOverlay_Hide()
+        => EditSupportedAvatarsOverlay.IsVisible = false;
+    
     internal void EditSupportedAvatarsOverlay_InitializeList(List<string>? avatars = null)
     {
         _editSupportedAvatarsOverlay_selectedAvatars.Clear();
@@ -38,13 +41,12 @@ public partial class MainWindow
             if (_editSupportedAvatarsOverlay_selectedAvatars.Contains(((Item)itemCountInfo.Item).ItemPath)) button.Background = new SolidColorBrush(Colors.Green);
         }
     }
-    internal void EditSupportedAvatarsOverlay_CloseInternal()
-        => EditSupportedAvatarsOverlay.IsVisible = false;
 
+    #region Event Handler
     private void EditSupportedAvatarsOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
-        => EditSupportedAvatarsOverlay_CloseInternal();
+        => EditSupportedAvatarsOverlay_Hide();
     private void EditSupportedAvatarsOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => EditSupportedAvatarsOverlay_CloseInternal();
+        => EditSupportedAvatarsOverlay_Hide();
     private void EditSupportedAvatarsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
         _addItemOverlay_addItemWindowValues.SupportedAvatars.Clear();
@@ -52,9 +54,8 @@ public partial class MainWindow
 
         AddItemOverlay_EditSupportedAvatarsButton.Content = string.Format("選択: {0}アバター", _editSupportedAvatarsOverlay_selectedAvatars.Count.ToString()); // TODO: Localizeする。これはテスト用です。
 
-        EditSupportedAvatarsOverlay_CloseInternal();
+        EditSupportedAvatarsOverlay_Hide();
     }
-
     private void EditSupportedAvatarsOverlay_ItemButton_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button || button.Tag is not ItemTagInfo itemTagInfo) return;
@@ -64,7 +65,7 @@ public partial class MainWindow
         
         EditSupportedAvatarsOverlay_RefleshList();
     }
-
     private void EditSupportedAvatarsOverlay_SearchTextBox_Changed(object? sender, RoutedEventArgs e)
         => EditSupportedAvatarsOverlay_RefleshList();
+    #endregion
 }

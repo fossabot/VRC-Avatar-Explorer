@@ -13,41 +13,13 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    private async void EditFoldersOverlay_AddFolder_Click(object? sender, RoutedEventArgs e)
+    private void EditFoldersOverlay_Show()
     {
-        string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
-        if (folders == null || folders.Length == 0) return;
-
-        _addItemOverlay_addItemWindowValues.Folders.AddRange(folders);
         EditFoldersOverlay_UpdateFolderList();
+        EditFoldersOverlay.IsVisible = true;
     }
-    private async void EditFoldersOverlay_AddFile_Click(object? sender, RoutedEventArgs e)
-    {
-        string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
-        if (files == null || files.Length == 0) return;
-
-        _addItemOverlay_addItemWindowValues.Folders.AddRange(files);
-        EditFoldersOverlay_UpdateFolderList();
-    }
-
-    private void EditFoldersOverlay_RemoveButton_Click(object? sender, RoutedEventArgs e)
-    {
-        if (sender is Button button && button.Tag is string folderPath)
-        {
-            _addItemOverlay_addItemWindowValues.Folders.RemoveAll(i => i == folderPath);
-            EditFoldersOverlay_UpdateFolderList();
-        }
-    }
-
-    private void EditFoldersOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => EditFoldersOverlay_CloseInternal();
-    private void EditFoldersOverlay_ConfirmButton_Click(object? sender, RoutedEventArgs e)
-        => EditFoldersOverlay_CloseInternal();
-    
-    private void EditFoldersOverlay_CloseInternal()
+    private void EditFoldersOverlay_Hide()
         => EditFoldersOverlay.IsVisible = false;
-    
-    #region Methods
     internal void EditFoldersOverlay_UpdateFolderList()
     {
         EditFoldersOverlay_FolderList.Children.Clear();
@@ -124,5 +96,37 @@ public partial class MainWindow
         folderListPanel.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
         folderListPanel.Children.Add(rowBorder);
     }
+
+    #region Event Handler
+    private async void EditFoldersOverlay_AddFolder_Click(object? sender, RoutedEventArgs e)
+    {
+        string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
+        if (folders == null || folders.Length == 0) return;
+
+        _addItemOverlay_addItemWindowValues.Folders.AddRange(folders);
+        EditFoldersOverlay_UpdateFolderList();
+    }
+    private async void EditFoldersOverlay_AddFile_Click(object? sender, RoutedEventArgs e)
+    {
+        string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
+        if (files == null || files.Length == 0) return;
+
+        _addItemOverlay_addItemWindowValues.Folders.AddRange(files);
+        EditFoldersOverlay_UpdateFolderList();
+    }
+
+    private void EditFoldersOverlay_RemoveButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is string folderPath)
+        {
+            _addItemOverlay_addItemWindowValues.Folders.RemoveAll(i => i == folderPath);
+            EditFoldersOverlay_UpdateFolderList();
+        }
+    }
+
+    private void EditFoldersOverlay_Border_Click(object? sender, RoutedEventArgs e)
+        => EditFoldersOverlay_Hide();
+    private void EditFoldersOverlay_ConfirmButton_Click(object? sender, RoutedEventArgs e)
+        => EditFoldersOverlay_Hide();
     #endregion
 }

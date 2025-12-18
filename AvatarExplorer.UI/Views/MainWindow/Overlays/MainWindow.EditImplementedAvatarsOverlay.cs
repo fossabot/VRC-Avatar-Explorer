@@ -19,6 +19,9 @@ public partial class MainWindow
         EditImplementedAvatarsOverlay.IsVisible = true;
         EditImplementedAvatarsOverlay_InitializeList(avatars);
     }
+    internal void EditImplementedAvatarsOverlay_Hide()
+        => EditImplementedAvatarsOverlay.IsVisible = false;
+    
     internal void EditImplementedAvatarsOverlay_InitializeList(List<string>? avatars = null)
     {
         _editImplementedAvatarsOverlay_selectedAvatars.Clear();
@@ -38,13 +41,12 @@ public partial class MainWindow
             if (_editImplementedAvatarsOverlay_selectedAvatars.Contains(((Item)itemCountInfo.Item).ItemPath)) button.Background = new SolidColorBrush(Colors.Green);
         }
     }
-    internal void EditImplementedAvatarsOverlay_CloseInternal()
-        => EditImplementedAvatarsOverlay.IsVisible = false;
 
+    #region Event Handler
     private void EditImplementedAvatarsOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
-        => EditImplementedAvatarsOverlay_CloseInternal();
+        => EditImplementedAvatarsOverlay_Hide();
     private void EditImplementedAvatarsOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => EditImplementedAvatarsOverlay_CloseInternal();
+        => EditImplementedAvatarsOverlay_Hide();
     private void EditImplementedAvatarsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
         if (_contextMenu_selectedItem != null)
@@ -53,9 +55,8 @@ public partial class MainWindow
             _contextMenu_selectedItem.ImplementedAvatars.AddRange(_editImplementedAvatarsOverlay_selectedAvatars);
         }
 
-        EditImplementedAvatarsOverlay_CloseInternal();
+        EditImplementedAvatarsOverlay_Hide();
     }
-
     private void EditImplementedAvatarsOverlay_ItemButton_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button || button.Tag is not ItemTagInfo itemTagInfo) return;
@@ -65,7 +66,7 @@ public partial class MainWindow
         
         EditImplementedAvatarsOverlay_RefleshList();
     }
-
     private void EditImplementedAvatarsOverlay_SearchTextBox_Changed(object? sender, RoutedEventArgs e)
         => EditImplementedAvatarsOverlay_RefleshList();
+    #endregion
 }

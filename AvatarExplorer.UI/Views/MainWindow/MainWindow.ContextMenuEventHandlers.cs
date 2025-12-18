@@ -99,7 +99,7 @@ public partial class MainWindow
         Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
         if (item == null) return Task.CompletedTask;
 
-        AddItemOverlay_ShowEditItemWindow(item);
+        AddItemOverlay_ShowEdit(item);
         return Task.CompletedTask;
     }
     private Task ItemButton_ContextMenu_AddMemo(string itemPath)
@@ -121,10 +121,10 @@ public partial class MainWindow
         string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
         if (folders == null || folders.Length == 0) return;
 
-        Main_ShowProgress(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
-        Main_UpdateProgress(0);
+        ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
+        ProgressOverlay_Update(0);
         List<string> processingFailedPaths = await _avatarExplorerApp.AddFolders(item, folders);
-        Main_HideProgress();
+        ProgressOverlay_Hide();
 
         if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
         {

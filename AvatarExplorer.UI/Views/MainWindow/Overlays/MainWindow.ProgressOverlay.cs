@@ -4,16 +4,16 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    private void Main_ShowProgress(string title)
+    private void ProgressOverlay_Show(string title)
     {
         ProgressBarTitle.Text = title;
         ProgressOverlay.IsVisible = true;
     }
-    private void Main_HideProgress()
+    private void ProgressOverlay_Hide()
     {
         ProgressOverlay.IsVisible = false;
     }
-    private void Main_UpdateProgress(int value)
+    private void ProgressOverlay_Update(int value)
     {
         ProgressBar.IsIndeterminate = value == 0;
         ProgressBar.Value = Math.Clamp(value, 0, 100);

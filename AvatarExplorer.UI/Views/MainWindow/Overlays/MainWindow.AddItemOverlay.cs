@@ -17,7 +17,7 @@ public partial class MainWindow
     internal Item? _addItemOverlay_selectedItem = null;
     internal readonly AddItemOverlayWindowValues _addItemOverlay_addItemWindowValues = new();
 
-    private void AddItemOverlay_ShowEditItemWindow(Item item)
+    private void AddItemOverlay_ShowEdit(Item item)
     {
         AddItemOverlay_InitializeAddItemWindowCategories();
 
@@ -27,7 +27,7 @@ public partial class MainWindow
         AddItemOverlay_BoothLinkTextBox.Text = item.GetBoothLink();
         AddItemOverlay.IsVisible = true;
     }
-    private void AddItemOverlay_ShowAddItemWindow(IEnumerable<string>? filePaths = null)
+    private void AddItemOverlay_ShowAdd(IEnumerable<string>? filePaths = null)
     {
         // もし表示されてる状態でD&Dされたら、フォルダ追加だけしてあげる
         if (AddItemOverlay.IsVisible && filePaths != null)
@@ -48,7 +48,13 @@ public partial class MainWindow
         if (filePaths != null) _addItemOverlay_addItemWindowValues.Folders.AddRange(filePaths);
         EditFoldersOverlay_UpdateFolderList();
     }
-    
+    private void AddItemOverlay_Hide()
+    {
+        _addItemOverlay_selectedItem = null;
+        _addItemOverlay_addItemWindowValues.Reset();
+        AddItemOverlay.IsVisible = false;
+    }
+
     private void AddItemOverlay_InitializeAddItemWindowCategories()
     {
         AddItemOverlay_ItemTypeComboBox.Items.Clear();
@@ -61,6 +67,37 @@ public partial class MainWindow
         if (AddItemOverlay_ItemTypeComboBox.Items.Count > 0) AddItemOverlay_ItemTypeComboBox.SelectedIndex = 0;
     }
 
+    private void AddItemOverlay_SetValuesToUi(AddItemOverlayWindowValues addItemWindowValues)
+    {
+        AddItemOverlay_BoothItemTitleTextBox.Text = addItemWindowValues.Title;
+        AddItemOverlay_BoothItemAuthorTextBox.Text = addItemWindowValues.Author;
+    }
+    private void AddItemOverlay_SetValuesFromUi(AddItemOverlayWindowValues addItemWindowValues)
+    {
+        addItemWindowValues.Title = AddItemOverlay_BoothItemTitleTextBox.Text ?? "";
+        addItemWindowValues.Author = AddItemOverlay_BoothItemAuthorTextBox.Text ?? "";
+    }
+    private (ItemType, string) AddItemOverlay_GetCategoryFromItemWindow()
+    {
+        int selectedIndex = AddItemOverlay_ItemTypeComboBox.SelectedIndex;
+
+        // カスタムカテゴリかどうかのチェック(式: ItemTypeの数 - 無効なItemType数 - カスタムカテゴリ)
+        if (selectedIndex >= (Enum.GetValues<ItemType>().Length - CategoryUtils.InvalidItemTypes.Length - 1)) // ここの1はカスタムカテゴリ分
+        {
+            return (ItemType.Custom, AddItemOverlay_ItemTypeComboBox.SelectedItem?.ToString() ?? "");
+        }
+
+        return ((ItemType)selectedIndex, string.Empty);
+    }
+    private bool AddItemOverlay_ValidateAddItemWindowValues()
+    {
+        var validationResult = _addItemOverlay_addItemWindowValues.Validate();
+        if (!validationResult.Item1) Dialog_Show(LocalizationKey.Error.Default, Localizer.Instance[validationResult.Item2]);
+
+        return validationResult.Item1;
+    }
+
+    #region Event Handler
     private async void AddItemOverlay_GetBoothItemData_Click(object? sender, RoutedEventArgs e)
     {
         string boothUrl = AddItemOverlay_BoothLinkTextBox.Text ?? "";
@@ -71,11 +108,11 @@ public partial class MainWindow
             return;
         }
         
-        Main_ShowProgress(Localizer.Instance[LocalizationKey.Processing.Booth.Status.Fetching]);
-        Main_UpdateProgress(0);
+        ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.Booth.Status.Fetching]);
+        ProgressOverlay_Update(0);
         
         BoothItem? boothItem = await _avatarExplorerApp.GetBoothItem(boothUrl);
-        Main_HideProgress();
+        ProgressOverlay_Hide();
 
         if (boothItem == null)
         {
@@ -113,13 +150,11 @@ public partial class MainWindow
 
     private async void AddItemOverlay_EditFolder_Click(object? sender, RoutedEventArgs e)
     {
-        EditFoldersOverlay_UpdateFolderList();
-        EditFoldersOverlay.IsVisible = true;
+        EditFoldersOverlay_Show();
     }
     private void AddItemOverlay_AddCustomCategory_Click(object? sender, RoutedEventArgs e)
     {
-        AddCustomCategory_CustomCategoryTextBox.Text = string.Empty;
-        AddCustomCategoryOverlay.IsVisible = true;
+        AddCustomCategory_Show();
     }
     private void AddItemOverlay_EditSupportedAvatars_Click(object? sender, RoutedEventArgs e)
     {
@@ -153,10 +188,10 @@ public partial class MainWindow
 
         if (_addItemOverlay_selectedItem == null)
         {
-            Main_ShowProgress(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
-            Main_UpdateProgress(0);
+            ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
+            ProgressOverlay_Update(0);
             var (newItem, processingFailedPaths) = await _avatarExplorerApp.AddItem(itemCreationContext);
-            Main_HideProgress();
+            ProgressOverlay_Hide();
 
             if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
             {
@@ -175,53 +210,12 @@ public partial class MainWindow
             Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemEdit]);
         }
 
-        _addItemOverlay_selectedItem = null;
-        _addItemOverlay_addItemWindowValues.Reset();
-        AddItemOverlay.IsVisible = false;
+        AddItemOverlay_Hide();
     }
     
     private void AddItemOverlay_Close_Click(object? sender, RoutedEventArgs e)
-        => AddItemOverlay_CloseInternal();
+        => AddItemOverlay_Hide();
     private void AddItemOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => AddItemOverlay_CloseInternal();
-
-    private void AddItemOverlay_CloseInternal()
-    {
-        _addItemOverlay_selectedItem = null;
-        _addItemOverlay_addItemWindowValues.Reset();
-        AddItemOverlay.IsVisible = false;
-    }
-
-    
-    #region Methods
-    private void AddItemOverlay_SetValuesToUi(AddItemOverlayWindowValues addItemWindowValues)
-    {
-        AddItemOverlay_BoothItemTitleTextBox.Text = addItemWindowValues.Title;
-        AddItemOverlay_BoothItemAuthorTextBox.Text = addItemWindowValues.Author;
-    }
-    private void AddItemOverlay_SetValuesFromUi(AddItemOverlayWindowValues addItemWindowValues)
-    {
-        addItemWindowValues.Title = AddItemOverlay_BoothItemTitleTextBox.Text ?? "";
-        addItemWindowValues.Author = AddItemOverlay_BoothItemAuthorTextBox.Text ?? "";
-    }
-    private (ItemType, string) AddItemOverlay_GetCategoryFromItemWindow()
-    {
-        int selectedIndex = AddItemOverlay_ItemTypeComboBox.SelectedIndex;
-
-        // カスタムカテゴリかどうかのチェック(式: ItemTypeの数 - 無効なItemType数 - カスタムカテゴリ)
-        if (selectedIndex >= (Enum.GetValues<ItemType>().Length - CategoryUtils.InvalidItemTypes.Length - 1)) // ここの1はカスタムカテゴリ分
-        {
-            return (ItemType.Custom, AddItemOverlay_ItemTypeComboBox.SelectedItem?.ToString() ?? "");
-        }
-
-        return ((ItemType)selectedIndex, string.Empty);
-    }
-    private bool AddItemOverlay_ValidateAddItemWindowValues()
-    {
-        var validationResult = _addItemOverlay_addItemWindowValues.Validate();
-        if (!validationResult.Item1) Dialog_Show(LocalizationKey.Error.Default, Localizer.Instance[validationResult.Item2]);
-
-        return validationResult.Item1;
-    }
+        => AddItemOverlay_Hide();
     #endregion
 }

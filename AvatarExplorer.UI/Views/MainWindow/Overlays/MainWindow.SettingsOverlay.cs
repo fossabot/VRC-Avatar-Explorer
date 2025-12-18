@@ -9,30 +9,15 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    private async void SettingsOverlay_OpenFolder_Click(object? sender, RoutedEventArgs e)
+    private void SettingsOverlay_Show()
     {
-        string[]? folders = await StorageService.OpenFolderDialog(this, "フォルダを選択してください", false);
-        if (folders == null || folders.Length == 0) return;
-
-        SettingsOverlay_ItemsFolderPathTextBox.Text = folders[0];
+        SettingsOverlay_SetUiValueFromCurrentSettings();
+        SettingsOverlay.IsVisible = true;
     }
-    
-    private void SettingsOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => SettingsOverlay_CloseInternal();
-    private void SettingsOverlay_Close_Click(object? sender, RoutedEventArgs e)
-        => SettingsOverlay_CloseInternal();
-    
-    private void SettingsOverlay_CloseInternal()
+    private void SettingsOverlay_Hide()
         => SettingsOverlay.IsVisible = false;
-        
-    private void SettingsOverlay_Apply_Click(object? sender, RoutedEventArgs e)
-    {
-        ApplySettingsValues();
-        Main_ReloadCurrentWindow();
-    }
-    
-    #region Methods
-    private void SetUiValueFromCurrentSettings() // 設定画面を読み込んだ時に値をセットするための関数
+
+    private void SettingsOverlay_SetUiValueFromCurrentSettings() // 設定画面を読み込んだ時に値をセットするための関数
     {
         RuntimeSettings runtimeSettings = _avatarExplorerApp.GetRuntimeSettings();
         UserPreferences userPreferences = _userPreferences;
@@ -45,7 +30,7 @@ public partial class MainWindow
         SettingsOverlay_DefaultLanguageComboBox.SelectedIndex = userPreferences.DefaultLanguage;
         SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex = (int)runtimeSettings.ItemSortOrder;
     }
-    private void ApplySettingsValues() // 設定の適用ボタンが押されたときのみ
+    private void SettingsOverlay_ApplySettingsValues() // 設定の適用ボタンが押されたときのみ
     {
         _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? "");
         _avatarExplorerApp.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
@@ -55,15 +40,15 @@ public partial class MainWindow
         _userPreferences.SetLanguage(SettingsOverlay_DefaultLanguageComboBox.SelectedIndex);
         _avatarExplorerApp.SetItemsSortOrder((SortOrder)SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex);
 
-        ApplyPreferenceSettingsToUi();
-        ApplyRuntimeSettingsToUi();
+        SettingsOverlay_ApplyPreferenceSettingsToUi();
+        SettingsOverlay_ApplyRuntimeSettingsToUi();
 
         // 適用時は自動で保存する
         _avatarExplorerApp.SaveRuntimeSettings();
         UserPreferencesService.Save(_userPreferences);
     }
     
-    private void ApplyPreferenceSettingsToUi()
+    private void SettingsOverlay_ApplyPreferenceSettingsToUi()
     {
         Application? currentApplication = Application.Current;
         if (currentApplication != null)
@@ -81,9 +66,27 @@ public partial class MainWindow
         
         Main_LanguageComboBox.SelectedIndex = _userPreferences.DefaultLanguage;
     }
-    private void ApplyRuntimeSettingsToUi()
+    private void SettingsOverlay_ApplyRuntimeSettingsToUi()
     {
         Main_SortOrderComboBox.SelectedIndex = (int)RuntimeSettings.ItemSortOrder;
+    }
+
+    #region Event Handler
+    private async void SettingsOverlay_OpenFolder_Click(object? sender, RoutedEventArgs e)
+    {
+        string[]? folders = await StorageService.OpenFolderDialog(this, "フォルダを選択してください", false);
+        if (folders == null || folders.Length == 0) return;
+
+        SettingsOverlay_ItemsFolderPathTextBox.Text = folders[0];
+    }
+    private void SettingsOverlay_Border_Click(object? sender, RoutedEventArgs e)
+        => SettingsOverlay_Hide();
+    private void SettingsOverlay_Close_Click(object? sender, RoutedEventArgs e)
+        => SettingsOverlay_Hide();
+    private void SettingsOverlay_Apply_Click(object? sender, RoutedEventArgs e)
+    {
+        SettingsOverlay_ApplySettingsValues();
+        Main_ReloadCurrentWindow();
     }
     #endregion
 }

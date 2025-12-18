@@ -38,8 +38,7 @@ public partial class MainWindow
     }
     private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e)
     {
-        SetUiValueFromCurrentSettings();
-        SettingsOverlay.IsVisible = true;
+        SettingsOverlay_Show();
     }
     #endregion
 
@@ -62,11 +61,11 @@ public partial class MainWindow
     }
     private void Main_AddItem_Click(object? sender, RoutedEventArgs e)
     {
-        AddItemOverlay_ShowAddItemWindow();
+        AddItemOverlay_ShowAdd();
     }
     private void Main_ImportData_Click(object? sender, RoutedEventArgs e)
     {
-        SelectImportTypeOverlay.IsVisible = true;
+        SelectImportTypeOverlay_Show();
     }
 
     private void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
@@ -107,7 +106,7 @@ public partial class MainWindow
             .Where(i => !string.IsNullOrEmpty(i) && (Directory.Exists(i) || File.Exists(i)))
             .ToArray()!;
 
-        AddItemOverlay_ShowAddItemWindow(storageItemPaths);
+        AddItemOverlay_ShowAdd(storageItemPaths);
     }
     #endregion
 

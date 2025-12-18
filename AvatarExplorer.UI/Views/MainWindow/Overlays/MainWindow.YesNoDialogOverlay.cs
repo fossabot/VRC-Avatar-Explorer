@@ -15,17 +15,17 @@ public partial class MainWindow
 
         YesNoDialogOverlay.IsVisible = true;
     }
+    private void YesNoDialog_Hide()
+        => YesNoDialogOverlay.IsVisible = false;
+
     private void YesNoDialog_Yes_Click(object? sender, RoutedEventArgs e)
     {
         _yesNoDialog_onYesClick?.Invoke(sender, e);
-        YesNoDialog_CloseInternal();
+        YesNoDialog_Hide();
     }
     private void YesNoDialog_No_Click(object? sender, RoutedEventArgs e)
     {
         _yesNoDialog_onNoClick?.Invoke(sender, e);
-        YesNoDialog_CloseInternal();
+        YesNoDialog_Hide();
     }
-
-    private void YesNoDialog_CloseInternal()
-        => YesNoDialogOverlay.IsVisible = false;
 }

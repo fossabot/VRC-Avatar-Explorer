@@ -10,11 +10,15 @@ namespace AvatarExplorer.UI;
 public partial class MainWindow
 {
     internal readonly List<string> _editTagsOverlay_selectedTags = new();
+
     internal void EditTagsOverlay_Show(List<string>? tags = null)
     {
         EditTagsOverlay.IsVisible = true;
         EditTagsOverlay_InitializeList(tags);
     }
+    internal void EditTagsOverlay_Hide()
+        => EditTagsOverlay.IsVisible = false;
+
     internal void EditTagsOverlay_InitializeList(List<string>? tags = null)
     {
         _editTagsOverlay_selectedTags.Clear();
@@ -23,7 +27,6 @@ public partial class MainWindow
         EditTagsOverlay_RefleshList();
         EditTagsOverlay_ReloadTagList();
     }
-
     internal void EditTagsOverlay_RefleshList()
     {
         EditTagsOverlay_TagComboBox.Items.Clear();
@@ -34,15 +37,6 @@ public partial class MainWindow
             EditTagsOverlay_TagComboBox.Items.Add(new ComboBoxItem() { Content = tag });
         }
     }
-    private void EditTagsOverlay_Tag_Click(object? sender, RoutedEventArgs e)
-    {
-        if (sender is Button button && button.Content is string tag)
-        {
-            _editTagsOverlay_selectedTags.RemoveAll(i => i == tag);
-            EditTagsOverlay_ReloadTagList();
-        }
-    }
-
     internal void EditTagsOverlay_ReloadTagList()
     {
         EditTagsOverlay_TagList.Children.Clear();
@@ -53,6 +47,15 @@ public partial class MainWindow
         }
     }
 
+    #region Event Handler
+    private void EditTagsOverlay_Tag_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Content is string tag)
+        {
+            _editTagsOverlay_selectedTags.RemoveAll(i => i == tag);
+            EditTagsOverlay_ReloadTagList();
+        }
+    }
     private void EditTagsOverlay_TagTextBox_KeyDown(object? sender, KeyEventArgs keyEventArgs)
     {
         if (keyEventArgs.Key == Key.Enter)
@@ -77,14 +80,10 @@ public partial class MainWindow
 
         EditTagsOverlay_TagComboBox.SelectedIndex = -1;
     }
-
-    internal void EditTagsOverlay_CloseInternal()
-        => EditTagsOverlay.IsVisible = false;
-
     private void EditTagsOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
-        => EditTagsOverlay_CloseInternal();
+        => EditTagsOverlay_Hide();
     private void EditTagsOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => EditTagsOverlay_CloseInternal();
+        => EditTagsOverlay_Hide();
     private void EditTagsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
         if (_contextMenu_selectedItem != null)
@@ -93,7 +92,8 @@ public partial class MainWindow
             _contextMenu_selectedItem.Tags.AddRange(_editTagsOverlay_selectedTags);
         }
 
-        EditTagsOverlay_CloseInternal();
+        EditTagsOverlay_Hide();
         Main_ReloadCurrentWindow();
     }
+    #endregion
 }
