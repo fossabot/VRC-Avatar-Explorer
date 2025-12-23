@@ -1,4 +1,5 @@
-﻿using AvatarExplorer.Core.Models.V1;
+﻿using System.Text.Json.Serialization;
+using AvatarExplorer.Core.Models.V1;
 using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Models;
@@ -6,7 +7,10 @@ namespace AvatarExplorer.Core.Models;
 public class CommonAvatar
 {
     public string GroupName { get; set; } = string.Empty;
-    public List<string> Avatars { get; set; } = new List<string>();
+    [JsonInclude] public List<string> Avatars { get; private set; } = new List<string>();
+
+    public void AddAvatars(IEnumerable<string> avatars, bool clear)
+        => ListUtils.Add(Avatars, avatars, clear);
 
     public static CommonAvatar FromV1(CommonAvatarV1 commonAvatar)
     {
@@ -15,7 +19,7 @@ public class CommonAvatar
             GroupName = commonAvatar.Name
         };
 
-        migratedCommonAvatar.Avatars.AddRange(commonAvatar.Avatars);
+        migratedCommonAvatar.AddAvatars(commonAvatar.Avatars, true);
         MigrateUtils.MigrateItemPaths(migratedCommonAvatar.Avatars);
 
         return migratedCommonAvatar;

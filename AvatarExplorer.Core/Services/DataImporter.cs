@@ -58,9 +58,9 @@ internal static class DataImporter
         progress?.Report((LocalizationKey.Processing.Import.Copying, 0, string.Empty));
 
         List<IKonoAssetItem> konoAssetItems = new();
-        konoAssetItems.AddRange((FileSystemService.DeserializeClass<KonoAssetAvatarDatabase>(KonoAssetPath.AvatarsDatabasePath(dataFolderPath)) ?? new()).Data);
-        konoAssetItems.AddRange((FileSystemService.DeserializeClass<KonoAssetWearableDatabase>(KonoAssetPath.AvatarWearablesDatabasePath(dataFolderPath)) ?? new()).Data);
-        konoAssetItems.AddRange((FileSystemService.DeserializeClass<KonoAssetWorldDatabase>(KonoAssetPath.WorldObjectsDatabasePath(dataFolderPath)) ?? new()).Data);
+        ListUtils.Add(konoAssetItems, (FileSystemService.DeserializeClass<KonoAssetAvatarDatabase>(KonoAssetPath.AvatarsDatabasePath(dataFolderPath)) ?? new()).Data, true);
+        ListUtils.Add(konoAssetItems, (FileSystemService.DeserializeClass<KonoAssetWearableDatabase>(KonoAssetPath.AvatarWearablesDatabasePath(dataFolderPath)) ?? new()).Data, false);
+        ListUtils.Add(konoAssetItems, (FileSystemService.DeserializeClass<KonoAssetWorldDatabase>(KonoAssetPath.WorldObjectsDatabasePath(dataFolderPath)) ?? new()).Data, false);
 
         List<Item> items = new();
 

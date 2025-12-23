@@ -13,5 +13,5 @@ public class ItemCreationContext
     public ItemType ItemType { get; set; } = ItemType.Avatar;
     public string CustomCategory { get; set; } = string.Empty;
     public string LocalizedItemTypeName { get; set; } = string.Empty;
-    public List<string> SupportedAvatars { get; set; } = new();
+    public List<string> SupportedAvatars { get; } = new();
 }

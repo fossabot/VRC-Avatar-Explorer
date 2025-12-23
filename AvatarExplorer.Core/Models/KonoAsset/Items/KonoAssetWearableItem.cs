@@ -24,7 +24,7 @@ public class KonoAssetWearableItem : IKonoAssetItem
         migratedItem.ItemPath = $"<sys>{Id}";
         migratedItem.Type = ItemType.Custom;
         migratedItem.CustomCategory = string.IsNullOrEmpty(Category) ? "Wearables" : Category;
-        migratedItem.SupportedAvatars.AddRange(SupportedAvatars);
+        migratedItem.AddSupportedAvatars(SupportedAvatars, true);
 
         return migratedItem;
     }

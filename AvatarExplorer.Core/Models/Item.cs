@@ -21,9 +21,9 @@ public class Item : ISelectableItem
     public string AuthorThumbnmailFileName { get; set; } = string.Empty;
     public ItemType Type { get; set; }
     public string CustomCategory { get; set; } = string.Empty;
-    public List<string> SupportedAvatars { get; set; } = new List<string>();
-    public List<string> ImplementedAvatars { get; set; } = new List<string>();
-    public List<string> Tags { get; set; } = new List<string>();
+    [JsonInclude] public List<string> SupportedAvatars { get; private set; } = new List<string>();
+    [JsonInclude] public List<string> ImplementedAvatars { get; private set; } = new List<string>();
+    [JsonInclude] public List<string> Tags { get; private set; } = new List<string>();
     public string ItemMemo { get; set; } = string.Empty;
     public string CreatedDate { get; set; } = string.Empty;
     public string UpdatedDate { get; set; } = string.Empty;
@@ -33,6 +33,15 @@ public class Item : ISelectableItem
 
     public string GetBoothJsonLink()
         => string.Format(BoothLink.ItemJsonURLFormat, BoothId);
+
+    public void AddSupportedAvatars(IEnumerable<string> avatars, bool clear)
+        => ListUtils.Add(SupportedAvatars, avatars, clear);
+
+    public void AddImplementedAvatars(IEnumerable<string> avatars, bool clear)
+        => ListUtils.Add(ImplementedAvatars, avatars, clear);
+
+    public void AddTags(IEnumerable<string> tags, bool clear)
+        => ListUtils.Add(Tags, tags, clear);
 
     [JsonIgnore]
     internal string SearchIndex { get; private set; } = string.Empty;
@@ -63,8 +72,7 @@ public class Item : ISelectableItem
         Type = itemCreationContext.ItemType;
         CustomCategory = itemCreationContext.CustomCategory;
 
-        SupportedAvatars.Clear();
-        SupportedAvatars.AddRange(itemCreationContext.SupportedAvatars);
+        AddSupportedAvatars(itemCreationContext.SupportedAvatars, true);
 
         return this;
     }
@@ -88,9 +96,9 @@ public class Item : ISelectableItem
             UpdatedDate = item.UpdatedDate,
         };
 
-        migratedItem.SupportedAvatars.AddRange(item.SupportedAvatar);
-        migratedItem.ImplementedAvatars.AddRange(item.ImplementedAvatars);
-        migratedItem.Tags.AddRange(item.Tags);
+        migratedItem.AddSupportedAvatars(item.SupportedAvatar, true);
+        migratedItem.AddImplementedAvatars(item.ImplementedAvatars, true);
+        migratedItem.AddTags(item.Tags, true);
 
         MigrateUtils.MigrateItemPaths(migratedItem.SupportedAvatars);
         MigrateUtils.MigrateItemPaths(migratedItem.ImplementedAvatars);

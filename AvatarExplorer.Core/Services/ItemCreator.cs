@@ -34,8 +34,7 @@ internal static class ItemCreator
             newItem.AuthorThumbnmailFileName = authorThumbnailFileName;
         }
 
-        newItem.SupportedAvatars.Clear();
-        newItem.SupportedAvatars.AddRange(itemCreationContext.SupportedAvatars);
+        newItem.AddSupportedAvatars(itemCreationContext.SupportedAvatars, true);
 
         return (newItem, processingFailedPaths);
     }
