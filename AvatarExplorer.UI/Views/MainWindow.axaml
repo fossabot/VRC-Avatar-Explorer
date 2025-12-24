@@ -92,7 +92,7 @@
 
                     <Grid ColumnDefinitions="85,250,*" RowDefinitions="*,10,*,10,*">
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="フォルダ" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                        <TextBlock x:Name="AddItemOverlay_FolderNamesTextBlock" Grid.Row="0" Grid.Column="1" Text="10件: フォルダ1.zipzipzipzipzipzipzipzipzipzipzpzipzipzipzipzipzip" Margin="10,0,0,0" Width="250" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" FontWeight="Bold"/>
+                        <TextBlock x:Name="AddItemOverlay_FolderNamesTextBlock" Grid.Row="0" Grid.Column="1" Text="何も選択されていません" Margin="10,0,0,0" Width="250" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" FontWeight="Bold"/>
                         <Button Grid.Row="0" Grid.Column="2" Content="編集" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="AddItemOverlay_EditFolder_Click"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="マテリアル" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
@@ -415,7 +415,7 @@
                     <TextBlock x:Name="DialogContent" Text="Content" Foreground="white" FontSize="17" Margin="0,0,0,10" MinWidth="300"/>
 
                     <!-- OKボタン -->
-                    <Button Content="OK" HorizontalAlignment="Right" Click="Dialog_OK_Click" Width="60" HorizontalContentAlignment="Center" FontWeight="Bold"/>
+                    <Button Content="OK" HorizontalAlignment="Right" Click="Dialog_OK_Click" MinWidth="100" Padding="16,6" HorizontalContentAlignment="Center" FontWeight="Bold"/>
                 </StackPanel>
             </Border>
         </Border>
@@ -433,8 +433,8 @@
                     
                     <!-- Yes/Noボタン -->
                     <Grid ColumnDefinitions="Auto,*,Auto" Margin="20,0,20,0">
-                        <Button Content="はい" Grid.Column="0" HorizontalAlignment="Center" Click="YesNoDialog_Yes_Click" Width="60" HorizontalContentAlignment="Center" FontWeight="Bold"/>
-                        <Button Content="いいえ" Grid.Column="2" HorizontalAlignment="Center" Click="YesNoDialog_No_Click" Width="60" HorizontalContentAlignment="Center" FontWeight="Bold"/>
+                        <Button Content="はい" Grid.Column="0" HorizontalAlignment="Center" Click="YesNoDialog_Yes_Click" MinWidth="80" Padding="16,6" HorizontalContentAlignment="Center" FontWeight="Bold"/>
+                        <Button Content="いいえ" Grid.Column="2" HorizontalAlignment="Center" Click="YesNoDialog_No_Click" MinWidth="80" Padding="16,6" HorizontalContentAlignment="Center" FontWeight="Bold"/>
                     </Grid>
                 </StackPanel>
             </Border>

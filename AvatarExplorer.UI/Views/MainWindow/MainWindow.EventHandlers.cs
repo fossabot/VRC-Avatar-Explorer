@@ -19,9 +19,7 @@ public partial class MainWindow
 {
     #region Left Filter
     private void Main_LeftFilter_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        Main_RenderLeftPanel();
-    }
+        => Main_RenderLeftPanel();
     #endregion
 
     #region Main Top Buttons
@@ -37,9 +35,7 @@ public partial class MainWindow
         else Main_RenderRightPanel();
     }
     private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e)
-    {
-        SettingsOverlay_Show();
-    }
+        => SettingsOverlay_Show();
     #endregion
 
     #region Main Bottom Buttons
@@ -60,13 +56,9 @@ public partial class MainWindow
         Main_ReloadCurrentWindow();
     }
     private void Main_AddItem_Click(object? sender, RoutedEventArgs e)
-    {
-        AddItemOverlay_ShowAdd();
-    }
+        => AddItemOverlay_ShowAdd();
     private void Main_ImportData_Click(object? sender, RoutedEventArgs e)
-    {
-        SelectImportTypeOverlay_Show();
-    }
+        => SelectImportTypeOverlay_Show();
 
     private void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
     {
@@ -81,7 +73,7 @@ public partial class MainWindow
         => Main_ExportDataToCsvInternal(false);
     private async void Main_ExportDataToCsvInternal(bool includeImplementedToSupported)
     {
-        string? filePath = await StorageService.SaveFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectSaveFilePath], ".csv");
+        string? filePath = await StorageService.SaveFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectSaveFilePath], "csv");
         if (filePath == null) return;
 
         var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
@@ -93,9 +85,7 @@ public partial class MainWindow
 
     #region Drag and Drop
     private void Main_DragDrop_Enter(object? sender, DragEventArgs e)
-    {
-        e.DragEffects = DragDropEffects.Copy;
-    }
+        => e.DragEffects = DragDropEffects.Copy;
     private void Main_DragDrop_Drop(object? sender, DragEventArgs e)
     {
         IEnumerable<IStorageItem>? storageItems = e.Data.GetFiles();
@@ -112,8 +102,6 @@ public partial class MainWindow
 
     #region Window Closing
     private void Main_Closing(object? sender, WindowClosingEventArgs e)
-    {
-        AvatarExplorerApp.ClearTemp();
-    }
+        => AvatarExplorerApp.ClearTemp();
     #endregion
 }
