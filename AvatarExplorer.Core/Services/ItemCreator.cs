@@ -18,7 +18,6 @@ internal static class ItemCreator
             AuthorId = itemCreationContext.AuthorId,
             BoothId = itemCreationContext.BoothId,
             ItemPath = itemPath,
-            MaterialPath = materialPath,
             Type = itemCreationContext.ItemType,
             CustomCategory = itemCreationContext.CustomCategory
         };

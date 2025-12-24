@@ -165,14 +165,15 @@ public partial class MainWindow
 
         _contextMenu_selectedItem = item;
 
-        _yesNoDialog_onYesClick = ItemButton_ContextMenu_RemoveItem_DialogYes_Click;
-        _yesNoDialog_onNoClick = null;
+        YesNoDialog_onYesClick += ItemButton_ContextMenu_RemoveItem_DialogYes_Click;
 
         YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Remove]); // TODO: Localize
         return Task.CompletedTask;
     }
     private void ItemButton_ContextMenu_RemoveItem_DialogYes_Click(object? sender, RoutedEventArgs e)
     {
+        YesNoDialog_onYesClick -= ItemButton_ContextMenu_RemoveItem_DialogYes_Click;
+
         if (_contextMenu_selectedItem == null) return;
         _avatarExplorerApp.RemoveItem(_contextMenu_selectedItem.ItemPath, true); // TODO: ここのtrueもYesNoダイアログでまた分岐しても良いかも
 

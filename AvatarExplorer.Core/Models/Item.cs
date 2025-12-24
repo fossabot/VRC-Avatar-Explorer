@@ -16,7 +16,6 @@ public class Item : ISelectableItem
     public string AuthorId { get; set; } = string.Empty;
     public int BoothId { get; set; } = -1;
     public string ItemPath { get; set; } = string.Empty;
-    public string MaterialPath { get; set; } = string.Empty;
     public string ThumbnmailFileName { get; set; } = string.Empty;
     public string AuthorThumbnmailFileName { get; set; } = string.Empty;
     public ItemType Type { get; set; }
@@ -86,7 +85,6 @@ public class Item : ISelectableItem
             AuthorId = item.AuthorId,
             BoothId = item.BoothId,
             ItemPath = MigrateUtils.MigrateItemPath(item.ItemPath),
-            MaterialPath = MigrateUtils.MigrateItemPath(item.MaterialPath),
             ThumbnmailFileName = MigrateUtils.MigrateItemPath(item.ImagePath),
             AuthorThumbnmailFileName = MigrateUtils.MigrateItemPath(item.AuthorImageFilePath),
             Type = item.Type,

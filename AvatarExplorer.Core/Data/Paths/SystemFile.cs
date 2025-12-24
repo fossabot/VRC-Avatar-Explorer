@@ -13,4 +13,6 @@ public static class SystemFileName
         public const string Runtime = "runtimeSettings.json";
         public const string Preferences = "preferenceSettings.json";
     }
+
+    public const string Scheme = "VRCAESCHEME";
 }

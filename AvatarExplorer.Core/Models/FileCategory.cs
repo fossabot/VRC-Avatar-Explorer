@@ -24,7 +24,7 @@ public enum FileCategory
     Unitypackage,
 
     [LocalizationKey(LocalizationKey.FileCategory.Material)]
-    Material,
+    Material, // TODO: ファイル名にMaterialが含まれていたらこちらに分類する
 
     Unknown
 }

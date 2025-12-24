@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Interactivity;
+using AvatarExplorer.Core.Data.Links;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
@@ -46,6 +47,19 @@ public partial class MainWindow
         AddItemOverlay.IsVisible = true;
 
         if (filePaths != null) _addItemOverlay_addItemWindowValues.Folders.AddRange(filePaths);
+        EditFoldersOverlay_UpdateFolderList();
+    }
+    private void AddItemOverlay_ShowAdd(LaunchInfo launchInfo)
+    {
+        AddItemOverlay_InitializeAddItemWindowCategories();
+
+        _addItemOverlay_selectedItem = null;
+        _addItemOverlay_addItemWindowValues.Reset();
+        AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
+        AddItemOverlay_BoothLinkTextBox.Text = string.Format(BoothLink.ItemURLWithoutAuthorFormat, launchInfo.AssetId);
+        AddItemOverlay.IsVisible = true;
+
+        _addItemOverlay_addItemWindowValues.Folders.AddRange(launchInfo.AssetDirs);
         EditFoldersOverlay_UpdateFolderList();
     }
     private void AddItemOverlay_Hide()

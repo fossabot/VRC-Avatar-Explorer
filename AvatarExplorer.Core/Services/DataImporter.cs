@@ -6,6 +6,7 @@ using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Models.Booth;
 using AvatarExplorer.Core.Models.KonoAsset.Databases;
+using AvatarExplorer.Core.Models.V1;
 using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Services;
@@ -16,7 +17,7 @@ internal static class DataImporter
     {
         progress?.Report((LocalizationKey.Processing.Import.Copying, 0, string.Empty));
 
-        List<Item> items = ItemDatabaseService.LoadFromV1(SystemPathV1.ItemDatabasePath(dataFolderPath));
+        List<ItemV1> v1Items = FileSystemService.DeserializeClass<List<ItemV1>>(SystemPathV1.ItemDatabasePath(dataFolderPath)) ?? [];
         List<CommonAvatar> commonAvatars = CommonAvatarDatabaseService.LoadFromV1(SystemPathV1.CommonAvatarDatabasePath(dataFolderPath));
 
         progress?.Report((LocalizationKey.Processing.Import.Copying, 10, string.Empty));
@@ -25,11 +26,13 @@ internal static class DataImporter
         progress?.Report((LocalizationKey.Processing.Import.Copying, 20, string.Empty));
         await FileSystemService.CopyDirectory(SystemPathV1.ItemThumbnailsPath(dataFolderPath), SystemPath.ItemThumbnailsPath);
 
+        List<Item> items = new();
+
         // データ移行処理
         int lastPercent = -1;
-        for (int i = 0; i < items.Count; i++)
+        for (int i = 0; i < v1Items.Count; i++)
         {
-            Item item = items[i];
+            ItemV1 item = v1Items[i];
             string LocalizedCategoryName = item.Type == ItemType.Custom ? item.CustomCategory : localizedItemTypesMapping[item.Type];
             string safeItemTitle = ItemUtils.GetSafeTitle(item.Title) ?? Path.GetFileNameWithoutExtension(item.ItemPath);
             string newItemPath = Path.Combine(runtimeSettings.DataRootDirectory, LocalizedCategoryName, safeItemTitle);
@@ -38,9 +41,10 @@ internal static class DataImporter
             await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), item.ItemPath), newItemPath);
             if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), item.MaterialPath), newItemMaterialPath);
 
-            item.ItemPath = newItemPath;
+            item.ItemPath = $"<sys>{Path.GetRelativePath(runtimeSettings.DataRootDirectory, newItemPath)}";
+            items.Add(Item.FromV1(item));
 
-            int percent = 20 + (int)(80.0 * i / items.Count);
+            int percent = 20 + (int)(80.0 * i / v1Items.Count);
             if (percent != lastPercent)
             {
                 lastPercent = percent;

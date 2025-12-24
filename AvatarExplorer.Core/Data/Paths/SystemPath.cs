@@ -21,4 +21,6 @@ public static class SystemPath
 
     public static readonly string RuntimeSettingsFilePath = Path.Join(SettingsFolderPath, SystemFileName.Settings.Runtime);
     public static readonly string UserPreferencesFilePath = Path.Join(SettingsFolderPath, SystemFileName.Settings.Preferences);
+
+    public static readonly string SchemeFilePath = Path.Join(SettingsFolderPath, SystemFileName.Scheme);
 }

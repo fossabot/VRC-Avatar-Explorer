@@ -9,6 +9,7 @@ using Avalonia.Threading;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
+using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Localization;
@@ -70,6 +71,7 @@ public partial class MainWindow : Window
         TODO: アップデータを作る
         */
 
+        InitializeCurrentPath();
         InitializeComponent();
         InitializeLanguageBox();
         InitializeAvatarExplorer();
@@ -77,8 +79,20 @@ public partial class MainWindow : Window
         InitializeNoItemsLabel();
         InitializeUserPreferences();
 
+        // Scheme Check (Only Windows)
+        if (ProcessUtils.IsWindows()) CheckScheme();
+
         Main_RenderLeftPanel();
         Main_RenderRightPanel();
+    }
+
+    public void SetArgs(string[]? args)
+    {
+        if (args?.Length > 0)
+        {
+            LaunchInfo launchInfo = LaunchInfoService.GetLaunchInfo(args[0]);
+            AddItemOverlay_ShowAdd(launchInfo);
+        }
     }
 
     #region Left Panel

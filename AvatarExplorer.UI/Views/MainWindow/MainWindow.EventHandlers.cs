@@ -64,8 +64,8 @@ public partial class MainWindow
     {
         YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Overlay.ExportToCsv.IncludeImplementedToSupported]);
 
-        _yesNoDialog_onYesClick = Main_ExportDataToCsv_DialogYes_Click;
-        _yesNoDialog_onNoClick = Main_ExportDataToCsv_DialogNo_Click;
+        YesNoDialog_onYesClick += Main_ExportDataToCsv_DialogYes_Click;
+        YesNoDialog_onNoClick += Main_ExportDataToCsv_DialogNo_Click;
     }
     private void Main_ExportDataToCsv_DialogYes_Click(object? sender, RoutedEventArgs e)
         => Main_ExportDataToCsvInternal(true);
@@ -73,6 +73,9 @@ public partial class MainWindow
         => Main_ExportDataToCsvInternal(false);
     private async void Main_ExportDataToCsvInternal(bool includeImplementedToSupported)
     {
+        YesNoDialog_onYesClick -= Main_ExportDataToCsv_DialogYes_Click;
+        YesNoDialog_onNoClick -= Main_ExportDataToCsv_DialogNo_Click;
+        
         string? filePath = await StorageService.SaveFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectSaveFilePath], "csv");
         if (filePath == null) return;
 

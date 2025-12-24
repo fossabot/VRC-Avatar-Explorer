@@ -54,7 +54,7 @@ internal static class SearchService
         );
 
         bool matchPath = searchFilter.FolderNames.Count == 0 || SearchUtils.MatchesFilter(
-            [Path.GetFileName(item.ItemPath), Path.GetFileName(item.MaterialPath)], searchFilter.FolderNames,
+            [Path.GetFileName(item.ItemPath)], searchFilter.FolderNames,
             searchFilter.IsOrSearch,
             (target, filter) => target.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
         );
@@ -67,11 +67,9 @@ internal static class SearchService
         else
         {
             string itemPath = ItemUtils.GetItemPath(parentFolder, item.ItemPath);
-            string materialPath = ItemUtils.GetItemPath(parentFolder, item.MaterialPath);
 
             List<string> files = new();
             if (!string.IsNullOrEmpty(itemPath) && Directory.Exists(itemPath)) files.AddRange(FileSystemService.EnumerateFiles(itemPath));
-            if (!string.IsNullOrEmpty(materialPath) && Directory.Exists(materialPath)) files.AddRange(FileSystemService.EnumerateFiles(materialPath));
 
             matchFile = SearchUtils.MatchesFilter(
                 files, searchFilter.FileNames,

@@ -1,8 +1,12 @@
+using System.IO;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Services;
+using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Services;
 
@@ -86,5 +90,73 @@ public partial class MainWindow
             Main_LanguageComboBox.Items.Add(language);
             SettingsOverlay_DefaultLanguageComboBox.Items.Add(language);
         }
+    }
+    private void InitializeCurrentPath()
+    {
+        string? currentDirectory = Path.GetDirectoryName(ProcessUtils.GetCurrentProcessPath());
+        if (currentDirectory != null) Directory.SetCurrentDirectory(currentDirectory);
+    }
+
+    private void CheckScheme()
+    {
+        // TODO: 全体のLocalize
+        if (SchemeService.IsSchemeRegistered())
+        {
+            YesNoDialog_onYesClick += Main_RegisterScheme_Click;
+            YesNoDialog_onNoClick += Main_SkipScheme_Click;
+
+            string? currentInternalSchemePath = SchemeService.GetInternalSchemePath();
+            
+            if (!string.IsNullOrEmpty(currentInternalSchemePath) && !SchemeService.IsSkipped(currentInternalSchemePath) && currentInternalSchemePath != ProcessUtils.GetCurrentProcessPath())
+            {
+                YesNoDialog_Show("確認", "カスタムURLスキームの登録先が変更されているため、再登録しますか？");
+            }
+            else if (string.IsNullOrEmpty(currentInternalSchemePath))
+            {
+                YesNoDialog_Show("確認", "カスタムURLスキームは既に登録されていますが、内部的に未登録です。\n再登録しますか？");
+            }
+        }
+        else
+        {
+            YesNoDialog_onYesClick += Main_RegisterScheme_Click;
+            YesNoDialog_onNoClick += Main_SkipScheme_Click;
+
+            YesNoDialog_Show("カスタムURLスキーム登録", $"カスタムURLスキームを登録しますか？\n\n登録すると、ブラウザからこのソフトを起動できます。\n登録しない場合はURLスキームでの起動はできませんが、通常の起動は可能です。");
+        }
+    }
+
+    // TODO: ファイルを分ける
+
+    private void Main_RegisterScheme_Click(object? s, RoutedEventArgs e)
+    {
+        Main_ResetSchemeDialogEvents();
+
+        if (!SchemeService.IsRunAsAdmin())
+        {
+            YesNoDialog_onYesClick += Main_RestartAsAdmin_Click;
+            YesNoDialog_Show("確認", "カスタムURLスキームの登録には管理者権限が必要です。\n再起動して管理者権限で起動しますか？");
+        }
+        else
+        {
+            SchemeService.RegisterScheme();
+            Dialog_Show("成功", "カスタムURLスキームの登録が完了しました");
+        }
+    }
+    private void Main_SkipScheme_Click(object? s, RoutedEventArgs e)
+    {
+        Main_ResetSchemeDialogEvents();
+
+        SchemeService.MarkSchemeSkipped();
+        Dialog_Show("成功", "カスタムURLスキームの登録をスキップしました");
+    }
+    private void Main_ResetSchemeDialogEvents()
+    {
+        YesNoDialog_onYesClick -= Main_RegisterScheme_Click;
+        YesNoDialog_onNoClick -= Main_SkipScheme_Click;
+    }
+    private void Main_RestartAsAdmin_Click(object? s, RoutedEventArgs e)
+    {
+        YesNoDialog_onYesClick -= Main_RestartAsAdmin_Click;
+        SchemeService.RestartAsAdmin();
     }
 }

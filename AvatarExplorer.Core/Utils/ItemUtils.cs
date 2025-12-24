@@ -1,6 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using AvatarExplorer.Core.Models;
-using AvatarExplorer.Core.Services;
 
 namespace AvatarExplorer.Core.Utils;
 
@@ -39,7 +39,20 @@ public static partial class ItemUtils
             safeTitle = safeTitle.Replace(invalidChar, '_');
         }
 
-        return string.IsNullOrEmpty(safeTitle) ? null : safeTitle;
+        return string.IsNullOrEmpty(safeTitle) ? null : RemoveEmoji(safeTitle); // 絵文字は削除する
+    }
+
+    private static string RemoveEmoji(string input)
+    {
+        StringBuilder builder = new();
+
+        foreach (Rune rune in input.EnumerateRunes())
+        {
+            if (!Rune.IsSymbol(rune))
+                builder.Append(rune.ToString());
+        }
+
+        return builder.ToString();
     }
     
     internal static Dictionary<string, string> GetAvatarNameMaps(List<Item> items)

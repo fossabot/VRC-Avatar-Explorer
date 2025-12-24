@@ -5,8 +5,8 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    internal EventHandler<RoutedEventArgs>? _yesNoDialog_onYesClick = null;
-    internal EventHandler<RoutedEventArgs>? _yesNoDialog_onNoClick = null;
+    internal event EventHandler<RoutedEventArgs>? YesNoDialog_onYesClick = null;
+    internal event EventHandler<RoutedEventArgs>? YesNoDialog_onNoClick = null;
 
     private void YesNoDialog_Show(string title, string content)
     {
@@ -20,12 +20,12 @@ public partial class MainWindow
 
     private void YesNoDialog_Yes_Click(object? sender, RoutedEventArgs e)
     {
-        _yesNoDialog_onYesClick?.Invoke(sender, e);
         YesNoDialog_Hide();
+        YesNoDialog_onYesClick?.Invoke(sender, e);
     }
     private void YesNoDialog_No_Click(object? sender, RoutedEventArgs e)
     {
-        _yesNoDialog_onNoClick?.Invoke(sender, e);
         YesNoDialog_Hide();
+        YesNoDialog_onNoClick?.Invoke(sender, e);
     }
 }

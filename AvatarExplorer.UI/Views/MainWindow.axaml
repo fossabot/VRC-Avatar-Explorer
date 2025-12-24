@@ -90,14 +90,10 @@
                         <TextBlock Text="アイテムの追加" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
                     </Grid>
 
-                    <Grid ColumnDefinitions="85,250,*" RowDefinitions="*,10,*,10,*">
+                    <Grid ColumnDefinitions="85,250,*" RowDefinitions="*,10,*">
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="フォルダ" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
                         <TextBlock x:Name="AddItemOverlay_FolderNamesTextBlock" Grid.Row="0" Grid.Column="1" Text="何も選択されていません" Margin="10,0,0,0" Width="250" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" FontWeight="Bold"/>
                         <Button Grid.Row="0" Grid.Column="2" Content="編集" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="AddItemOverlay_EditFolder_Click"/>
-
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="マテリアル" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Watermark="アイテムのマテリアルパス" Margin="10,0,0,0" Width="250" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        <Button Grid.Row="2" Grid.Column="2" Content="フォルダを開く" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Center"/>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Booth URL" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
                         <TextBox x:Name="AddItemOverlay_BoothLinkTextBox" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Watermark="https://booth.pm/ja/items/123456" HorizontalAlignment="Stretch" Margin="10,0,0,0" VerticalAlignment="Center"/>
@@ -120,7 +116,7 @@
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="タイプ" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
                         <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" Spacing="10">
                             <ComboBox x:Name="AddItemOverlay_ItemTypeComboBox" MinWidth="190" SelectedIndex="0"/>
-                            <Button Content="追加する" MinWidth="100" HorizontalContentAlignment="Center" Click="AddItemOverlay_AddCustomCategory_Click"/>
+                            <Button Content="追加する" MinWidth="100" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="AddItemOverlay_AddCustomCategory_Click"/>
                         </StackPanel>
 
                         <TextBlock Grid.Row="6" Grid.Column="0" Text="対応アバター" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
