@@ -5,9 +5,9 @@ namespace AvatarExplorer.Core.Services;
 public static class SingleInstanceService
 {
     public static event EventHandler<string[]>? OnPipeMessageReceived = null;
-    
+
     private const string PipeName = "AvatarExplorerV2.Pipe";
-    private const char ArgsSeparaterChar = '|';
+    private const char ArgumentSeparator = '|';
 
     public static void SendToServer(string[] args)
     {
@@ -17,7 +17,7 @@ public static class SingleInstanceService
             client.Connect(1000);
 
             using StreamWriter writer = new(client) { AutoFlush = true };
-            writer.WriteLine(string.Join(ArgsSeparaterChar, args));
+            writer.WriteLine(string.Join(ArgumentSeparator, args));
         }
         catch
         {
@@ -38,7 +38,7 @@ public static class SingleInstanceService
                 using StreamReader reader = new(server);
                 string? message = await reader.ReadLineAsync() ?? string.Empty;
 
-                OnPipeMessageReceived?.Invoke(null, message.Split(ArgsSeparaterChar));
+                OnPipeMessageReceived?.Invoke(null, message.Split(ArgumentSeparator));
             }
         });
     }
