@@ -78,6 +78,7 @@ public partial class MainWindow : Window
         InitializeContextMenuHandlers();
         InitializeNoItemsLabel();
         InitializeUserPreferences();
+        InitializePipeServer();
 
         // Scheme Check (Only Windows)
         if (ProcessUtils.IsWindows()) CheckScheme();

@@ -2,6 +2,7 @@ using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.Threading;
 using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
@@ -95,6 +96,19 @@ public partial class MainWindow
     {
         string? currentDirectory = Path.GetDirectoryName(ProcessUtils.GetCurrentProcessPath());
         if (currentDirectory != null) Directory.SetCurrentDirectory(currentDirectory);
+    }
+    private void InitializePipeServer()
+    {
+        SingleInstanceService.OnPipeMessageReceived += (_, args) => OnPipeMessageReceived(args);
+        SingleInstanceService.StartServer();
+    }
+    private void OnPipeMessageReceived(string[] args)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            Activate();
+            SetArgs(args);
+        });
     }
 
     private void CheckScheme()
