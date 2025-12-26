@@ -24,4 +24,7 @@ public class CommonAvatar
 
         return migratedCommonAvatar;
     }
+
+    public void SetAvatars(IEnumerable<string> avatars, bool clear)
+        => ListUtils.Add(Avatars, avatars, clear);
 }

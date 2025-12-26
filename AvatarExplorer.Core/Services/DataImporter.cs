@@ -64,12 +64,21 @@ internal static class DataImporter
             IEnumerable<string> supportedAvatars = item.SupportedAvatars
                 .Select(a => pathMapping.TryGetValue(a, out string? value) ? value : a)
                 .ToArray();
-            item.AddSupportedAvatars(supportedAvatars, true);
+            item.SetSupportedAvatars(supportedAvatars, true);
 
             IEnumerable<string> implementedAvatars = item.ImplementedAvatars
                 .Select(a => pathMapping.TryGetValue(a, out string? value) ? value : a)
                 .ToArray();
-            item.AddImplementedAvatars(implementedAvatars, true);
+            item.SetImplementedAvatars(implementedAvatars, true);
+        }
+
+        // 共通素体のパスを更新する
+        foreach (CommonAvatar commonAvatar in commonAvatars)
+        {
+            IEnumerable<string> avatarPaths = commonAvatar.Avatars
+                .Select(a => pathMapping.TryGetValue(a, out string? value) ? value : a)
+                .ToArray();
+            commonAvatar.SetAvatars(avatarPaths, true);
         }
 
         progress?.Report((LocalizationKey.Processing.Import.Copying, 100, string.Empty));

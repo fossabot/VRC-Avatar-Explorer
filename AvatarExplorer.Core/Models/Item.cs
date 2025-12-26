@@ -33,13 +33,13 @@ public class Item : ISelectableItem
     public string GetBoothJsonLink()
         => string.Format(BoothLink.ItemJsonURLFormat, BoothId);
 
-    public void AddSupportedAvatars(IEnumerable<string> avatars, bool clear)
+    public void SetSupportedAvatars(IEnumerable<string> avatars, bool clear)
         => ListUtils.Add(SupportedAvatars, avatars, clear);
 
-    public void AddImplementedAvatars(IEnumerable<string> avatars, bool clear)
+    public void SetImplementedAvatars(IEnumerable<string> avatars, bool clear)
         => ListUtils.Add(ImplementedAvatars, avatars, clear);
 
-    public void AddTags(IEnumerable<string> tags, bool clear)
+    public void SetTags(IEnumerable<string> tags, bool clear)
         => ListUtils.Add(Tags, tags, clear);
 
     [JsonIgnore]
@@ -71,7 +71,7 @@ public class Item : ISelectableItem
         Type = itemCreationContext.ItemType;
         CustomCategory = itemCreationContext.CustomCategory;
 
-        AddSupportedAvatars(itemCreationContext.SupportedAvatars, true);
+        SetSupportedAvatars(itemCreationContext.SupportedAvatars, true);
 
         return this;
     }
@@ -94,9 +94,9 @@ public class Item : ISelectableItem
             UpdatedDate = item.UpdatedDate,
         };
 
-        migratedItem.AddSupportedAvatars(item.SupportedAvatar, true);
-        migratedItem.AddImplementedAvatars(item.ImplementedAvatars, true);
-        migratedItem.AddTags(item.Tags, true);
+        migratedItem.SetSupportedAvatars(item.SupportedAvatar, true);
+        migratedItem.SetImplementedAvatars(item.ImplementedAvatars, true);
+        migratedItem.SetTags(item.Tags, true);
 
         return migratedItem;
     }
