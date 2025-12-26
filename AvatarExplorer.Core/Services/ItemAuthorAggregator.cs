@@ -7,15 +7,8 @@ internal static class ItemAuthorAggregator
     internal static IReadOnlyList<ItemCountInfo> Aggregate(IReadOnlyList<Item> items)
     {
         return items
-            .GroupBy(item => new { item.Author, item.AuthorThumbnmailFileName })
-            .Select(g => new ItemCountInfo(
-                new Author
-                {
-                    Name = g.Key.Author,
-                    AuthorThumbnailFileName = g.Key.AuthorThumbnmailFileName
-                },
-                g.Count()
-            ))
+            .GroupBy(i => new { i.Author, i.AuthorThumbnmailFileName })
+            .Select(i => new ItemCountInfo(new Author { Name = i.Key.Author, AuthorThumbnailFileName = i.Key.AuthorThumbnmailFileName }, i.Count()))
             .ToList();
     }
 }
