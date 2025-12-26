@@ -97,6 +97,16 @@ public static class LocalizationKey
                 public const string IncludeImplementedToSupported = "UI.Overlay.ExportToCsv.IncludeImplementedToSupported";
             }
         }
+
+        public static class Scheme
+        {
+            public const string PathChanged = "UI.Scheme.PathChanged";
+            public const string RegisterAgain = "UI.Scheme.RegisterAgain";
+            public const string Register = "UI.Scheme.Register";
+            public const string RestartAsAdmin = "UI.Scheme.RestartAsAdmin";
+            public const string RegisterSuccess = "UI.Scheme.RegisterSuccess";
+            public const string RegisterSkipped = "UI.Scheme.RegisterSkipped";
+        }
     }
 
     public static class FileCategory

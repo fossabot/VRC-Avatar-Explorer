@@ -167,7 +167,7 @@ public partial class MainWindow
 
         YesNoDialog_onYesClick += ItemButton_ContextMenu_RemoveItem_DialogYes_Click;
 
-        YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Remove]); // TODO: Localize
+        YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Remove]);
         return Task.CompletedTask;
     }
     private void ItemButton_ContextMenu_RemoveItem_DialogYes_Click(object? sender, RoutedEventArgs e)

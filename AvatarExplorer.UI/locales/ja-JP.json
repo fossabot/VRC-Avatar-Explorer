@@ -48,6 +48,13 @@
 
     "UI.Overlay.ExportToCsv.IncludeImplementedToSupported": "対応アバターの欄に共通素体アバターを含めますか？",
 
+    "UI.Scheme.PathChanged": "カスタムURLスキームの登録先が変更されているため、再登録しますか？",
+    "UI.Scheme.RegisterAgain": "カスタムURLスキームは既に登録されていますが、内部的に未登録です。\n再登録しますか？",
+    "UI.Scheme.Register": "カスタムURLスキームを登録しますか？\n\n登録すると、ブラウザからこのソフトを起動できます。\n登録しない場合はURLスキームでの起動はできませんが、通常の起動は可能です.",
+    "UI.Scheme.RestartAsAdmin": "カスタムURLスキームの登録には管理者権限が必要です。\n再起動して管理者権限で起動しますか？",
+    "UI.Scheme.RegisterSuccess": "カスタムURLスキームの登録に成功しました",
+    "UI.Scheme.RegisterSkipped": "カスタムURLスキームの登録をスキップしました",
+
     "FileCategory.Modification": "改変用ファイル",
     "FileCategory.Texture": "テクスチャ",
     "FileCategory.Document": "ドキュメント",

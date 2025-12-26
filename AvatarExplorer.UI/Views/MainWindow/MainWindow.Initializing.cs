@@ -113,7 +113,6 @@ public partial class MainWindow
 
     private void CheckScheme()
     {
-        // TODO: 全体のLocalize
         if (SchemeService.IsSchemeRegistered())
         {
             YesNoDialog_onYesClick += Main_RegisterScheme_Click;
@@ -123,11 +122,11 @@ public partial class MainWindow
             
             if (!string.IsNullOrEmpty(currentInternalSchemePath) && !SchemeService.IsSkipped(currentInternalSchemePath) && currentInternalSchemePath != ProcessUtils.GetCurrentProcessPath())
             {
-                YesNoDialog_Show("確認", "カスタムURLスキームの登録先が変更されているため、再登録しますか？");
+                YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.PathChanged]);
             }
             else if (string.IsNullOrEmpty(currentInternalSchemePath))
             {
-                YesNoDialog_Show("確認", "カスタムURLスキームは既に登録されていますが、内部的に未登録です。\n再登録しますか？");
+                YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.RegisterAgain]);
             }
         }
         else
@@ -135,11 +134,9 @@ public partial class MainWindow
             YesNoDialog_onYesClick += Main_RegisterScheme_Click;
             YesNoDialog_onNoClick += Main_SkipScheme_Click;
 
-            YesNoDialog_Show("カスタムURLスキーム登録", $"カスタムURLスキームを登録しますか？\n\n登録すると、ブラウザからこのソフトを起動できます。\n登録しない場合はURLスキームでの起動はできませんが、通常の起動は可能です。");
+            YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.Register]);
         }
     }
-
-    // TODO: ファイルを分ける
 
     private void Main_RegisterScheme_Click(object? s, RoutedEventArgs e)
     {
@@ -148,12 +145,12 @@ public partial class MainWindow
         if (!SchemeService.IsRunAsAdmin())
         {
             YesNoDialog_onYesClick += Main_RestartAsAdmin_Click;
-            YesNoDialog_Show("確認", "カスタムURLスキームの登録には管理者権限が必要です。\n再起動して管理者権限で起動しますか？");
+            YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.RestartAsAdmin]);
         }
         else
         {
             SchemeService.RegisterScheme();
-            Dialog_Show("成功", "カスタムURLスキームの登録が完了しました");
+            Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Scheme.RegisterSuccess]);
         }
     }
     private void Main_SkipScheme_Click(object? s, RoutedEventArgs e)
@@ -161,7 +158,7 @@ public partial class MainWindow
         Main_ResetSchemeDialogEvents();
 
         SchemeService.MarkSchemeSkipped();
-        Dialog_Show("成功", "カスタムURLスキームの登録をスキップしました");
+        Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Scheme.RegisterSkipped]);
     }
     private void Main_ResetSchemeDialogEvents()
     {
