@@ -18,7 +18,7 @@ internal static class DataImporter
         progress?.Report((LocalizationKey.Processing.Import.Copying, 0, string.Empty));
 
         List<ItemV1> v1Items = FileSystemService.DeserializeClass<List<ItemV1>>(SystemPathV1.ItemDatabasePath(dataFolderPath)) ?? [];
-        List<CommonAvatar> commonAvatars = CommonAvatarDatabaseService.LoadFromV1(SystemPathV1.CommonAvatarDatabasePath(dataFolderPath));
+        List<CommonAvatarV1> v1CommonAvatars = FileSystemService.DeserializeClass<List<CommonAvatarV1>>(SystemPathV1.CommonAvatarDatabasePath(dataFolderPath)) ?? [];
 
         progress?.Report((LocalizationKey.Processing.Import.Copying, 10, string.Empty));
         await FileSystemService.CopyDirectory(SystemPathV1.AuthorThumbnailsPath(dataFolderPath), SystemPath.AuthorThumbnailsPath);
@@ -71,6 +71,9 @@ internal static class DataImporter
                 .ToArray();
             item.SetImplementedAvatars(implementedAvatars, true);
         }
+
+        List<CommonAvatar> commonAvatars = new();
+        ListUtils.Add(commonAvatars, v1CommonAvatars.Select(CommonAvatar.FromV1), true);
 
         // 共通素体のパスを更新する
         foreach (CommonAvatar commonAvatar in commonAvatars)

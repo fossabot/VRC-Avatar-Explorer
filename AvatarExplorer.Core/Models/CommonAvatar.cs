@@ -9,7 +9,7 @@ public class CommonAvatar
     public string GroupName { get; set; } = string.Empty;
     [JsonInclude] public List<string> Avatars { get; private set; } = new List<string>();
 
-    public void AddAvatars(IEnumerable<string> avatars, bool clear)
+    public void SetAvatars(IEnumerable<string> avatars, bool clear)
         => ListUtils.Add(Avatars, avatars, clear);
 
     public static CommonAvatar FromV1(CommonAvatarV1 commonAvatar)
@@ -19,12 +19,8 @@ public class CommonAvatar
             GroupName = commonAvatar.Name
         };
 
-        migratedCommonAvatar.AddAvatars(commonAvatar.Avatars, true);
-        MigrateUtils.MigrateItemPaths(migratedCommonAvatar.Avatars);
+        migratedCommonAvatar.SetAvatars(commonAvatar.Avatars, true);
 
         return migratedCommonAvatar;
     }
-
-    public void SetAvatars(IEnumerable<string> avatars, bool clear)
-        => ListUtils.Add(Avatars, avatars, clear);
 }
