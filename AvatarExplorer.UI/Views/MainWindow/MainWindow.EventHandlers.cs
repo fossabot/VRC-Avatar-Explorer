@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -67,11 +68,11 @@ public partial class MainWindow
         YesNoDialog_onYesClick += Main_ExportDataToCsv_DialogYes_Click;
         YesNoDialog_onNoClick += Main_ExportDataToCsv_DialogNo_Click;
     }
-    private void Main_ExportDataToCsv_DialogYes_Click(object? sender, RoutedEventArgs e)
-        => Main_ExportDataToCsvInternal(true);
-    private void Main_ExportDataToCsv_DialogNo_Click(object? sender, RoutedEventArgs e)
-        => Main_ExportDataToCsvInternal(false);
-    private async void Main_ExportDataToCsvInternal(bool includeImplementedToSupported)
+    private async void Main_ExportDataToCsv_DialogYes_Click(object? sender, RoutedEventArgs e)
+        => await Main_ExportDataToCsvInternal(true);
+    private async void Main_ExportDataToCsv_DialogNo_Click(object? sender, RoutedEventArgs e)
+        => await Main_ExportDataToCsvInternal(false);
+    private async Task Main_ExportDataToCsvInternal(bool includeImplementedToSupported)
     {
         YesNoDialog_onYesClick -= Main_ExportDataToCsv_DialogYes_Click;
         YesNoDialog_onNoClick -= Main_ExportDataToCsv_DialogNo_Click;

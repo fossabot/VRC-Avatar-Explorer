@@ -106,7 +106,7 @@
                         <Button Grid.Column="2" x:Name="AddItemOverlay_ResetBoothItemDataButton" Content="情報をリセット" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Click="AddItemOverlay_ResetBoothItemData_Click" IsVisible="False"/>
                     </Grid>
 
-                    <Grid ColumnDefinitions="85,10,*" RowDefinitions="*,10,*,10,*,10,*">
+                    <Grid ColumnDefinitions="85,10,325" RowDefinitions="*,10,*,10,*,10,*">
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="タイトル" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
                         <TextBox x:Name="AddItemOverlay_BoothItemTitleTextBox" Grid.Row="0" Grid.Column="2" Watermark="タイトル未取得" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
 

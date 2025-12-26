@@ -20,7 +20,6 @@ internal class AddItemOverlayWindowValues
     internal void Reset()
     {
         Folders.Clear();
-        MaterialFolder = string.Empty;
         Title = string.Empty;
         Author = string.Empty;
         BoothAuthorId = string.Empty;
@@ -30,6 +29,24 @@ internal class AddItemOverlayWindowValues
         ItemType = ItemType.Avatar;
         SupportedAvatars.Clear();
     }
+
+    internal void ResetBoothInfo()
+    {
+        Title = string.Empty;
+        Author = string.Empty;
+        BoothAuthorId = string.Empty;
+        BoothThumbnailUrl = string.Empty;
+        BoothAuthorThumbnailUrl = string.Empty;
+        BoothId = -1;
+    }
+
+    internal bool IsBoothInfoEmpty
+        => Title == string.Empty
+        && Author == string.Empty
+        && BoothAuthorId == string.Empty
+        && BoothThumbnailUrl == string.Empty
+        && BoothAuthorThumbnailUrl == string.Empty
+        && BoothId == -1;
 
     internal void FromItem(Item item)
     {

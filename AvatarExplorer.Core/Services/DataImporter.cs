@@ -28,20 +28,26 @@ internal static class DataImporter
 
         List<Item> items = new();
 
+        Dictionary<string, string> pathMapping = new();
+
         // データ移行処理
         int lastPercent = -1;
         for (int i = 0; i < v1Items.Count; i++)
         {
             ItemV1 item = v1Items[i];
+            string previousItemPath = item.ItemPath;
+
             string LocalizedCategoryName = item.Type == ItemType.Custom ? item.CustomCategory : localizedItemTypesMapping[item.Type];
             string safeItemTitle = ItemUtils.GetSafeTitle(item.Title) ?? Path.GetFileNameWithoutExtension(item.ItemPath);
             string newItemPath = Path.Combine(runtimeSettings.DataRootDirectory, LocalizedCategoryName, safeItemTitle);
             string newItemMaterialPath = Path.Combine(newItemPath, "AE_Materials");
 
-            await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), item.ItemPath), newItemPath);
-            if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), item.MaterialPath), newItemMaterialPath);
+            // await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.ItemPath)), newItemPath);
+            // if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.MaterialPath)), newItemMaterialPath);
 
             item.ItemPath = $"<sys>{Path.GetRelativePath(runtimeSettings.DataRootDirectory, newItemPath)}";
+            pathMapping[previousItemPath] = item.ItemPath;
+            
             items.Add(Item.FromV1(item));
 
             int percent = 20 + (int)(80.0 * i / v1Items.Count);
@@ -50,6 +56,20 @@ internal static class DataImporter
                 lastPercent = percent;
                 progress?.Report((LocalizationKey.Processing.Import.Copying, percent, string.Empty));
             }
+        }
+
+        // SupportedAvatarsとImplementedAvatarsのパスを更新する
+        foreach (Item item in items)
+        {
+            IEnumerable<string> supportedAvatars = item.SupportedAvatars
+                .Select(a => pathMapping.TryGetValue(a, out string? value) ? value : a)
+                .ToArray();
+            item.AddSupportedAvatars(supportedAvatars, true);
+
+            IEnumerable<string> implementedAvatars = item.ImplementedAvatars
+                .Select(a => pathMapping.TryGetValue(a, out string? value) ? value : a)
+                .ToArray();
+            item.AddImplementedAvatars(implementedAvatars, true);
         }
 
         progress?.Report((LocalizationKey.Processing.Import.Copying, 100, string.Empty));

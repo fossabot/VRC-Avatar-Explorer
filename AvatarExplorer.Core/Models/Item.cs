@@ -84,7 +84,7 @@ public class Item : ISelectableItem
             Author = item.AuthorName,
             AuthorId = item.AuthorId,
             BoothId = item.BoothId,
-            ItemPath = MigrateUtils.MigrateItemPath(item.ItemPath),
+            ItemPath = item.ItemPath,
             ThumbnmailFileName = MigrateUtils.MigrateItemPath(item.ImagePath),
             AuthorThumbnmailFileName = MigrateUtils.MigrateItemPath(item.AuthorImageFilePath),
             Type = item.Type,
@@ -97,9 +97,6 @@ public class Item : ISelectableItem
         migratedItem.AddSupportedAvatars(item.SupportedAvatar, true);
         migratedItem.AddImplementedAvatars(item.ImplementedAvatars, true);
         migratedItem.AddTags(item.Tags, true);
-
-        MigrateUtils.MigrateItemPaths(migratedItem.SupportedAvatars);
-        MigrateUtils.MigrateItemPaths(migratedItem.ImplementedAvatars);
 
         return migratedItem;
     }

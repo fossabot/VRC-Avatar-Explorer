@@ -91,8 +91,10 @@ public partial class MainWindow : Window
     {
         if (args?.Length > 0)
         {
+            if (string.IsNullOrEmpty(args[0])) return;
+
             LaunchInfo launchInfo = LaunchInfoService.GetLaunchInfo(args[0]);
-            AddItemOverlay_ShowAdd(launchInfo);
+            if (launchInfo.AssetDirs.Length != 0 && !string.IsNullOrEmpty(launchInfo.AssetId)) AddItemOverlay_ShowAdd(launchInfo);
         }
     }
 

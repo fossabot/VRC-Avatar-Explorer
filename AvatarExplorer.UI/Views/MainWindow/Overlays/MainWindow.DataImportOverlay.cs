@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Interactivity;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
@@ -17,7 +18,7 @@ public partial class MainWindow
     private void SelectImportTypeOverlay_Hide()
         => SelectImportTypeOverlay.IsVisible = false;
 
-    private async void SelectImportTypeOverlay_DataImportInternal(DataImportType dataImportType)
+    private async Task SelectImportTypeOverlay_DataImportInternal(DataImportType dataImportType)
     {
         string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], false);
         if (folders == null || folders.Length == 0) return;
@@ -42,7 +43,7 @@ public partial class MainWindow
         });
 
         if (dataImportType == DataImportType.V1) await _avatarExplorerApp.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
-        else if (dataImportType == DataImportType.KonoAsset)  await _avatarExplorerApp.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progress);
+        else if (dataImportType == DataImportType.KonoAsset) await _avatarExplorerApp.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progress);
 
         Main_ReloadCurrentWindow();
     }
@@ -52,9 +53,9 @@ public partial class MainWindow
         => SelectImportTypeOverlay_Hide();
     private void SelectImportTypeOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
         => SelectImportTypeOverlay_Hide();
-    private void SelectImportTypeOverlay_FromV1_Click(object? sender, RoutedEventArgs e)
-        => SelectImportTypeOverlay_DataImportInternal(DataImportType.V1);
-    private void SelectImportTypeOverlay_FromKonoAsset_Click(object? sender, RoutedEventArgs e)
-        => SelectImportTypeOverlay_DataImportInternal(DataImportType.KonoAsset);
+    private async void SelectImportTypeOverlay_FromV1_Click(object? sender, RoutedEventArgs e)
+        => await SelectImportTypeOverlay_DataImportInternal(DataImportType.V1);
+    private async void SelectImportTypeOverlay_FromKonoAsset_Click(object? sender, RoutedEventArgs e)
+        => await SelectImportTypeOverlay_DataImportInternal(DataImportType.KonoAsset);
     #endregion
 }

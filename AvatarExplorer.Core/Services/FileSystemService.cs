@@ -160,13 +160,12 @@ public static class FileSystemService
     #endregion
 
     #region Extract Item Folders
-    internal static async Task<(string, string, List<string>)> ExtractItemFolders(ItemCreationContext itemCreationContext, string dataRootDirectory, string destinationDirectory, bool removeOriginal = false)
+    internal static async Task<(string, List<string>)> ExtractItemFolders(ItemCreationContext itemCreationContext, string dataRootDirectory, string destinationDirectory, bool removeOriginal = false)
     {
         List<string> processingFailedPaths = new();
 
         string parentFolder = string.Empty;
         string othersFolder = string.Empty;
-        string materialsFolder = string.Empty;
     
         for (int i = 0; i < itemCreationContext.Folders.Count; i++)
         {
@@ -183,7 +182,6 @@ public static class FileSystemService
                 {
                     parentFolder = extractedFolderPath;
                     othersFolder = Path.Combine(parentFolder, "AE_Others");
-                    materialsFolder = Path.Combine(parentFolder, "AE_Materials");
                 }
             }
             catch
@@ -192,29 +190,12 @@ public static class FileSystemService
             }
         }
 
-        try
-        {
-            if (!string.IsNullOrEmpty(parentFolder) && !string.IsNullOrEmpty(itemCreationContext.MaterialFolder))
-            {
-                await ExtractItemFoldersInternal(
-                    itemCreationContext.MaterialFolder,
-                    materialsFolder,
-                    Path.GetFileNameWithoutExtension(itemCreationContext.MaterialFolder),
-                    removeOriginal
-                );
-            }
-        }
-        catch
-        {
-            processingFailedPaths.Add(itemCreationContext.MaterialFolder);
-        }
-
         if (string.IsNullOrEmpty(parentFolder)) // 展開全てに失敗した時
         {
-            return (string.Empty, string.Empty, processingFailedPaths);
+            return (string.Empty, processingFailedPaths);
         }
 
-        return ($"<sys>{Path.GetRelativePath(dataRootDirectory, parentFolder)}", $"<sys>{Path.GetRelativePath(dataRootDirectory, materialsFolder)}", processingFailedPaths);
+        return ($"<sys>{Path.GetRelativePath(dataRootDirectory, parentFolder)}", processingFailedPaths);
     }
     internal static async Task<List<string>> ExtractItemFolders(string parentFolderPath, string[] folders, bool removeOriginal = false)
     {
@@ -283,8 +264,14 @@ public static class FileSystemService
 
         if (removeOriginalFile)
         {
-            try { File.Delete(filePath); }
-            catch{ }
+            try
+            {
+                File.Delete(filePath);
+            }
+            catch
+            {
+                // Ignored
+            }
         }
 
         return (extractedFolderPath, false);
@@ -399,9 +386,9 @@ public static class FileSystemService
                         progress?.Report((LocalizationKey.Processing.DirectoryCopy.Copying, percent, string.Empty));
                     }
                 }
-                catch (OperationCanceledException)
+                catch
                 {
-                    throw;
+                    // Ignored
                 }
             });
         });

@@ -8,7 +8,7 @@ internal static class ItemCreator
 {
     internal static async Task<(Item? newItem, List<string> processingFailedPaths)> FromItemCreationContext(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
     {
-        (string itemPath, string materialPath, List<string> processingFailedPaths) = await ExtractInternal(itemCreationContext, runtimeSettings);
+        (string itemPath, List<string> processingFailedPaths) = await ExtractInternal(itemCreationContext, runtimeSettings);
         if (string.IsNullOrEmpty(itemPath)) return (null, processingFailedPaths);
         
         Item newItem = new()
@@ -37,7 +37,7 @@ internal static class ItemCreator
 
         return (newItem, processingFailedPaths);
     }
-    private static async Task<(string itemPath, string materialPath, List<string> processingFailedPaths)> ExtractInternal(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
+    private static async Task<(string itemPath, List<string> processingFailedPaths)> ExtractInternal(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
     {
         string extractDestinationFolderPath = Path.Combine(runtimeSettings.DataRootDirectory, itemCreationContext.LocalizedItemTypeName);
         return await FileSystemService.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, extractDestinationFolderPath, runtimeSettings.RemoveOriginal);

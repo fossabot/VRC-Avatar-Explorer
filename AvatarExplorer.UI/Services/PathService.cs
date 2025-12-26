@@ -8,7 +8,7 @@ using AvatarExplorer.UI.Localization;
 
 namespace AvatarExplorer.UI.Services;
 
-internal class PathService
+internal static class PathService
 {
     internal static string BuildPath(IEnumerable<Item> items, SelectionNode selectionNode)
     {

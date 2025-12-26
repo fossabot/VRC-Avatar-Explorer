@@ -43,15 +43,6 @@ public partial class AvatarExplorerApp
         _items.Clear();
         _items.AddRange(database);
     }
-
-    public void LoadCommonAvatarDatabase(bool fromV1 = false)
-    {
-        List<CommonAvatar> database = fromV1 ? CommonAvatarDatabaseService.LoadFromV1(SystemPath.CommonAvatarDatabasePath) :  CommonAvatarDatabaseService.Load(SystemPath.CommonAvatarDatabasePath);
-
-        _commonAvatars.Clear();
-        _commonAvatars.AddRange(database);
-    }
-
     public void LoadItemDatabase(string path, bool fromV1 = false)
     {
         List<Item> database = fromV1 ? ItemDatabaseService.LoadFromV1(path) : ItemDatabaseService.Load(path);
@@ -60,6 +51,13 @@ public partial class AvatarExplorerApp
         _items.AddRange(database);
     }
 
+    public void LoadCommonAvatarDatabase(bool fromV1 = false)
+    {
+        List<CommonAvatar> database = fromV1 ? CommonAvatarDatabaseService.LoadFromV1(SystemPath.CommonAvatarDatabasePath) :  CommonAvatarDatabaseService.Load(SystemPath.CommonAvatarDatabasePath);
+
+        _commonAvatars.Clear();
+        _commonAvatars.AddRange(database);
+    }
     public void LoadCommonAvatarDatabase(string path, bool fromV1 = false)
     {
         List<CommonAvatar> database = fromV1 ? CommonAvatarDatabaseService.LoadFromV1(path) :  CommonAvatarDatabaseService.Load(path);
