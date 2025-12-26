@@ -42,8 +42,8 @@ internal static class DataImporter
             string newItemPath = Path.Combine(runtimeSettings.DataRootDirectory, LocalizedCategoryName, safeItemTitle);
             string newItemMaterialPath = Path.Combine(newItemPath, "AE_Materials");
 
-            // await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.ItemPath)), newItemPath);
-            // if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.MaterialPath)), newItemMaterialPath);
+            await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.ItemPath)), newItemPath);
+            if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.MaterialPath)), newItemMaterialPath);
 
             item.ItemPath = $"<sys>{Path.GetRelativePath(runtimeSettings.DataRootDirectory, newItemPath)}";
             pathMapping[previousItemPath] = item.ItemPath;
