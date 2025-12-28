@@ -23,8 +23,10 @@ public enum FileCategory
     [LocalizationKey(LocalizationKey.FileCategory.Unitypackage)]
     Unitypackage,
 
+    [FileNamesFilter("Material|マテリアル")]
+    [ExtensionsFilter(".unitypackage")]
     [LocalizationKey(LocalizationKey.FileCategory.Material)]
-    Material, // TODO: ファイル名にMaterialが含まれていたらこちらに分類する
+    Material,
 
     Unknown
 }

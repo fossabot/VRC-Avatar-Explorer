@@ -18,4 +18,11 @@ public static class EnumExtensions
         ExtensionsFilterAttribute? attribute = field?.GetCustomAttributes(typeof(ExtensionsFilterAttribute), false).FirstOrDefault() as ExtensionsFilterAttribute;
         return attribute?.Filter.Split('|') ?? null;
     }
+
+    internal static string[]? GetFileNameFilters(this Enum value)
+    {
+        FieldInfo? field = value.GetType().GetField(value.ToString());
+        FileNamesFilterAttribute? attribute = field?.GetCustomAttributes(typeof(FileNamesFilterAttribute), false).FirstOrDefault() as FileNamesFilterAttribute;
+        return attribute?.Filter.Split('|') ?? null;
+    }
 }

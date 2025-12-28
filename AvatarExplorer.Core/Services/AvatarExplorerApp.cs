@@ -215,6 +215,8 @@ public partial class AvatarExplorerApp
             string[]? filters = filter.GetExtensionFilters();
             if (filters == null) continue;
 
+            string[]? fileNameFilters = filter.GetFileNameFilters();
+
             FileCategoryItem categoryItem = new(filter);
 
             foreach (string file in FileSystemService.EnumerateFiles(itemPath))
@@ -222,6 +224,12 @@ public partial class AvatarExplorerApp
                 string fileExtension = Path.GetExtension(file);
                 if (filters.Contains(fileExtension))
                 {
+                    if (fileNameFilters != null)
+                    {
+                        string fileName = Path.GetFileNameWithoutExtension(file);
+                        if (!fileNameFilters.Any(f => fileName.Contains(f, StringComparison.CurrentCultureIgnoreCase))) continue;
+                    }
+
                     categoryItem.FilePaths.Add(file);
                 }
             }
@@ -244,11 +252,19 @@ public partial class AvatarExplorerApp
         string[]? filters = fileCategory.GetExtensionFilters();
         if (filters == null) return new();
 
+        string[]? fileNameFilters = fileCategory.GetFileNameFilters();
+
         foreach (string file in FileSystemService.EnumerateFiles(itemPath))
         {
             string fileExtension = Path.GetExtension(file);
             if (filters.Contains(fileExtension))
             {
+                if (fileNameFilters != null)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(file);
+                    if (!fileNameFilters.Any(f => fileName.Contains(f, StringComparison.CurrentCultureIgnoreCase))) continue;
+                }
+
                 categoryItems.Add(new ItemCountInfo(new ItemFile(Path.GetFullPath(file)), 0));
             }
         }
@@ -314,7 +330,7 @@ public partial class AvatarExplorerApp
         item.ThumbnmailFileName = Path.GetFileName(newFileFullPath);
 
         return item;
-    }
+    } 
     #endregion
 
     #region Add API

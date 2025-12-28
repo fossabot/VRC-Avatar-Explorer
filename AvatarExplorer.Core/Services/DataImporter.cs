@@ -58,7 +58,6 @@ internal static class DataImporter
             }
         }
 
-        // SupportedAvatarsとImplementedAvatarsのパスを更新する
         foreach (Item item in items)
         {
             IEnumerable<string> supportedAvatars = item.SupportedAvatars
@@ -75,7 +74,6 @@ internal static class DataImporter
         List<CommonAvatar> commonAvatars = new();
         ListUtils.Add(commonAvatars, v1CommonAvatars.Select(CommonAvatar.FromV1), true);
 
-        // 共通素体のパスを更新する
         foreach (CommonAvatar commonAvatar in commonAvatars)
         {
             IEnumerable<string> avatarPaths = commonAvatar.Avatars
