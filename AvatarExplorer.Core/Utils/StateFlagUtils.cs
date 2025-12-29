@@ -4,9 +4,9 @@ namespace AvatarExplorer.Core.Utils;
 
 public static class StateFlagUtils
 {
-    public static readonly ItemTagState ItemsFlag = ItemTagState.SearchItem | ItemTagState.RootAvatar | ItemTagState.RootSelectedItem;
-    public static readonly ItemTagState CategoriesFlag = ItemTagState.RootCategory | ItemTagState.RootSelectedCategory | ItemTagState.ItemFileCategory;
+    public static readonly ItemTagState ItemFlags = ItemTagState.SearchItem | ItemTagState.RootAvatar | ItemTagState.RootSelectedItem;
+    public static readonly ItemTagState CategoryFlags = ItemTagState.RootCategory | ItemTagState.RootSelectedCategory | ItemTagState.ItemFileCategory;
 
-    public static bool IsItemState(ItemTagState itemTagState) => ItemsFlag.HasFlag(itemTagState);
-    public static bool IsCategoryState(ItemTagState itemTagState) => CategoriesFlag.HasFlag(itemTagState);
+    public static bool IsItemState(ItemTagState itemTagState) => ItemFlags.HasFlag(itemTagState);
+    public static bool IsCategoryState(ItemTagState itemTagState) => CategoryFlags.HasFlag(itemTagState);
 }

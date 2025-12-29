@@ -3,9 +3,10 @@ using AvatarExplorer.Core.Localization;
 
 namespace AvatarExplorer.Core.Models;
 
+[Flags]
 public enum ItemTagState
 {
-    Unknown = 0,
+    None = 0,
 
     // RootだけはPrefixがあるため、翻訳キーを追加している。その他はそのままで大丈夫
     [LocalizationKey(LocalizationKey.Path.SearchResult)]

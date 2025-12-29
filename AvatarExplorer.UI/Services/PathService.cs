@@ -15,13 +15,13 @@ internal static class PathService
         ItemTagState state = selectionNode.State;
         string value = selectionNode.Key;
 
-        if (StateFlagUtils.ItemsFlag.HasFlag(state))
+        if (StateFlagUtils.IsItemState(state))
         {
             Item? item = items.FirstOrDefault(item => item.ItemPath == value);
             if (item != null) value = item.Title; // アイテムはパスからタイトルに変換する
         }
 
-        if (StateFlagUtils.CategoriesFlag.HasFlag(state))
+        if (StateFlagUtils.IsCategoryState(state))
         {
             // カテゴリはValue自体を翻訳する
             // カテゴリ: Search.Category.Textureのような感じで入っているため

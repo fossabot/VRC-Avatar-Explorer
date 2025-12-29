@@ -48,7 +48,7 @@ public partial class MainWindow : Window
     private string _main_searchTextCache = string.Empty;
     internal bool _main_isLastWindowSearch = false;
 
-    private ItemTagState _main_lastRightPanelItemTagState = ItemTagState.Unknown;
+    private ItemTagState _main_lastRightPanelItemTagState = ItemTagState.None;
 
     internal readonly UserPreferences _userPreferences = new();
     internal int ItemsPerPage => _userPreferences.ItemsPerPage;
@@ -105,7 +105,7 @@ public partial class MainWindow : Window
 
         List<ItemCountInfo> items = new();
 
-        ItemTagState customState = ItemTagState.Unknown;
+        ItemTagState customState = ItemTagState.None;
         switch (Main_LeftFilter.SelectedIndex)
         {
             case 0:
@@ -175,7 +175,7 @@ public partial class MainWindow : Window
         if (items.Count == 0) Main_ShowNoItemsLabel();
         else Main_HideNoItemsLabel();
 
-        ItemTagState itemTagState = ItemTagState.Unknown;
+        ItemTagState itemTagState = ItemTagState.None;
         if (items.Count > 0) itemTagState = new UISelectableItem(items[0]).Tag.State;
         _main_lastRightPanelItemTagState = itemTagState;
         

@@ -222,16 +222,15 @@ public partial class AvatarExplorerApp
             foreach (string file in FileSystemService.EnumerateFiles(itemPath))
             {
                 string fileExtension = Path.GetExtension(file);
-                if (filters.Contains(fileExtension))
+                if (!filters.Contains(fileExtension)) continue;
+                
+                if (fileNameFilters != null)
                 {
-                    if (fileNameFilters != null)
-                    {
-                        string fileName = Path.GetFileNameWithoutExtension(file);
-                        if (!fileNameFilters.Any(f => fileName.Contains(f, StringComparison.CurrentCultureIgnoreCase))) continue;
-                    }
-
-                    categoryItem.FilePaths.Add(file);
+                    string fileName = Path.GetFileNameWithoutExtension(file);
+                    if (!fileNameFilters.Any(f => fileName.Contains(f, StringComparison.CurrentCultureIgnoreCase))) continue;
                 }
+
+                categoryItem.FilePaths.Add(file);
             }
 
             if (categoryItem.FilePaths.Count > 0)
@@ -257,16 +256,15 @@ public partial class AvatarExplorerApp
         foreach (string file in FileSystemService.EnumerateFiles(itemPath))
         {
             string fileExtension = Path.GetExtension(file);
-            if (filters.Contains(fileExtension))
-            {
-                if (fileNameFilters != null)
-                {
-                    string fileName = Path.GetFileNameWithoutExtension(file);
-                    if (!fileNameFilters.Any(f => fileName.Contains(f, StringComparison.CurrentCultureIgnoreCase))) continue;
-                }
+            if (!filters.Contains(fileExtension)) continue;
 
-                categoryItems.Add(new ItemCountInfo(new ItemFile(Path.GetFullPath(file)), 0));
+            if (fileNameFilters != null)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(file);
+                if (!fileNameFilters.Any(f => fileName.Contains(f, StringComparison.CurrentCultureIgnoreCase))) continue;
             }
+
+            categoryItems.Add(new ItemCountInfo(new ItemFile(Path.GetFullPath(file)), 0));
         }
 
         return categoryItems;
