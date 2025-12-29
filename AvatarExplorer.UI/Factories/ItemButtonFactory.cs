@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -37,14 +38,15 @@ internal static class ItemButtonFactory
         {
             Source = ImageService.Get(item.ImageFileName, item.IconType),
             Width = 70,
-            Height = 70
+            Height = 70,
+            Stretch = Stretch.Uniform
         };
         if (!IconUtils.IsSystemIcon(item.ImageFileName))
         {
             itemIcon.PointerEntered += (s, e) =>
             {
                 itemIcon.Width = 200;
-                itemIcon.Height = 200;
+                itemIcon.Height = double.NaN;
             };
 
             itemIcon.PointerExited += (s, e) =>
@@ -102,7 +104,11 @@ internal static class ItemButtonFactory
         contentPanel.Children.Add(textPanel);
 
         itemButton.Content = contentPanel;
-        if (StateFlagUtils.IsItemState(item.Tag.State)) ToolTip.SetTip(itemButton, GetTooltipTextFromItem(item));
+        if (StateFlagUtils.IsItemState(item.Tag.State))
+        {
+            ToolTip.SetTip(itemButton, GetTooltipTextFromItem(item));
+            ToolTip.SetBetweenShowDelay(itemButton, -1);
+        }
 
         if (contextMenu != null && contextMenu.ItemCount > 0) itemButton.ContextMenu = contextMenu;
         if (onClick != null) itemButton.Click += onClick;
