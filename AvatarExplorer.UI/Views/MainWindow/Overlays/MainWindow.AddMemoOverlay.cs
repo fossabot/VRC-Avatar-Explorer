@@ -22,6 +22,7 @@ public partial class MainWindow
         if (_contextMenu_selectedItem != null)
         {
             _contextMenu_selectedItem.ItemMemo = AddMemoOverlay_MemoTextBox.Text ?? string.Empty;
+            _avatarExplorerApp.SaveItemDatabase();
         }
 
         AddMemoOverlay_Hide();

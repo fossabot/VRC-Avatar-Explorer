@@ -36,34 +36,30 @@ public partial class AvatarExplorerApp
     }
 
     #region Database
-    public void LoadItemDatabase(bool fromV1 = false)
+    public void LoadItemDatabase(string path = "")
     {
-        List<Item> database = fromV1 ? ItemDatabaseService.LoadFromV1(SystemPath.ItemDatabasePath) : ItemDatabaseService.Load(SystemPath.ItemDatabasePath);
-
-        _items.Clear();
-        _items.AddRange(database);
-    }
-    public void LoadItemDatabase(string path, bool fromV1 = false)
-    {
-        List<Item> database = fromV1 ? ItemDatabaseService.LoadFromV1(path) : ItemDatabaseService.Load(path);
+        List<Item> database = string.IsNullOrEmpty(path) ? ItemDatabaseService.Load(SystemPath.ItemDatabasePath) : ItemDatabaseService.Load(path);
 
         _items.Clear();
         _items.AddRange(database);
     }
 
-    public void LoadCommonAvatarDatabase(bool fromV1 = false)
+    public void LoadCommonAvatarDatabase(string path = "")
     {
-        List<CommonAvatar> database = fromV1 ? CommonAvatarDatabaseService.LoadFromV1(SystemPath.CommonAvatarDatabasePath) :  CommonAvatarDatabaseService.Load(SystemPath.CommonAvatarDatabasePath);
+        List<CommonAvatar> database = string.IsNullOrEmpty(path) ? CommonAvatarDatabaseService.Load(SystemPath.CommonAvatarDatabasePath) : CommonAvatarDatabaseService.Load(path);
 
         _commonAvatars.Clear();
         _commonAvatars.AddRange(database);
     }
-    public void LoadCommonAvatarDatabase(string path, bool fromV1 = false)
-    {
-        List<CommonAvatar> database = fromV1 ? CommonAvatarDatabaseService.LoadFromV1(path) :  CommonAvatarDatabaseService.Load(path);
 
-        _commonAvatars.Clear();
-        _commonAvatars.AddRange(database);
+    public void SaveItemDatabase()
+    {
+        ItemDatabaseService.Save(_items);
+    }
+
+    public void SaveCommonAvatarDatabase()
+    {
+        CommonAvatarDatabaseService.Save(_commonAvatars);
     }
     #endregion
 
@@ -298,6 +294,8 @@ public partial class AvatarExplorerApp
             _items.Add(addItemResult.newItem); // アイテムの追加に失敗していなければここで追加してあげる
         }
 
+        SaveItemDatabase();
+
         return addItemResult;
     }
 
@@ -305,6 +303,8 @@ public partial class AvatarExplorerApp
     {
         item.SetValuesFromCreationContext(itemCreationContext);
         item.UpdatedDate = DatetimeUtils.GetCurrentUnixTime();
+
+        SaveItemDatabase();
 
         return item;
     }
@@ -328,7 +328,7 @@ public partial class AvatarExplorerApp
         item.ThumbnmailFileName = Path.GetFileName(newFileFullPath);
 
         return item;
-    } 
+    }
     #endregion
 
     #region Add API
@@ -399,6 +399,9 @@ public partial class AvatarExplorerApp
 
         _commonAvatars.Clear();
         _commonAvatars.AddRange(result.Item2);
+
+        SaveItemDatabase();
+        SaveCommonAvatarDatabase();
     }
     public async Task ImportFromKonoAsset(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
     {
@@ -408,6 +411,9 @@ public partial class AvatarExplorerApp
         _items.AddRange(items);
 
         _commonAvatars.Clear();
+
+        SaveItemDatabase();
+        SaveCommonAvatarDatabase();
     }
     #endregion
 

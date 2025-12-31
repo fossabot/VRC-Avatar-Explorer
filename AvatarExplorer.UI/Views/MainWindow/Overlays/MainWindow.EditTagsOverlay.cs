@@ -90,6 +90,8 @@ public partial class MainWindow
         {
             _contextMenu_selectedItem.Tags.Clear();
             _contextMenu_selectedItem.Tags.AddRange(_editTagsOverlay_selectedTags);
+
+            _avatarExplorerApp.SaveItemDatabase();
         }
 
         EditTagsOverlay_Hide();

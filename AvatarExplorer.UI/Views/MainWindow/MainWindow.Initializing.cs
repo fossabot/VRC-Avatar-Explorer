@@ -19,8 +19,8 @@ public partial class MainWindow
     {
         try
         {
-            _avatarExplorerApp.LoadItemDatabase(true); // TODO: V1のデータを読み込む設定になっているのでリリース時に直す
-            _avatarExplorerApp.LoadCommonAvatarDatabase(true);
+            _avatarExplorerApp.LoadItemDatabase();
+            _avatarExplorerApp.LoadCommonAvatarDatabase();
             _avatarExplorerApp.LoadRuntimeSettings();
             SettingsOverlay_ApplyRuntimeSettingsToUi(); // 並び替え順をセットするため
         }

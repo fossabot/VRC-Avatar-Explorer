@@ -53,6 +53,8 @@ public partial class MainWindow
         {
             _contextMenu_selectedItem.ImplementedAvatars.Clear();
             _contextMenu_selectedItem.ImplementedAvatars.AddRange(_editImplementedAvatarsOverlay_selectedAvatars);
+
+            _avatarExplorerApp.SaveItemDatabase();
         }
 
         EditImplementedAvatarsOverlay_Hide();

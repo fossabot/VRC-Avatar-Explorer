@@ -1,3 +1,4 @@
+using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Models.V1;
 
@@ -9,6 +10,18 @@ internal static class CommonAvatarDatabaseService
     {
         if (!File.Exists(path)) throw new FileNotFoundException();
         return FileSystemService.DeserializeClass<List<CommonAvatar>>(path) ?? [];
+    }
+
+    internal static void Save(List<CommonAvatar> commonAvatars)
+    {
+        try
+        {
+            FileSystemService.SerializeClass(commonAvatars, SystemPath.CommonAvatarDatabasePath);
+        }
+        catch
+        {
+            // Ignored
+        }
     }
 
     internal static List<CommonAvatar> LoadFromV1(string path)

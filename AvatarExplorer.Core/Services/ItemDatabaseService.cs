@@ -1,3 +1,4 @@
+using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Models.V1;
 
@@ -9,6 +10,18 @@ internal static class ItemDatabaseService
     {
         if (!File.Exists(path)) throw new FileNotFoundException();
         return FileSystemService.DeserializeClass<List<Item>>(path) ?? [];
+    }
+
+    internal static void Save(List<Item> items)
+    {
+        try
+        {
+            FileSystemService.SerializeClass(items, SystemPath.ItemDatabasePath);
+        }
+        catch
+        {
+            // Ignored
+        }
     }
     
     internal static List<Item> LoadFromV1(string path)
