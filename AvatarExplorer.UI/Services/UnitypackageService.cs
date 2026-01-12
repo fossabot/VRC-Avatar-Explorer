@@ -8,7 +8,7 @@ using AvatarExplorer.UI.Localization;
 
 namespace AvatarExplorer.UI.Services;
 
-internal class UnitypackageService
+internal static class UnitypackageService
 {
     internal static async Task Open(Window window, string itemPath, Item? selectedItem, Func<string, int, Task>? onProgress = null, Func<string, Task>? onCompleted = null)
     {

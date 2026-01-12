@@ -1,6 +1,6 @@
 namespace AvatarExplorer.UI.Models;
 
-public enum YesNoResult
+internal enum YesNoResult
 {
     Yes,
     No

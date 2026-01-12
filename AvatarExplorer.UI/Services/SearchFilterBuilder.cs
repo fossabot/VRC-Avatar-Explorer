@@ -8,7 +8,7 @@ using AvatarExplorer.UI.Utils;
 
 namespace AvatarExplorer.UI.Services;
 
-internal partial class SearchFilterBuilder
+internal static partial class SearchFilterBuilder
 {
     [GeneratedRegex(@"(?<key>Title|Author|Booth|Avatar|Category|Memo|Folder|File|Implemented|NotImplemented|Tag|Common|OR|BrokenItems)=(?:""(?<value>.*?)""|(?<value>[^\s]+))|(?<word>[^\s]+)")]
     private static partial Regex SearchFilterTextRegex();
