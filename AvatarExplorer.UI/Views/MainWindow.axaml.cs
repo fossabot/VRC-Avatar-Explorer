@@ -326,16 +326,14 @@ public partial class MainWindow : Window
     {
         List<ItemTagState> selectedItemTagStates = new();
 
-        foreach (SelectionNode selectionNode in _avatarExplorerApp.GetCurrentPaths())
+        foreach (SelectionNode selectionNode in _avatarExplorerApp.GetCurrentPaths().Where(i => !selectedItemTagStates.Contains(i.State)))
         {
-            if (!selectedItemTagStates.Contains(selectionNode.State))
-                selectedItemTagStates.Add(selectionNode.State);
+            selectedItemTagStates.Add(selectionNode.State);
         }
 
-        foreach (var pageInfo in _main_currentPageStates)
+        foreach (var pageInfo in _main_currentPageStates.Where(i => !selectedItemTagStates.Contains(i.Key)))
         {
-            if (!selectedItemTagStates.Contains(pageInfo.Key))
-                _main_currentPageStates[pageInfo.Key] = 0;
+            _main_currentPageStates[pageInfo.Key] = 0;
         }
     }
     

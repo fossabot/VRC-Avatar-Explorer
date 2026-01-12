@@ -9,7 +9,7 @@ public partial class MainWindow
 {
     private TaskCompletionSource<YesNoResult>? _yesNoTcs;
 
-    public Task<YesNoResult> Main_ShowYesNoDialogAsync(string title, string content)
+    internal Task<YesNoResult> Main_ShowYesNoDialogAsync(string title, string content)
     {
         if (_yesNoTcs != null)
             throw new InvalidOperationException("YesNoDialog is already shown.");
