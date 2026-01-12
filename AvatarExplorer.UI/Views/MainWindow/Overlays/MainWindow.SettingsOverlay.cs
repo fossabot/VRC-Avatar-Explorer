@@ -29,8 +29,9 @@ public partial class MainWindow
         SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory;
         SettingsOverlay_RemoveBracketsCheckBox.IsChecked = runtimeSettings.RemoveBrackets;
         SettingsOverlay_RemoveOriginalCheckBox.IsChecked = runtimeSettings.RemoveOriginal;
+        SettingsOverlay_UseBackgroundImageCheckBox.IsChecked = userPreferences.UseBackgroundImage;
         SettingsOverlay_BackgroundImagePathTextBox.Text = userPreferences.BackgroundImage;
-        SettingsOverlay_BackgroundImageOpacityTextBox.Text = userPreferences.BackgroundOpacity.ToString();
+        SettingsOverlay_BackgroundImageOpacitySlider.Value = userPreferences.BackgroundOpacity;
         SettingsOverlay_ItemsPerPageTextBox.Text = userPreferences.ItemsPerPage.ToString();
         SettingsOverlay_ThemeComboBox.SelectedIndex = (int)userPreferences.Theme;
         SettingsOverlay_DefaultLanguageComboBox.SelectedIndex = userPreferences.DefaultLanguage;
@@ -41,8 +42,9 @@ public partial class MainWindow
         _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? "");
         _avatarExplorerApp.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
         _avatarExplorerApp.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
+        _userPreferences.UseBackground(SettingsOverlay_UseBackgroundImageCheckBox.IsChecked ?? false);
         _userPreferences.SetBackground(SettingsOverlay_BackgroundImagePathTextBox.Text ?? "");
-        _userPreferences.SetBackgroundOpacity(int.TryParse(SettingsOverlay_BackgroundImageOpacityTextBox.Text, out var opacity) ? opacity : 15);
+        _userPreferences.SetBackgroundOpacity(Math.Clamp((int)SettingsOverlay_BackgroundImageOpacitySlider.Value, 0, 100));
         _userPreferences.SetItemsPerPage(int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var count) ? count : 30);
         _userPreferences.SetTheme((Theme)SettingsOverlay_ThemeComboBox.SelectedIndex);
         _userPreferences.SetLanguage(SettingsOverlay_DefaultLanguageComboBox.SelectedIndex);
@@ -67,11 +69,10 @@ public partial class MainWindow
                 Background="Transparent"
             */
 
-            if (_userPreferences.Theme == Models.Theme.Auto) currentApplication.RequestedThemeVariant = ThemeVariant.Default;
-            else if (_userPreferences.Theme == Models.Theme.Dark) currentApplication.RequestedThemeVariant = ThemeVariant.Dark;
+            if (_userPreferences.Theme == Models.Theme.Dark) currentApplication.RequestedThemeVariant = ThemeVariant.Dark;
             else if (_userPreferences.Theme == Models.Theme.Light) currentApplication.RequestedThemeVariant = ThemeVariant.Light;
 
-            if (File.Exists(_userPreferences.BackgroundImage))
+            if (_userPreferences.UseBackgroundImage && File.Exists(_userPreferences.BackgroundImage))
             {
                 try
                 {
@@ -84,9 +85,18 @@ public partial class MainWindow
                 }
                 catch
                 {
-                    // Ignored
+                    Background = new SolidColorBrush()
+                    {
+                        Color = _userPreferences.Theme == Models.Theme.Dark ? new Color(255, 32, 32, 32) : new Color(255, 249, 249, 249)
+                    };
                 }
-
+            }
+            else
+            {
+                Background = new SolidColorBrush()
+                {
+                    Color = _userPreferences.Theme == Models.Theme.Dark ? new Color(255, 32, 32, 32) : new Color(255, 249, 249, 249)
+                };
             }
         }
         

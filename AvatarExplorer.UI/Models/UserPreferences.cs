@@ -8,13 +8,16 @@ public class UserPreferences
     public int DefaultLanguage { get; private set; } = 0;
 
     [JsonInclude]
+    public bool UseBackgroundImage { get; private set; } = false;
+
+    [JsonInclude]
     public string BackgroundImage { get; private set; } = string.Empty;
 
     [JsonInclude]
-    public int BackgroundOpacity { get; private set; } = 15;
+    public int BackgroundOpacity { get; private set; } = 20;
     
     [JsonInclude]
-    public Theme Theme { get; private set; } = Theme.Auto;
+    public Theme Theme { get; private set; } = Theme.Dark;
 
     [JsonInclude]
     public int ItemsPerPage { get; private set; } = 30;
@@ -22,6 +25,7 @@ public class UserPreferences
     internal void FromOther(UserPreferences userPreferences)
     {
         DefaultLanguage = userPreferences.DefaultLanguage;
+        UseBackgroundImage = userPreferences.UseBackgroundImage;
         BackgroundImage = userPreferences.BackgroundImage;
         BackgroundOpacity = userPreferences.BackgroundOpacity;
         Theme = userPreferences.Theme;
@@ -30,6 +34,9 @@ public class UserPreferences
 
     internal void SetLanguage(int index)
         => DefaultLanguage = index;
+
+    internal void UseBackground(bool value)
+        => UseBackgroundImage = value;
 
     internal void SetBackground(string path)
         => BackgroundImage = path;

@@ -204,8 +204,8 @@
                     <!-- 上のボタン -->
                     <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,10,0,10" ColumnSpacing="10" VerticalAlignment="Center">
                         <TextBlock Grid.Column="0" Text="フォルダ一覧" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
-                        <Button Grid.Column="2" Content="フォルダを開く" Margin="10,0,0,0" VerticalAlignment="Center" Click="EditFoldersOverlay_AddFolder_Click"/>
-                        <Button Grid.Column="3" Content="ファイルを開く" Margin="10,0,20,0" VerticalAlignment="Center" Click="EditFoldersOverlay_AddFile_Click"/>
+                        <Button Grid.Column="2" Content="フォルダを追加" Margin="10,0,0,0" VerticalAlignment="Center" Click="EditFoldersOverlay_AddFolder_Click"/>
+                        <Button Grid.Column="3" Content="ファイルを追加" Margin="10,0,20,0" VerticalAlignment="Center" Click="EditFoldersOverlay_AddFile_Click"/>
                     </Grid>
 
                     <!-- フォルダーリスト -->
@@ -380,7 +380,7 @@
                             <Grid ColumnDefinitions="200,10,*,10,Auto">
                                 <TextBlock Grid.Column="0" TextWrapping="Wrap" Text="データ保存先フォルダ" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
                                 <TextBox x:Name="SettingsOverlay_ItemsFolderPathTextBox" IsReadOnly="True" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                                <Button Grid.Column="4" Content="フォルダを開く" VerticalAlignment="Center" Margin="0,0,20,0" Click="SettingsOverlay_OpenFolder_Click"/>
+                                <Button Grid.Column="4" Content="フォルダを変更する" VerticalAlignment="Center" Margin="0,0,20,0" Click="SettingsOverlay_OpenFolder_Click"/>
                             </Grid>
 
                             <!-- 背景設定 -->
@@ -388,13 +388,16 @@
                                 <TextBlock Text="背景設定" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
                             </Grid>
 
-                            <Grid ColumnDefinitions="200,10,*,10,Auto" RowDefinitions="*,20,*">
-                                <TextBlock Grid.Column="0" TextWrapping="Wrap" Text="背景写真ファイル" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                                <TextBox x:Name="SettingsOverlay_BackgroundImagePathTextBox" IsReadOnly="True" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                                <Button Grid.Column="4" Content="ファイルを開く" VerticalAlignment="Center" Margin="0,0,20,0" Click="SettingsOverlay_OpenBackgroundFile_Click"/>
+                            <Grid ColumnDefinitions="200,10,*,10,Auto" RowDefinitions="*,20,*,20,*">
+                                <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="背景を使用する" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
+                                <CheckBox x:Name="SettingsOverlay_UseBackgroundImageCheckBox" Grid.Row="0" Grid.Column="2" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left"/>
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="透明度" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
-                                <TextBox x:Name="SettingsOverlay_BackgroundImageOpacityTextBox" Grid.Row="2" Grid.Column="2" Text="30" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Center"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="背景写真ファイル" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
+                                <TextBox x:Name="SettingsOverlay_BackgroundImagePathTextBox" IsReadOnly="True" Grid.Row="2" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                <Button Grid.Row="2" Grid.Column="4" Content="ファイルを変更する" VerticalAlignment="Center" Margin="0,0,20,0" Click="SettingsOverlay_OpenBackgroundFile_Click"/>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" TextWrapping="Wrap" Text="不透明度" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
+                                <Slider x:Name="SettingsOverlay_BackgroundImageOpacitySlider" Grid.Row="4" Grid.Column="2" Value="15" Maximum="100" Minimum="0" Width="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                             </Grid>
 
                             <!-- アイテム設定 -->
@@ -421,7 +424,6 @@
                             <Grid ColumnDefinitions="200,*" RowDefinitions="*">
                                 <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="テーマ" Margin="0,0,10,0" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
                                 <ComboBox x:Name="SettingsOverlay_ThemeComboBox" Grid.Row="0" Grid.Column="1" SelectedIndex="0" Margin="10,0,0,0" MinWidth="150" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                    <ComboBoxItem Content="自動"/>
                                     <ComboBoxItem Content="ダーク"/>
                                     <ComboBoxItem Content="ライト"/>
                                 </ComboBox>
