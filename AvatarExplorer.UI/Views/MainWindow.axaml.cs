@@ -68,6 +68,7 @@ public partial class MainWindow : Window
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるようにしたい
         TODO: アップデータを作る
         TODO: オーバーレイの背景の色をBindingかなにかで指定してあげる。ライトモードでも使えるように。
+        TODO: デフォルトの保存先を空にし、起動時にフォルダがなければ選択してあげる。
         */
 
         InitializeCurrentPath();
