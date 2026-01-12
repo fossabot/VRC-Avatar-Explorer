@@ -72,11 +72,16 @@ public partial class MainWindow
             if (_userPreferences.Theme == Models.Theme.Dark) currentApplication.RequestedThemeVariant = ThemeVariant.Dark;
             else if (_userPreferences.Theme == Models.Theme.Light) currentApplication.RequestedThemeVariant = ThemeVariant.Light;
 
+            Background = new SolidColorBrush()
+            {
+                Color = _userPreferences.Theme == Models.Theme.Dark ? new Color(255, 32, 32, 32) : new Color(255, 249, 249, 249)
+            };
+
             if (_userPreferences.UseBackgroundImage && File.Exists(_userPreferences.BackgroundImage))
             {
                 try
                 {
-                    Background = new ImageBrush()
+                    WindowGrid.Background = new ImageBrush()
                     {
                         Source = new Bitmap(_userPreferences.BackgroundImage),
                         Opacity = Math.Clamp(_userPreferences.BackgroundOpacity / 100.0, 0, 1),
@@ -85,18 +90,12 @@ public partial class MainWindow
                 }
                 catch
                 {
-                    Background = new SolidColorBrush()
-                    {
-                        Color = _userPreferences.Theme == Models.Theme.Dark ? new Color(255, 32, 32, 32) : new Color(255, 249, 249, 249)
-                    };
+                    WindowGrid.Background = null;
                 }
             }
             else
             {
-                Background = new SolidColorBrush()
-                {
-                    Color = _userPreferences.Theme == Models.Theme.Dark ? new Color(255, 32, 32, 32) : new Color(255, 249, 249, 249)
-                };
+                WindowGrid.Background = null;
             }
         }
         

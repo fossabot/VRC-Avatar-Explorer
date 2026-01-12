@@ -14,7 +14,7 @@ public class UserPreferences
     public string BackgroundImage { get; private set; } = string.Empty;
 
     [JsonInclude]
-    public int BackgroundOpacity { get; private set; } = 75;
+    public int BackgroundOpacity { get; private set; } = 20;
     
     [JsonInclude]
     public Theme Theme { get; private set; } = Theme.Dark;
