@@ -66,7 +66,6 @@ public partial class MainWindow : Window
         TODO: 言語変更を実装する (UIが完成したらやる)
         TODO: UIのタグを使った翻訳機能を追加する
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるようにしたい
-        TODO: 詳細検索用の画面を追加する（右のアイテム画面の右側に縦長に別ウィンドウみたいな感じで表示するのはありかも？）
         TODO: アップデータを作る
         */
 
@@ -228,7 +227,7 @@ public partial class MainWindow : Window
 
     #region Search Box
     private readonly DispatcherTimer _searchTimer = new() { Interval = TimeSpan.FromMilliseconds(150) };
-    private void Main_SearchTextBox_TextChanged(object? sender, TextChangedEventArgs e)
+    private void Main_SearchValue_Changed(object? sender, RoutedEventArgs e)
     {
         _searchTimer.Stop();
         _searchTimer.Tick -= Main_OnSearchTimerTick;
@@ -245,7 +244,10 @@ public partial class MainWindow : Window
     {
         if (!string.IsNullOrEmpty(searchText)) _main_searchTextCache = searchText;
 
-        if (string.IsNullOrEmpty(_main_searchTextCache))
+        SearchFilter searchFilter = SearchFilterBuilder.Build(_main_searchTextCache);
+        if (AdvancedSearchPanel.IsVisible) AdvancedSearchPanel_ApplyValues(searchFilter);
+
+        if (string.IsNullOrEmpty(_main_searchTextCache) && searchFilter.IsEmpty)
         {
             Main_RenderRightPanel();
             return;
@@ -256,7 +258,6 @@ public partial class MainWindow : Window
 
         Main_RightPanel.Children.Clear();
 
-        SearchFilter searchFilter = SearchFilterBuilder.Build(_main_searchTextCache);
         IReadOnlyList<Item> items = _avatarExplorerApp.SearchItems(searchFilter);
         
         // 検索文字列が前回と違う場合はページ、スクロール位置をリセットする

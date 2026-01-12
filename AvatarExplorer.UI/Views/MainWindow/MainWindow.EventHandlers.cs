@@ -38,10 +38,16 @@ public partial class MainWindow
     }
     private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e)
         => SettingsOverlay_Show();
+
+    private void Main_AdvancedSearchButton_Click(object? sender, RoutedEventArgs e)
+    {
+        AdvancedSearchPanel.IsVisible = !AdvancedSearchPanel.IsVisible;
+        Main_SearchValue_Changed(sender, e);
+    }
     #endregion
 
     #region Main Bottom Buttons
-    // TODO: あとはバックアップと共通素体管理画面だけかも
+    // TODO: あとはバックアップだけかも
     private void Main_LanguageComboBox_Changed(object? sender, RoutedEventArgs e)
     {
         if (Main_LanguageComboBox == null) return;
@@ -78,6 +84,8 @@ public partial class MainWindow
 
         Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Export]);
     }
+    private async void Main_EditCommonAvatars_Click(object? sender, RoutedEventArgs e)
+        => EditCommonAvatarsOverlay_Show();
     #endregion
 
     #region Drag and Drop

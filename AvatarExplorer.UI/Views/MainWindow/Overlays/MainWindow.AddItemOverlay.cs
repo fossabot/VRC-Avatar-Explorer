@@ -183,9 +183,13 @@ public partial class MainWindow
     {
         EditFoldersOverlay_Show();
     }
-    private void AddItemOverlay_AddCustomCategory_Click(object? sender, RoutedEventArgs e)
+    private async void AddItemOverlay_AddCustomCategory_Click(object? sender, RoutedEventArgs e)
     {
-        AddCustomCategory_Show();
+        string? customCategory = await Main_ShowTextDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Title.AddCustomCategory]);
+        if (string.IsNullOrEmpty(customCategory)) return;
+
+        int index = AddItemOverlay_ItemTypeComboBox.Items.Add(customCategory);
+        AddItemOverlay_ItemTypeComboBox.SelectedIndex = index;
     }
     private void AddItemOverlay_EditSupportedAvatars_Click(object? sender, RoutedEventArgs e)
     {

@@ -60,6 +60,14 @@ public static class LocalizationKey
                 public const string Default = "UI.Dialog.Confirmation.Default";
                 public const string Remove = "UI.Dialog.Confirmation.Remove";
                 public const string RemoveAvatarFromSupportedAndImplemented = "UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented";
+                public const string RemoveCommonAvatarGroup = "UI.Dialog.Confirmation.RemoveCommonAvatarGroup";
+            }
+
+            public static class Title
+            {
+                public const string AddCustomCategory = "UI.Dialog.Title.AddCustomCategory";
+                public const string AddCommonAvatarGroup = "UI.Dialog.Title.AddCommonAvatarGroup";
+                public const string NewCommonAvatarGroupName = "UI.Dialog.Title.NewCommonAvatarGroupName";
             }
 
             public static class Success
@@ -79,6 +87,7 @@ public static class LocalizationKey
                 public const string Export = "UI.Dialog.Failed.Export";
                 public const string ItemAdd = "UI.Dialog.Failed.ItemAdd";
                 public const string ItemEdit = "UI.Dialog.Failed.ItemEdit";
+                public const string GetCommonAvatarGroup = "UI.Dialog.Failed.GetCommonAvatarGroup";
             }
 
             public const string SelectSaveFilePath = "UI.Dialog.SelectSaveFilePath";

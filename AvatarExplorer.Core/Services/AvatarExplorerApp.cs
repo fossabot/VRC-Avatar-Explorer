@@ -282,6 +282,20 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Add API
+    public CommonAvatar? AddCommonAvatar(string groupName, IEnumerable<string> avatars)
+    {
+        if (_commonAvatars.Any(i => i.GroupName == groupName)) return null;
+
+        CommonAvatar commonAvatar = new()
+        {
+            GroupName = groupName
+        };
+        commonAvatar.SetAvatars(avatars, true);
+
+        _commonAvatars.Add(commonAvatar);
+
+        return commonAvatar;
+    }
     public async Task<(Item? newItem, List<string> processingFailedPaths)> AddItem(ItemCreationContext itemCreationContext)
     {
         var addItemResult = await ItemCreator.FromItemCreationContext(itemCreationContext, _runtimeSettings);

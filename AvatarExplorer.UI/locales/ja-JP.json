@@ -27,7 +27,12 @@
     "UI.Dialog.Confirmation.Default": "確認",
     "UI.Dialog.Confirmation.Remove": "本当にこのアイテムを削除しますか？",
     "UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented": "このアバターを対応アバターとしているアイテムの対応アバターからこのアバターを削除しますか？",
+    "UI.Dialog.Confirmation.RemoveCommonAvatarGroup": "共通素体グループを削除しますか？\n共通素体グループ名: {0}",
 
+    "UI.Dialog.Title.AddCustomCategory": "新しいカスタムカテゴリ",
+    "UI.Dialog.Title.AddCommonAvatarGroup": "新しい共通素体グループ",
+    "UI.Dialog.Title.NewCommonAvatarGroupName": "新しい共通素体グループ名",
+    
     "UI.Dialog.Success.Default": "成功",
     "UI.Dialog.Success.Import": "データのインポートに成功しました",
     "UI.Dialog.Success.Export": "データのエクスポートに成功しました",
@@ -40,6 +45,7 @@
     "UI.Dialog.Failed.Export": "データのエクスポートに失敗しました",
     "UI.Dialog.Failed.ItemAdd": "アイテムの追加に失敗しました",
     "UI.Dialog.Failed.ItemEdit": "アイテムの編集に失敗しました",
+    "UI.Dialog.Failed.GetCommonAvatarGroup": "共通素体グループの取得に失敗しました。",
 
     "UI.Dialog.SelectSaveFilePath": "ファイルの保存先を選択してください",
     "UI.Dialog.SelectFolderPath": "フォルダを選択してください",
