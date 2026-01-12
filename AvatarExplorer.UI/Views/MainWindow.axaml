@@ -406,7 +406,7 @@
                                 <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="タイトルの括弧を削除する" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
                                 <ToggleSwitch x:Name="SettingsOverlay_RemoveBracketsCheckBox" Grid.Row="0" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                             
-                                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="インポート時にオジリナルファイルを削除する" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="インポート時にオリジナルファイルを削除する" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
                                 <ToggleSwitch x:Name="SettingsOverlay_RemoveOriginalCheckBox" Grid.Row="2" Grid.Column="2"  Width="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
 
                                 <TextBlock Grid.Row="4" Grid.Column="0" TextWrapping="Wrap" Text="ページあたりのアイテム表示数" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
