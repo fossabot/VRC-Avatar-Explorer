@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -9,6 +10,7 @@ using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
+using AvatarExplorer.UI.Models;
 using AvatarExplorer.UI.Services;
 
 namespace AvatarExplorer.UI;
@@ -111,41 +113,39 @@ public partial class MainWindow
         });
     }
 
-    private void CheckScheme()
+    private async Task CheckScheme()
     {
         if (SchemeService.IsSchemeRegistered())
         {
-            YesNoDialog_onYesClick += Main_RegisterScheme_Click;
-            YesNoDialog_onNoClick += Main_SkipScheme_Click;
-
             string? currentInternalSchemePath = SchemeService.GetInternalSchemePath();
             
             if (!string.IsNullOrEmpty(currentInternalSchemePath) && !SchemeService.IsSkipped(currentInternalSchemePath) && currentInternalSchemePath != ProcessUtils.GetCurrentProcessPath())
             {
-                YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.PathChanged]);
+                YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.PathChanged]);
+                if (result == YesNoResult.Yes) await Main_RegisterScheme();
+                else Main_SkipScheme();
             }
             else if (string.IsNullOrEmpty(currentInternalSchemePath))
             {
-                YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.RegisterAgain]);
+                YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.RegisterAgain]);
+                if (result == YesNoResult.Yes) await Main_RegisterScheme();
+                else Main_SkipScheme();
             }
         }
         else
         {
-            YesNoDialog_onYesClick += Main_RegisterScheme_Click;
-            YesNoDialog_onNoClick += Main_SkipScheme_Click;
-
-            YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.Register]);
+            YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.Register]);
+            if (result == YesNoResult.Yes) await Main_RegisterScheme();
+            else Main_SkipScheme();
         }
     }
 
-    private void Main_RegisterScheme_Click(object? s, RoutedEventArgs e)
+    private async Task Main_RegisterScheme()
     {
-        Main_ResetSchemeDialogEvents();
-
         if (!SchemeService.IsRunAsAdmin())
         {
-            YesNoDialog_onYesClick += Main_RestartAsAdmin_Click;
-            YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.RestartAsAdmin]);
+            YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.RestartAsAdmin]);
+            if (result == YesNoResult.Yes) SchemeService.RestartAsAdmin();
         }
         else
         {
@@ -153,21 +153,9 @@ public partial class MainWindow
             Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Scheme.RegisterSuccess]);
         }
     }
-    private void Main_SkipScheme_Click(object? s, RoutedEventArgs e)
+    private void Main_SkipScheme()
     {
-        Main_ResetSchemeDialogEvents();
-
         SchemeService.MarkSchemeSkipped();
         Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Scheme.RegisterSkipped]);
-    }
-    private void Main_ResetSchemeDialogEvents()
-    {
-        YesNoDialog_onYesClick -= Main_RegisterScheme_Click;
-        YesNoDialog_onNoClick -= Main_SkipScheme_Click;
-    }
-    private void Main_RestartAsAdmin_Click(object? s, RoutedEventArgs e)
-    {
-        YesNoDialog_onYesClick -= Main_RestartAsAdmin_Click;
-        SchemeService.RestartAsAdmin();
     }
 }

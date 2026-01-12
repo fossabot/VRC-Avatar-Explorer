@@ -59,6 +59,7 @@ public static class LocalizationKey
             {
                 public const string Default = "UI.Dialog.Confirmation.Default";
                 public const string Remove = "UI.Dialog.Confirmation.Remove";
+                public const string RemoveAvatarFromSupportedAndImplemented = "UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented";
             }
 
             public static class Success

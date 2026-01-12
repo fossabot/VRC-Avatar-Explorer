@@ -8,6 +8,7 @@ using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
+using AvatarExplorer.UI.Models;
 using AvatarExplorer.UI.Services;
 
 namespace AvatarExplorer.UI;
@@ -158,24 +159,23 @@ public partial class MainWindow
 
         return Task.CompletedTask;
     }
-    private Task ItemButton_ContextMenu_RemoveItem(string itemPath)
+    private async Task ItemButton_ContextMenu_RemoveItem(string itemPath)
     {
         Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
-        if (item == null) return Task.CompletedTask;
+        if (item == null) return;
 
         _contextMenu_selectedItem = item;
 
-        YesNoDialog_onYesClick += ItemButton_ContextMenu_RemoveItem_DialogYes_Click;
-
-        YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Remove]);
-        return Task.CompletedTask;
+        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Remove]);
+        if (result == YesNoResult.Yes) await ItemButton_ContextMenu_RemoveItem_DialogYes_Click();
     }
-    private void ItemButton_ContextMenu_RemoveItem_DialogYes_Click(object? sender, RoutedEventArgs e)
+    private async Task ItemButton_ContextMenu_RemoveItem_DialogYes_Click()
     {
-        YesNoDialog_onYesClick -= ItemButton_ContextMenu_RemoveItem_DialogYes_Click;
-
         if (_contextMenu_selectedItem == null) return;
-        _avatarExplorerApp.RemoveItem(_contextMenu_selectedItem.ItemPath, true); // TODO: ここのtrueもYesNoダイアログでまた分岐しても良いかも
+
+        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented]);
+        if (result == YesNoResult.Yes) _avatarExplorerApp.RemoveItem(_contextMenu_selectedItem.ItemPath, true);
+        else _avatarExplorerApp.RemoveItem(_contextMenu_selectedItem.ItemPath, false);
 
         Main_ReloadCurrentWindow();
         Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Remove]);

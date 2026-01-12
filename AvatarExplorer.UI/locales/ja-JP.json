@@ -26,6 +26,7 @@
 
     "UI.Dialog.Confirmation.Default": "確認",
     "UI.Dialog.Confirmation.Remove": "本当にこのアイテムを削除しますか？",
+    "UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented": "このアバターを対応アバターとしているアイテムの対応アバターからこのアバターを削除しますか？",
 
     "UI.Dialog.Success.Default": "成功",
     "UI.Dialog.Success.Import": "データのインポートに成功しました",

@@ -13,6 +13,7 @@ using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Services;
+using AvatarExplorer.UI.Models;
 
 namespace AvatarExplorer.UI;
 
@@ -61,22 +62,14 @@ public partial class MainWindow
     private void Main_ImportData_Click(object? sender, RoutedEventArgs e)
         => SelectImportTypeOverlay_Show();
 
-    private void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
+    private async void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
     {
-        YesNoDialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Overlay.ExportToCsv.IncludeImplementedToSupported]);
-
-        YesNoDialog_onYesClick += Main_ExportDataToCsv_DialogYes_Click;
-        YesNoDialog_onNoClick += Main_ExportDataToCsv_DialogNo_Click;
+        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Overlay.ExportToCsv.IncludeImplementedToSupported]);
+        if (result == YesNoResult.Yes) await Main_ExportDataToCsvInternal(true);
+        else await Main_ExportDataToCsvInternal(false);
     }
-    private async void Main_ExportDataToCsv_DialogYes_Click(object? sender, RoutedEventArgs e)
-        => await Main_ExportDataToCsvInternal(true);
-    private async void Main_ExportDataToCsv_DialogNo_Click(object? sender, RoutedEventArgs e)
-        => await Main_ExportDataToCsvInternal(false);
     private async Task Main_ExportDataToCsvInternal(bool includeImplementedToSupported)
     {
-        YesNoDialog_onYesClick -= Main_ExportDataToCsv_DialogYes_Click;
-        YesNoDialog_onNoClick -= Main_ExportDataToCsv_DialogNo_Click;
-        
         string? filePath = await StorageService.SaveFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectSaveFilePath], "csv");
         if (filePath == null) return;
 

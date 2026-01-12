@@ -80,7 +80,7 @@ public partial class MainWindow : Window
         InitializePipeServer();
 
         // Scheme Check (Only Windows)
-        if (ProcessUtils.IsWindows()) CheckScheme();
+        if (ProcessUtils.IsWindows()) _ = CheckScheme();
 
         Main_RenderLeftPanel();
         Main_RenderRightPanel();
