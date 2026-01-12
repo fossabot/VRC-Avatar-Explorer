@@ -83,7 +83,7 @@
                     <Grid RowDefinitions="30,20,*">
                         <TextBlock Grid.Row="0" Text="詳細検索パネル" Foreground="White" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
 
-                        <ScrollViewer MaxHeight="500" Grid.Row="2">
+                        <ScrollViewer Grid.Row="2" VerticalAlignment="Stretch">
                             <StackPanel Spacing="20" Margin="0,10,20,0">
                                 <Grid ColumnDefinitions="90,10,*">
                                     <TextBlock Grid.Row="2" Grid.Column="0" Text="タイトル" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
