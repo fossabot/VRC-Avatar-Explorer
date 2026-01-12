@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Utils;
@@ -40,6 +41,8 @@ internal static class ItemButtonFactory
             Height = 70,
             Stretch = Stretch.Uniform
         };
+        RenderOptions.SetBitmapInterpolationMode(itemIcon, BitmapInterpolationMode.HighQuality);
+
         if (!IconUtils.IsSystemIcon(item.ImageFileName))
         {
             itemIcon.PointerEntered += (s, e) =>
