@@ -34,7 +34,7 @@ public static class FileNameUtils
 
         string safe = builder.ToString();
 
-        safe = safe.Trim(' ', '.', '_');
+        safe = safe.Trim(' ', '　', '.');
 
         if (safe.Length > maxLength) safe = safe[..maxLength];
 
