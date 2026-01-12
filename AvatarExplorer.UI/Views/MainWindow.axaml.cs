@@ -67,6 +67,7 @@ public partial class MainWindow : Window
         TODO: UIのタグを使った翻訳機能を追加する
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるようにしたい
         TODO: アップデータを作る
+        TODO: オーバーレイの背景の色をBindingかなにかで指定してあげる。ライトモードでも使えるように。
         */
 
         InitializeCurrentPath();
