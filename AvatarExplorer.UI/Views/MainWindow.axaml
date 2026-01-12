@@ -79,7 +79,7 @@
                     </Grid>
                 </ScrollViewer>
 
-                <Border x:Name="AdvancedSearchPanel" Grid.Column="2" CornerRadius="15" Background="#af333333" HorizontalAlignment="Right" VerticalAlignment="Stretch" Padding="20" MinWidth="350" Margin="0,0,20,0" IsVisible="False">
+                <Border x:Name="AdvancedSearchPanel" Grid.Column="2" CornerRadius="15" Background="#af333333" HorizontalAlignment="Right" VerticalAlignment="Stretch" Padding="20" MinWidth="350" Margin="0,20,30,20" IsVisible="False">
                     <Grid RowDefinitions="30,20,*">
                         <TextBlock Grid.Row="0" Text="詳細検索パネル" Foreground="White" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
 
