@@ -96,6 +96,11 @@ public static class LocalizationKey
             {
                 public const string IncludeImplementedToSupported = "UI.Overlay.ExportToCsv.IncludeImplementedToSupported";
             }
+
+            public static class AddItem
+            {
+                public const string SelectedAvatarsCount = "UI.Overlay.AddItem.SelectedAvatarsCount";
+            }
         }
 
         public static class Scheme

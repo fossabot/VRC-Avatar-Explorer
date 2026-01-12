@@ -52,7 +52,7 @@ public partial class MainWindow
         _addItemOverlay_addItemWindowValues.SupportedAvatars.Clear();
         _addItemOverlay_addItemWindowValues.SupportedAvatars.AddRange(_editSupportedAvatarsOverlay_selectedAvatars);
 
-        AddItemOverlay_EditSupportedAvatarsButton.Content = string.Format("選択: {0}アバター", _editSupportedAvatarsOverlay_selectedAvatars.Count.ToString()); // TODO: Localizeする。これはテスト用です。
+        AddItemOverlay_UpdateSupportedAvatarsLabel();
 
         EditSupportedAvatarsOverlay_Hide();
     }

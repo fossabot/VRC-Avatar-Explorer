@@ -31,6 +31,7 @@ public partial class MainWindow
         AddItemOverlay.IsVisible = true;
 
         AddItemOverlay_RefleshResetBoothItemDataButton();
+        AddItemOverlay_UpdateSupportedAvatarsLabel();
     }
     private void AddItemOverlay_ShowAdd(IEnumerable<string>? filePaths = null)
     {
@@ -56,6 +57,7 @@ public partial class MainWindow
         EditFoldersOverlay_UpdateFolderList();
 
         AddItemOverlay_RefleshResetBoothItemDataButton();
+        AddItemOverlay_UpdateSupportedAvatarsLabel();
     }
     private void AddItemOverlay_ShowAdd(LaunchInfo launchInfo)
     {
@@ -73,11 +75,13 @@ public partial class MainWindow
         EditFoldersOverlay_UpdateFolderList();
 
         AddItemOverlay_RefleshResetBoothItemDataButton();
+        AddItemOverlay_UpdateSupportedAvatarsLabel();
     }
     private void AddItemOverlay_Hide()
     {
         _addItemOverlay_selectedItem = null;
         _addItemOverlay_addItemWindowValues.Reset();
+        _editSupportedAvatarsOverlay_selectedAvatars.Clear();
         AddItemOverlay.IsVisible = false;
     }
 
@@ -91,6 +95,11 @@ public partial class MainWindow
         }
 
         if (AddItemOverlay_ItemTypeComboBox.Items.Count > 0) AddItemOverlay_ItemTypeComboBox.SelectedIndex = 0;
+    }
+
+    private void AddItemOverlay_UpdateSupportedAvatarsLabel()
+    {
+        AddItemOverlay_EditSupportedAvatarsButton.Content = string.Format(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Overlay.AddItem.SelectedAvatarsCount, _editSupportedAvatarsOverlay_selectedAvatars.Count.ToString()));
     }
 
     private void AddItemOverlay_SetValuesToUi(AddItemOverlayWindowValues addItemWindowValues)
