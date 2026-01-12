@@ -1,5 +1,9 @@
+using System;
+using System.IO;
 using Avalonia;
 using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.UI.Models;
@@ -25,6 +29,8 @@ public partial class MainWindow
         SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory;
         SettingsOverlay_RemoveBracketsCheckBox.IsChecked = runtimeSettings.RemoveBrackets;
         SettingsOverlay_RemoveOriginalCheckBox.IsChecked = runtimeSettings.RemoveOriginal;
+        SettingsOverlay_BackgroundImagePathTextBox.Text = userPreferences.BackgroundImage;
+        SettingsOverlay_BackgroundImageOpacityTextBox.Text = userPreferences.BackgroundOpacity.ToString();
         SettingsOverlay_ItemsPerPageTextBox.Text = userPreferences.ItemsPerPage.ToString();
         SettingsOverlay_ThemeComboBox.SelectedIndex = (int)userPreferences.Theme;
         SettingsOverlay_DefaultLanguageComboBox.SelectedIndex = userPreferences.DefaultLanguage;
@@ -35,7 +41,9 @@ public partial class MainWindow
         _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? "");
         _avatarExplorerApp.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
         _avatarExplorerApp.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
-        _userPreferences.SetItemsPerPage(int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var result) ? result : 30);
+        _userPreferences.SetBackground(SettingsOverlay_BackgroundImagePathTextBox.Text ?? "");
+        _userPreferences.SetBackgroundOpacity(int.TryParse(SettingsOverlay_BackgroundImageOpacityTextBox.Text, out var opacity) ? opacity : 15);
+        _userPreferences.SetItemsPerPage(int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var count) ? count : 30);
         _userPreferences.SetTheme((Theme)SettingsOverlay_ThemeComboBox.SelectedIndex);
         _userPreferences.SetLanguage(SettingsOverlay_DefaultLanguageComboBox.SelectedIndex);
         _avatarExplorerApp.SetItemsSortOrder((SortOrder)SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex);
@@ -62,6 +70,24 @@ public partial class MainWindow
             if (_userPreferences.Theme == Models.Theme.Auto) currentApplication.RequestedThemeVariant = ThemeVariant.Default;
             else if (_userPreferences.Theme == Models.Theme.Dark) currentApplication.RequestedThemeVariant = ThemeVariant.Dark;
             else if (_userPreferences.Theme == Models.Theme.Light) currentApplication.RequestedThemeVariant = ThemeVariant.Light;
+
+            if (File.Exists(_userPreferences.BackgroundImage))
+            {
+                try
+                {
+                    Background = new ImageBrush()
+                    {
+                        Source = new Bitmap(_userPreferences.BackgroundImage),
+                        Opacity = Math.Clamp(_userPreferences.BackgroundOpacity / 100.0, 0, 1),
+                        Stretch = Stretch.UniformToFill
+                    };
+                }
+                catch
+                {
+                    // Ignored
+                }
+
+            }
         }
         
         Main_LanguageComboBox.SelectedIndex = _userPreferences.DefaultLanguage;
@@ -78,6 +104,13 @@ public partial class MainWindow
         if (folders == null || folders.Length == 0) return;
 
         SettingsOverlay_ItemsFolderPathTextBox.Text = folders[0];
+    }
+    private async void SettingsOverlay_OpenBackgroundFile_Click(object? sender, RoutedEventArgs e)
+    {
+        string[]? files = await StorageService.OpenFileDialog(this, "ファイルを選択してください", false);
+        if (files == null || files.Length == 0) return;
+
+        SettingsOverlay_BackgroundImagePathTextBox.Text = files[0];
     }
     private void SettingsOverlay_Border_Click(object? sender, RoutedEventArgs e)
         => SettingsOverlay_Hide();

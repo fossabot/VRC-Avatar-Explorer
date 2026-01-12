@@ -288,7 +288,7 @@
 
         <!-- 設定画面 -->
         <Border x:Name="SettingsOverlay" Background="#80000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="False" PointerPressed="">
-            <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
+            <Border CornerRadius="15" Background="#FF333333" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20" Width="700">
                 <StackPanel Spacing="10">
                     <ScrollViewer MaxHeight="500">
                         <StackPanel>
@@ -302,6 +302,20 @@
                                 <TextBlock Grid.Column="0" TextWrapping="Wrap" Text="データ保存先フォルダ" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
                                 <TextBox x:Name="SettingsOverlay_ItemsFolderPathTextBox" IsReadOnly="True" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                                 <Button Grid.Column="4" Content="フォルダを開く" VerticalAlignment="Center" Margin="0,0,20,0" Click="SettingsOverlay_OpenFolder_Click"/>
+                            </Grid>
+
+                            <!-- 背景設定 -->
+                            <Grid ColumnDefinitions="Auto,*" Margin="0,30,0,10">
+                                <TextBlock Text="背景設定" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="200,10,*,10,Auto" RowDefinitions="*,20,*">
+                                <TextBlock Grid.Column="0" TextWrapping="Wrap" Text="背景写真ファイル" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
+                                <TextBox x:Name="SettingsOverlay_BackgroundImagePathTextBox" IsReadOnly="True" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                <Button Grid.Column="4" Content="ファイルを開く" VerticalAlignment="Center" Margin="0,0,20,0" Click="SettingsOverlay_OpenBackgroundFile_Click"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="透明度" Foreground="White" FontSize="15" VerticalAlignment="Center"/>
+                                <TextBox x:Name="SettingsOverlay_BackgroundImageOpacityTextBox" Grid.Row="2" Grid.Column="2" Text="30" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Center"/>
                             </Grid>
 
                             <!-- アイテム設定 -->
