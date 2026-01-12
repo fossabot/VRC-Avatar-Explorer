@@ -32,6 +32,5 @@ public class SearchFilter
         Tags.Count == 0 &&
         CommonAvatars.Count == 0 &&
         SearchWords.Count == 0 &&
-        !IsOrSearch &&
         !BrokenItems;
 }
