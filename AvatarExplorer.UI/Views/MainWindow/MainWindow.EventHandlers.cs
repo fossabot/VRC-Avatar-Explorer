@@ -93,11 +93,11 @@ public partial class MainWindow
         => e.DragEffects = DragDropEffects.Copy;
     private void Main_DragDrop_Drop(object? sender, DragEventArgs e)
     {
-        IEnumerable<IStorageItem>? storageItems = e.Data.GetFiles();
+        IEnumerable<IStorageItem?> storageItems = e.DataTransfer.GetItems(DataFormat.File).Select(i => i.TryGetFile());
         if (storageItems == null) return;
 
         string[] storageItemPaths = storageItems
-            .Select(i => i.TryGetLocalPath())
+            .Select(i => i?.TryGetLocalPath())
             .Where(i => !string.IsNullOrEmpty(i) && (Directory.Exists(i) || File.Exists(i)))
             .ToArray()!;
 
