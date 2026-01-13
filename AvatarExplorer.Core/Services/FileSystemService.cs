@@ -25,8 +25,16 @@ public static class FileSystemService
     }
     public static T? DeserializeClass<T>(string filePath)
     {
-        string json = File.ReadAllText(filePath);
-        return JsonSerializer.Deserialize<T>(json);
+        try
+        {
+            string json = File.ReadAllText(filePath);
+            return JsonSerializer.Deserialize<T>(json);
+        }
+        catch
+        {
+            return default;
+        }
+
     }
     #endregion
 
