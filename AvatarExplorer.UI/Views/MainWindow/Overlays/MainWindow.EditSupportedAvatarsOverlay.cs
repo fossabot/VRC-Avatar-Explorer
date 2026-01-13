@@ -31,14 +31,19 @@ public partial class MainWindow
     internal void EditSupportedAvatarsOverlay_RefleshList()
     {
         EditSupportedAvatarsOverlay_AvatarsList.Children.Clear();
-        IEnumerable<ItemCountInfo> avatars = _avatarExplorerApp.GetAvatars().Where(i => string.IsNullOrEmpty(EditSupportedAvatarsOverlay_SearchTextBox.Text) || ((Item)i.Item).Title.Contains(EditSupportedAvatarsOverlay_SearchTextBox.Text));
+        IEnumerable<ItemCountInfo> avatars = _avatarExplorerApp.GetAvatars(includeCommonAvatar: true).Where(i => string.IsNullOrEmpty(EditSupportedAvatarsOverlay_SearchTextBox.Text) || (i.Item is Item item && item.Title.Contains(EditSupportedAvatarsOverlay_SearchTextBox.Text)) || (i.Item is CommonAvatar commonAvatar && commonAvatar.GroupName.Contains(EditSupportedAvatarsOverlay_SearchTextBox.Text)));
 
         foreach (ItemCountInfo itemCountInfo in avatars)
         {
-            Button button = ItemButtonFactory.AddItemButton(EditSupportedAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, onClick: EditSupportedAvatarsOverlay_ItemButton_Click);
+            Button button = ItemButtonFactory.AddItemButton(EditSupportedAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, onClick: EditSupportedAvatarsOverlay_ItemButton_Click, normalIconSize: _userPreferences.NormalIconSize, hoverIconSize: _userPreferences.HoverIconSize);
             button.Margin = new Thickness(0, 0, 10, 0); // 通常のリスト用のMarginなのでそれを直す。AddItemButtonの中身でMarginが指定されてるのもどうかと思うけどね。
 
-            if (_editSupportedAvatarsOverlay_selectedAvatars.Contains(((Item)itemCountInfo.Item).ItemPath)) button.Background = new SolidColorBrush(Colors.Green);
+            string avatarPath = string.Empty;
+            
+            if (itemCountInfo.Item is Item item) avatarPath = item.ItemPath;
+            else if (itemCountInfo.Item is CommonAvatar commonAvatar) avatarPath = commonAvatar.GetInternalPath();
+
+            if (!string.IsNullOrEmpty(avatarPath) && _editSupportedAvatarsOverlay_selectedAvatars.Contains(avatarPath)) button.Classes.Add("selected");
         }
     }
 

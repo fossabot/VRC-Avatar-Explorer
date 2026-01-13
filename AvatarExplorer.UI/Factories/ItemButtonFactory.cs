@@ -18,7 +18,7 @@ namespace AvatarExplorer.UI.Factories;
 
 internal static class ItemButtonFactory
 {
-    internal static Button AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null, EventHandler<RoutedEventArgs>? onTagClick = null)
+    internal static Button AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null, int normalIconSize = 70, int hoverIconSize = 200)
     {
         Button itemButton = new()
         {
@@ -38,8 +38,8 @@ internal static class ItemButtonFactory
         Image itemIcon = new()
         {
             Source = ImageService.Get(item.ImageFileName, item.IconType),
-            Width = 70,
-            Height = 70,
+            Width = normalIconSize,
+            Height = normalIconSize,
             Stretch = Stretch.Uniform
         };
         RenderOptions.SetBitmapInterpolationMode(itemIcon, BitmapInterpolationMode.HighQuality);
@@ -48,14 +48,14 @@ internal static class ItemButtonFactory
         {
             itemIcon.PointerEntered += (s, e) =>
             {
-                itemIcon.Width = 200;
+                itemIcon.Width = hoverIconSize;
                 itemIcon.Height = double.NaN;
             };
 
             itemIcon.PointerExited += (s, e) =>
             {
-                itemIcon.Width = 70;
-                itemIcon.Height = 70;
+                itemIcon.Width = normalIconSize;
+                itemIcon.Height = normalIconSize;
             };
         }
         contentPanel.Children.Add(itemIcon);
@@ -100,7 +100,7 @@ internal static class ItemButtonFactory
 
         foreach (string itemTag in item.ItemTags)
         {
-            tagPanel.Children.Add(GetTagButton(itemTag, onTagClick));
+            tagPanel.Children.Add(GetTagButton(itemTag, onClick: null));
         }
 
         textPanel.Children.Add(tagPanel);
@@ -232,6 +232,7 @@ internal static class ItemButtonFactory
                 Tag = new PageButtonInfo(itemTagState, PageButtonState.First, 0),
                 Width = 50
             };
+            firstButton.Classes.Add("button");
             
             Grid.SetColumn(firstButton, 0);
             if (onClick != null) firstButton.Click += onClick;
@@ -250,6 +251,8 @@ internal static class ItemButtonFactory
                 Tag = new PageButtonInfo(itemTagState, PageButtonState.Back, currentPageValue - 1),
                 Width = 50
             };
+            backButton.Classes.Add("button");
+
             Grid.SetColumn(backButton, 1);
             if (onClick != null) backButton.Click += onClick;
             pageGrid.Children.Add(backButton);
@@ -267,6 +270,8 @@ internal static class ItemButtonFactory
                 Tag = new PageButtonInfo(itemTagState, PageButtonState.Next, currentPageValue + 1),
                 Width = 50
             };
+            nextButton.Classes.Add("button");
+
             Grid.SetColumn(nextButton, 2);
             if (onClick != null) nextButton.Click += onClick;
             pageGrid.Children.Add(nextButton);
@@ -284,6 +289,8 @@ internal static class ItemButtonFactory
                 Tag = new PageButtonInfo(itemTagState, PageButtonState.Last, totalPages - 1),
                 Width = 50
             };
+            lastButton.Classes.Add("button");
+
             Grid.SetColumn(lastButton, 3);
             if (onClick != null) lastButton.Click += onClick;
             pageGrid.Children.Add(lastButton);

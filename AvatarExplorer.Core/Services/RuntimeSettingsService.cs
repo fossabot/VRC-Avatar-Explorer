@@ -34,6 +34,7 @@ internal static class RuntimeSettingsService
     {
         if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
         {
+            FileSystemService.PrepareDirectory(SystemPath.DefaultItemsFolderPath);
             settings.SetDataRootDirectory(SystemPath.DefaultItemsFolderPath);
             return false;
         }

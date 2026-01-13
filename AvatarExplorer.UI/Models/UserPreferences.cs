@@ -8,6 +8,12 @@ public class UserPreferences
     public int DefaultLanguage { get; private set; } = 0;
 
     [JsonInclude]
+    public int NormalIconSize { get; private set; } = 70;
+
+    [JsonInclude]
+    public int HoverIconSize { get; private set; } = 200;
+
+    [JsonInclude]
     public bool UseBackgroundImage { get; private set; } = false;
 
     [JsonInclude]
@@ -25,6 +31,8 @@ public class UserPreferences
     internal void FromOther(UserPreferences userPreferences)
     {
         DefaultLanguage = userPreferences.DefaultLanguage;
+        NormalIconSize = userPreferences.NormalIconSize;
+        HoverIconSize = userPreferences.HoverIconSize;
         UseBackgroundImage = userPreferences.UseBackgroundImage;
         BackgroundImage = userPreferences.BackgroundImage;
         BackgroundOpacity = userPreferences.BackgroundOpacity;
@@ -34,6 +42,12 @@ public class UserPreferences
 
     internal void SetLanguage(int index)
         => DefaultLanguage = index;
+
+    internal void SetIconSize(int normal, int hover)
+    {
+        NormalIconSize = normal;
+        HoverIconSize = hover;
+    }
 
     internal void UseBackground(bool value)
         => UseBackgroundImage = value;

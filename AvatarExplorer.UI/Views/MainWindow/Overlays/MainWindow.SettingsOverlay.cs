@@ -29,6 +29,8 @@ public partial class MainWindow
         SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory;
         SettingsOverlay_RemoveBracketsCheckBox.IsChecked = runtimeSettings.RemoveBrackets;
         SettingsOverlay_RemoveOriginalCheckBox.IsChecked = runtimeSettings.RemoveOriginal;
+        SettingsOverlay_NormalIconSizeSlider.Value = userPreferences.NormalIconSize;
+        SettingsOverlay_HoverIconSizeSlider.Value = userPreferences.HoverIconSize;
         SettingsOverlay_UseBackgroundImageCheckBox.IsChecked = userPreferences.UseBackgroundImage;
         SettingsOverlay_BackgroundImagePathTextBox.Text = userPreferences.BackgroundImage;
         SettingsOverlay_BackgroundImageOpacitySlider.Value = userPreferences.BackgroundOpacity;
@@ -42,6 +44,7 @@ public partial class MainWindow
         _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? "");
         _avatarExplorerApp.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
         _avatarExplorerApp.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
+        _userPreferences.SetIconSize((int)SettingsOverlay_NormalIconSizeSlider.Value, (int)SettingsOverlay_HoverIconSizeSlider.Value);
         _userPreferences.UseBackground(SettingsOverlay_UseBackgroundImageCheckBox.IsChecked ?? false);
         _userPreferences.SetBackground(SettingsOverlay_BackgroundImagePathTextBox.Text ?? "");
         _userPreferences.SetBackgroundOpacity(Math.Clamp((int)SettingsOverlay_BackgroundImageOpacitySlider.Value, 0, 100));
@@ -63,43 +66,45 @@ public partial class MainWindow
         Application? currentApplication = Application.Current;
         if (currentApplication != null)
         {
-            /*
-                これも設定する
-                TransparencyLevelHint="AcrylicBlur"
-                Background="Transparent"
-            */
-
-            if (_userPreferences.Theme == Models.Theme.Dark) currentApplication.RequestedThemeVariant = ThemeVariant.Dark;
-            else if (_userPreferences.Theme == Models.Theme.Light) currentApplication.RequestedThemeVariant = ThemeVariant.Light;
-
-            Background = new SolidColorBrush()
+            SettingsOverlay_SetApplicationTheme(currentApplication, _userPreferences.Theme);
+            SettingsOverlay_SetBackground(_userPreferences.Theme);
+            SettingsOverlay_ApplyBackgroundImage(_userPreferences);
+        }
+        
+        Main_LanguageComboBox.SelectedIndex = _userPreferences.DefaultLanguage;
+    }
+    private void SettingsOverlay_SetApplicationTheme(Application application, Theme theme)
+    {
+        if (theme == Models.Theme.Dark) application.RequestedThemeVariant = ThemeVariant.Dark;
+        else if (theme == Models.Theme.Light) application.RequestedThemeVariant = ThemeVariant.Light;
+    }
+    private void SettingsOverlay_SetBackground(Theme theme)
+    {
+        if (theme == Models.Theme.Dark) Background = new SolidColorBrush(new Color(255, 32, 32, 32));
+        else if (theme == Models.Theme.Light) Background = new SolidColorBrush(new Color(255, 249, 249, 249));
+    }
+    private void SettingsOverlay_ApplyBackgroundImage(UserPreferences userPreferences)
+    {
+        if (userPreferences.UseBackgroundImage && File.Exists(userPreferences.BackgroundImage))
+        {
+            try
             {
-                Color = _userPreferences.Theme == Models.Theme.Dark ? new Color(255, 32, 32, 32) : new Color(255, 249, 249, 249)
-            };
-
-            if (_userPreferences.UseBackgroundImage && File.Exists(_userPreferences.BackgroundImage))
-            {
-                try
+                WindowGrid.Background = new ImageBrush()
                 {
-                    WindowGrid.Background = new ImageBrush()
-                    {
-                        Source = new Bitmap(_userPreferences.BackgroundImage),
-                        Opacity = Math.Clamp(_userPreferences.BackgroundOpacity / 100.0, 0, 1),
-                        Stretch = Stretch.UniformToFill
-                    };
-                }
-                catch
-                {
-                    WindowGrid.Background = null;
-                }
+                    Source = new Bitmap(userPreferences.BackgroundImage),
+                    Opacity = Math.Clamp(userPreferences.BackgroundOpacity / 100.0, 0, 1),
+                    Stretch = Stretch.UniformToFill
+                };
             }
-            else
+            catch
             {
                 WindowGrid.Background = null;
             }
         }
-        
-        Main_LanguageComboBox.SelectedIndex = _userPreferences.DefaultLanguage;
+        else
+        {
+            WindowGrid.Background = null;
+        }
     }
     private void SettingsOverlay_ApplyRuntimeSettingsToUi()
     {

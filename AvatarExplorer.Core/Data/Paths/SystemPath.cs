@@ -5,10 +5,9 @@ namespace AvatarExplorer.Core.Data.Paths;
 public static class SystemPath
 {
     public static readonly string SoftwareDataPath = DatabaseUtils.GetSoftwareFolderPath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-    public static readonly string DocumentPath = DatabaseUtils.GetSoftwareFolderPath(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)); // デフォルトのアイテム保存先
     public static readonly string DatabaseFolderPath = DatabaseUtils.GetDataFolderPath(SoftwareDataPath);
     public static readonly string ImagesFolderPath = DatabaseUtils.GetImagesFolderPath(SoftwareDataPath);
-    public static readonly string DefaultItemsFolderPath = DatabaseUtils.GetItemsFolderPath(DocumentPath);
+    public static readonly string DefaultItemsFolderPath = DatabaseUtils.GetItemsFolderPath(SoftwareDataPath);
     public static readonly string SettingsFolderPath = DatabaseUtils.GetSettingsFolderPath(SoftwareDataPath);
 
     public static readonly string TempFolderPath = DatabaseUtils.GetSoftwareFolderPath(Path.GetTempPath());

@@ -5,6 +5,7 @@ using AvatarExplorer.Core.Interfaces;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Utils;
+using AvatarExplorer.UI.Localization;
 
 namespace AvatarExplorer.UI.Models;
 
@@ -34,6 +35,7 @@ internal class UISelectableItem
         else if (source is Category category) FromCategory(category);
         else if (source is FileCategoryItem fileCategoryItem) FromFileCategoryItem(fileCategoryItem);
         else if (source is ItemFile itemFile) FromFileItemFile(itemFile);
+        else if (source is CommonAvatar commonAvatar) FromCommonAvatar(commonAvatar);
     }
 
     internal UISelectableItem(ItemCountInfo itemCountInfo)
@@ -100,5 +102,14 @@ internal class UISelectableItem
         ImageFileName = SystemIconKey.FileIcon;
         Tag = new(ItemTagState.ItemFileCategoryOpen, itemFile.FullPath);
         IconType = IconType.Author;
+    }
+
+    private void FromCommonAvatar(CommonAvatar commonAvatar)
+    {
+        Title = Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, commonAvatar.GroupName);
+        Description = (LocalizationKey.UI.Button.Description.CommonAvatar.Count, [commonAvatar.Avatars.Count.ToString()]);
+        ImageFileName = SystemIconKey.GroupIcon;
+        Tag = new(ItemTagState.None, commonAvatar.GetInternalPath());
+        IconType = IconType.Item;
     }
 }

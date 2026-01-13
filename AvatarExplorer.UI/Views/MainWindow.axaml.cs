@@ -69,6 +69,11 @@ public partial class MainWindow : Window
         TODO: アップデータを作る
         TODO: オーバーレイの背景の色をBindingかなにかで指定してあげる。ライトモードでも使えるように。
         TODO: デフォルトの保存先を空にし、起動時にフォルダがなければ選択してあげる。
+        TODO: Boothのアイテム情報用のUIを考える
+        TODO: デフォルトの保存先を設定させるダイアログを追加
+        TODO: 共通素体グループ作成時に、元のアバターを置き換えるかどうかをダイアログで決める
+        TODO: 共通素体グループ削除時に、共通素体の中のアバターに置き換えるかどうかをダイアログで決める
+        TODO: AEの親フォルダを選択してインポートするとエラーで落ちる問題
         */
 
         InitializeCurrentPath();
@@ -137,7 +142,7 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            ItemButtonFactory.AddItemButton(Main_LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings.RemoveBrackets, itemContextMenu, LeftPanel_ItemButton_Click);
+            ItemButtonFactory.AddItemButton(Main_LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings.RemoveBrackets, itemContextMenu, LeftPanel_ItemButton_Click, _userPreferences.NormalIconSize, _userPreferences.HoverIconSize);
         }
 
         if (currentPage != -1 && items.Count != 0) ItemButtonFactory.AddPageButton(Main_LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Click);
@@ -188,7 +193,7 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Click);
+            ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Click, _userPreferences.NormalIconSize, _userPreferences.HoverIconSize);
         }
 
         if (currentPage != -1 && items.Count != 0) ItemButtonFactory.AddPageButton(Main_RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
@@ -281,7 +286,7 @@ public partial class MainWindow : Window
         foreach (Item item in items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage))
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(item), ItemButton_ContextMenuItem_Click);
-            ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Click);
+            ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RuntimeSettings.RemoveBrackets, itemContextMenu, RightPanel_ItemButton_Click, _userPreferences.NormalIconSize, _userPreferences.HoverIconSize);
         }
 
         if (items.Count != 0) ItemButtonFactory.AddPageButton(Main_RightPanel, ItemTagState.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
@@ -322,7 +327,12 @@ public partial class MainWindow : Window
 
         // 最後に表示されていた画面が検索画面だったら、キャッシュを元にもう一度検索してあげる
         if (_main_isLastWindowSearch) Main_ExecuteSearchItems();
-        else Main_RenderRightPanel();
+        else
+        {
+            // 再読込する前に、前の画面のスクロール位置を保存してあげる
+            Main_SaveScrollViewerOffset(Main_RightPanelScrollViewer, _main_lastRightPanelItemTagState);
+            Main_RenderRightPanel();
+        }
     }
 
     private void Main_CheckPageStates()

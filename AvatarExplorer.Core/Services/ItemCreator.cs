@@ -49,7 +49,7 @@ internal static class ItemCreator
         {
             Title = konoAssetDescription.Name,
             Author = konoAssetDescription.Creator,
-            ThumbnmailFileName = konoAssetDescription.ImageFilename,
+            ThumbnmailFileName = konoAssetDescription.ImageFilename ?? string.Empty,
             ItemMemo = konoAssetDescription.Memo ?? string.Empty,
             BoothId = konoAssetDescription.BoothItemId ?? -1,
             CreatedDate = konoAssetDescription.CreatedAt.ToString(),

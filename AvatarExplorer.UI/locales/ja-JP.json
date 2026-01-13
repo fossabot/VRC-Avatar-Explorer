@@ -12,9 +12,9 @@
     "ItemCategory.Shader": "シェーダー",
 
     "UI.Button.Description.Item.Author": "作者: {0}",
-    "UI.Button.Description.Item.Author.WithAvatar": "作者: {0}  |  共通素体名: {1}",
     "UI.Button.Description.Item.Count": "{0}個の項目",
     "UI.Button.Description.File.Extension": "{0} ファイル",
+    "UI.Button.Description.CommonAvatar.Count": "合計アバター数: {0}",
     
     "UI.Button.Tag.CommonAvatar": "共通素体: {0}",
 

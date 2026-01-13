@@ -3,7 +3,6 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.UI.Factories;
@@ -45,10 +44,10 @@ public partial class MainWindow
 
         foreach (ItemCountInfo itemCountInfo in avatars)
         {
-            Button button = ItemButtonFactory.AddItemButton(EditCommonAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, onClick: EditCommonAvatarsOverlay_ItemButton_Click);
+            Button button = ItemButtonFactory.AddItemButton(EditCommonAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, onClick: EditCommonAvatarsOverlay_ItemButton_Click, normalIconSize: _userPreferences.NormalIconSize, hoverIconSize: _userPreferences.HoverIconSize);
             button.Margin = new Thickness(0, 0, 10, 0); // 通常のリスト用のMarginなのでそれを直す。AddItemButtonの中身でMarginが指定されてるのもどうかと思うけどね。
 
-            if (_editCommonAvatarsOverlay_SelectedGroup?.Avatars.Contains(((Item)itemCountInfo.Item).ItemPath) ?? false) button.Background = new SolidColorBrush(Colors.Green);
+            if (_editCommonAvatarsOverlay_SelectedGroup?.Avatars.Contains(((Item)itemCountInfo.Item).ItemPath) ?? false) button.Classes.Add("selected");
         }
     }
 
@@ -89,10 +88,15 @@ public partial class MainWindow
             return;
         }
 
+        string previousInternalGroupPath = _editCommonAvatarsOverlay_SelectedGroup.GetInternalPath();
+
         string? commonAvatarGroupName = await Main_ShowTextDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Title.NewCommonAvatarGroupName], _editCommonAvatarsOverlay_SelectedGroup.GroupName);
         if (string.IsNullOrEmpty(commonAvatarGroupName)) return;
 
         _editCommonAvatarsOverlay_SelectedGroup.GroupName = commonAvatarGroupName;
+        string newInternalGroupPath = _editCommonAvatarsOverlay_SelectedGroup.GetInternalPath();
+
+        _avatarExplorerApp.RenameCommonAvatarGroupName(previousInternalGroupPath, newInternalGroupPath);
         
         int previousIndex = EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex;
         EditCommonAvatarsOverlay_RefleshGroupList();

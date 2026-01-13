@@ -11,7 +11,7 @@ public class KonoAssetDescription
     public string Creator { get; set; } = "";
 
     [JsonPropertyName("imageFilename")]
-    public string ImageFilename { get; set; } = "";
+    public string? ImageFilename { get; set; } = null;
 
     [JsonPropertyName("tags")]
     public string[] Tags { get; set; } = Array.Empty<string>();
@@ -28,6 +28,6 @@ public class KonoAssetDescription
     [JsonPropertyName("createdAt")]
     public long CreatedAt { get; set; } = 0;
 
-    [JsonPropertyName("publishedAt")]
-    public long PublishedAt { get; set; } = 0;
+    // [JsonPropertyName("publishedAt")]
+    // public long? PublishedAt { get; set; } = null;
 }

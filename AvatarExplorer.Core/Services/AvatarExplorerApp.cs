@@ -103,8 +103,8 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Get API
-    public IReadOnlyList<ItemCountInfo> GetAvatars()
-        => ItemAvatarAggregator.Aggregate(_items, _runtimeSettings);
+    public IReadOnlyList<ItemCountInfo> GetAvatars(bool includeCommonAvatar = false)
+        => ItemAvatarAggregator.Aggregate(_items, _commonAvatars, _runtimeSettings, includeCommonAvatar);
     public IReadOnlyList<ItemCountInfo> GetAuthors()
         => ItemAuthorAggregator.Aggregate(_items);
     public IReadOnlyList<ItemCountInfo> GetCategories()
@@ -321,6 +321,20 @@ public partial class AvatarExplorerApp
         SaveItemDatabase();
 
         return item;
+    }
+    #endregion
+
+    #region Rename CommonAvatar Group Name
+    public void RenameCommonAvatarGroupName(string previousInternalGroupPath, string newInternalGroupPath)
+    {
+        foreach (Item item in _items.Where(i => i.SupportedAvatars.Contains(previousInternalGroupPath)))
+        {
+            List<string> newSupportedAvatars = item.SupportedAvatars
+                .Select(i => i == previousInternalGroupPath ? newInternalGroupPath : i)
+                .ToList();
+            
+            item.SetSupportedAvatars(newSupportedAvatars, true);
+        }
     }
     #endregion
 

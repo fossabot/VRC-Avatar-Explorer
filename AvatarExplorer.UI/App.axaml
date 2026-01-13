@@ -24,6 +24,7 @@
 
                     <SolidColorBrush x:Key="Button.Background" Color="#33EAEAEA"/>
                     <SolidColorBrush x:Key="Button.BorderBrush" Color="#54000000"/>
+                    <SolidColorBrush x:Key="Button.Selected" Color="#8600A900"/>
                     
                     <SolidColorBrush x:Key="GridSplitter.Background" Color="#FFC8C8C8"/>
                 </ResourceDictionary>
@@ -41,6 +42,7 @@
 
                     <SolidColorBrush x:Key="Button.Background" Color="#33FFFFFF"/>
                     <SolidColorBrush x:Key="Button.BorderBrush" Color="#00000000"/>
+                    <SolidColorBrush x:Key="Button.Selected" Color="#8600A900"/>
 
                     <SolidColorBrush x:Key="GridSplitter.Background" Color="#FF646464"/>
                 </ResourceDictionary>
@@ -68,6 +70,10 @@
             <Setter Property="Background" Value="{DynamicResource Button.Background}"/>
             <Setter Property="Foreground" Value="{DynamicResource Text.Primary}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource Button.BorderBrush}"/>
+        </Style>
+
+        <Style Selector="Button.selected">
+            <Setter Property="Background" Value="{DynamicResource Button.Selected}"/>
         </Style>
     </Application.Styles>
 

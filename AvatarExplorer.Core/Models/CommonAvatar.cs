@@ -1,10 +1,11 @@
 ﻿using System.Text.Json.Serialization;
+using AvatarExplorer.Core.Interfaces;
 using AvatarExplorer.Core.Models.V1;
 using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Models;
 
-public class CommonAvatar
+public class CommonAvatar : ISelectableItem
 {
     public string GroupName { get; set; } = string.Empty;
     [JsonInclude] public List<string> Avatars { get; private set; } = new List<string>();
@@ -22,5 +23,18 @@ public class CommonAvatar
         migratedCommonAvatar.SetAvatars(commonAvatar.Avatars, true);
 
         return migratedCommonAvatar;
+    }
+
+    [JsonIgnore] public static readonly string InternalPathPrefix = "<sys:commonavatar>";
+    public string GetInternalPath() => InternalPathPrefix + GroupName;
+    public static string? GetGroupName(string internalPath)
+    {
+        if (string.IsNullOrEmpty(internalPath))
+            return null;
+
+        if (!internalPath.StartsWith(InternalPathPrefix))
+            return null;
+
+        return internalPath[InternalPathPrefix.Length..];
     }
 }

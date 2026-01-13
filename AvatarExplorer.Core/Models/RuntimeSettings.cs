@@ -3,7 +3,6 @@ using AvatarExplorer.Core.Data.Paths;
 
 namespace AvatarExplorer.Core.Models;
 
-
 public class RuntimeSettings
 {
     [JsonInclude]

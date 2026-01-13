@@ -33,6 +33,11 @@ public static class LocalizationKey
                 {
                     public const string Extension = "UI.Button.Description.File.Extension";
                 }
+
+                public static class CommonAvatar
+                {
+                    public const string Count = "UI.Button.Description.CommonAvatar.Count";
+                }
             }
 
             public static class Tag

@@ -13,6 +13,20 @@ internal static class AvatarStatusResolver
             avatarStatus.IsSupported = true;
 
         if (item.Type != ItemType.Clothing) return avatarStatus;
+        
+        // アイテムの対応アバターが共通素体グループで登録されていた時用の処理
+        foreach (string supportedAvatar in item.SupportedAvatars)
+        {
+            if (!supportedAvatar.StartsWith(CommonAvatar.InternalPathPrefix)) continue;
+
+            CommonAvatar? group = commonAvatars.FirstOrDefault(g => g.GroupName == CommonAvatar.GetGroupName(supportedAvatar));
+            if (group != null && group.Avatars.Contains(avatarPath))
+            {
+                avatarStatus.IsCommon = true;
+                avatarStatus.CommonAvatarName = group.GroupName;
+                return avatarStatus;
+            }
+        }
 
         CommonAvatar[] groupsForPath = commonAvatars
             .Where(x => x.Avatars.Contains(avatarPath))

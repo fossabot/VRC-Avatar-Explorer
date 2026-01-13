@@ -12,6 +12,7 @@ internal static class IconUtils
         { SystemIconKey.FolderIcon, ImageService.Load("Assets/FolderIcon.png") },
         { SystemIconKey.FileIcon, ImageService.Load("Assets/FileIcon.png") },
         { SystemIconKey.EmptyIcon, ImageService.Load("Assets/EmptyIcon.png") },
+        { SystemIconKey.GroupIcon, ImageService.Load("Assets/GroupIcon.png") }
     };
 
     internal static bool IsSystemIcon(string fileName)
