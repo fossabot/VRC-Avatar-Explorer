@@ -422,10 +422,7 @@ public partial class AvatarExplorerApp
     {
         (List<Item>, List<CommonAvatar>) result = await DataImporter.FromV1(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, progress);
         
-        _items.Clear();
         _items.AddRange(result.Item1);
-
-        _commonAvatars.Clear();
         _commonAvatars.AddRange(result.Item2);
 
         SaveItemDatabase();
@@ -434,11 +431,7 @@ public partial class AvatarExplorerApp
     public async Task ImportFromKonoAsset(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
     {
         List<Item> items = await DataImporter.FromKonoAsset(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, progress);
-        
-        _items.Clear();
         _items.AddRange(items);
-
-        _commonAvatars.Clear();
 
         SaveItemDatabase();
         SaveCommonAvatarDatabase();
