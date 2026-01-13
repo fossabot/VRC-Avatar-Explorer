@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace AvatarExplorer.Core.Utils;
 
 public static class DatetimeUtils
@@ -9,7 +11,7 @@ public static class DatetimeUtils
         if (long.TryParse(unixTime, out long unixTimeLong))
         {
             DateTime dateTime = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeLong).ToLocalTime().DateTime;
-            return dateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            return dateTime.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
         }
 
         return "Invalid Date";
