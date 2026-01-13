@@ -27,6 +27,7 @@ internal static class ItemButtonFactory
             Margin = new Thickness(15, 0, 20, 0),
             Tag = item.Tag
         };
+        itemButton.Classes.Add("button");
 
         StackPanel contentPanel = new()
         {
@@ -92,6 +93,7 @@ internal static class ItemButtonFactory
         {
             Button commonAvatarButton = GetTagButton(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, item.CommonAvatarName));
             commonAvatarButton.FontWeight = FontWeight.Bold;
+            commonAvatarButton.Foreground = new SolidColorBrush(Colors.White);
             commonAvatarButton.Background = new SolidColorBrush(Colors.Green);
             tagPanel.Children.Add(commonAvatarButton);
         }
@@ -129,7 +131,7 @@ internal static class ItemButtonFactory
             Height = 28,
             FontSize = 13,
             HorizontalContentAlignment = HorizontalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center
         };
 
         if (onClick != null) tagButton.Click += onClick;

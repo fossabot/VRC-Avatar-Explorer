@@ -7,4 +7,68 @@
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="Background.TransparentMain" Color="#B8E8E8E8"/>
+                    <SolidColorBrush x:Key="Background.BorderBrush" Color="#54000000"/>
+
+                    <SolidColorBrush x:Key="BorderBrush.Main" Color="#FFE0E0E0"/>
+                    <SolidColorBrush x:Key="Background.Main" Color="#FFFFFFFF"/>
+
+                    <SolidColorBrush x:Key="Text.Primary"   Color="#FF1A1A1A"/>
+                    <SolidColorBrush x:Key="Text.Secondary" Color="#FF666666"/>
+                    <SolidColorBrush x:Key="Text.Disabled"  Color="#FF9E9E9E"/>
+
+                    <SolidColorBrush x:Key="Button.Background" Color="#33EAEAEA"/>
+                    <SolidColorBrush x:Key="Button.BorderBrush" Color="#54000000"/>
+                    
+                    <SolidColorBrush x:Key="GridSplitter.Background" Color="#FFC8C8C8"/>
+                </ResourceDictionary>
+
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="Background.TransparentMain" Color="#DB333333"/>
+                    <SolidColorBrush x:Key="Background.BorderBrush" Color="#00000000"/>
+
+                    <SolidColorBrush x:Key="BorderBrush.Main" Color="#FF2A2A2A"/>
+                    <SolidColorBrush x:Key="Background.Main" Color="#FF333333"/>
+
+                    <SolidColorBrush x:Key="Text.Primary" Color="#FFF2F2F2"/>
+                    <SolidColorBrush x:Key="Text.Secondary" Color="#FFB0B0B0"/>
+                    <SolidColorBrush x:Key="Text.Disabled"  Color="#FF777777"/>
+
+                    <SolidColorBrush x:Key="Button.Background" Color="#33FFFFFF"/>
+                    <SolidColorBrush x:Key="Button.BorderBrush" Color="#00000000"/>
+
+                    <SolidColorBrush x:Key="GridSplitter.Background" Color="#FF646464"/>
+                </ResourceDictionary>
+
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <Style Selector="Border.overlaybackground">
+            <Setter Property="Background" Value="#80000000"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+        </Style>
+
+        <Style Selector="Border.overlay">
+            <Setter Property="Background" Value="{DynamicResource Background.Main}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="CornerRadius" Value="15"/>
+            <Setter Property="Padding" Value="20"/>
+        </Style>
+
+        <Style Selector="Button.button">
+            <Setter Property="Background" Value="{DynamicResource Button.Background}"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text.Primary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Button.BorderBrush}"/>
+        </Style>
+    </Application.Styles>
+
 </Application>
