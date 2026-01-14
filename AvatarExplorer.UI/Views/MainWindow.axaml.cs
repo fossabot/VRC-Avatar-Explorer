@@ -47,6 +47,7 @@ public partial class MainWindow : Window
     private string _main_lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
     private string _main_searchTextCache = string.Empty;
     internal bool _main_isLastWindowSearch = false;
+    internal bool _main_initialized = false;
 
     private ItemTagState _main_lastRightPanelItemTagState = ItemTagState.None;
 
@@ -86,6 +87,9 @@ public partial class MainWindow : Window
 
         Main_RenderLeftPanel();
         Main_RenderRightPanel();
+
+        _main_initialized = true;
+        CheckFirstLaunching();
     }
 
     public void SetArgs(string[]? args)

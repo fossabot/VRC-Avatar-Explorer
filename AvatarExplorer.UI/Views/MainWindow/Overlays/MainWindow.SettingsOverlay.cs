@@ -23,6 +23,8 @@ public partial class MainWindow
 
     private void SettingsOverlay_SetUiValueFromCurrentSettings() // 設定画面を読み込んだ時に値をセットするための関数
     {
+        if (!_main_initialized) return;
+
         RuntimeSettings runtimeSettings = _avatarExplorerApp.GetRuntimeSettings();
         UserPreferences userPreferences = _userPreferences;
 
@@ -41,6 +43,8 @@ public partial class MainWindow
     }
     private void SettingsOverlay_ApplySettingsValues() // 設定の適用ボタンが押されたときのみ
     {
+        if (!_main_initialized) return;
+
         _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? "");
         _avatarExplorerApp.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
         _avatarExplorerApp.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);

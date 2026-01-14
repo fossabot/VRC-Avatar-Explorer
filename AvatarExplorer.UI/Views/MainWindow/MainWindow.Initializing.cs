@@ -1,7 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Threading;
 using AvatarExplorer.Core.Data.Paths;
@@ -98,6 +97,11 @@ public partial class MainWindow
     {
         string? currentDirectory = Path.GetDirectoryName(ProcessUtils.GetCurrentProcessPath());
         if (currentDirectory != null) Directory.SetCurrentDirectory(currentDirectory);
+    }
+    private void CheckFirstLaunching()
+    {
+        if (_avatarExplorerApp.GetAllItems().Count != 0) return;
+        Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.FirstLaunch.DialogTitle], Localizer.Instance[LocalizationKey.UI.Dialog.FirstLaunch.DialogMessage]);
     }
     private void InitializePipeServer()
     {

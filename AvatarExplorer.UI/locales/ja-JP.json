@@ -47,6 +47,9 @@
     "UI.Dialog.Failed.ItemEdit": "アイテムの編集に失敗しました",
     "UI.Dialog.Failed.GetCommonAvatarGroup": "共通素体グループの取得に失敗しました。",
 
+    "UI.Dialog.FirstLaunch.DialogTitle": "はじめまして！",
+    "UI.Dialog.FirstLaunch.DialogMessage": "Avatar Explorerを使って頂きありがとうございます！\nまず初めに、画面右上の設定からアセットの保存先を変更することをおすすめします！",
+
     "UI.Dialog.SelectSaveFilePath": "ファイルの保存先を選択してください",
     "UI.Dialog.SelectFolderPath": "フォルダを選択してください",
     "UI.Dialog.SelectFilePath": "ファイルを選択してください",

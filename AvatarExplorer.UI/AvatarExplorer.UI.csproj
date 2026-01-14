@@ -25,6 +25,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>none</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.1.1" />
 		<ProjectReference Include="..\AvatarExplorer.Core/AvatarExplorer.Core.csproj" />
 
     <Content Include="locales\**\*">
