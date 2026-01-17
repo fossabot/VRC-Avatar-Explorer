@@ -47,7 +47,6 @@ public partial class MainWindow : Window
     private string _main_lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
     private string _main_searchTextCache = string.Empty;
     internal bool _main_isLastWindowSearch = false;
-    internal bool _main_initialized = false;
 
     private ItemTagState _main_lastRightPanelItemTagState = ItemTagState.None;
 
@@ -66,7 +65,6 @@ public partial class MainWindow : Window
         /* プロジェクトTODO
         TODO: UIのタグを使った翻訳機能を追加する
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるようにしたい
-        TODO: アップデータを作る
         TODO: 共通素体グループ作成時に、元のアバターを置き換えるかどうかをダイアログで決める
         TODO: 共通素体グループ削除時に、共通素体の中のアバターに置き換えるかどうかをダイアログで決める
         TODO: 自動バックアップ機能を作る
@@ -81,17 +79,21 @@ public partial class MainWindow : Window
         InitializeUserPreferences();
         InitializePipeServer();
 
-        // Scheme Check (Only Windows)
-        if (ProcessUtils.IsWindows()) _ = CheckScheme();
-        
         // 設定画面の設定
         SettingsOverlay_SetUiValueFromCurrentSettings();
         SettingsOverlay_ApplySettingsValues();
+    }
 
+    private async void Main_Loaded(object? sender, RoutedEventArgs e)
+    {
         Main_RenderLeftPanel();
         Main_RenderRightPanel();
 
-        _main_initialized = true;
+        // Scheme Check (Only Windows)
+        if (ProcessUtils.IsWindows()) await CheckScheme();
+        
+        await UpdateDialogOverlay_Check();
+
         CheckFirstLaunching();
     }
 

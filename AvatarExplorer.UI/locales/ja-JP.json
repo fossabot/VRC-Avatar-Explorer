@@ -47,6 +47,12 @@
     "UI.Dialog.Failed.ItemEdit": "アイテムの編集に失敗しました",
     "UI.Dialog.Failed.GetCommonAvatarGroup": "共通素体グループの取得に失敗しました。",
 
+    "UI.Dialog.Update.Available": "アップデートが利用可能です",
+    "UI.Dialog.Update.VersionText": "新しいバージョン: {0} (現在のバージョン: {1})",
+    "UI.Dialog.Update.ChangeLogs": "更新内容:",
+    "UI.Dialog.Update.Later": "後で通知",
+    "UI.Dialog.Update.UpdateNow": "今すぐ更新",
+
     "UI.Dialog.FirstLaunch.DialogTitle": "はじめまして！",
     "UI.Dialog.FirstLaunch.DialogMessage": "Avatar Explorerを使って頂きありがとうございます！\nまず初めに、画面右上の設定からアセットの保存先を変更することをおすすめします！",
 

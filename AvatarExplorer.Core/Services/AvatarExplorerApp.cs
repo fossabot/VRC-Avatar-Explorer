@@ -8,6 +8,8 @@ namespace AvatarExplorer.Core.Services;
 
 public partial class AvatarExplorerApp
 {
+    public static readonly string CurrentVersion = "v2.0.0";
+    
     private readonly List<Item> _items = new();
     private readonly List<CommonAvatar> _commonAvatars = new();
 
