@@ -16,6 +16,7 @@ using Avalonia;
 using Avalonia.Layout;
 using Avalonia.Media;
 using AvatarExplorer.UI.Services;
+using System.Threading.Tasks;
 
 namespace AvatarExplorer.UI;
 
@@ -67,7 +68,7 @@ public partial class MainWindow
 
         AddItemOverlay_UpdateSupportedAvatarsLabel();
     }
-    private void AddItemOverlay_ShowAdd(LaunchInfo launchInfo)
+    private async Task AddItemOverlay_ShowAdd(LaunchInfo launchInfo)
     {
         AddItemOverlay_InitializeAddItemWindowCategories();
 
@@ -84,6 +85,8 @@ public partial class MainWindow
         AddItemOverlay_UpdateFolderList();
 
         AddItemOverlay_UpdateSupportedAvatarsLabel();
+        
+        await AddItemOverlay_GetBoothItemData();
     }
     private void AddItemOverlay_Hide()
     {
@@ -235,7 +238,8 @@ public partial class MainWindow
     }
 
     #region Event Handler
-    private async void AddItemOverlay_GetBoothItemData_Click(object? sender, RoutedEventArgs e)
+    private async void AddItemOverlay_GetBoothItemData_Click(object? sender, RoutedEventArgs e) => await AddItemOverlay_GetBoothItemData();
+    private async Task AddItemOverlay_GetBoothItemData()
     {
         string boothUrl = AddItemOverlay_BoothLinkTextBox.Text ?? string.Empty;
 

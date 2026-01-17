@@ -103,10 +103,10 @@ public partial class MainWindow
     }
     private void OnPipeMessageReceived(string[] args)
     {
-        Dispatcher.UIThread.Post(() =>
+        Dispatcher.UIThread.Post(async () =>
         {
             Activate();
-            SetApplicationArgs(args);
+            await SetApplicationArgs(args);
         });
     }
 

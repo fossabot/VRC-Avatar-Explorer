@@ -53,10 +53,8 @@ public partial class MainWindow : Window
     internal readonly UserPreferences _userPreferences = new();
     internal int ItemsPerPage => _userPreferences.ItemsPerPage;
 
-    private bool IsPageSupported(ItemTagState itemTagState)
-        => _main_currentPageStates.ContainsKey(itemTagState);
-    private int GetPage(ItemTagState itemTagState)
-        => IsPageSupported(itemTagState) ? _main_currentPageStates[itemTagState] : -1;
+    private bool IsPageSupported(ItemTagState itemTagState) => _main_currentPageStates.ContainsKey(itemTagState);
+    private int GetPage(ItemTagState itemTagState) => IsPageSupported(itemTagState) ? _main_currentPageStates[itemTagState] : -1;
 
     internal RuntimeSettings RuntimeSettings => _avatarExplorerApp.GetRuntimeSettings();
 
@@ -97,14 +95,14 @@ public partial class MainWindow : Window
         CheckFirstLaunching();
     }
 
-    public void SetApplicationArgs(string[]? args)
+    public async Task SetApplicationArgs(string[]? args)
     {
         if (args?.Length > 0)
         {
             if (string.IsNullOrEmpty(args[0])) return;
 
             LaunchInfo launchInfo = LaunchInfoService.GetLaunchInfo(args[0]);
-            if (launchInfo.AssetDirs.Length != 0 && !string.IsNullOrEmpty(launchInfo.AssetId)) AddItemOverlay_ShowAdd(launchInfo);
+            if (launchInfo.AssetDirs.Length != 0 && !string.IsNullOrEmpty(launchInfo.AssetId)) await AddItemOverlay_ShowAdd(launchInfo);
         }
     }
 
