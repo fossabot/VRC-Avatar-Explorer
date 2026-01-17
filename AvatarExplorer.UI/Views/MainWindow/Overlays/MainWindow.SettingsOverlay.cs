@@ -1,10 +1,13 @@
 using System;
 using System.IO;
+using System.Linq;
 using Avalonia;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Styling;
+using AvatarExplorer.Core.Extensions;
+using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
@@ -123,5 +126,21 @@ public partial class MainWindow
 
         Main_ReloadCurrentWindow();
     }
+
+    private void SettingsOverlay_ImportData_Click(object? sender, RoutedEventArgs e) => SelectImportTypeOverlay_Show();
+    
+    private async void SettingsOverlay_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
+    {
+        string? filePath = await StorageService.SaveFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectSaveFilePath], "csv");
+        if (filePath == null) return;
+
+        var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
+
+        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Overlay.ExportToCsv.IncludeImplementedToSupported]);
+        await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, result == YesNoResult.Yes);
+
+        Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Export]);
+    }
+    private async void SettingsOverlay_EditCommonAvatars_Click(object? sender, RoutedEventArgs e) => EditCommonAvatarsOverlay_Show();
     #endregion
 }

@@ -1,19 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using AvatarExplorer.Core.Extensions;
-using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
-using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Services;
-using AvatarExplorer.UI.Models;
 
 namespace AvatarExplorer.UI;
 
@@ -45,34 +38,7 @@ public partial class MainWindow
     #endregion
 
     #region Main Bottom Buttons
-    // TODO: あとはバックアップだけかも
-    private void Main_SortOrderComboBox_Changed(object? sender, RoutedEventArgs e)
-    {
-        if (sender is not ComboBox comboBox) return;
-        _avatarExplorerApp.SetItemsSortOrder((SortOrder)comboBox.SelectedIndex);
-        Main_ReloadCurrentWindow();
-    }
     private void Main_AddItem_Click(object? sender, RoutedEventArgs e) => AddItemOverlay_ShowAdd();
-    private void Main_ImportData_Click(object? sender, RoutedEventArgs e) => SelectImportTypeOverlay_Show();
-
-    private async void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
-    {
-        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Overlay.ExportToCsv.IncludeImplementedToSupported]);
-        if (result == YesNoResult.Yes) await Main_ExportDataToCsvInternal(true);
-        else await Main_ExportDataToCsvInternal(false);
-    }
-    private async Task Main_ExportDataToCsvInternal(bool includeImplementedToSupported)
-    {
-        string? filePath = await StorageService.SaveFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectSaveFilePath], "csv");
-        if (filePath == null) return;
-
-        var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
-        await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, includeImplementedToSupported);
-
-        Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Export]);
-    }
-    private async void Main_EditCommonAvatars_Click(object? sender, RoutedEventArgs e)
-        => EditCommonAvatarsOverlay_Show();
     #endregion
 
     #region Drag and Drop
