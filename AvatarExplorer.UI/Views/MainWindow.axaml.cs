@@ -64,13 +64,12 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         /* プロジェクトTODO
-        TODO: 言語変更を実装する (UIが完成したらやる)
         TODO: UIのタグを使った翻訳機能を追加する
         TODO: アイテムのカテゴリを変更したときにフォルダを移行できるようにしたい
         TODO: アップデータを作る
-        TODO: Boothのアイテム情報用のUIを考える
         TODO: 共通素体グループ作成時に、元のアバターを置き換えるかどうかをダイアログで決める
         TODO: 共通素体グループ削除時に、共通素体の中のアバターに置き換えるかどうかをダイアログで決める
+        TODO: 自動バックアップ機能を作る
         */
 
         InitializeCurrentPath();
@@ -84,6 +83,10 @@ public partial class MainWindow : Window
 
         // Scheme Check (Only Windows)
         if (ProcessUtils.IsWindows()) _ = CheckScheme();
+        
+        // 設定画面の設定
+        SettingsOverlay_SetUiValueFromCurrentSettings();
+        SettingsOverlay_ApplySettingsValues();
 
         Main_RenderLeftPanel();
         Main_RenderRightPanel();
@@ -92,7 +95,7 @@ public partial class MainWindow : Window
         CheckFirstLaunching();
     }
 
-    public void SetArgs(string[]? args)
+    public void SetApplicationArgs(string[]? args)
     {
         if (args?.Length > 0)
         {

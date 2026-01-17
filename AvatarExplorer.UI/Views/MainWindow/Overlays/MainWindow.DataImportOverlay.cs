@@ -49,13 +49,8 @@ public partial class MainWindow
     }
 
     #region Event Handler
-    private void SelectImportTypeOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => SelectImportTypeOverlay_Hide();
-    private void SelectImportTypeOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
-        => SelectImportTypeOverlay_Hide();
-    private async void SelectImportTypeOverlay_FromV1_Click(object? sender, RoutedEventArgs e)
-        => await SelectImportTypeOverlay_DataImportInternal(DataImportType.V1);
-    private async void SelectImportTypeOverlay_FromKonoAsset_Click(object? sender, RoutedEventArgs e)
-        => await SelectImportTypeOverlay_DataImportInternal(DataImportType.KonoAsset);
+    private void SelectImportTypeOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => SelectImportTypeOverlay_Hide();
+    private async void SelectImportTypeOverlay_FromV1_Click(object? sender, RoutedEventArgs e) => await SelectImportTypeOverlay_DataImportInternal(DataImportType.V1);
+    private async void SelectImportTypeOverlay_FromKonoAsset_Click(object? sender, RoutedEventArgs e) => await SelectImportTypeOverlay_DataImportInternal(DataImportType.KonoAsset);
     #endregion
 }

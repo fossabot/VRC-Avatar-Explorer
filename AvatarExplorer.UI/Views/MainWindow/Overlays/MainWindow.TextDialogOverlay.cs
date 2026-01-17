@@ -8,7 +8,7 @@ public partial class MainWindow
 {
     private TaskCompletionSource<string?>? _textTcs;
 
-    internal Task<string?> Main_ShowTextDialogAsync(string title, string initialText = "")
+    private Task<string?> Main_ShowTextDialogAsync(string title, string initialText = "")
     {
         if (_textTcs != null)
             throw new InvalidOperationException("TextDialog is already shown.");
@@ -32,9 +32,7 @@ public partial class MainWindow
         tcs?.TrySetResult(result);
     }
 
-    private void TextDialogOverlay_Add_Click(object? sender, RoutedEventArgs e)
-        => TextDialogOverlay_Close(TextDialogOverlay_Content.Text);
+    private void TextDialogOverlay_Add_Click(object? sender, RoutedEventArgs e) => TextDialogOverlay_Close(TextDialogOverlay_Content.Text);
 
-    private void TextDialogOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
-        => TextDialogOverlay_Close(null);
+    private void TextDialogOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => TextDialogOverlay_Close(null);
 }

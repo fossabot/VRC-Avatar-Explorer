@@ -4,19 +4,15 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    internal void AddMemoOverlay_Show(string initialMemo = "")
+    private void AddMemoOverlay_Show(string initialMemo = "")
     {
         AddMemoOverlay.IsVisible = true;
         if (!string.IsNullOrEmpty(initialMemo)) AddMemoOverlay_MemoTextBox.Text = initialMemo;
     }
-    internal void AddMemoOverlay_Hide()
-        => AddMemoOverlay.IsVisible = false;
+    private void AddMemoOverlay_Hide() => AddMemoOverlay.IsVisible = false;
 
     #region Event Handler
-    private void AddMemoOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
-        => AddMemoOverlay_Hide();
-    private void AddMemoOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => AddMemoOverlay_Hide();
+    private void AddMemoOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => AddMemoOverlay_Hide();
     private void AddMemoOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
         if (_contextMenu_selectedItem != null)

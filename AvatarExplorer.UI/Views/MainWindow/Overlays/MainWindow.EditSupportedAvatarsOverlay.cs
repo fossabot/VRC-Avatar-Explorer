@@ -3,7 +3,6 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Models;
@@ -12,23 +11,22 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    internal readonly List<string> _editSupportedAvatarsOverlay_selectedAvatars = new();
+    private readonly List<string> _editSupportedAvatarsOverlay_selectedAvatars = new();
     
-    internal void EditSupportedAvatarsOverlay_Show(List<string>? avatars = null)
+    private void EditSupportedAvatarsOverlay_Show(List<string>? avatars = null)
     {
         EditSupportedAvatarsOverlay.IsVisible = true;
         EditSupportedAvatarsOverlay_InitializeList(avatars);
     }
-    internal void EditSupportedAvatarsOverlay_Hide()
-        => EditSupportedAvatarsOverlay.IsVisible = false;
+    private void EditSupportedAvatarsOverlay_Hide() => EditSupportedAvatarsOverlay.IsVisible = false;
     
-    internal void EditSupportedAvatarsOverlay_InitializeList(List<string>? avatars = null)
+    private void EditSupportedAvatarsOverlay_InitializeList(List<string>? avatars = null)
     {
         _editSupportedAvatarsOverlay_selectedAvatars.Clear();
         if (avatars != null) _editSupportedAvatarsOverlay_selectedAvatars.AddRange(avatars);
         EditSupportedAvatarsOverlay_RefleshList();
     }
-    internal void EditSupportedAvatarsOverlay_RefleshList()
+    private void EditSupportedAvatarsOverlay_RefleshList()
     {
         EditSupportedAvatarsOverlay_AvatarsList.Children.Clear();
         IEnumerable<ItemCountInfo> avatars = _avatarExplorerApp.GetAvatars(includeCommonAvatar: true).Where(i => string.IsNullOrEmpty(EditSupportedAvatarsOverlay_SearchTextBox.Text) || (i.Item is Item item && item.Title.Contains(EditSupportedAvatarsOverlay_SearchTextBox.Text)) || (i.Item is CommonAvatar commonAvatar && commonAvatar.GroupName.Contains(EditSupportedAvatarsOverlay_SearchTextBox.Text)));
@@ -48,10 +46,7 @@ public partial class MainWindow
     }
 
     #region Event Handler
-    private void EditSupportedAvatarsOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
-        => EditSupportedAvatarsOverlay_Hide();
-    private void EditSupportedAvatarsOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => EditSupportedAvatarsOverlay_Hide();
+    private void EditSupportedAvatarsOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => EditSupportedAvatarsOverlay_Hide();
     private void EditSupportedAvatarsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
         _addItemOverlay_addItemWindowValues.SupportedAvatars.Clear();
@@ -70,7 +65,6 @@ public partial class MainWindow
         
         EditSupportedAvatarsOverlay_RefleshList();
     }
-    private void EditSupportedAvatarsOverlay_SearchTextBox_Changed(object? sender, RoutedEventArgs e)
-        => EditSupportedAvatarsOverlay_RefleshList();
+    private void EditSupportedAvatarsOverlay_SearchTextBox_Changed(object? sender, RoutedEventArgs e) => EditSupportedAvatarsOverlay_RefleshList();
     #endregion
 }

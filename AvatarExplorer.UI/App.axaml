@@ -1,5 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         x:Class="AvatarExplorer.UI.App"
         RequestedThemeVariant="Dark">
         <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
@@ -17,6 +18,7 @@
 
                     <SolidColorBrush x:Key="BorderBrush.Main" Color="#FFE0E0E0"/>
                     <SolidColorBrush x:Key="Background.Main" Color="#FFFFFFFF"/>
+                    <SolidColorBrush x:Key="Background.Sub" Color="#FFD5D5D5"/>
 
                     <SolidColorBrush x:Key="Text.Primary"   Color="#FF1A1A1A"/>
                     <SolidColorBrush x:Key="Text.Secondary" Color="#FF666666"/>
@@ -35,6 +37,7 @@
 
                     <SolidColorBrush x:Key="BorderBrush.Main" Color="#FF2A2A2A"/>
                     <SolidColorBrush x:Key="Background.Main" Color="#FF333333"/>
+                    <SolidColorBrush x:Key="Background.Sub" Color="#FF1E1E1E"/>
 
                     <SolidColorBrush x:Key="Text.Primary" Color="#FFF2F2F2"/>
                     <SolidColorBrush x:Key="Text.Secondary" Color="#FFB0B0B0"/>
@@ -75,6 +78,8 @@
         <Style Selector="Button.selected">
             <Setter Property="Background" Value="{DynamicResource Button.Selected}"/>
         </Style>
+
+        <materialIcons:MaterialIconStyles />
     </Application.Styles>
 
 </Application>

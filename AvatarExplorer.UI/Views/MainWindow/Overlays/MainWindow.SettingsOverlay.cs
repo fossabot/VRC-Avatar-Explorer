@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using AvatarExplorer.Core.Models;
+using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
 using AvatarExplorer.UI.Services;
 
@@ -13,18 +14,11 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    private void SettingsOverlay_Show()
-    {
-        SettingsOverlay_SetUiValueFromCurrentSettings();
-        SettingsOverlay.IsVisible = true;
-    }
-    private void SettingsOverlay_Hide()
-        => SettingsOverlay.IsVisible = false;
+    private void SettingsOverlay_Show() => SettingsOverlay.IsVisible = true;
+    private void SettingsOverlay_Hide() => SettingsOverlay.IsVisible = false;
 
-    private void SettingsOverlay_SetUiValueFromCurrentSettings() // 設定画面を読み込んだ時に値をセットするための関数
+    private void SettingsOverlay_SetUiValueFromCurrentSettings()
     {
-        if (!_main_initialized) return;
-
         RuntimeSettings runtimeSettings = _avatarExplorerApp.GetRuntimeSettings();
         UserPreferences userPreferences = _userPreferences;
 
@@ -38,13 +32,11 @@ public partial class MainWindow
         SettingsOverlay_BackgroundImageOpacitySlider.Value = userPreferences.BackgroundOpacity;
         SettingsOverlay_ItemsPerPageTextBox.Text = userPreferences.ItemsPerPage.ToString();
         SettingsOverlay_ThemeComboBox.SelectedIndex = (int)userPreferences.Theme;
-        SettingsOverlay_DefaultLanguageComboBox.SelectedIndex = userPreferences.DefaultLanguage;
+        SettingsOverlay_DefaultLanguageComboBox.SelectedIndex = userPreferences.Language;
         SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex = (int)runtimeSettings.ItemSortOrder;
     }
-    private void SettingsOverlay_ApplySettingsValues() // 設定の適用ボタンが押されたときのみ
+    private void SettingsOverlay_ApplySettingsValues()
     {
-        if (!_main_initialized) return;
-
         _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? "");
         _avatarExplorerApp.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
         _avatarExplorerApp.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
@@ -58,27 +50,20 @@ public partial class MainWindow
         _avatarExplorerApp.SetItemsSortOrder((SortOrder)SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex);
 
         SettingsOverlay_ApplyPreferenceSettingsToUi();
-        SettingsOverlay_ApplyRuntimeSettingsToUi();
-
-        // 適用時は自動で保存する
-        _avatarExplorerApp.SaveRuntimeSettings();
-        UserPreferencesService.Save(_userPreferences);
     }
     
     private void SettingsOverlay_ApplyPreferenceSettingsToUi()
     {
-        Application? currentApplication = Application.Current;
-        if (currentApplication != null)
-        {
-            SettingsOverlay_SetApplicationTheme(currentApplication, _userPreferences.Theme);
-            SettingsOverlay_SetBackground(_userPreferences.Theme);
-            SettingsOverlay_ApplyBackgroundImage(_userPreferences);
-        }
-        
-        Main_LanguageComboBox.SelectedIndex = _userPreferences.DefaultLanguage;
+        SettingsOverlay_SetApplicationTheme(Application.Current, _userPreferences.Theme);
+        SettingsOverlay_SetBackground(_userPreferences.Theme);
+        SettingsOverlay_ApplyBackgroundImage(_userPreferences);
+        SettingsOverlay_ApplyLanguage(_userPreferences.Language);
     }
-    private void SettingsOverlay_SetApplicationTheme(Application application, Theme theme)
+    
+    private void SettingsOverlay_SetApplicationTheme(Application? application, Theme theme)
     {
+        if (application == null) return;
+
         if (theme == Models.Theme.Dark) application.RequestedThemeVariant = ThemeVariant.Dark;
         else if (theme == Models.Theme.Light) application.RequestedThemeVariant = ThemeVariant.Light;
     }
@@ -91,28 +76,24 @@ public partial class MainWindow
     {
         if (userPreferences.UseBackgroundImage && File.Exists(userPreferences.BackgroundImage))
         {
-            try
+            WindowGrid.Background = new ImageBrush()
             {
-                WindowGrid.Background = new ImageBrush()
-                {
-                    Source = new Bitmap(userPreferences.BackgroundImage),
-                    Opacity = Math.Clamp(userPreferences.BackgroundOpacity / 100.0, 0, 1),
-                    Stretch = Stretch.UniformToFill
-                };
-            }
-            catch
-            {
-                WindowGrid.Background = null;
-            }
+                Source = new Bitmap(userPreferences.BackgroundImage),
+                Opacity = Math.Clamp(userPreferences.BackgroundOpacity / 100.0, 0, 1),
+                Stretch = Stretch.UniformToFill
+            };
         }
         else
         {
             WindowGrid.Background = null;
         }
     }
-    private void SettingsOverlay_ApplyRuntimeSettingsToUi()
+    private void SettingsOverlay_ApplyLanguage(int language)
     {
-        Main_SortOrderComboBox.SelectedIndex = (int)RuntimeSettings.ItemSortOrder;
+        Localizer.Instance.SetLanguage(language);
+
+        InitializeNoItemsLabel();
+        Main_ReloadCurrentWindow();
     }
 
     #region Event Handler
@@ -130,13 +111,16 @@ public partial class MainWindow
 
         SettingsOverlay_BackgroundImagePathTextBox.Text = files[0];
     }
-    private void SettingsOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => SettingsOverlay_Hide();
-    private void SettingsOverlay_Close_Click(object? sender, RoutedEventArgs e)
-        => SettingsOverlay_Hide();
+    
+    private void SettingsOverlay_Close_Click(object? sender, RoutedEventArgs e) => SettingsOverlay_Hide();
     private void SettingsOverlay_Apply_Click(object? sender, RoutedEventArgs e)
     {
         SettingsOverlay_ApplySettingsValues();
+        
+        // 適用時は自動で保存する
+        _avatarExplorerApp.SaveRuntimeSettings();
+        UserPreferencesService.Save(_userPreferences);
+
         Main_ReloadCurrentWindow();
     }
     #endregion

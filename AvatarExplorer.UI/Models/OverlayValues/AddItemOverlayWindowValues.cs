@@ -7,13 +7,12 @@ namespace AvatarExplorer.UI.Models.OverlayValues;
 internal class AddItemOverlayWindowValues
 {
     internal List<string> Folders { get; set; } = new(); // 新規作成のときにしか使わない
-    internal string MaterialFolder { get; set; } = string.Empty; // 新規作成のときにしか使わない
     internal string Title { get; set; } = string.Empty;
     internal string Author { get; set; } = string.Empty;
-    internal string BoothAuthorId { get; set; } = string.Empty; // 内部の値
-    internal string BoothThumbnailUrl { get; set; } = string.Empty; // 内部の値
-    internal string BoothAuthorThumbnailUrl { get; set; } = string.Empty; // 内部の値
-    internal int BoothId { get; set; } = -1; // 内部の値
+    internal string BoothAuthorId { get; set; } = string.Empty;
+    internal string BoothThumbnailUrl { get; set; } = string.Empty;
+    internal string BoothAuthorThumbnailUrl { get; set; } = string.Empty;
+    internal int BoothId { get; set; } = -1;
     internal ItemType ItemType { get; set; } = ItemType.Avatar;
     internal List<string> SupportedAvatars { get; set; } = new();
 
@@ -29,24 +28,6 @@ internal class AddItemOverlayWindowValues
         ItemType = ItemType.Avatar;
         SupportedAvatars.Clear();
     }
-
-    internal void ResetBoothInfo()
-    {
-        Title = string.Empty;
-        Author = string.Empty;
-        BoothAuthorId = string.Empty;
-        BoothThumbnailUrl = string.Empty;
-        BoothAuthorThumbnailUrl = string.Empty;
-        BoothId = -1;
-    }
-
-    internal bool IsBoothInfoEmpty
-        => Title == string.Empty
-        && Author == string.Empty
-        && BoothAuthorId == string.Empty
-        && BoothThumbnailUrl == string.Empty
-        && BoothAuthorThumbnailUrl == string.Empty
-        && BoothId == -1;
 
     internal void FromItem(Item item)
     {

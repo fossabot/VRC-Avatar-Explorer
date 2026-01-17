@@ -11,11 +11,9 @@ public partial class MainWindow
 
         DialogOverlay.IsVisible = true;
     }
-    private void Dialog_Hide()
-        =>  DialogOverlay.IsVisible = false;
+    private void Dialog_Hide() => DialogOverlay.IsVisible = false;
 
     #region Event Handler
-    private void Dialog_OK_Click(object? sender, RoutedEventArgs e)
-        => Dialog_Hide();
+    private void Dialog_OK_Click(object? sender, RoutedEventArgs e) => Dialog_Hide();
     #endregion
 }

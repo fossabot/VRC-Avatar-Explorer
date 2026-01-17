@@ -23,7 +23,6 @@ public partial class MainWindow
             _avatarExplorerApp.LoadItemDatabase();
             _avatarExplorerApp.LoadCommonAvatarDatabase();
             _avatarExplorerApp.LoadRuntimeSettings();
-            SettingsOverlay_ApplyRuntimeSettingsToUi(); // 並び替え順をセットするため
         }
         catch
         {
@@ -34,10 +33,6 @@ public partial class MainWindow
     {
         var userPreferences = UserPreferencesService.Load(SystemPath.UserPreferencesFilePath);
         _userPreferences.FromOther(userPreferences);
-
-        SettingsOverlay_ApplyPreferenceSettingsToUi();
-
-        UserPreferencesService.Save(_userPreferences);
     }
     private void InitializeNoItemsLabel()
     {
@@ -84,12 +79,10 @@ public partial class MainWindow
     {
         Localizer.Instance.LoadFromFolder("locales");
 
-        Main_LanguageComboBox.Items.Clear();
         SettingsOverlay_DefaultLanguageComboBox.Items.Clear();
 
         foreach (string language in Localizer.Instance.GetLanguageList())
         {
-            Main_LanguageComboBox.Items.Add(language);
             SettingsOverlay_DefaultLanguageComboBox.Items.Add(language);
         }
     }
@@ -113,7 +106,7 @@ public partial class MainWindow
         Dispatcher.UIThread.Post(() =>
         {
             Activate();
-            SetArgs(args);
+            SetApplicationArgs(args);
         });
     }
 

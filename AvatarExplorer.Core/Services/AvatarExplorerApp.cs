@@ -68,13 +68,11 @@ public partial class AvatarExplorerApp
     {
         RuntimeSettings runtimeSettings = RuntimeSettingsService.Load(SystemPath.RuntimeSettingsFilePath);
         SetRuntimeSettingsInternal(runtimeSettings);
-        RuntimeSettingsService.Save(_runtimeSettings);
     }
     public void LoadRuntimeSettings(string path)
     {
         RuntimeSettings runtimeSettings = RuntimeSettingsService.Load(path);
         SetRuntimeSettingsInternal(runtimeSettings);
-        RuntimeSettingsService.Save(_runtimeSettings);
     }
     private void SetRuntimeSettingsInternal(RuntimeSettings runtimeSettings)
     {
@@ -313,9 +311,11 @@ public partial class AvatarExplorerApp
         return addItemResult;
     }
 
-    public Item EditItem(Item item, ItemCreationContext itemCreationContext)
+    public async Task<Item> EditItem(Item item, ItemCreationContext itemCreationContext)
     {
         item.SetValuesFromCreationContext(itemCreationContext);
+        if (itemCreationContext.Folders.Count > 1) await AddFolders(item, itemCreationContext.Folders.Skip(1).ToArray()); // １個より多い場合は、追加のアイテムとしてインポートしてあげる
+
         item.UpdatedDate = DatetimeUtils.GetCurrentUnixTime();
 
         SaveItemDatabase();

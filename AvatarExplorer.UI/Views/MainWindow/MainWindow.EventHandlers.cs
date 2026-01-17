@@ -20,8 +20,7 @@ namespace AvatarExplorer.UI;
 public partial class MainWindow
 {
     #region Left Filter
-    private void Main_LeftFilter_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-        => Main_RenderLeftPanel();
+    private void Main_LeftFilter_SelectionChanged(object? sender, SelectionChangedEventArgs e) => Main_RenderLeftPanel();
     #endregion
 
     #region Main Top Buttons
@@ -36,8 +35,7 @@ public partial class MainWindow
         if (isCurrentSearchNode) Main_ExecuteSearchItems();
         else Main_RenderRightPanel();
     }
-    private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e)
-        => SettingsOverlay_Show();
+    private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e) => SettingsOverlay_Show();
 
     private void Main_AdvancedSearchButton_Click(object? sender, RoutedEventArgs e)
     {
@@ -48,25 +46,14 @@ public partial class MainWindow
 
     #region Main Bottom Buttons
     // TODO: あとはバックアップだけかも
-    private void Main_LanguageComboBox_Changed(object? sender, RoutedEventArgs e)
-    {
-        if (Main_LanguageComboBox == null) return;
-
-        Localizer.Instance.SetLanguage(Main_LanguageComboBox.SelectedIndex);
-
-        InitializeNoItemsLabel();
-        Main_ReloadCurrentWindow();
-    }
     private void Main_SortOrderComboBox_Changed(object? sender, RoutedEventArgs e)
     {
         if (sender is not ComboBox comboBox) return;
         _avatarExplorerApp.SetItemsSortOrder((SortOrder)comboBox.SelectedIndex);
         Main_ReloadCurrentWindow();
     }
-    private void Main_AddItem_Click(object? sender, RoutedEventArgs e)
-        => AddItemOverlay_ShowAdd();
-    private void Main_ImportData_Click(object? sender, RoutedEventArgs e)
-        => SelectImportTypeOverlay_Show();
+    private void Main_AddItem_Click(object? sender, RoutedEventArgs e) => AddItemOverlay_ShowAdd();
+    private void Main_ImportData_Click(object? sender, RoutedEventArgs e) => SelectImportTypeOverlay_Show();
 
     private async void Main_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
     {
@@ -89,8 +76,7 @@ public partial class MainWindow
     #endregion
 
     #region Drag and Drop
-    private void Main_DragDrop_Enter(object? sender, DragEventArgs e)
-        => e.DragEffects = DragDropEffects.Copy;
+    private void Main_DragDrop_Enter(object? sender, DragEventArgs e) => e.DragEffects = DragDropEffects.Copy;
     private void Main_DragDrop_Drop(object? sender, DragEventArgs e)
     {
         IEnumerable<IStorageItem?> storageItems = e.DataTransfer.GetItems(DataFormat.File).Select(i => i.TryGetFile());
@@ -106,7 +92,6 @@ public partial class MainWindow
     #endregion
 
     #region Window Closing
-    private void Main_Closing(object? sender, WindowClosingEventArgs e)
-        => AvatarExplorerApp.ClearTemp();
+    private void Main_Closing(object? sender, WindowClosingEventArgs e) => AvatarExplorerApp.ClearTemp();
     #endregion
 }

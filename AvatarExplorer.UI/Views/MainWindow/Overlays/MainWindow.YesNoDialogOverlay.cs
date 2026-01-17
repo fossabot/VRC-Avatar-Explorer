@@ -9,7 +9,7 @@ public partial class MainWindow
 {
     private TaskCompletionSource<YesNoResult>? _yesNoTcs;
 
-    internal Task<YesNoResult> Main_ShowYesNoDialogAsync(string title, string content)
+    private Task<YesNoResult> Main_ShowYesNoDialogAsync(string title, string content)
     {
         if (_yesNoTcs != null)
             throw new InvalidOperationException("YesNoDialog is already shown.");
@@ -33,9 +33,7 @@ public partial class MainWindow
         tcs?.TrySetResult(result);
     }
 
-    private void YesNoDialog_Yes_Click(object? sender, RoutedEventArgs e)
-        => CloseDialog(YesNoResult.Yes);
+    private void YesNoDialog_Yes_Click(object? sender, RoutedEventArgs e) => CloseDialog(YesNoResult.Yes);
 
-    private void YesNoDialog_No_Click(object? sender, RoutedEventArgs e)
-        => CloseDialog(YesNoResult.No);
+    private void YesNoDialog_No_Click(object? sender, RoutedEventArgs e) => CloseDialog(YesNoResult.No);
 }

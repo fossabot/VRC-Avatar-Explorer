@@ -9,17 +9,16 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    internal readonly List<string> _editTagsOverlay_selectedTags = new();
+    private readonly List<string> _editTagsOverlay_selectedTags = new();
 
-    internal void EditTagsOverlay_Show(List<string>? tags = null)
+    private void EditTagsOverlay_Show(List<string>? tags = null)
     {
         EditTagsOverlay.IsVisible = true;
         EditTagsOverlay_InitializeList(tags);
     }
-    internal void EditTagsOverlay_Hide()
-        => EditTagsOverlay.IsVisible = false;
+    private void EditTagsOverlay_Hide() => EditTagsOverlay.IsVisible = false;
 
-    internal void EditTagsOverlay_InitializeList(List<string>? tags = null)
+    private void EditTagsOverlay_InitializeList(List<string>? tags = null)
     {
         _editTagsOverlay_selectedTags.Clear();
         if (tags != null) _editTagsOverlay_selectedTags.AddRange(tags);
@@ -27,7 +26,7 @@ public partial class MainWindow
         EditTagsOverlay_RefleshList();
         EditTagsOverlay_ReloadTagList();
     }
-    internal void EditTagsOverlay_RefleshList()
+    private void EditTagsOverlay_RefleshList()
     {
         EditTagsOverlay_TagComboBox.Items.Clear();
         IEnumerable<string> tags = _avatarExplorerApp.GetAllItems().SelectMany(i => i.Tags).Distinct();
@@ -37,7 +36,7 @@ public partial class MainWindow
             EditTagsOverlay_TagComboBox.Items.Add(new ComboBoxItem() { Content = tag });
         }
     }
-    internal void EditTagsOverlay_ReloadTagList()
+    private void EditTagsOverlay_ReloadTagList()
     {
         EditTagsOverlay_TagList.Children.Clear();
 
@@ -80,10 +79,7 @@ public partial class MainWindow
 
         EditTagsOverlay_TagComboBox.SelectedIndex = -1;
     }
-    private void EditTagsOverlay_Cancel_Click(object? sender, RoutedEventArgs e)
-        => EditTagsOverlay_Hide();
-    private void EditTagsOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => EditTagsOverlay_Hide();
+    private void EditTagsOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => EditTagsOverlay_Hide();
     private void EditTagsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
         if (_contextMenu_selectedItem != null)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvatarExplorer.Core.Data.Links;
 using AvatarExplorer.Core.Extensions;
@@ -10,6 +11,11 @@ using AvatarExplorer.Core.Models.Booth;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models.OverlayValues;
+using System.IO;
+using Avalonia;
+using Avalonia.Layout;
+using Avalonia.Media;
+using AvatarExplorer.UI.Services;
 
 namespace AvatarExplorer.UI;
 
@@ -23,14 +29,16 @@ public partial class MainWindow
         AddItemOverlay_InitializeAddItemWindowCategories();
 
         _addItemOverlay_selectedItem = item;
-        AddItemOverlay_BoothLinkTextBox.Text = item.GetBoothLink();
+        AddItemOverlay_BoothLinkTextBox.Text = item.BoothId == -1 ? string.Empty : item.GetBoothLink();
 
+        _addItemOverlay_addItemWindowValues.Folders.Clear();
+        _addItemOverlay_addItemWindowValues.Folders.Add(ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath));
         _addItemOverlay_addItemWindowValues.FromItem(item);
+        AddItemOverlay_UpdateFolderList();
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
 
         AddItemOverlay.IsVisible = true;
 
-        AddItemOverlay_RefleshResetBoothItemDataButton();
         AddItemOverlay_UpdateSupportedAvatarsLabel();
     }
     private void AddItemOverlay_ShowAdd(IEnumerable<string>? filePaths = null)
@@ -39,7 +47,7 @@ public partial class MainWindow
         if (AddItemOverlay.IsVisible && filePaths != null)
         {
             _addItemOverlay_addItemWindowValues.Folders.AddRange(filePaths);
-            EditFoldersOverlay_UpdateFolderList();
+            AddItemOverlay_UpdateFolderList();
             return;
         }
 
@@ -49,14 +57,14 @@ public partial class MainWindow
         AddItemOverlay_BoothLinkTextBox.Text = string.Empty;
 
         _addItemOverlay_addItemWindowValues.Reset();
+        
+        if (filePaths != null) _addItemOverlay_addItemWindowValues.Folders.AddRange(filePaths);
+        AddItemOverlay_UpdateFolderList();
+
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
 
         AddItemOverlay.IsVisible = true;
 
-        if (filePaths != null) _addItemOverlay_addItemWindowValues.Folders.AddRange(filePaths);
-        EditFoldersOverlay_UpdateFolderList();
-
-        AddItemOverlay_RefleshResetBoothItemDataButton();
         AddItemOverlay_UpdateSupportedAvatarsLabel();
     }
     private void AddItemOverlay_ShowAdd(LaunchInfo launchInfo)
@@ -67,14 +75,14 @@ public partial class MainWindow
         AddItemOverlay_BoothLinkTextBox.Text = string.Format(BoothLink.ItemURLWithoutAuthorFormat, launchInfo.AssetId);
 
         _addItemOverlay_addItemWindowValues.Reset();
+        
+        _addItemOverlay_addItemWindowValues.Folders.AddRange(launchInfo.AssetDirs);
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
 
         AddItemOverlay.IsVisible = true;
 
-        _addItemOverlay_addItemWindowValues.Folders.AddRange(launchInfo.AssetDirs);
-        EditFoldersOverlay_UpdateFolderList();
+        AddItemOverlay_UpdateFolderList();
 
-        AddItemOverlay_RefleshResetBoothItemDataButton();
         AddItemOverlay_UpdateSupportedAvatarsLabel();
     }
     private void AddItemOverlay_Hide()
@@ -83,6 +91,89 @@ public partial class MainWindow
         _addItemOverlay_addItemWindowValues.Reset();
         _editSupportedAvatarsOverlay_selectedAvatars.Clear();
         AddItemOverlay.IsVisible = false;
+    }
+
+    internal void AddItemOverlay_UpdateFolderList()
+    {
+        AddItemOverlay_FolderList.Children.Clear();
+        AddItemOverlay_FolderList.RowDefinitions.Clear();
+
+        for (int i = 0; i < _addItemOverlay_addItemWindowValues.Folders.Count; i++)
+        {
+            string folder = _addItemOverlay_addItemWindowValues.Folders[i];
+            AddItemOverlay_AddFolderRow(AddItemOverlay_FolderList, i, folder);
+        }
+    }
+    private void AddItemOverlay_AddFolderRow(Grid folderListPanel, int index, string folder)
+    {
+        Border rowBorder = new()
+        {
+            BorderBrush = Brushes.Gray,
+            BorderThickness = new Thickness(0, 0, 0, 1),
+            Padding = new Thickness(8, 6)
+        };
+
+        Grid folderPanel = new()
+        {
+            ColumnDefinitions = new ColumnDefinitions("30,10,*,Auto,5"),
+            ColumnSpacing = 6
+        };
+        rowBorder.Child = folderPanel;
+
+        TextBlock indexLabel = new()
+        {
+            Text = (index + 1).ToString(),
+            FontSize = 16,
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            FontWeight = FontWeight.Bold
+        };
+        Grid.SetColumn(indexLabel, 0);
+        folderPanel.Children.Add(indexLabel);
+
+        TextBlock folderLabel = new()
+        {
+            Text = Path.GetFileName(folder),
+            FontSize = 16,
+            VerticalAlignment = VerticalAlignment.Center,
+            FontWeight = FontWeight.Medium,
+            TextTrimming = TextTrimming.CharacterEllipsis
+        };
+        ToolTip.SetTip(folderLabel, Path.GetFileName(folder));
+        Grid.SetColumn(folderLabel, 2);
+        folderPanel.Children.Add(folderLabel);
+
+        Button folderRemoveButton = new()
+        {
+            Content = Localizer.Instance[LocalizationKey.UI.Overlay.EditFolder.RemoveFolder],
+            FontSize = 14,
+            Padding = new Thickness(10, 4),
+            Background = new SolidColorBrush(Color.FromRgb(210, 0, 0)),
+            Foreground = Brushes.White,
+            BorderBrush = Brushes.DarkRed,
+            BorderThickness = new Thickness(1),
+            Tag = folder
+        };
+        Grid.SetColumn(folderRemoveButton, 3);
+        folderRemoveButton.Click += AddItemOverlay_RemoveButton_Click;
+        folderPanel.Children.Add(folderRemoveButton);
+
+        if (_addItemOverlay_selectedItem != null && index == 0)
+        {
+            folderRemoveButton.IsEnabled = false; // 親フォルダは削除できないように
+        }
+
+        Grid.SetRow(rowBorder, folderListPanel.RowDefinitions.Count);
+        folderListPanel.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        folderListPanel.Children.Add(rowBorder);
+    }
+    private void AddItemOverlay_RemoveButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is string folderPath)
+        {
+            _addItemOverlay_addItemWindowValues.Folders.RemoveAll(i => i == folderPath);
+            AddItemOverlay_UpdateFolderList();
+        }
     }
 
     private void AddItemOverlay_InitializeAddItemWindowCategories()
@@ -99,19 +190,30 @@ public partial class MainWindow
 
     private void AddItemOverlay_UpdateSupportedAvatarsLabel()
     {
-        AddItemOverlay_EditSupportedAvatarsButton.Content = string.Format(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Overlay.AddItem.SelectedAvatarsCount, _editSupportedAvatarsOverlay_selectedAvatars.Count.ToString()));
+        AddItemOverlay_EditSupportedAvatarsButton.Content = string.Format(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Overlay.AddItem.SelectedAvatarsCount, _addItemOverlay_addItemWindowValues.SupportedAvatars.Count.ToString()));
     }
 
     private void AddItemOverlay_SetValuesToUi(AddItemOverlayWindowValues addItemWindowValues)
     {
         AddItemOverlay_BoothItemTitleTextBox.Text = addItemWindowValues.Title;
         AddItemOverlay_BoothItemAuthorTextBox.Text = addItemWindowValues.Author;
+        AddItemOverlay_ItemTypeComboBox.SelectedIndex = (int)addItemWindowValues.ItemType;
+        AddItemOverlay_UpdateSupportedAvatarsLabel();
+        AddItemOverlay_InternalAuthorIdTextBox.Text = addItemWindowValues.BoothAuthorId;
+        AddItemOverlay_InternalBoothIdTextBox.Text = addItemWindowValues.BoothId == -1 ? string.Empty : addItemWindowValues.BoothId.ToString();
+        AddItemOverlay_InternalImageURLTextBox.Text = addItemWindowValues.BoothThumbnailUrl;
+        AddItemOverlay_InternalAuthorImageURLTextBox.Text = addItemWindowValues.BoothAuthorThumbnailUrl;
     }
     private void AddItemOverlay_SetValuesFromUi(AddItemOverlayWindowValues addItemWindowValues)
     {
-        addItemWindowValues.Title = AddItemOverlay_BoothItemTitleTextBox.Text ?? "";
-        addItemWindowValues.Author = AddItemOverlay_BoothItemAuthorTextBox.Text ?? "";
+        addItemWindowValues.Title = AddItemOverlay_BoothItemTitleTextBox.Text ?? string.Empty;
+        addItemWindowValues.Author = AddItemOverlay_BoothItemAuthorTextBox.Text ?? string.Empty;
+        addItemWindowValues.BoothAuthorId = AddItemOverlay_InternalAuthorIdTextBox.Text ?? string.Empty;
+        addItemWindowValues.BoothId = int.TryParse( AddItemOverlay_InternalBoothIdTextBox.Text ?? string.Empty, out int id) ? id : -1;
+        addItemWindowValues.BoothThumbnailUrl = AddItemOverlay_InternalImageURLTextBox.Text ?? string.Empty;
+        addItemWindowValues.BoothAuthorThumbnailUrl = AddItemOverlay_InternalAuthorImageURLTextBox.Text ??string.Empty;
     }
+    
     private (ItemType, string) AddItemOverlay_GetCategoryFromItemWindow()
     {
         int selectedIndex = AddItemOverlay_ItemTypeComboBox.SelectedIndex;
@@ -119,7 +221,7 @@ public partial class MainWindow
         // カスタムカテゴリかどうかのチェック(式: ItemTypeの数 - 無効なItemType数 - カスタムカテゴリ)
         if (selectedIndex >= (Enum.GetValues<ItemType>().Length - CategoryUtils.InvalidItemTypes.Length - 1)) // ここの1はカスタムカテゴリ分
         {
-            return (ItemType.Custom, AddItemOverlay_ItemTypeComboBox.SelectedItem?.ToString() ?? "");
+            return (ItemType.Custom, AddItemOverlay_ItemTypeComboBox.SelectedItem?.ToString() ?? string.Empty);
         }
 
         return ((ItemType)selectedIndex, string.Empty);
@@ -135,7 +237,7 @@ public partial class MainWindow
     #region Event Handler
     private async void AddItemOverlay_GetBoothItemData_Click(object? sender, RoutedEventArgs e)
     {
-        string boothUrl = AddItemOverlay_BoothLinkTextBox.Text ?? "";
+        string boothUrl = AddItemOverlay_BoothLinkTextBox.Text ?? string.Empty;
 
         if (_avatarExplorerApp.IsApiCooldownNow)
         {
@@ -163,25 +265,7 @@ public partial class MainWindow
         _addItemOverlay_addItemWindowValues.BoothAuthorThumbnailUrl = boothItem.Shop.ThumbnailUrl;
         _addItemOverlay_addItemWindowValues.ItemType = (boothItem.EstimatedCategory != ItemType.None && boothItem.EstimatedCategory != ItemType.Unknown) ? boothItem.EstimatedCategory : ItemType.Avatar;
         
-        AddItemOverlay_RefleshResetBoothItemDataButton();
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
-    }
-    private void AddItemOverlay_ResetBoothItemData_Click(object? sender, RoutedEventArgs e)
-    {
-        _addItemOverlay_addItemWindowValues.ResetBoothInfo();
-
-        AddItemOverlay_RefleshResetBoothItemDataButton();
-        AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
-    }
-
-    private void AddItemOverlay_RefleshResetBoothItemDataButton()
-    {
-        AddItemOverlay_ResetBoothItemDataButton.IsVisible = !_addItemOverlay_addItemWindowValues.IsBoothInfoEmpty;
-    }
-
-    private async void AddItemOverlay_EditFolder_Click(object? sender, RoutedEventArgs e)
-    {
-        EditFoldersOverlay_Show();
     }
     private async void AddItemOverlay_AddCustomCategory_Click(object? sender, RoutedEventArgs e)
     {
@@ -194,6 +278,22 @@ public partial class MainWindow
     private void AddItemOverlay_EditSupportedAvatars_Click(object? sender, RoutedEventArgs e)
     {
         EditSupportedAvatarsOverlay_Show(_addItemOverlay_addItemWindowValues.SupportedAvatars);
+    }
+    private async void AddItemOverlay_AddFolder_Click(object? sender, RoutedEventArgs e)
+    {
+        string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
+        if (folders == null || folders.Length == 0) return;
+
+        _addItemOverlay_addItemWindowValues.Folders.AddRange(folders);
+        AddItemOverlay_UpdateFolderList();
+    }
+    private async void AddItemOverlay_AddFile_Click(object? sender, RoutedEventArgs e)
+    {
+        string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
+        if (files == null || files.Length == 0) return;
+
+        _addItemOverlay_addItemWindowValues.Folders.AddRange(files);
+        AddItemOverlay_UpdateFolderList();
     }
 
     private async void AddItemOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
@@ -240,16 +340,16 @@ public partial class MainWindow
         }
         else
         {
-            _avatarExplorerApp.EditItem(_addItemOverlay_selectedItem, itemCreationContext);
+            ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
+            ProgressOverlay_Update(0);
+            await _avatarExplorerApp.EditItem(_addItemOverlay_selectedItem, itemCreationContext);
+            ProgressOverlay_Hide();
             Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemEdit]);
         }
 
         AddItemOverlay_Hide();
     }
     
-    private void AddItemOverlay_Close_Click(object? sender, RoutedEventArgs e)
-        => AddItemOverlay_Hide();
-    private void AddItemOverlay_Border_Click(object? sender, RoutedEventArgs e)
-        => AddItemOverlay_Hide();
+    private void AddItemOverlay_Close_Click(object? sender, RoutedEventArgs e) => AddItemOverlay_Hide();
     #endregion
 }

@@ -15,7 +15,7 @@ public partial class MainWindow
 {
     private CommonAvatar? _editCommonAvatarsOverlay_SelectedGroup = null;
 
-    internal void EditCommonAvatarsOverlay_Show()
+    private void EditCommonAvatarsOverlay_Show()
     {
         EditCommonAvatarsOverlay.IsVisible = true;
 
@@ -24,10 +24,9 @@ public partial class MainWindow
 
         if (EditCommonAvatarsOverlay_GroupComboBox.Items.Count > 0) EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex = 0;
     }
-    internal void EditCommonAvatarsOverlay_Hide()
-        => EditCommonAvatarsOverlay.IsVisible = false;
+    private void EditCommonAvatarsOverlay_Hide() => EditCommonAvatarsOverlay.IsVisible = false;
 
-    internal void EditCommonAvatarsOverlay_RefleshGroupList()
+    private void EditCommonAvatarsOverlay_RefleshGroupList()
     {
         EditCommonAvatarsOverlay_GroupComboBox.Items.Clear();
         foreach (CommonAvatar commonAvatar in _avatarExplorerApp.GetCommonAvatars())
@@ -36,7 +35,7 @@ public partial class MainWindow
         }
     }
 
-    internal void EditCommonAvatarsOverlay_RefleshAvatarList()
+    private void EditCommonAvatarsOverlay_RefleshAvatarList()
     {
         if (EditCommonAvatarsOverlay_AvatarsList == null) return;
         EditCommonAvatarsOverlay_AvatarsList.Children.Clear();
@@ -52,8 +51,7 @@ public partial class MainWindow
     }
 
     #region Event Handler
-    private void EditCommonAvatarsOverlay_Close_Click(object? sender, RoutedEventArgs e)
-        => EditCommonAvatarsOverlay_Hide();
+    private void EditCommonAvatarsOverlay_Close_Click(object? sender, RoutedEventArgs e) => EditCommonAvatarsOverlay_Hide();
     private void EditCommonAvatarsOverlay_ItemButton_Click(object? sender, RoutedEventArgs e)
     {
         if (_editCommonAvatarsOverlay_SelectedGroup == null) return;

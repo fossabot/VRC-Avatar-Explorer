@@ -5,7 +5,7 @@ namespace AvatarExplorer.UI.Models;
 public class UserPreferences
 {
     [JsonInclude]
-    public int DefaultLanguage { get; private set; } = 0;
+    public int Language { get; private set; } = 0;
 
     [JsonInclude]
     public int NormalIconSize { get; private set; } = 70;
@@ -30,7 +30,7 @@ public class UserPreferences
 
     internal void FromOther(UserPreferences userPreferences)
     {
-        DefaultLanguage = userPreferences.DefaultLanguage;
+        Language = userPreferences.Language;
         NormalIconSize = userPreferences.NormalIconSize;
         HoverIconSize = userPreferences.HoverIconSize;
         UseBackgroundImage = userPreferences.UseBackgroundImage;
@@ -40,8 +40,7 @@ public class UserPreferences
         ItemsPerPage = userPreferences.ItemsPerPage;
     }
 
-    internal void SetLanguage(int index)
-        => DefaultLanguage = index;
+    internal void SetLanguage(int index) => Language = index;
 
     internal void SetIconSize(int normal, int hover)
     {
@@ -49,18 +48,13 @@ public class UserPreferences
         HoverIconSize = hover;
     }
 
-    internal void UseBackground(bool value)
-        => UseBackgroundImage = value;
+    internal void UseBackground(bool value) => UseBackgroundImage = value;
 
-    internal void SetBackground(string path)
-        => BackgroundImage = path;
+    internal void SetBackground(string path) => BackgroundImage = path;
 
-    internal void SetBackgroundOpacity(int value)
-        => BackgroundOpacity = value;
+    internal void SetBackgroundOpacity(int value) => BackgroundOpacity = value;
 
-    internal void SetTheme(Theme theme)
-        => Theme = theme;
+    internal void SetTheme(Theme theme) => Theme = theme;
 
-    internal void SetItemsPerPage(int value)
-        => ItemsPerPage = value;
+    internal void SetItemsPerPage(int value) => ItemsPerPage = value;
 }
