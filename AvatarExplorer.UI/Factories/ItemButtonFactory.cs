@@ -18,6 +18,7 @@ namespace AvatarExplorer.UI.Factories;
 
 internal static class ItemButtonFactory
 {
+    private const string ButtonClass = "button";
     internal static Button AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null, int normalIconSize = 70, int hoverIconSize = 200)
     {
         Button itemButton = new()
@@ -27,7 +28,7 @@ internal static class ItemButtonFactory
             Margin = new Thickness(15, 0, 20, 0),
             Tag = item.Tag
         };
-        itemButton.Classes.Add("button");
+        itemButton.Classes.Add(ButtonClass);
 
         Grid contentGrid = new()
         {
@@ -240,7 +241,7 @@ internal static class ItemButtonFactory
                 Tag = new PageButtonInfo(itemTagState, PageButtonState.First, 0),
                 Width = 50
             };
-            firstButton.Classes.Add("button");
+            firstButton.Classes.Add(ButtonClass);
             
             Grid.SetColumn(firstButton, 0);
             if (onClick != null) firstButton.Click += onClick;
@@ -259,7 +260,7 @@ internal static class ItemButtonFactory
                 Tag = new PageButtonInfo(itemTagState, PageButtonState.Back, currentPageValue - 1),
                 Width = 50
             };
-            backButton.Classes.Add("button");
+            backButton.Classes.Add(ButtonClass);
 
             Grid.SetColumn(backButton, 1);
             if (onClick != null) backButton.Click += onClick;
@@ -278,7 +279,7 @@ internal static class ItemButtonFactory
                 Tag = new PageButtonInfo(itemTagState, PageButtonState.Next, currentPageValue + 1),
                 Width = 50
             };
-            nextButton.Classes.Add("button");
+            nextButton.Classes.Add(ButtonClass);
 
             Grid.SetColumn(nextButton, 2);
             if (onClick != null) nextButton.Click += onClick;
@@ -297,7 +298,7 @@ internal static class ItemButtonFactory
                 Tag = new PageButtonInfo(itemTagState, PageButtonState.Last, totalPages - 1),
                 Width = 50
             };
-            lastButton.Classes.Add("button");
+            lastButton.Classes.Add(ButtonClass);
 
             Grid.SetColumn(lastButton, 3);
             if (onClick != null) lastButton.Click += onClick;
