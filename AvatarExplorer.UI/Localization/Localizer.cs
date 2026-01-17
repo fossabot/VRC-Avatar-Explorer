@@ -41,8 +41,7 @@ internal class Localizer
         _selectedLanguageIndex = index;
     }
 
-    internal string GetDisplayName(string localizationKey)
-        => this[localizationKey];
+    internal string GetDisplayName(string localizationKey) => this[localizationKey];
     internal string GetDisplayName(string localizationKey, string arg)
     {
         if (!IsValidIndex) return localizationKey;
@@ -55,6 +54,7 @@ internal class Localizer
         string localizedText = _map[_selectedLanguageIndex].TryGetValue(localizationKey, out var value) ? value : localizationKey;
         return args.Length > 0 ? string.Format(localizedText, args) : localizedText;
     }
+
     internal string this[string key]
     {
         get
