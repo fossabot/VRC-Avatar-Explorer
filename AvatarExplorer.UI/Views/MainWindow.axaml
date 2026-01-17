@@ -576,7 +576,7 @@
             </Border>
         </Border>
 
-        <Border x:Name="UpdateDialogOverlay" Classes="overlaybackground" IsVisible="True">
+        <Border x:Name="UpdateDialogOverlay" Classes="overlaybackground" IsVisible="False">
             <Border Classes="overlay" Width="500" Padding="20">
                 <StackPanel Spacing="15">
 
