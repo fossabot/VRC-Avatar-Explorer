@@ -29,10 +29,10 @@ internal static class ItemButtonFactory
         };
         itemButton.Classes.Add("button");
 
-        StackPanel contentPanel = new()
+        Grid contentGrid = new()
         {
-            Orientation = Orientation.Horizontal,
-            Spacing = 10
+            ColumnSpacing = 10,
+            ColumnDefinitions = new ColumnDefinitions("Auto,*")
         };
 
         Image itemIcon = new()
@@ -40,7 +40,8 @@ internal static class ItemButtonFactory
             Source = ImageService.Get(item.ImageFileName, item.IconType),
             Width = normalIconSize,
             Height = normalIconSize,
-            Stretch = Stretch.Uniform
+            Stretch = Stretch.Uniform,
+            VerticalAlignment = VerticalAlignment.Top
         };
         RenderOptions.SetBitmapInterpolationMode(itemIcon, BitmapInterpolationMode.HighQuality);
 
@@ -58,36 +59,44 @@ internal static class ItemButtonFactory
                 itemIcon.Height = normalIconSize;
             };
         }
-        contentPanel.Children.Add(itemIcon);
+        contentGrid.Children.Add(itemIcon);
+        Grid.SetColumn(itemIcon, 0);
 
-        StackPanel textPanel = new()
+        Grid textGrid = new()
         {
-            Orientation = Orientation.Vertical
+            RowDefinitions = new RowDefinitions("Auto,Auto,5,*")
         };
 
         string itemTitle = StateFlagUtils.IsCategoryState(item.Tag.State) ? Localizer.Instance[item.Title] : item.Title;
         if (removeBrackets && StateFlagUtils.IsItemState(item.Tag.State)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
 
-        textPanel.Children.Add(new TextBlock()
+        TextBlock titleTextBlock = new TextBlock()
         {
             Text = itemTitle,
             FontSize = 16,
             FontWeight = FontWeight.Bold
-        });
-        textPanel.Children.Add(new TextBlock()
+        };
+
+        textGrid.Children.Add(titleTextBlock);
+        Grid.SetRow(titleTextBlock, 0);
+
+        TextBlock descriptionTextBlock = new TextBlock()
         {
             Text = Localizer.Instance.GetDisplayName(item.Description.LocalizationKey, item.Description.Args),
             FontSize = 13
-        });
+        };
 
-        // タグパネルが横に無限に伸びてしまっているのを修正したいが、StackPanelを使っていると難しいため、いつかはGridに移行したい
+        textGrid.Children.Add(descriptionTextBlock);
+        Grid.SetRow(descriptionTextBlock, 1);
+
         WrapPanel tagPanel = new()
         {
             Orientation = Orientation.Horizontal,
             ItemSpacing = 10,
-            LineSpacing = 3,
-            Margin = new Thickness(0, 5, 0, 0)
+            LineSpacing = 3
         };
+        textGrid.Children.Add(tagPanel);
+        Grid.SetRow(tagPanel, 3);
 
         if (!string.IsNullOrEmpty(item.CommonAvatarName))
         {
@@ -103,11 +112,10 @@ internal static class ItemButtonFactory
             tagPanel.Children.Add(GetTagButton(itemTag, onClick: null));
         }
 
-        textPanel.Children.Add(tagPanel);
+        contentGrid.Children.Add(textGrid);
+        Grid.SetColumn(textGrid, 1);
 
-        contentPanel.Children.Add(textPanel);
-
-        itemButton.Content = contentPanel;
+        itemButton.Content = contentGrid;
         if (StateFlagUtils.IsItemState(item.Tag.State))
         {
             ToolTip.SetTip(itemButton, GetTooltipTextFromItem(item));
