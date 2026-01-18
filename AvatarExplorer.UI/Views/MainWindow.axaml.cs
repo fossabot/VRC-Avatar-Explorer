@@ -20,9 +20,9 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow : Window
 {
-    internal readonly AvatarExplorerApp _avatarExplorerApp = new();
+    private readonly AvatarExplorerApp _avatarExplorerApp = new();
 
-    internal readonly Dictionary<ItemTagState, int> _main_currentPageStates = new()
+    private readonly Dictionary<ItemTagState, int> _main_currentPageStates = new()
     {
         { ItemTagState.SearchItem, 0 },
         { ItemTagState.RootAvatar, 0 },
@@ -32,7 +32,7 @@ public partial class MainWindow : Window
         { ItemTagState.RootSelectedItem, 0 },
         { ItemTagState.ItemFileCategoryOpen, 0 }
     };
-    internal readonly Dictionary<ItemTagState, Vector> _main_currentScrollValues = new()
+    private readonly Dictionary<ItemTagState, Vector> _main_currentScrollValues = new()
     {
         { ItemTagState.SearchItem, new() },
         { ItemTagState.RootAvatar, new() },
@@ -46,17 +46,17 @@ public partial class MainWindow : Window
 
     private string _main_lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
     private string _main_searchTextCache = string.Empty;
-    internal bool _main_isLastWindowSearch = false;
+    private bool _main_isLastWindowSearch = false;
 
     private ItemTagState _main_lastRightPanelItemTagState = ItemTagState.None;
 
-    internal readonly UserPreferences _userPreferences = new();
-    internal int ItemsPerPage => _userPreferences.ItemsPerPage;
+    private readonly UserPreferences _userPreferences = new();
+    private int ItemsPerPage => _userPreferences.ItemsPerPage;
 
     private bool IsPageSupported(ItemTagState itemTagState) => _main_currentPageStates.ContainsKey(itemTagState);
     private int GetPage(ItemTagState itemTagState) => IsPageSupported(itemTagState) ? _main_currentPageStates[itemTagState] : -1;
 
-    internal RuntimeSettings RuntimeSettings => _avatarExplorerApp.GetRuntimeSettings();
+    private RuntimeSettings RuntimeSettings => _avatarExplorerApp.GetRuntimeSettings();
 
     public MainWindow()
     {
