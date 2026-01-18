@@ -56,7 +56,12 @@ public partial class MainWindow
             EditTagsOverlay_ReloadTagList();
         }
     }
-    private void EditTagsOverlay_AddTagButton_Click(object? sender, RoutedEventArgs e)
+    private void EditTagsOverlay_TagTextBox_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter) EditTagsOverlay_AddTagByText();
+    }
+    private void EditTagsOverlay_AddTagButton_Click(object? sender, RoutedEventArgs e) => EditTagsOverlay_AddTagByText();
+    private void EditTagsOverlay_AddTagByText()
     {
         if (!string.IsNullOrEmpty(EditTagsOverlay_TagTextBox.Text) && !_editTagsOverlay_selectedTags.Contains(EditTagsOverlay_TagTextBox.Text))
         {
@@ -68,14 +73,12 @@ public partial class MainWindow
     }
     private void EditTagsOverlay_TagComboBox_SelectionChanged(object? sender, RoutedEventArgs e)
     {
-        if (EditTagsOverlay_TagComboBox.SelectedItem == null || _editTagsOverlay_selectedTags.Contains(((ComboBoxItem)EditTagsOverlay_TagComboBox.SelectedItem).Content))
+        string? selectedTag = (EditTagsOverlay_TagComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
+        if (string.IsNullOrEmpty(selectedTag) || _editTagsOverlay_selectedTags.Contains(selectedTag))
         {
             EditTagsOverlay_TagComboBox.SelectedIndex = -1;
             return;
         }
-
-        string? selectedTag = ((ComboBoxItem)EditTagsOverlay_TagComboBox.SelectedItem).Content?.ToString();
-        if (string.IsNullOrEmpty(selectedTag)) return;
 
         _editTagsOverlay_selectedTags.Add(selectedTag);
         EditTagsOverlay_ReloadTagList();
