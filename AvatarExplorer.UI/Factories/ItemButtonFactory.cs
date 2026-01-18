@@ -52,7 +52,8 @@ internal static class ItemButtonFactory
 
     private static Image CreateItemIcon(UISelectableItem item, UserPreferences userPreferences)
     {
-        Image itemIcon = new() {
+        Image itemIcon = new()
+        {
             Source = ImageService.Get(item.ImageFileName, item.IconType),
             Width = userPreferences.NormalIconSize,
             Height = userPreferences.NormalIconSize,
@@ -67,6 +68,7 @@ internal static class ItemButtonFactory
                 itemIcon.Width = userPreferences.HoverIconSize;
                 itemIcon.Height = double.NaN;
             };
+            
             itemIcon.PointerExited += (s, e) => {
                 itemIcon.Width = userPreferences.NormalIconSize;
                 itemIcon.Height = userPreferences.NormalIconSize;
