@@ -469,10 +469,10 @@
                     <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="アイテムタグの編集" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
 
                     <!-- アイテムタグリスト -->
-                    <ScrollViewer Height="160" Margin="0,10,0,10">
+                    <ScrollViewer x:Name="EditTagsOverlay_TagListScrollViewer" Height="160" Margin="0,10,0,10">
                         <Grid>
                             <Border Background="{DynamicResource Background.Sub}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="10" Padding="10">
-                                <WrapPanel x:Name="EditTagsOverlay_TagList" VerticalAlignment="Stretch" LineSpacing="10" ItemSpacing="10"/>
+                                <WrapPanel x:Name="EditTagsOverlay_TagList" VerticalAlignment="Stretch" LineSpacing="5" ItemSpacing="5"/>
                             </Border>
                         </Grid>
                     </ScrollViewer>

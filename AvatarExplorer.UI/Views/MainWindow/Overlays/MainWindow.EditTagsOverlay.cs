@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -10,6 +11,7 @@ namespace AvatarExplorer.UI;
 public partial class MainWindow
 {
     private readonly List<string> _editTagsOverlay_selectedTags = new();
+    private static readonly Vector VectorMaxValue = new(double.MaxValue, double.MaxValue);
 
     private void EditTagsOverlay_Show(List<string>? tags = null)
     {
@@ -43,8 +45,12 @@ public partial class MainWindow
 
         foreach (string tag in _editTagsOverlay_selectedTags)
         {
-            EditTagsOverlay_TagList.Children.Add(ItemButtonFactory.GetTagButton(tag, EditTagsOverlay_Tag_Click));
+            Button tagButton = ItemButtonFactory.GetTagButton(tag, EditTagsOverlay_Tag_Click);
+            tagButton.Classes.Add("accent");
+            EditTagsOverlay_TagList.Children.Add(tagButton);
         }
+
+        EditTagsOverlay_TagListScrollViewer.Offset = VectorMaxValue;
     }
 
     #region Event Handler

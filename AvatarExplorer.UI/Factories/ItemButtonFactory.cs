@@ -78,7 +78,7 @@ internal static class ItemButtonFactory
 
     private static Grid CreateTextAndTagGrid(UISelectableItem item, RuntimeSettings runtimeSettings, UserPreferences userPreferences)
     {
-        Grid textGrid = new() { RowDefinitions = new("Auto,Auto,5,*") };
+        Grid textGrid = new() { RowDefinitions = new("Auto,Auto,8,*") };
 
         string itemTitle = GetFormattedTitle(item, runtimeSettings);
         
@@ -112,12 +112,11 @@ internal static class ItemButtonFactory
 
     private static WrapPanel CreateTagPanel(UISelectableItem item)
     {
-        WrapPanel tagPanel = new() { Orientation = Orientation.Horizontal, ItemSpacing = 10, LineSpacing = 3 };
+        WrapPanel tagPanel = new() { Orientation = Orientation.Horizontal, ItemSpacing = 5, LineSpacing = 5 };
 
         if (!string.IsNullOrEmpty(item.CommonAvatarName))
         {
             Button commonAvatarButton = GetTagButton(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, item.CommonAvatarName));
-            commonAvatarButton.FontWeight = FontWeight.Bold;
             commonAvatarButton.Foreground = new SolidColorBrush(Colors.White);
             commonAvatarButton.Background = new SolidColorBrush(Colors.Green);
             tagPanel.Children.Add(commonAvatarButton);
@@ -125,7 +124,9 @@ internal static class ItemButtonFactory
 
         foreach (string itemTag in item.ItemTags)
         {
-            tagPanel.Children.Add(GetTagButton(itemTag, onClick: null));
+            Button tagButton = GetTagButton(itemTag, onClick: null);
+            tagButton.Classes.Add("accent");
+            tagPanel.Children.Add(tagButton);
         }
         return tagPanel;
     }
