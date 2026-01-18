@@ -27,6 +27,10 @@ public partial class MainWindow
 
     #region Event Handler
     private void UpdateDialogOverlay_Later_Click(object? sender, RoutedEventArgs e) => UpdateDialogOverlay_Hide();
-    private async void UpdateDialogOverlay_UpdateNow_Click(object? sender, RoutedEventArgs e) => await LauncherService.OpenLink(this, SoftwareLink.LatestReleasePageURL);
+    private async void UpdateDialogOverlay_UpdateNow_Click(object? sender, RoutedEventArgs e)
+    {
+        await LauncherService.OpenLink(this, SoftwareLink.LatestReleasePageURL);
+        UpdateDialogOverlay_Hide();
+    }
     #endregion
 }
