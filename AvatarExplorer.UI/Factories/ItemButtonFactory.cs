@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -19,25 +18,41 @@ namespace AvatarExplorer.UI.Factories;
 internal static class ItemButtonFactory
 {
     private const string ButtonClass = "button";
+    private const string PageButtonClass = "pagebutton";
+
     internal static Button AddItemButton(StackPanel parent, UISelectableItem item, RuntimeSettings runtimeSettings, UserPreferences userPreferences, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
-        Button itemButton = new()
-        {
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Top,
-            Margin = new Thickness(15, 0, 20, 0),
-            Tag = item.Tag
-        };
-        itemButton.Classes.Add(ButtonClass);
+        Button itemButton = CreateBaseButton(item);
+        
+        Grid contentGrid = new() { ColumnSpacing = 10, ColumnDefinitions = new("Auto,*") };
 
-        Grid contentGrid = new()
-        {
-            ColumnSpacing = 10,
-            ColumnDefinitions = new ColumnDefinitions("Auto,*")
-        };
+        // アイコン
+        Image itemIcon = CreateItemIcon(item, userPreferences);
+        contentGrid.Children.Add(itemIcon);
+        Grid.SetColumn(itemIcon, 0);
 
-        Image itemIcon = new()
-        {
+        // テキスト + タグ部分
+        Grid textGrid = CreateTextAndTagGrid(item, runtimeSettings, userPreferences);
+        contentGrid.Children.Add(textGrid);
+        Grid.SetColumn(textGrid, 1);
+
+        itemButton.Content = contentGrid;
+        SetupButtonInteractions(itemButton, item, contextMenu, onClick);
+
+        parent.Children.Add(itemButton);
+        return itemButton;
+    }
+
+    private static Button CreateBaseButton(UISelectableItem item)
+    {
+        Button button = new() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Top, Margin = new(15, 0, 20, 0), Tag = item.Tag };
+        button.Classes.Add(ButtonClass);
+        return button;
+    }
+
+    private static Image CreateItemIcon(UISelectableItem item, UserPreferences userPreferences)
+    {
+        Image itemIcon = new() {
             Source = ImageService.Get(item.ImageFileName, item.IconType),
             Width = userPreferences.NormalIconSize,
             Height = userPreferences.NormalIconSize,
@@ -48,56 +63,56 @@ internal static class ItemButtonFactory
 
         if (!IconUtils.IsSystemIcon(item.ImageFileName) && userPreferences.EnableHoverIconSize)
         {
-            itemIcon.PointerEntered += (s, e) =>
-            {
+            itemIcon.PointerEntered += (s, e) => {
                 itemIcon.Width = userPreferences.HoverIconSize;
                 itemIcon.Height = double.NaN;
             };
-
-            itemIcon.PointerExited += (s, e) =>
-            {
+            itemIcon.PointerExited += (s, e) => {
                 itemIcon.Width = userPreferences.NormalIconSize;
                 itemIcon.Height = userPreferences.NormalIconSize;
             };
         }
-        contentGrid.Children.Add(itemIcon);
-        Grid.SetColumn(itemIcon, 0);
 
-        Grid textGrid = new()
-        {
-            RowDefinitions = new RowDefinitions("Auto,Auto,5,*")
-        };
+        return itemIcon;
+    }
 
-        string itemTitle = StateFlagUtils.IsCategoryState(item.Tag.State) ? Localizer.Instance[item.Title] : item.Title;
-        if (runtimeSettings.RemoveBrackets && StateFlagUtils.IsItemState(item.Tag.State)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
+    private static Grid CreateTextAndTagGrid(UISelectableItem item, RuntimeSettings runtimeSettings, UserPreferences userPreferences)
+    {
+        Grid textGrid = new() { RowDefinitions = new("Auto,Auto,5,*") };
 
-        TextBlock titleTextBlock = new TextBlock()
-        {
-            Text = itemTitle,
-            FontSize = 16,
-            FontWeight = FontWeight.Bold
-        };
-
-        textGrid.Children.Add(titleTextBlock);
+        string itemTitle = GetFormattedTitle(item, runtimeSettings);
+        
+        TextBlock titleTextBlock = new TextBlock() { Text = itemTitle, FontSize = 16, FontWeight = FontWeight.Bold };
         Grid.SetRow(titleTextBlock, 0);
+        textGrid.Children.Add(titleTextBlock);
 
-        TextBlock descriptionTextBlock = new TextBlock()
-        {
-            Text = Localizer.Instance.GetDisplayName(item.Description.LocalizationKey, item.Description.Args),
-            FontSize = 13
-        };
-
-        textGrid.Children.Add(descriptionTextBlock);
+        TextBlock descriptionTextBlock = new TextBlock() { Text = Localizer.Instance.GetDisplayName(item.Description.LocalizationKey, item.Description.Args), FontSize = 13 };
         Grid.SetRow(descriptionTextBlock, 1);
+        textGrid.Children.Add(descriptionTextBlock);
 
-        WrapPanel tagPanel = new()
-        {
-            Orientation = Orientation.Horizontal,
-            ItemSpacing = 10,
-            LineSpacing = 3
-        };
-        textGrid.Children.Add(tagPanel);
+        WrapPanel tagPanel = CreateTagPanel(item);
         Grid.SetRow(tagPanel, 3);
+        textGrid.Children.Add(tagPanel);
+
+        return textGrid;
+    }
+
+    private static string GetFormattedTitle(UISelectableItem item, RuntimeSettings runtimeSettings)
+    {
+        string title = StateFlagUtils.IsCategoryState(item.Tag.State) ? Localizer.Instance[item.Title] : item.Title;
+
+        // アイテムの場合は設定をチェックして括弧を削除してあげる
+        if (runtimeSettings.RemoveBrackets && StateFlagUtils.IsItemState(item.Tag.State))
+        {
+            title = ItemUtils.RemoveBrackets(title);
+        }
+
+        return title;
+    }
+
+    private static WrapPanel CreateTagPanel(UISelectableItem item)
+    {
+        WrapPanel tagPanel = new() { Orientation = Orientation.Horizontal, ItemSpacing = 10, LineSpacing = 3 };
 
         if (!string.IsNullOrEmpty(item.CommonAvatarName))
         {
@@ -112,36 +127,24 @@ internal static class ItemButtonFactory
         {
             tagPanel.Children.Add(GetTagButton(itemTag, onClick: null));
         }
+        return tagPanel;
+    }
 
-        contentGrid.Children.Add(textGrid);
-        Grid.SetColumn(textGrid, 1);
-
-        itemButton.Content = contentGrid;
+    private static void SetupButtonInteractions(Button button, UISelectableItem item, ContextMenu? contextMenu, EventHandler<RoutedEventArgs>? onClick)
+    {
         if (StateFlagUtils.IsItemState(item.Tag.State))
         {
-            ToolTip.SetTip(itemButton, GetTooltipTextFromItem(item));
-            ToolTip.SetBetweenShowDelay(itemButton, -1);
+            ToolTip.SetTip(button, GetTooltipTextFromItem(item));
+            ToolTip.SetBetweenShowDelay(button, -1);
         }
 
-        if (contextMenu != null && contextMenu.ItemCount > 0) itemButton.ContextMenu = contextMenu;
-        if (onClick != null) itemButton.Click += onClick;
-
-        parent.Children.Add(itemButton);
-
-        return itemButton;
+        if (contextMenu != null && contextMenu.ItemCount > 0) button.ContextMenu = contextMenu;
+        if (onClick != null) button.Click += onClick;
     }
 
     internal static Button GetTagButton(string text, EventHandler<RoutedEventArgs>? onClick = null)
     {
-        Button tagButton = new Button()
-        {
-            Content = text,
-            CornerRadius = new CornerRadius(15),
-            Height = 28,
-            FontSize = 13,
-            HorizontalContentAlignment = HorizontalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center
-        };
+        Button tagButton = new Button() { Content = text, CornerRadius = new(15), Height = 28, FontSize = 13, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
 
         if (onClick != null) tagButton.Click += onClick;
         return tagButton;
@@ -192,39 +195,19 @@ internal static class ItemButtonFactory
         bool renderNextButton = currentPageValue < totalPages - 1;
         bool renderLastButton = currentPageValue < totalPages - 1;
 
-        Grid pageGrid = new()
-        {
-            ColumnDefinitions = new ColumnDefinitions("*,*,*,*"),
-            ColumnSpacing = 10,
-            Margin = new Thickness(30, 0, 30, 0)
-        };
+        Grid pageGrid = new() { ColumnDefinitions = new("*,*,*,*"), ColumnSpacing = 10, Margin = new(50, 0, 50, 0) };
 
-        StackPanel pageInfoStackPanel = new()
-        {
-            Orientation = Orientation.Vertical,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        };
+        StackPanel pageInfoStackPanel = new() { Orientation = Orientation.Vertical, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
 
         Grid.SetColumn(pageInfoStackPanel, 0);
         Grid.SetColumnSpan(pageInfoStackPanel, 4);
 
-        TextBlock pageTextBlock = new()
-        {
-            Text = Localizer.Instance.GetDisplayName(LocalizationKey.UI.ItemWindow.Page, [(currentPageValue + 1).ToString(), totalPages.ToString()]),
-            FontSize = 15,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        };
+        string pageTextString = Localizer.Instance.GetDisplayName(LocalizationKey.UI.ItemWindow.Page, [(currentPageValue + 1).ToString(), totalPages.ToString()]);
+        TextBlock pageTextBlock = new() { Text = pageTextString, FontSize = 15, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
         pageInfoStackPanel.Children.Add(pageTextBlock);
 
-        TextBlock itemsCountTextBlock = new()
-        {
-            Text = Localizer.Instance.GetDisplayName(LocalizationKey.UI.ItemWindow.PageItemCount, [start.ToString(), end.ToString(), totalItemCount.ToString()]),
-            FontSize = 15,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        };
+        string itemsCountTextString = Localizer.Instance.GetDisplayName(LocalizationKey.UI.ItemWindow.PageItemCount, [start.ToString(), end.ToString(), totalItemCount.ToString()]);
+        TextBlock itemsCountTextBlock = new() { Text = itemsCountTextString, FontSize = 15, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
         pageInfoStackPanel.Children.Add(itemsCountTextBlock);
 
         pageGrid.Children.Add(pageInfoStackPanel);
@@ -234,14 +217,11 @@ internal static class ItemButtonFactory
             Button firstButton = new()
             {
                 Content = "<<",
-                FontSize = 15,
                 HorizontalAlignment = HorizontalAlignment.Right,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                Tag = new PageButtonInfo(itemTagState, PageButtonState.First, 0),
-                Width = 50
+                Tag = new PageButtonInfo(itemTagState, PageButtonState.First, 0)
             };
             firstButton.Classes.Add(ButtonClass);
+            firstButton.Classes.Add(PageButtonClass);
             
             Grid.SetColumn(firstButton, 0);
             if (onClick != null) firstButton.Click += onClick;
@@ -253,14 +233,11 @@ internal static class ItemButtonFactory
             Button backButton = new()
             {
                 Content = "<",
-                FontSize = 15,
                 HorizontalAlignment = HorizontalAlignment.Left,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
                 Tag = new PageButtonInfo(itemTagState, PageButtonState.Back, currentPageValue - 1),
-                Width = 50
             };
             backButton.Classes.Add(ButtonClass);
+            backButton.Classes.Add(PageButtonClass);
 
             Grid.SetColumn(backButton, 1);
             if (onClick != null) backButton.Click += onClick;
@@ -272,14 +249,11 @@ internal static class ItemButtonFactory
             Button nextButton = new()
             {
                 Content = ">",
-                FontSize = 15,
                 HorizontalAlignment = HorizontalAlignment.Right,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                Tag = new PageButtonInfo(itemTagState, PageButtonState.Next, currentPageValue + 1),
-                Width = 50
+                Tag = new PageButtonInfo(itemTagState, PageButtonState.Next, currentPageValue + 1)
             };
             nextButton.Classes.Add(ButtonClass);
+            nextButton.Classes.Add(PageButtonClass);
 
             Grid.SetColumn(nextButton, 2);
             if (onClick != null) nextButton.Click += onClick;
@@ -291,14 +265,11 @@ internal static class ItemButtonFactory
             Button lastButton = new()
             {
                 Content = ">>",
-                FontSize = 15,
                 HorizontalAlignment = HorizontalAlignment.Left,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                Tag = new PageButtonInfo(itemTagState, PageButtonState.Last, totalPages - 1),
-                Width = 50
+                Tag = new PageButtonInfo(itemTagState, PageButtonState.Last, totalPages - 1)
             };
             lastButton.Classes.Add(ButtonClass);
+            lastButton.Classes.Add(PageButtonClass);
 
             Grid.SetColumn(lastButton, 3);
             if (onClick != null) lastButton.Click += onClick;
