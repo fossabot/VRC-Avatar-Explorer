@@ -2,7 +2,6 @@
 using AvatarExplorer.Core.Interfaces;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.Core.Data.Links;
-using AvatarExplorer.Core.Models.V1;
 
 namespace AvatarExplorer.Core.Models;
 
@@ -74,30 +73,5 @@ public class Item : ISelectableItem
         SetSupportedAvatars(itemCreationContext.SupportedAvatars, true);
 
         return this;
-    }
-
-    internal static Item FromV1(ItemV1 item)
-    {
-        Item migratedItem = new()
-        {
-            Title = item.Title,
-            Author = item.AuthorName,
-            AuthorId = item.AuthorId,
-            BoothId = item.BoothId,
-            ItemPath = item.ItemPath,
-            ThumbnmailFileName = MigrateUtils.MigrateItemPath(item.ImagePath),
-            AuthorThumbnmailFileName = MigrateUtils.MigrateItemPath(item.AuthorImageFilePath),
-            Type = item.Type,
-            CustomCategory = item.CustomCategory,
-            ItemMemo = item.ItemMemo,
-            CreatedDate = item.CreatedDate,
-            UpdatedDate = item.UpdatedDate,
-        };
-
-        migratedItem.SetSupportedAvatars(item.SupportedAvatar, true);
-        migratedItem.SetImplementedAvatars(item.ImplementedAvatars, true);
-        migratedItem.SetTags(item.Tags, true);
-
-        return migratedItem;
     }
 }

@@ -48,7 +48,7 @@ internal static class DataImporter
             item.ItemPath = $"<sys>{Path.GetRelativePath(runtimeSettings.DataRootDirectory, newItemPath)}";
             pathMapping[previousItemPath] = item.ItemPath;
             
-            items.Add(Item.FromV1(item));
+            items.Add(FromV1(item));
 
             int percent = 20 + (int)(80.0 * i / v1Items.Count);
             if (percent != lastPercent)
@@ -72,7 +72,7 @@ internal static class DataImporter
         }
 
         List<CommonAvatar> commonAvatars = new();
-        ListUtils.Add(commonAvatars, v1CommonAvatars.Select(CommonAvatar.FromV1), true);
+        ListUtils.Add(commonAvatars, v1CommonAvatars.Select(FromV1), true);
 
         foreach (CommonAvatar commonAvatar in commonAvatars)
         {
@@ -85,6 +85,41 @@ internal static class DataImporter
         progress?.Report((LocalizationKey.Processing.Import.Copying, 100, string.Empty));
 
         return (items, commonAvatars);
+    }
+    private static Item FromV1(ItemV1 item)
+    {
+        Item migratedItem = new()
+        {
+            Title = item.Title,
+            Author = item.AuthorName,
+            AuthorId = item.AuthorId,
+            BoothId = item.BoothId,
+            ItemPath = item.ItemPath,
+            ThumbnmailFileName = MigrateUtils.MigrateItemPath(item.ImagePath),
+            AuthorThumbnmailFileName = MigrateUtils.MigrateItemPath(item.AuthorImageFilePath),
+            Type = item.Type,
+            CustomCategory = item.CustomCategory,
+            ItemMemo = item.ItemMemo,
+            CreatedDate = item.CreatedDate,
+            UpdatedDate = item.UpdatedDate,
+        };
+
+        migratedItem.SetSupportedAvatars(item.SupportedAvatar, true);
+        migratedItem.SetImplementedAvatars(item.ImplementedAvatars, true);
+        migratedItem.SetTags(item.Tags, true);
+
+        return migratedItem;
+    }
+    private static CommonAvatar FromV1(CommonAvatarV1 commonAvatar)
+    {
+        CommonAvatar migratedCommonAvatar = new()
+        {
+            GroupName = commonAvatar.Name
+        };
+
+        migratedCommonAvatar.SetAvatars(commonAvatar.Avatars, true);
+
+        return migratedCommonAvatar;
     }
 
     internal static async Task<List<Item>> FromKonoAsset(string dataFolderPath, RuntimeSettings runtimeSettings, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
