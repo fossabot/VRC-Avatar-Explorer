@@ -269,11 +269,11 @@ public static class LocalizationKey
                 public const string Default = "ContextMenu.Item.Edit.Default";
                 public const string Implemented = "ContextMenu.Item.Edit.Implemented";
                 public const string Tag = "ContextMenu.Item.Edit.Tag";
+                public const string Memo = "ContextMenu.Item.Edit.Memo";
             }
 
             public static class Add
             {
-                public const string Memo = "ContextMenu.Item.Add.Memo";
                 public const string Folder = "ContextMenu.Item.Add.Folder";
             }
 

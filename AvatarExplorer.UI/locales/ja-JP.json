@@ -100,16 +100,20 @@
     "Path.Search": "検索: {0}",
 
     "ContextMenu.Item.OpenFolder": "フォルダを開く",
-    "ContextMenu.Item.Booth.Copy": "Boothリンクのコピー",
-    "ContextMenu.Item.Booth.Open": "Boothリンクを開く",
     "ContextMenu.Item.ShowOtherItemsByAuthor": "この作者の他のアイテムを表示",
+    "ContextMenu.Item.Add.Folder": "アイテムフォルダを追加する",
+
+    "ContextMenu.Item.Booth.Open": "Boothリンクを開く",
+    "ContextMenu.Item.Booth.Copy": "Boothリンクのコピー",
+
+    "ContextMenu.Item.Edit.Default": "アイテムを編集する",
+    "ContextMenu.Item.Edit.Tag": "アイテムタグを編集する",
+    "ContextMenu.Item.Edit.Memo": "アイテムメモを編集する",
+    "ContextMenu.Item.Edit.Implemented": "実装 / 未実装",
+    
     "ContextMenu.Item.Thumbnail.Change": "サムネイルを変更する",
     "ContextMenu.Item.Thumbnail.Fetch": "サムネイルを取得する",
-    "ContextMenu.Item.Edit.Default": "アイテムを編集する",
-    "ContextMenu.Item.Add.Memo": "メモを追加する",
-    "ContextMenu.Item.Add.Folder": "アイテムフォルダを追加する",
-    "ContextMenu.Item.Edit.Implemented": "実装 / 未実装",
-    "ContextMenu.Item.Edit.Tag": "タグの編集",
+
     "ContextMenu.Item.Remove": "アイテムを削除する",
 
     "SearchFilter.Default": "検索中... - {0}",
