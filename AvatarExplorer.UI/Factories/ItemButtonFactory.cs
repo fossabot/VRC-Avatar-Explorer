@@ -19,7 +19,7 @@ namespace AvatarExplorer.UI.Factories;
 internal static class ItemButtonFactory
 {
     private const string ButtonClass = "button";
-    internal static Button AddItemButton(StackPanel parent, UISelectableItem item, bool removeBrackets, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null, int normalIconSize = 70, int hoverIconSize = 200)
+    internal static Button AddItemButton(StackPanel parent, UISelectableItem item, RuntimeSettings runtimeSettings, UserPreferences userPreferences, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
         Button itemButton = new()
         {
@@ -39,25 +39,25 @@ internal static class ItemButtonFactory
         Image itemIcon = new()
         {
             Source = ImageService.Get(item.ImageFileName, item.IconType),
-            Width = normalIconSize,
-            Height = normalIconSize,
+            Width = userPreferences.NormalIconSize,
+            Height = userPreferences.NormalIconSize,
             Stretch = Stretch.Uniform,
             VerticalAlignment = VerticalAlignment.Top
         };
         RenderOptions.SetBitmapInterpolationMode(itemIcon, BitmapInterpolationMode.HighQuality);
 
-        if (!IconUtils.IsSystemIcon(item.ImageFileName))
+        if (!IconUtils.IsSystemIcon(item.ImageFileName) && userPreferences.EnableHoverIconSize)
         {
             itemIcon.PointerEntered += (s, e) =>
             {
-                itemIcon.Width = hoverIconSize;
+                itemIcon.Width = userPreferences.HoverIconSize;
                 itemIcon.Height = double.NaN;
             };
 
             itemIcon.PointerExited += (s, e) =>
             {
-                itemIcon.Width = normalIconSize;
-                itemIcon.Height = normalIconSize;
+                itemIcon.Width = userPreferences.NormalIconSize;
+                itemIcon.Height = userPreferences.NormalIconSize;
             };
         }
         contentGrid.Children.Add(itemIcon);
@@ -69,7 +69,7 @@ internal static class ItemButtonFactory
         };
 
         string itemTitle = StateFlagUtils.IsCategoryState(item.Tag.State) ? Localizer.Instance[item.Title] : item.Title;
-        if (removeBrackets && StateFlagUtils.IsItemState(item.Tag.State)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
+        if (runtimeSettings.RemoveBrackets && StateFlagUtils.IsItemState(item.Tag.State)) itemTitle = ItemUtils.RemoveBrackets(itemTitle); // アイテムの場合は括弧を削除してあげる
 
         TextBlock titleTextBlock = new TextBlock()
         {

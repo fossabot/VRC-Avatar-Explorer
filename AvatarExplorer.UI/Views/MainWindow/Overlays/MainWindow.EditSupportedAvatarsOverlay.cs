@@ -33,7 +33,7 @@ public partial class MainWindow
 
         foreach (ItemCountInfo itemCountInfo in avatars)
         {
-            Button button = ItemButtonFactory.AddItemButton(EditSupportedAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, onClick: EditSupportedAvatarsOverlay_ItemButton_Click, normalIconSize: _userPreferences.NormalIconSize, hoverIconSize: _userPreferences.HoverIconSize);
+            Button button = ItemButtonFactory.AddItemButton(EditSupportedAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings, _userPreferences, onClick: EditSupportedAvatarsOverlay_ItemButton_Click);
             button.Margin = new Thickness(0, 0, 10, 0); // 通常のリスト用のMarginなのでそれを直す。AddItemButtonの中身でMarginが指定されてるのもどうかと思うけどね。
 
             string avatarPath = string.Empty;

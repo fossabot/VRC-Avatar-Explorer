@@ -43,7 +43,7 @@ public partial class MainWindow
 
         foreach (ItemCountInfo itemCountInfo in avatars)
         {
-            Button button = ItemButtonFactory.AddItemButton(EditCommonAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings.RemoveBrackets, onClick: EditCommonAvatarsOverlay_ItemButton_Click, normalIconSize: _userPreferences.NormalIconSize, hoverIconSize: _userPreferences.HoverIconSize);
+            Button button = ItemButtonFactory.AddItemButton(EditCommonAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings, _userPreferences, onClick: EditCommonAvatarsOverlay_ItemButton_Click);
             button.Margin = new Thickness(0, 0, 10, 0); // 通常のリスト用のMarginなのでそれを直す。AddItemButtonの中身でMarginが指定されてるのもどうかと思うけどね。
 
             if (_editCommonAvatarsOverlay_SelectedGroup?.Avatars.Contains(((Item)itemCountInfo.Item).ItemPath) ?? false) button.Classes.Add("selected");

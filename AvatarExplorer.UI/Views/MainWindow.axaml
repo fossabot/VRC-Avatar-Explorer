@@ -153,7 +153,7 @@
 
                         <TabItem Header="表示">
                             <ScrollViewer Margin="0,10,0,0">
-                                <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="20" RowSpacing="20">
+                                <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="20" RowSpacing="20">
                                     <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="タイトルの括弧を削除する" FontSize="15" VerticalAlignment="Center"/>
                                     <ToggleSwitch x:Name="SettingsOverlay_RemoveBracketsCheckBox" Grid.Row="0" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                                     
@@ -163,8 +163,11 @@
                                         <TextBlock Text="{Binding #SettingsOverlay_NormalIconSizeSlider.Value, StringFormat={}{0:0}}" VerticalAlignment="Center"/>
                                     </StackPanel>
 
-                                    <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="アイコンサイズ(拡大時)" FontSize="15" VerticalAlignment="Center"/>
-                                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="アイコンの拡大を有効化する" FontSize="15" VerticalAlignment="Center"/>
+                                    <ToggleSwitch x:Name="SettingsOverlay_EnableHoverIconSizeCheckBox" Grid.Row="2" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+
+                                    <TextBlock Grid.Row="3" Grid.Column="0" TextWrapping="Wrap" Text="アイコンサイズ(拡大時)" FontSize="15" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Spacing="10">
                                         <Slider x:Name="SettingsOverlay_HoverIconSizeSlider" Value="200" Maximum="800" Minimum="0" Width="300"/>
                                         <TextBlock Text="{Binding #SettingsOverlay_HoverIconSizeSlider.Value, StringFormat={}{0:0}}" VerticalAlignment="Center"/>
                                     </StackPanel>
@@ -522,13 +525,13 @@
         <!-- OKダイアログ -->
         <Border x:Name="DialogOverlay" Classes="overlaybackground" IsVisible="False">
             <Border Classes="overlay" Width="400">
-                <StackPanel Spacing="10">
+                <StackPanel Spacing="15">
 
                     <!-- タイトル -->
-                    <TextBlock x:Name="DialogTitle" Text="Dialog Title" FontSize="24" Margin="0,0,0,10" FontWeight="Bold" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="DialogTitle" Text="Dialog Title" FontSize="24" FontWeight="Bold" HorizontalAlignment="Left"/>
 
                     <!-- 内容 -->
-                    <TextBlock x:Name="DialogContent" Text="Content" FontSize="17" Margin="0,0,0,10" Width="300" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="DialogContent" Text="Content" FontSize="17" Margin="0,10,0,10" Width="300" TextWrapping="Wrap" HorizontalAlignment="Left"/>
 
                     <!-- OKボタン -->
                     <Button Classes="accent" FontWeight="Bold" Content="OK" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="Dialog_OK_Click"/>
@@ -539,7 +542,7 @@
         <!-- テキストダイアログ -->
         <Border x:Name="TextDialogOverlay" Classes="overlaybackground" IsVisible="False">
             <Border Classes="overlay" Width="400">
-                <StackPanel Spacing="10">
+                <StackPanel Spacing="15">
                     
                     <!-- タイトル -->
                     <TextBlock x:Name="TextDialogOverlay_Title"  Text="Dialog Title" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
@@ -559,13 +562,13 @@
         <!-- Yes/Noダイアログ -->
         <Border x:Name="YesNoDialogOverlay" Classes="overlaybackground" IsVisible="False">
             <Border Classes="overlay" Width="400">
-                <StackPanel Spacing="25">
+                <StackPanel Spacing="15">
 
                     <!-- タイトル -->
                     <TextBlock x:Name="YesNoDialogTitle" Text="Dialog Title" FontSize="24" FontWeight="Bold" HorizontalAlignment="Left"/>
 
                     <!-- 内容 -->
-                    <TextBlock x:Name="YesNoDialogContent" Text="Content" FontSize="17" Width="300" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="YesNoDialogContent" Text="Content" FontSize="17" Width="400" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="0,10,0,10"/>
                     
                     <!-- Yes/Noボタン -->
                     <Grid ColumnDefinitions="100,*,100">

@@ -11,6 +11,9 @@ public class UserPreferences
     public int NormalIconSize { get; private set; } = 70;
 
     [JsonInclude]
+    public bool EnableHoverIconSize { get; private set; } = true;
+
+    [JsonInclude]
     public int HoverIconSize { get; private set; } = 200;
 
     [JsonInclude]
@@ -33,6 +36,7 @@ public class UserPreferences
         Language = userPreferences.Language;
         NormalIconSize = userPreferences.NormalIconSize;
         HoverIconSize = userPreferences.HoverIconSize;
+        EnableHoverIconSize = userPreferences.EnableHoverIconSize;
         UseBackgroundImage = userPreferences.UseBackgroundImage;
         BackgroundImage = userPreferences.BackgroundImage;
         BackgroundOpacity = userPreferences.BackgroundOpacity;
@@ -42,11 +46,13 @@ public class UserPreferences
 
     internal void SetLanguage(int index) => Language = index;
 
-    internal void SetIconSize(int normal, int hover)
+    internal void SetIconSize(int normalIconSize, int hoverIconSize)
     {
-        NormalIconSize = normal;
-        HoverIconSize = hover;
+        NormalIconSize = normalIconSize;
+        HoverIconSize = hoverIconSize;
     }
+
+    internal void UseHoverIconSize(bool value) => EnableHoverIconSize = value;
 
     internal void UseBackground(bool value) => UseBackgroundImage = value;
 
