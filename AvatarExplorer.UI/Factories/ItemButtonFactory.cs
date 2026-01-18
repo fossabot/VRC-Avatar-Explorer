@@ -145,7 +145,7 @@ internal static class ItemButtonFactory
 
     internal static Button GetTagButton(string text, EventHandler<RoutedEventArgs>? onClick = null)
     {
-        Button tagButton = new Button() { Content = text, CornerRadius = new(15), Height = 28, FontSize = 13, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+        Button tagButton = new Button() { Content = text, CornerRadius = new(15), Height = 30, FontSize = 13.5, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
 
         if (onClick != null) tagButton.Click += onClick;
         return tagButton;
