@@ -344,7 +344,7 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Add API
-    public async Task<List<string>> AddFolders(Item item, string[] folders)
+    public async Task<IReadOnlyList<string>> AddFolders(Item item, string[] folders)
     {
         List<string> processingFailedPaths = await FileSystemService.ExtractItemFolders(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), folders);
         return processingFailedPaths;

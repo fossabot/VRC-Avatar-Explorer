@@ -279,5 +279,11 @@ public static class LocalizationKey
 
             public const string Remove = "ContextMenu.Item.Remove";
         }
+
+        public static class ItemFile
+        {
+            public const string OpenFile = "ContextMenu.ItemFile.OpenFile";
+            public const string OpenFileInExplorer = "ContextMenu.ItemFile.OpenFileInExplorer";
+        }
     }
 }

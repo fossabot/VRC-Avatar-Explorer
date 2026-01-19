@@ -1,6 +1,7 @@
 using AvatarExplorer.Core.Interfaces;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Services;
 
@@ -9,6 +10,7 @@ public static class ContextMenuCreator
     public static ContextMenuAction[] Create(ISelectableItem selectableItem)
     {
         if (selectableItem is Item item) return CreateFromItem(item);
+        if (selectableItem is ItemFile itemFile) return CreateFromItemFile(itemFile);
         else return [];
     }
 
@@ -36,5 +38,20 @@ public static class ContextMenuCreator
         ];
 
         return contextMenuActions;
+    }
+
+    private static ContextMenuAction[] CreateFromItemFile(ItemFile itemFile)
+    {
+        List<ContextMenuAction> contextMenuActions =
+        [
+            new ContextMenuAction(LocalizationKey.ContextMenu.ItemFile.OpenFile, ActionKey.OpenFile, ActionLayer.UI, ContextMenuIconType.Open, itemFile.FullPath)
+        ];
+
+        if (ProcessUtils.IsWindows())
+        {
+            contextMenuActions.Add(new ContextMenuAction(LocalizationKey.ContextMenu.ItemFile.OpenFileInExplorer, ActionKey.OpenFileInExplorer, ActionLayer.UI, ContextMenuIconType.Open, itemFile.FullPath));
+        }
+
+        return contextMenuActions.ToArray();
     }
 }

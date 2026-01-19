@@ -66,6 +66,7 @@ public partial class MainWindow : Window
         TODO: 共通素体グループ作成時に、元のアバターを置き換えるかどうかをダイアログで決める
         TODO: 共通素体グループ削除時に、共通素体の中のアバターに置き換えるかどうかをダイアログで決める
         TODO: 自動バックアップ機能を作る
+        TODO: 一括インポート画面を作る
         */
 
         InitializeCurrentPath();

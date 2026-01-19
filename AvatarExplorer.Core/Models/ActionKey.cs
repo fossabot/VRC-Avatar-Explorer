@@ -3,6 +3,7 @@ namespace AvatarExplorer.Core.Models;
 public enum ActionKey
 {
     None,
+    
     OpenItemFolder,
     CopyBoothLink,
     OpenBoothLink,
@@ -14,5 +15,8 @@ public enum ActionKey
     AddItemFolder,
     EditImplementedAvatar,
     EditItemTag,
-    RemoveItem
+    RemoveItem,
+
+    OpenFile,
+    OpenFileInExplorer
 }

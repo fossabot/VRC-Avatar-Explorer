@@ -116,6 +116,9 @@
 
     "ContextMenu.Item.Remove": "アイテムを削除する",
 
+    "ContextMenu.ItemFile.OpenFile": "ファイルを開く",
+    "ContextMenu.ItemFile.OpenFileInExplorer": "エクスプローラーで表示する",
+
     "SearchFilter.Default": "検索中... - {0}",
     "SearchFilter.Title": "タイトル: {0}",
     "SearchFilter.Author": "作者: {0}",

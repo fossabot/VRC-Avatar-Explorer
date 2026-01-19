@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -124,7 +125,7 @@ public partial class MainWindow
 
         ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
         ProgressOverlay_Update(0);
-        List<string> processingFailedPaths = await _avatarExplorerApp.AddFolders(item, folders);
+        IReadOnlyList<string> processingFailedPaths = await _avatarExplorerApp.AddFolders(item, folders);
         ProgressOverlay_Hide();
 
         if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
@@ -144,7 +145,7 @@ public partial class MainWindow
 
         _contextMenu_selectedItem = item;
 
-        EditImplementedAvatarsOverlay_Show(item.ImplementedAvatarsView);
+        EditImplementedAvatarsOverlay_Show(item.ImplementedAvatarsView); //TODO: ここらへんも全部Taskで管理するべき
 
         return Task.CompletedTask;
     }
@@ -155,7 +156,7 @@ public partial class MainWindow
 
         _contextMenu_selectedItem = item;
 
-        EditTagsOverlay_Show(item.TagsView);
+        EditTagsOverlay_Show(item.TagsView); //TODO: ここらへんも全部Taskで管理するべき
 
         return Task.CompletedTask;
     }
@@ -164,21 +165,25 @@ public partial class MainWindow
         Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
         if (item == null) return;
 
-        _contextMenu_selectedItem = item;
-
         YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Remove]);
-        if (result == YesNoResult.Yes) await ItemButton_ContextMenu_RemoveItem_DialogYes_Click();
-    }
-    private async Task ItemButton_ContextMenu_RemoveItem_DialogYes_Click()
-    {
-        if (_contextMenu_selectedItem == null) return;
+        if (result != YesNoResult.Yes) return;
 
-        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented]);
-        if (result == YesNoResult.Yes) _avatarExplorerApp.RemoveItem(_contextMenu_selectedItem.ItemPath, true);
-        else _avatarExplorerApp.RemoveItem(_contextMenu_selectedItem.ItemPath, false);
+        YesNoResult result2 = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented]);
+        if (result2 == YesNoResult.Yes) _avatarExplorerApp.RemoveItem(item.ItemPath, true);
+        else _avatarExplorerApp.RemoveItem(item.ItemPath, false);
 
         Main_ReloadCurrentWindow();
         Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Remove]);
+    }
+
+    private async Task ItemButton_ContextMenu_OpenFile(string filePath)
+    {
+        await LauncherService.OpenFile(this, filePath);
+    }
+    private async Task ItemButton_ContextMenu_OpenFileInExplorer(string filePath)
+    {
+        if (!ProcessUtils.IsWindows()) return;
+        Process.Start("explorer.exe", "/select," + filePath);
     }
     #endregion
 }

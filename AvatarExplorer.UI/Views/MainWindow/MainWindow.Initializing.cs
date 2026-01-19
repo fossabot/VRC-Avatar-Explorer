@@ -72,7 +72,10 @@ public partial class MainWindow
             { ActionKey.AddItemFolder, ItemButton_ContextMenu_AddItemFolder },
             { ActionKey.EditImplementedAvatar, ItemButton_ContextMenu_EditImplementedAvatar },
             { ActionKey.EditItemTag, ItemButton_ContextMenu_EditItemTag },
-            { ActionKey.RemoveItem, ItemButton_ContextMenu_RemoveItem }
+            { ActionKey.RemoveItem, ItemButton_ContextMenu_RemoveItem },
+
+            { ActionKey.OpenFile, ItemButton_ContextMenu_OpenFile },
+            { ActionKey.OpenFileInExplorer, ItemButton_ContextMenu_OpenFileInExplorer }
         };
     }
     private void InitializeLanguageBox()
