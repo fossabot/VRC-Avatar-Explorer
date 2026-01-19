@@ -66,6 +66,7 @@ public partial class MainWindow
     private void EditTagsOverlay_TagTextBox_KeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Enter) EditTagsOverlay_AddTagByText();
+        else if (e.Key == Key.Escape) EditTagsOverlay_TagTextBox.Text = string.Empty;
     }
     private void EditTagsOverlay_AddTagButton_Click(object? sender, RoutedEventArgs e) => EditTagsOverlay_AddTagByText();
     private void EditTagsOverlay_AddTagByText()

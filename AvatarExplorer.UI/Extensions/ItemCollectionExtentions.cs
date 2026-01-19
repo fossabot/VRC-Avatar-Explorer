@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using Avalonia.Controls;
 
@@ -8,7 +7,7 @@ internal static class ItemCollectionExtentions
 {
     internal static void AddRange(this ItemCollection itemCollection, IEnumerable values)
     {
-        foreach (string value in values)
+        foreach (var value in values)
         {
             itemCollection.Add(value);
         }
