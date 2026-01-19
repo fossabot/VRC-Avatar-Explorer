@@ -362,4 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-AvatarExplorer.Test/Program.cs
+# テスト用プロジェクト
+AvatarExplorer.Test/
