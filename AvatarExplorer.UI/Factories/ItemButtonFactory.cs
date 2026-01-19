@@ -32,7 +32,7 @@ internal static class ItemButtonFactory
         Grid.SetColumn(itemIcon, 0);
 
         // テキスト + タグ部分
-        Grid textGrid = CreateTextAndTagGrid(item, runtimeSettings, userPreferences);
+        Grid textGrid = CreateTextAndTagGrid(item, runtimeSettings);
         contentGrid.Children.Add(textGrid);
         Grid.SetColumn(textGrid, 1);
 
@@ -57,19 +57,21 @@ internal static class ItemButtonFactory
             Source = ImageService.Get(item.ImageFileName, item.IconType),
             Width = userPreferences.NormalIconSize,
             Height = userPreferences.NormalIconSize,
-            Stretch = Stretch.Uniform,
+            Stretch = Stretch.Fill,
             VerticalAlignment = VerticalAlignment.Top
         };
         RenderOptions.SetBitmapInterpolationMode(itemIcon, BitmapInterpolationMode.HighQuality);
 
         if (!IconUtils.IsSystemIcon(item.ImageFileName) && userPreferences.EnableHoverIconSize)
         {
-            itemIcon.PointerEntered += (s, e) => {
+            itemIcon.PointerEntered += (s, e) =>
+            {
                 itemIcon.Width = userPreferences.HoverIconSize;
                 itemIcon.Height = double.NaN;
             };
 
-            itemIcon.PointerExited += (s, e) => {
+            itemIcon.PointerExited += (s, e) =>
+            {
                 itemIcon.Width = userPreferences.NormalIconSize;
                 itemIcon.Height = userPreferences.NormalIconSize;
             };
@@ -78,7 +80,7 @@ internal static class ItemButtonFactory
         return itemIcon;
     }
 
-    private static Grid CreateTextAndTagGrid(UISelectableItem item, RuntimeSettings runtimeSettings, UserPreferences userPreferences)
+    private static Grid CreateTextAndTagGrid(UISelectableItem item, RuntimeSettings runtimeSettings)
     {
         Grid textGrid = new() { RowDefinitions = new("Auto,Auto,8,*") };
 
@@ -218,14 +220,8 @@ internal static class ItemButtonFactory
 
         if (renderFirstButton)
         {
-            Button firstButton = new()
-            {
-                Content = "<<",
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Tag = new PageButtonInfo(itemTagState, PageButtonState.First, 0)
-            };
-            firstButton.Classes.Add(ButtonClass);
-            firstButton.Classes.Add(PageButtonClass);
+            Button firstButton = new() { Content = "<<", HorizontalAlignment = HorizontalAlignment.Right, Tag = new PageButtonInfo(itemTagState, PageButtonState.First, 0) };
+            firstButton.Classes.AddRange([ButtonClass, PageButtonClass]);
             
             Grid.SetColumn(firstButton, 0);
             if (onClick != null) firstButton.Click += onClick;
@@ -234,14 +230,8 @@ internal static class ItemButtonFactory
 
         if (renderBackButton)
         {
-            Button backButton = new()
-            {
-                Content = "<",
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Tag = new PageButtonInfo(itemTagState, PageButtonState.Back, currentPageValue - 1),
-            };
-            backButton.Classes.Add(ButtonClass);
-            backButton.Classes.Add(PageButtonClass);
+            Button backButton = new() { Content = "<", HorizontalAlignment = HorizontalAlignment.Left, Tag = new PageButtonInfo(itemTagState, PageButtonState.Back, currentPageValue - 1) };
+            backButton.Classes.AddRange([ButtonClass, PageButtonClass]);
 
             Grid.SetColumn(backButton, 1);
             if (onClick != null) backButton.Click += onClick;
@@ -250,14 +240,8 @@ internal static class ItemButtonFactory
 
         if (renderNextButton)
         {
-            Button nextButton = new()
-            {
-                Content = ">",
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Tag = new PageButtonInfo(itemTagState, PageButtonState.Next, currentPageValue + 1)
-            };
-            nextButton.Classes.Add(ButtonClass);
-            nextButton.Classes.Add(PageButtonClass);
+            Button nextButton = new() { Content = ">", HorizontalAlignment = HorizontalAlignment.Right, Tag = new PageButtonInfo(itemTagState, PageButtonState.Next, currentPageValue + 1) };
+            nextButton.Classes.AddRange([ButtonClass, PageButtonClass]);
 
             Grid.SetColumn(nextButton, 2);
             if (onClick != null) nextButton.Click += onClick;
@@ -266,14 +250,8 @@ internal static class ItemButtonFactory
 
         if (renderLastButton)
         {
-            Button lastButton = new()
-            {
-                Content = ">>",
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Tag = new PageButtonInfo(itemTagState, PageButtonState.Last, totalPages - 1)
-            };
-            lastButton.Classes.Add(ButtonClass);
-            lastButton.Classes.Add(PageButtonClass);
+            Button lastButton = new() { Content = ">>", HorizontalAlignment = HorizontalAlignment.Left, Tag = new PageButtonInfo(itemTagState, PageButtonState.Last, totalPages - 1) };
+            lastButton.Classes.AddRange([ButtonClass, PageButtonClass]);
 
             Grid.SetColumn(lastButton, 3);
             if (onClick != null) lastButton.Click += onClick;
