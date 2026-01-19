@@ -84,7 +84,7 @@ internal static class ItemButtonFactory
 
         string itemTitle = GetFormattedTitle(item, runtimeSettings);
         
-        TextBlock titleTextBlock = new TextBlock() { Text = itemTitle, FontSize = 16, FontWeight = FontWeight.Bold, LetterSpacing = 0.4 };
+        TextBlock titleTextBlock = new TextBlock() { Text = itemTitle, FontSize = 16, FontWeight = FontWeight.Bold };
         Grid.SetRow(titleTextBlock, 0);
         textGrid.Children.Add(titleTextBlock);
 
