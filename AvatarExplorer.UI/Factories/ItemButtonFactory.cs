@@ -119,6 +119,7 @@ internal static class ItemButtonFactory
         if (!string.IsNullOrEmpty(item.CommonAvatarName))
         {
             Button commonAvatarButton = GetTagButton(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, item.CommonAvatarName));
+            commonAvatarButton.FontWeight = FontWeight.Bold;
             commonAvatarButton.Foreground = new SolidColorBrush(Colors.White);
             commonAvatarButton.Background = new SolidColorBrush(Colors.Green);
             tagPanel.Children.Add(commonAvatarButton);

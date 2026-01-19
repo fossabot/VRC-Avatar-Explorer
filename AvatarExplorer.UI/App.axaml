@@ -88,6 +88,8 @@
         </Style>
 
         <materialIcons:MaterialIconStyles />
+        
+        <FluentTheme />
     </Application.Styles>
 
 </Application>
