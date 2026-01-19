@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Factories;
 
 namespace AvatarExplorer.UI;
@@ -32,12 +33,12 @@ public partial class MainWindow
     private void EditTagsOverlay_RefleshList()
     {
         EditTagsOverlay_TagComboBox.Items.Clear();
-        IEnumerable<string> tags = _avatarExplorerApp.GetAllItems().SelectMany(i => i.TagsView).Distinct();
-
-        foreach (string tag in tags)
-        {
-            EditTagsOverlay_TagComboBox.Items.Add(new ComboBoxItem() { Content = tag });
-        }
+        EditTagsOverlay_TagComboBox.Items.AddRange(
+            _avatarExplorerApp.GetAllItems()
+                .SelectMany(i => i.TagsView)
+                .Distinct()
+                .Select(i => new ComboBoxItem() { Content = i })
+        );
     }
     private void EditTagsOverlay_ReloadTagList()
     {

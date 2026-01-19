@@ -71,6 +71,7 @@ public partial class MainWindow : Window
 
         InitializeCurrentPath();
         InitializeComponent();
+        InitializeTitle();
         InitializeLanguageBox();
         InitializeAvatarExplorer();
         InitializeContextMenuHandlers();

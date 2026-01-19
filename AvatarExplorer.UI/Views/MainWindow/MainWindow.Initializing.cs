@@ -8,6 +8,7 @@ using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
 using AvatarExplorer.Core.Utils;
+using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
 using AvatarExplorer.UI.Services;
@@ -16,6 +17,10 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
+    private void InitializeTitle()
+    {
+        Title = string.Format("VRC Avatar Explorer {0}", AvatarExplorerApp.CurrentVersion);
+    }
     private void InitializeAvatarExplorer()
     {
         try
@@ -83,11 +88,7 @@ public partial class MainWindow
         Localizer.Instance.LoadFromFolder("locales");
 
         SettingsOverlay_DefaultLanguageComboBox.Items.Clear();
-
-        foreach (string language in Localizer.Instance.GetLanguageList())
-        {
-            SettingsOverlay_DefaultLanguageComboBox.Items.Add(language);
-        }
+        SettingsOverlay_DefaultLanguageComboBox.Items.AddRange(Localizer.Instance.GetLanguageList());
     }
     private void InitializeCurrentPath()
     {

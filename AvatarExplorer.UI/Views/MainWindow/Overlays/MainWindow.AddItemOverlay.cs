@@ -17,6 +17,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using AvatarExplorer.UI.Services;
 using System.Threading.Tasks;
+using AvatarExplorer.UI.Extensions;
 
 namespace AvatarExplorer.UI;
 
@@ -182,11 +183,7 @@ public partial class MainWindow
     private void AddItemOverlay_InitializeAddItemWindowCategories()
     {
         AddItemOverlay_ItemTypeComboBox.Items.Clear();
-
-        foreach (ItemCountInfo itemCountInfo in _avatarExplorerApp.GetCategories())
-        {
-            AddItemOverlay_ItemTypeComboBox.Items.Add(Localizer.Instance[((Category)itemCountInfo.Item).ToString()]);
-        }
+        AddItemOverlay_ItemTypeComboBox.Items.AddRange(_avatarExplorerApp.GetCategories().Select(i => Localizer.Instance[((Category)i.Item).ToString()]));
 
         if (AddItemOverlay_ItemTypeComboBox.Items.Count > 0) AddItemOverlay_ItemTypeComboBox.SelectedIndex = 0;
     }
