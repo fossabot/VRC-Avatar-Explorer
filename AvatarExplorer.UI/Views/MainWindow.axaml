@@ -533,7 +533,9 @@
                     <TextBlock x:Name="DialogTitle" Text="Dialog Title" FontSize="24" FontWeight="Bold" HorizontalAlignment="Left"/>
 
                     <!-- 内容 -->
-                    <TextBlock x:Name="DialogContent" Text="Content" FontSize="17" Margin="0,10,0,10" Width="300" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                    <Grid RowDefinitions="Auto" ColumnDefinitions="*" Margin="0,10,0,10">
+                        <TextBlock x:Name="DialogContent" Text="Content" FontSize="17" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                    </Grid>
 
                     <!-- OKボタン -->
                     <Button Classes="accent" FontWeight="Bold" Content="OK" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="Dialog_OK_Click"/>
@@ -570,7 +572,9 @@
                     <TextBlock x:Name="YesNoDialogTitle" Text="Dialog Title" FontSize="24" FontWeight="Bold" HorizontalAlignment="Left"/>
 
                     <!-- 内容 -->
-                    <TextBlock x:Name="YesNoDialogContent" Text="Content" FontSize="17" Width="400" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="0,10,0,10"/>
+                    <Grid RowDefinitions="Auto" ColumnDefinitions="*" Margin="0,10,0,10">
+                        <TextBlock x:Name="YesNoDialogContent" Text="Content" FontSize="17" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                    </Grid>
                     
                     <!-- Yes/Noボタン -->
                     <Grid ColumnDefinitions="100,*,100">
