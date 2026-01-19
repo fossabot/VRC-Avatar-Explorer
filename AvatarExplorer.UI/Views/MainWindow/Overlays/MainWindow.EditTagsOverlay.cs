@@ -100,6 +100,7 @@ public partial class MainWindow
         {
             _contextMenu_selectedItem.UpdateTags(_editTagsOverlay_selectedTags);
             _avatarExplorerApp.SaveItemDatabase();
+            _avatarExplorerApp.UpdateSearchIndex(_contextMenu_selectedItem);
         }
 
         EditTagsOverlay_Hide();

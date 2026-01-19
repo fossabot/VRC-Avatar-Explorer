@@ -19,6 +19,7 @@ public partial class MainWindow
         {
             _contextMenu_selectedItem.ItemMemo = AddMemoOverlay_MemoTextBox.Text ?? string.Empty;
             _avatarExplorerApp.SaveItemDatabase();
+            _avatarExplorerApp.UpdateSearchIndex(_contextMenu_selectedItem);
         }
 
         AddMemoOverlay_Hide();

@@ -6,7 +6,7 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class SearchService
 {
-    internal static List<Item> ExecuteSearch(List<Item> items, List<CommonAvatar> commonAvatars, RuntimeSettings runtimeSettings, SearchFilter searchFilter)
+    internal static IReadOnlyList<Item> ExecuteSearch(IReadOnlyList<Item> items, IReadOnlyList<CommonAvatar> commonAvatars, RuntimeSettings runtimeSettings, SearchFilter searchFilter)
     {
         var avatarNameMaps = ItemUtils.GetAvatarNameMaps(items);
 
@@ -15,7 +15,7 @@ internal static class SearchService
             .OrderByDescending(i => SearchUtils.GetScore(i, searchFilter.SearchWords))
             .ToList();
     }
-    private static bool Matches(SearchFilter searchFilter, Dictionary<string, string> avatarNameMaps, List<CommonAvatar> commonAvatars, Item item, string parentFolder)
+    private static bool Matches(SearchFilter searchFilter, Dictionary<string, string> avatarNameMaps, IReadOnlyList<CommonAvatar> commonAvatars, Item item, string parentFolder)
     {
         bool matchTitle = searchFilter.Titles.Count == 0 || SearchUtils.MatchesFilter(
             [item.Title], searchFilter.Titles,

@@ -5,11 +5,10 @@ namespace AvatarExplorer.Core.Utils;
 
 public static class FileNameUtils
 {
-    private static readonly char[] InvalidCharsCommon =
-        Path.GetInvalidFileNameChars()
-            .Concat(Path.GetInvalidPathChars())
-            .Distinct()
-            .ToArray();
+    private static readonly char[] InvalidCharsCommon = Path.GetInvalidFileNameChars()
+        .Concat(Path.GetInvalidPathChars())
+        .Distinct()
+        .ToArray();
 
     private static readonly string[] WindowsReservedNames =
     [

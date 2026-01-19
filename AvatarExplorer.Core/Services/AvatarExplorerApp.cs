@@ -44,6 +44,8 @@ public partial class AvatarExplorerApp
 
         _items.Clear();
         _items.AddRange(database);
+
+        UpdateSearchIndex();
     }
 
     public void LoadCommonAvatarDatabase(string path = "")
@@ -90,6 +92,11 @@ public partial class AvatarExplorerApp
     {
         var avatarNameMaps = ItemUtils.GetAvatarNameMaps(_items);
         _items.ForEach(i => i.BuildSearchIndex(avatarNameMaps));
+    }
+    public void UpdateSearchIndex(Item item)
+    {
+        var avatarNameMaps = ItemUtils.GetAvatarNameMaps(_items);
+        item.BuildSearchIndex(avatarNameMaps);
     }
     #endregion
 
@@ -293,6 +300,7 @@ public partial class AvatarExplorerApp
         }
 
         SaveItemDatabase();
+        UpdateSearchIndex();
 
         return addItemResult;
     }
@@ -305,6 +313,7 @@ public partial class AvatarExplorerApp
         item.UpdatedDate = DatetimeUtils.GetCurrentUnixTime();
 
         SaveItemDatabase();
+        UpdateSearchIndex();
 
         return item;
     }

@@ -34,7 +34,7 @@ public static partial class ItemUtils
         return FileNameUtils.GetSafeTitle(itemTitle);
     }
     
-    internal static Dictionary<string, string> GetAvatarNameMaps(List<Item> items)
+    internal static Dictionary<string, string> GetAvatarNameMaps(IReadOnlyList<Item> items)
     {
         return items
             .Where(i => i.Type == ItemType.Avatar)

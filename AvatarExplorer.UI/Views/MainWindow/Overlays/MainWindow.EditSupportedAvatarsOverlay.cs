@@ -49,7 +49,11 @@ public partial class MainWindow
     private void EditSupportedAvatarsOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => EditSupportedAvatarsOverlay_Hide();
     private void EditSupportedAvatarsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
-        _addItemOverlay_selectedItem?.UpdateSupportedAvatars(_editSupportedAvatarsOverlay_selectedAvatars);
+        if (_addItemOverlay_selectedItem != null)
+        {
+            _addItemOverlay_selectedItem.UpdateSupportedAvatars(_editSupportedAvatarsOverlay_selectedAvatars);
+            _avatarExplorerApp.UpdateSearchIndex(_addItemOverlay_selectedItem);
+        }
 
         AddItemOverlay_UpdateSupportedAvatarsLabel();
 
