@@ -39,7 +39,7 @@ public static class FileSystemService
     #endregion
 
     #region Unitypackage Modifier
-    internal static async Task ModifyUnityPackageFilePathAsync(string[] filePaths, string[] itemCategoryNames, IProgress<(string, int, string)>? progress = null)
+    internal static async Task<string> ModifyUnityPackageFilePathsAsync(string[] filePaths, string[] itemCategoryNames, IProgress<(string, int)>? progress = null)
     {
         List<string> unitypackagePaths = new();
         foreach (string filePath in filePaths)
@@ -50,22 +50,22 @@ public static class FileSystemService
             unitypackagePaths.Add(filePath);
         }
 
-        if (unitypackagePaths.Count == 0) return;
+        if (unitypackagePaths.Count == 0) return string.Empty;
         
-        await ModifyUnityPackageFilePathAsyncInternal(unitypackagePaths, itemCategoryNames, progress);
+        return await ModifyUnityPackageFilePathsAsyncInternal(unitypackagePaths, itemCategoryNames, progress);
     }
-    private static async Task ModifyUnityPackageFilePathAsyncInternal(List<string> itemPaths, string[] itemCategoryNames, IProgress<(string, int, string)>? progress = null)
+    private static async Task<string> ModifyUnityPackageFilePathsAsyncInternal(List<string> itemPaths, string[] itemCategoryNames, IProgress<(string, int)>? progress = null)
     {
-        if (itemPaths.Count == 0) return;
+        if (itemPaths.Count == 0) return string.Empty;
 
-        await Task.Run(async () =>
+        string unityPackagePath = await Task.Run(async () =>
         {
-            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Preparing, 0, string.Empty));
+            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Preparing, 0));
 
             var (saveFolder, saveFilePath, unityPackagePath) = PrepareSavePaths(itemPaths[0]);
             PrepareSaveDirectory(saveFolder);
 
-            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Extracting, 10, string.Empty));
+            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Extracting, 10));
 
             int totalEntries = 0;
             foreach (string itemPath in itemPaths)
@@ -79,15 +79,19 @@ public static class FileSystemService
                 await ExtractTarToFolderAsync(itemPath, saveFilePath, itemCategoryNames[i], totalEntries, progress);
             }
 
-            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Creating, 90, string.Empty));
+            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Creating, 90));
 
             CreateTarArchive(saveFilePath, unityPackagePath);
 
             Directory.Delete(saveFilePath, true);
             
             // ここの3つ目の引数で出力先のアイテムパスをUI側に返してあげる
-            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Completed, 100, unityPackagePath));
+            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Completed, 100));
+
+            return unityPackagePath;
         });
+
+        return unityPackagePath;
     }
     private static (string saveFolder, string saveFilePath, string unityPackagePath) PrepareSavePaths(string itemPath)
     {
@@ -122,7 +126,7 @@ public static class FileSystemService
             count++;
         return count;
     }
-    private static async Task ExtractTarToFolderAsync(string tarGzFilePath, string saveFilePath, string category, int totalEntries, IProgress<(string, int, string)>? progress = null)
+    private static async Task ExtractTarToFolderAsync(string tarGzFilePath, string saveFilePath, string category, int totalEntries, IProgress<(string, int)>? progress = null)
     {
         int processedEntries = 0;
 
@@ -164,7 +168,7 @@ public static class FileSystemService
 
             if (currentProgress != lastProgress)
             {
-                progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Extracting, currentProgress, string.Empty));
+                progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Extracting, currentProgress));
                 lastProgress = currentProgress;
             }
         }

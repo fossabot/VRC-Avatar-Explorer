@@ -18,20 +18,13 @@ internal static class UnitypackageService
             return;
         }
 
-        var progress = new Progress<(string, int, string)>(async tuple =>
+        // Item1: LocalizationKey, Item2: ProgressValue
+        var progress = new Progress<(string, int)>(async tuple =>
         {
-            if (tuple.Item2 == 100)
-            {
-                if (onCompleted != null)
-                    await onCompleted(tuple.Item3);
-            }
-            else
-            {
-                if (onProgress != null)
-                    await onProgress(tuple.Item1, tuple.Item2);
-            }
+            if (onProgress != null) await onProgress(tuple.Item1, tuple.Item2);
         });
 
-        await AvatarExplorerApp.ModifyUnityPackageFilePath(itemPath, Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? string.Empty], progress);
+        string unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePath(itemPath, Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? string.Empty], progress);
+        if (onCompleted != null) await onCompleted(unityPackagePath);
     }
 }
