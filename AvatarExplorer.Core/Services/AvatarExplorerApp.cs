@@ -94,26 +94,18 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Select API
-    public void Select(ItemTagState state, string key)
-        => _selectionState.Push(state, key);
-    public void SelectUndo()
-        => _selectionState.Pop();
-    public void SelectClear()
-        => _selectionState.Clear();
+    public void Select(ItemTagState state, string key) => _selectionState.Push(state, key);
+    public void SelectUndo() => _selectionState.Pop();
+    public void SelectClear() => _selectionState.Clear();
     #endregion
 
     #region Get API
-    public IReadOnlyList<ItemCountInfo> GetAvatars(bool includeCommonAvatar = false)
-        => ItemAvatarAggregator.Aggregate(_items, _commonAvatars, _runtimeSettings, includeCommonAvatar);
-    public IReadOnlyList<ItemCountInfo> GetAuthors()
-        => ItemAuthorAggregator.Aggregate(_items);
-    public IReadOnlyList<ItemCountInfo> GetCategories()
-        => ItemCategoryAggregator.Aggregate(_items);
+    public IReadOnlyList<ItemCountInfo> GetAvatars(bool includeCommonAvatar = false) => ItemAvatarAggregator.Aggregate(_items, _commonAvatars, _runtimeSettings, includeCommonAvatar);
+    public IReadOnlyList<ItemCountInfo> GetAuthors() => ItemAuthorAggregator.Aggregate(_items);
+    public IReadOnlyList<ItemCountInfo> GetCategories() => ItemCategoryAggregator.Aggregate(_items);
 
-    public IReadOnlyList<Item> GetAllItems()
-        => _items;
-    public Item? GetItemByPath(string itemPath)
-        => _items.FirstOrDefault(i => i.ItemPath == itemPath);
+    public IReadOnlyList<Item> GetAllItems() => _items;
+    public Item? GetItemByPath(string itemPath) => _items.FirstOrDefault(i => i.ItemPath == itemPath);
     public IReadOnlyList<ItemCountInfo> GetItemsForCurrentState()
     {
         SelectionNode? current = _selectionState.Current;
@@ -127,14 +119,11 @@ public partial class AvatarExplorerApp
         return new List<ItemCountInfo>();
     }
 
-    public IReadOnlyList<CommonAvatar> GetCommonAvatars()
-        => _commonAvatars;
+    public IReadOnlyList<CommonAvatar> GetCommonAvatars() => _commonAvatars;
     
     #region Current State Internal Handler
-    private IReadOnlyList<ItemCountInfo> HandleRootAvatar(SelectionNode selectionNode)
-        => ItemCategoryAggregator.Aggregate(_items.Where(i => AvatarStatusResolver.Resolve(selectionNode.Key, i, _commonAvatars).IsSupportedOrCommon));
-    private IReadOnlyList<ItemCountInfo> HandleRootAuthor(SelectionNode selectionNode)
-        =>  ItemCategoryAggregator.Aggregate(_items.Where(i => i.Author == selectionNode.Key));
+    private IReadOnlyList<ItemCountInfo> HandleRootAvatar(SelectionNode selectionNode) => ItemCategoryAggregator.Aggregate(_items.Where(i => AvatarStatusResolver.Resolve(selectionNode.Key, i, _commonAvatars).IsSupportedOrCommon));
+    private IReadOnlyList<ItemCountInfo> HandleRootAuthor(SelectionNode selectionNode) => ItemCategoryAggregator.Aggregate(_items.Where(i => i.Author == selectionNode.Key));
     private IReadOnlyList<ItemCountInfo> HandleRootCategory(SelectionNode selectionNode)
     {
         return _items
@@ -266,19 +255,14 @@ public partial class AvatarExplorerApp
         return categoryItems;
     }
 
-    public RuntimeSettings GetRuntimeSettings()
-        => _runtimeSettings;
+    public RuntimeSettings GetRuntimeSettings() => _runtimeSettings;
     #endregion
 
     #region Set API
-    public bool SetDataRootDirectory(string path)
-        => RuntimeSettingsService.TrySetDataRootDirectory(_runtimeSettings, path);
-    public void SetItemsSortOrder(SortOrder sortOrder)
-        => _runtimeSettings.SetSortOrder(sortOrder);
-    public void SetRemoveOriginal(bool value)
-        => _runtimeSettings.SetRemoveOriginal(value);
-    public void SetRemoveBrackets(bool value)
-        => _runtimeSettings.SetRemoveBrackets(value);
+    public bool SetDataRootDirectory(string path) => RuntimeSettingsService.TrySetDataRootDirectory(_runtimeSettings, path);
+    public void SetItemsSortOrder(SortOrder sortOrder) => _runtimeSettings.SetSortOrder(sortOrder);
+    public void SetRemoveOriginal(bool value) => _runtimeSettings.SetRemoveOriginal(value);
+    public void SetRemoveBrackets(bool value) => _runtimeSettings.SetRemoveBrackets(value);
     #endregion
 
     #region Add API
@@ -290,7 +274,7 @@ public partial class AvatarExplorerApp
         {
             GroupName = groupName
         };
-        commonAvatar.SetAvatars(avatars, true);
+        commonAvatar.UpdateAvatars(avatars);
 
         _commonAvatars.Add(commonAvatar);
 
@@ -329,13 +313,11 @@ public partial class AvatarExplorerApp
     #region Rename CommonAvatar Group Name
     public void RenameCommonAvatarGroupName(string previousInternalGroupPath, string newInternalGroupPath)
     {
-        foreach (Item item in _items.Where(i => i.SupportedAvatars.Contains(previousInternalGroupPath)))
+        foreach (Item item in _items.Where(i => i.SupportedAvatarsView.Contains(previousInternalGroupPath)))
         {
-            List<string> newSupportedAvatars = item.SupportedAvatars
-                .Select(i => i == previousInternalGroupPath ? newInternalGroupPath : i)
-                .ToList();
-            
-            item.SetSupportedAvatars(newSupportedAvatars, true);
+            IEnumerable<string> newSupportedAvatars = item.SupportedAvatarsView
+                .Select(i => i == previousInternalGroupPath ? newInternalGroupPath : i);
+            item.UpdateSupportedAvatars(newSupportedAvatars);
         }
     }
     #endregion
@@ -397,26 +379,23 @@ public partial class AvatarExplorerApp
         {
             _items.ForEach(i =>
             {
-                i.SupportedAvatars.RemoveAll(a => a == itemPath);
-                i.ImplementedAvatars.RemoveAll(a => a == itemPath);
+                i.UpdateSupportedAvatars(i.SupportedAvatarsView.Where(a => a != itemPath));
+                i.UpdateImplementedAvatars(i.ImplementedAvatarsView.Where(a => a != itemPath));
             });
         }
 
         return removed > 0;
     }
 
-    public bool RemoveCommonAvatar(string commonAvatarName)
-        => _commonAvatars.RemoveAll(i => i.GroupName == commonAvatarName) > 0;
+    public bool RemoveCommonAvatar(string commonAvatarName) => _commonAvatars.RemoveAll(i => i.GroupName == commonAvatarName) > 0;
     #endregion
 
     #region Search API
-    public IReadOnlyList<Item> SearchItems(SearchFilter searchFilter)
-        => SearchService.ExecuteSearch(_items, _commonAvatars, _runtimeSettings, searchFilter);
+    public IReadOnlyList<Item> SearchItems(SearchFilter searchFilter) => SearchService.ExecuteSearch(_items, _commonAvatars, _runtimeSettings, searchFilter);
     #endregion
 
     #region Save API
-    public void SaveRuntimeSettings()
-        => RuntimeSettingsService.Save(_runtimeSettings);
+    public void SaveRuntimeSettings() => RuntimeSettingsService.Save(_runtimeSettings);
     #endregion
 
     #region Data Importer API
@@ -441,13 +420,11 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Data Exporter API
-    public async Task ExportToCsv(string filePath, Dictionary<ItemType, string> localizedItemTypesMapping, bool includeImplementedToSupported)
-        => await DataExporter.ToCsv(_items, _commonAvatars, localizedItemTypesMapping, filePath, includeImplementedToSupported);
+    public async Task ExportToCsv(string filePath, Dictionary<ItemType, string> localizedItemTypesMapping, bool includeImplementedToSupported) => await DataExporter.ToCsv(_items, _commonAvatars, localizedItemTypesMapping, filePath, includeImplementedToSupported);
     #endregion
     
     #region Clear API
-    public static void ClearTemp()
-        => FileSystemService.DeleteDirectory(SystemPath.TempFolderPath);
+    public static void ClearTemp() => FileSystemService.DeleteDirectory(SystemPath.TempFolderPath);
     #endregion
     
     #region Ececute Context Menu Command

@@ -46,7 +46,7 @@ public partial class MainWindow
             Button button = ItemButtonFactory.AddItemButton(EditCommonAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings, _userPreferences, onClick: EditCommonAvatarsOverlay_ItemButton_Click);
             button.Margin = new Thickness(0, 0, 10, 0); // 通常のリスト用のMarginなのでそれを直す。AddItemButtonの中身でMarginが指定されてるのもどうかと思うけどね。
 
-            if (_editCommonAvatarsOverlay_SelectedGroup?.Avatars.Contains(((Item)itemCountInfo.Item).ItemPath) ?? false) button.Classes.Add("selected");
+            if (_editCommonAvatarsOverlay_SelectedGroup?.AvatarsView.Contains(((Item)itemCountInfo.Item).ItemPath) ?? false) button.Classes.Add("selected");
         }
     }
 
@@ -57,8 +57,8 @@ public partial class MainWindow
         if (_editCommonAvatarsOverlay_SelectedGroup == null) return;
         if (sender is not Button button || button.Tag is not ItemTagInfo itemTagInfo) return;
         
-        if (_editCommonAvatarsOverlay_SelectedGroup.Avatars.Contains(itemTagInfo.Value)) _editCommonAvatarsOverlay_SelectedGroup.Avatars.RemoveAll(i => i == itemTagInfo.Value);
-        else _editCommonAvatarsOverlay_SelectedGroup.Avatars.Add(itemTagInfo.Value);
+        if (_editCommonAvatarsOverlay_SelectedGroup.AvatarsView.Contains(itemTagInfo.Value)) _editCommonAvatarsOverlay_SelectedGroup.UpdateAvatars(_editCommonAvatarsOverlay_SelectedGroup.AvatarsView.Where(i => i != itemTagInfo.Value));
+        else _editCommonAvatarsOverlay_SelectedGroup.UpdateAvatars(_editCommonAvatarsOverlay_SelectedGroup.AvatarsView.Append(itemTagInfo.Value));
         
         EditCommonAvatarsOverlay_RefleshAvatarList();
     }

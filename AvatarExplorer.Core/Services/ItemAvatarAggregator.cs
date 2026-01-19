@@ -14,7 +14,7 @@ internal static class ItemAvatarAggregator
         {
             avatars.AddRange(
                 commonAvatars
-                    .Select(i => new ItemCountInfo(i, i.Avatars.Count))
+                    .Select(i => new ItemCountInfo(i, i.AvatarsView.Count))
             );
         }
 

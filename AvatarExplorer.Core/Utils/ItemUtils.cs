@@ -17,17 +17,16 @@ public static partial class ItemUtils
     internal static string GetAvatarNameFromDictionary(Dictionary<string, string> avatarNamesDictionary, string avatarPath)
     {
         avatarNamesDictionary.TryGetValue(avatarPath, out string? avatarName);
-        return avatarName ?? "";
+        return avatarName ?? string.Empty;
     }
 
     public static string GetItemPath(string parentFolder, string itemPath)
     {
         // <sys>で始まっていないものはフルパスと認識する
-        return itemPath.StartsWith("<sys>") ? Path.Join(parentFolder, itemPath.Replace("<sys>", "")) : itemPath;
+        return itemPath.StartsWith("<sys>") ? Path.Join(parentFolder, itemPath.Replace("<sys>", string.Empty)) : itemPath;
     }
 
-    public static string RemoveBrackets(string value)
-        => TextBracketsRegex().Replace(value, "");
+    public static string RemoveBrackets(string value) => TextBracketsRegex().Replace(value, string.Empty);
     
     public static string? GetSafeTitle(string itemTitle)
     {

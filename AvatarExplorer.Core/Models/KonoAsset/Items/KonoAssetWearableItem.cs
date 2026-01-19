@@ -13,7 +13,7 @@ public class KonoAssetWearableItem : IKonoAssetItem
     public KonoAssetDescription Description { get; set; } = new KonoAssetDescription();
 
     [JsonPropertyName("category")]
-    public string Category { get; set; } = "";
+    public string Category { get; set; } = string.Empty;
 
     [JsonPropertyName("supportedAvatars")]
     public List<string> SupportedAvatars { get; set; } = new List<string>();
@@ -24,7 +24,7 @@ public class KonoAssetWearableItem : IKonoAssetItem
         migratedItem.ItemPath = $"<sys>{Id}";
         migratedItem.Type = ItemType.Custom;
         migratedItem.CustomCategory = string.IsNullOrEmpty(Category) ? "Wearables" : Category;
-        migratedItem.SetSupportedAvatars(SupportedAvatars, true);
+        migratedItem.UpdateSupportedAvatars(SupportedAvatars);
 
         return migratedItem;
     }

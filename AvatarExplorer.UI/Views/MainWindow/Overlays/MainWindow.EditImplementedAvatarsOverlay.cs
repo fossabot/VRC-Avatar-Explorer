@@ -13,14 +13,14 @@ public partial class MainWindow
 {
     private readonly List<string> _editImplementedAvatarsOverlay_selectedAvatars = new();
     
-    private void EditImplementedAvatarsOverlay_Show(List<string>? avatars = null)
+    private void EditImplementedAvatarsOverlay_Show(IReadOnlyList<string>? avatars = null)
     {
         EditImplementedAvatarsOverlay.IsVisible = true;
         EditImplementedAvatarsOverlay_InitializeList(avatars);
     }
     private void EditImplementedAvatarsOverlay_Hide() => EditImplementedAvatarsOverlay.IsVisible = false;
     
-    private void EditImplementedAvatarsOverlay_InitializeList(List<string>? avatars = null)
+    private void EditImplementedAvatarsOverlay_InitializeList(IReadOnlyList<string>? avatars = null)
     {
         _editImplementedAvatarsOverlay_selectedAvatars.Clear();
         if (avatars != null) _editImplementedAvatarsOverlay_selectedAvatars.AddRange(avatars);
@@ -47,9 +47,7 @@ public partial class MainWindow
     {
         if (_contextMenu_selectedItem != null)
         {
-            _contextMenu_selectedItem.ImplementedAvatars.Clear();
-            _contextMenu_selectedItem.ImplementedAvatars.AddRange(_editImplementedAvatarsOverlay_selectedAvatars);
-
+            _contextMenu_selectedItem.UpdateImplementedAvatars(_editImplementedAvatarsOverlay_selectedAvatars);
             _avatarExplorerApp.SaveItemDatabase();
         }
 

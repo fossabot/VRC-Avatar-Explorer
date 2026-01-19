@@ -12,10 +12,10 @@ internal static class MigrateUtils
             return path.Replace(V1ItemsFolderPrefix, "<sys>"); // フルパスとアプリフォルダの区別をつけるため
 
         if (path.StartsWith(V1ThumbnailFolderPrefix))
-            return path.Replace(V1ThumbnailFolderPrefix, "");
+            return path.Replace(V1ThumbnailFolderPrefix, string.Empty);
 
         if (path.StartsWith(V1AuthorThumbnailFolderPrefix))
-            return path.Replace(V1AuthorThumbnailFolderPrefix, "");
+            return path.Replace(V1AuthorThumbnailFolderPrefix, string.Empty);
 
         return path;
     }

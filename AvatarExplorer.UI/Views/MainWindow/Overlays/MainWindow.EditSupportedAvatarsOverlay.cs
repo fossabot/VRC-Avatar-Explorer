@@ -13,14 +13,14 @@ public partial class MainWindow
 {
     private readonly List<string> _editSupportedAvatarsOverlay_selectedAvatars = new();
     
-    private void EditSupportedAvatarsOverlay_Show(List<string>? avatars = null)
+    private void EditSupportedAvatarsOverlay_Show(IReadOnlyList<string>? avatars = null)
     {
         EditSupportedAvatarsOverlay.IsVisible = true;
         EditSupportedAvatarsOverlay_InitializeList(avatars);
     }
     private void EditSupportedAvatarsOverlay_Hide() => EditSupportedAvatarsOverlay.IsVisible = false;
     
-    private void EditSupportedAvatarsOverlay_InitializeList(List<string>? avatars = null)
+    private void EditSupportedAvatarsOverlay_InitializeList(IReadOnlyList<string>? avatars = null)
     {
         _editSupportedAvatarsOverlay_selectedAvatars.Clear();
         if (avatars != null) _editSupportedAvatarsOverlay_selectedAvatars.AddRange(avatars);
@@ -49,8 +49,7 @@ public partial class MainWindow
     private void EditSupportedAvatarsOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => EditSupportedAvatarsOverlay_Hide();
     private void EditSupportedAvatarsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
-        _addItemOverlay_addItemWindowValues.SupportedAvatars.Clear();
-        _addItemOverlay_addItemWindowValues.SupportedAvatars.AddRange(_editSupportedAvatarsOverlay_selectedAvatars);
+        _addItemOverlay_selectedItem?.UpdateSupportedAvatars(_editSupportedAvatarsOverlay_selectedAvatars);
 
         AddItemOverlay_UpdateSupportedAvatarsLabel();
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Interfaces;
@@ -22,7 +23,8 @@ internal class UISelectableItem
     internal string CommonAvatarName { get; set; } // アイテム表記用
     internal string CreatedDate { get; set; } = string.Empty; // アイテムTooltip表記用
     internal string UpdatedDate { get; set; } = string.Empty; // アイテムTooltip表記用
-    internal List<string> ItemTags { get; private set; } = new(); // アイテムのタグ
+    private List<string> ItemTags { get; set; } = new(); // アイテムのタグ
+    internal IReadOnlyList<string> ItemTagsView => ItemTags;
     internal string ItemMemo { get; set; } = string.Empty; // アイテムTooltip表記用
 
     internal UISelectableItem(ISelectableItem source, int itemCount, string commonAvatarName = "")
@@ -60,9 +62,8 @@ internal class UISelectableItem
         CreatedDate = DatetimeUtils.GetDateStringFromUnixTime(item.CreatedDate);
         UpdatedDate = DatetimeUtils.GetDateStringFromUnixTime(item.UpdatedDate);
         
-        ItemTags.Clear();
-        ItemTags.AddRange(item.Tags);
-
+        ItemTags = item.TagsView.ToList();
+        
         ItemMemo = item.ItemMemo;
     }
 
@@ -88,10 +89,10 @@ internal class UISelectableItem
 
     private void FromFileCategoryItem(FileCategoryItem fileCategoryItem)
     {
-        Title = fileCategoryItem.FileCategory.GetLocalizationKey() ?? "";
+        Title = fileCategoryItem.FileCategory.GetLocalizationKey() ?? string.Empty;
         Description = (LocalizationKey.UI.Button.Description.Item.Count, [ItemCount.ToString()]);
         ImageFileName = SystemIconKey.FolderIcon;
-        Tag = new(ItemTagState.ItemFileCategory, fileCategoryItem.FileCategory.GetLocalizationKey() ?? "");
+        Tag = new(ItemTagState.ItemFileCategory, fileCategoryItem.FileCategory.GetLocalizationKey() ?? string.Empty);
         IconType = IconType.Author;
     }
 
@@ -107,7 +108,7 @@ internal class UISelectableItem
     private void FromCommonAvatar(CommonAvatar commonAvatar)
     {
         Title = Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, commonAvatar.GroupName);
-        Description = (LocalizationKey.UI.Button.Description.CommonAvatar.Count, [commonAvatar.Avatars.Count.ToString()]);
+        Description = (LocalizationKey.UI.Button.Description.CommonAvatar.Count, [commonAvatar.AvatarsView.Count.ToString()]);
         ImageFileName = SystemIconKey.GroupIcon;
         Tag = new(ItemTagState.None, commonAvatar.GetInternalPath());
         IconType = IconType.Item;

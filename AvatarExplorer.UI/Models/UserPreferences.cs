@@ -45,22 +45,15 @@ public class UserPreferences
     }
 
     internal void SetLanguage(int index) => Language = index;
-
     internal void SetIconSize(int normalIconSize, int hoverIconSize)
     {
         NormalIconSize = normalIconSize;
         HoverIconSize = hoverIconSize;
     }
-
     internal void UseHoverIconSize(bool value) => EnableHoverIconSize = value;
-
     internal void UseBackground(bool value) => UseBackgroundImage = value;
-
     internal void SetBackground(string path) => BackgroundImage = path;
-
     internal void SetBackgroundOpacity(int value) => BackgroundOpacity = value;
-
     internal void SetTheme(Theme theme) => Theme = theme;
-
     internal void SetItemsPerPage(int value) => ItemsPerPage = value;
 }

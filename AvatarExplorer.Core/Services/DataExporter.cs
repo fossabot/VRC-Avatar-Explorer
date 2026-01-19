@@ -16,7 +16,7 @@ internal static class DataExporter
             List<string> supportedAvatarNames = new();
             List<string> supportedAvatarPaths = new();
 
-            foreach (string avatar in item.SupportedAvatars)
+            foreach (string avatar in item.SupportedAvatarsView)
             {
                 string avatarName = ItemUtils.GetAvatarNameFromPath(items, avatar);
                 if (avatarName == null) continue;
@@ -26,10 +26,10 @@ internal static class DataExporter
 
                 if (!includeImplementedToSupported) continue;
 
-                IEnumerable<CommonAvatar> commonAvatarGroup = commonAvatars.Where(commonAvatar => commonAvatar.Avatars.Contains(avatar));
+                IEnumerable<CommonAvatar> commonAvatarGroup = commonAvatars.Where(commonAvatar => commonAvatar.AvatarsView.Contains(avatar));
                 foreach (CommonAvatar commonAvatar in commonAvatarGroup)
                 {
-                    foreach (string commonAvatarPath in commonAvatar.Avatars)
+                    foreach (string commonAvatarPath in commonAvatar.AvatarsView)
                     {
                         if (supportedAvatarPaths.Contains(commonAvatarPath)) continue;
 
@@ -43,7 +43,7 @@ internal static class DataExporter
             }
 
             List<string> implementedAvatarNames = new();
-            foreach (string implementedAvatar in item.ImplementedAvatars)
+            foreach (string implementedAvatar in item.ImplementedAvatarsView)
             {
                 string avatarName = ItemUtils.GetAvatarNameFromPath(items, implementedAvatar);
                 if (avatarName == null) continue;
@@ -61,7 +61,7 @@ internal static class DataExporter
             string implementedAvatarsList = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, implementedAvatarNames));
             string boothId = CsvUtils.EscapeCsv(item.BoothId.ToString());
             string itemPath = CsvUtils.EscapeCsv(item.ItemPath);
-            string tags = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, item.Tags));
+            string tags = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, item.TagsView));
 
             await sw.WriteLineAsync($"{itemTitle},{authorName},{authorImageFilePath},{imagePath},{type},{memo},{supportedAvatarsList},{implementedAvatarsList},{boothId},{itemPath},{tags}");
         }

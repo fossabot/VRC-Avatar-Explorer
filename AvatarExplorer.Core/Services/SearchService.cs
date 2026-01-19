@@ -36,7 +36,7 @@ internal static class SearchService
         );
 
         bool matchAvatar = searchFilter.SupportedAvatars.Count == 0 || SearchUtils.MatchesFilter(
-            item.SupportedAvatars.Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar)), searchFilter.SupportedAvatars,
+            item.SupportedAvatarsView.Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar)), searchFilter.SupportedAvatars,
             searchFilter.IsOrSearch,
             (target, filter) => !string.IsNullOrEmpty(target) && target.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
         );
@@ -78,7 +78,7 @@ internal static class SearchService
             );
         }
         
-        IEnumerable<string> implementedAvatarNames = item.ImplementedAvatars.Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar));
+        IEnumerable<string> implementedAvatarNames = item.ImplementedAvatarsView.Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar));
 
         bool matchImplemented = searchFilter.ImplementedAvatars.Count == 0 || SearchUtils.MatchesFilter(
             implementedAvatarNames, searchFilter.ImplementedAvatars,
@@ -92,7 +92,7 @@ internal static class SearchService
                 : searchFilter.NotImplementedAvatars.All(filter => !implementedAvatarNames.Any(name => name.Contains(filter, StringComparison.CurrentCultureIgnoreCase))));
 
         bool matchTag = searchFilter.Tags.Count == 0 || SearchUtils.MatchesFilter(
-            item.Tags, searchFilter.Tags,
+            item.TagsView, searchFilter.Tags,
             searchFilter.IsOrSearch,
             (target, filter) => target.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
         );
@@ -109,11 +109,11 @@ internal static class SearchService
                 .ToList();
 
             matchCommon = searchFilter.IsOrSearch
-                ? item.SupportedAvatars.Any(avatar => filterCommonAvatars.Any(ca => ca != null && ca.Avatars.Contains(avatar)))
-                : filterCommonAvatars.All(ca => ca != null && item.SupportedAvatars.Any(avatar => ca.Avatars.Contains(avatar)));
+                ? item.SupportedAvatarsView.Any(avatar => filterCommonAvatars.Any(ca => ca != null && ca.AvatarsView.Contains(avatar)))
+                : filterCommonAvatars.All(ca => ca != null && item.SupportedAvatarsView.Any(avatar => ca.AvatarsView.Contains(avatar)));
         }
 
-        bool matchBroken = !searchFilter.BrokenItems || (searchFilter.BrokenItems && !(item.SupportedAvatars.Contains(item.ItemPath) || item.ImplementedAvatars.Contains(item.ItemPath)));
+        bool matchBroken = !searchFilter.BrokenItems || (searchFilter.BrokenItems && !(item.SupportedAvatarsView.Contains(item.ItemPath) || item.ImplementedAvatarsView.Contains(item.ItemPath)));
 
         bool matchWord = searchFilter.SearchWords.Count == 0
             || (searchFilter.IsOrSearch

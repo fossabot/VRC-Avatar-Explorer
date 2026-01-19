@@ -60,15 +60,13 @@ internal static class DataImporter
 
         foreach (Item item in items)
         {
-            IEnumerable<string> supportedAvatars = item.SupportedAvatars
-                .Select(a => pathMapping.TryGetValue(a, out string? value) ? value : a)
-                .ToArray();
-            item.SetSupportedAvatars(supportedAvatars, true);
+            IEnumerable<string> supportedAvatars = item.SupportedAvatarsView
+                .Select(a => pathMapping.TryGetValue(a, out string? value) ? value : a);
+            item.UpdateSupportedAvatars(supportedAvatars);
 
-            IEnumerable<string> implementedAvatars = item.ImplementedAvatars
-                .Select(a => pathMapping.TryGetValue(a, out string? value) ? value : a)
-                .ToArray();
-            item.SetImplementedAvatars(implementedAvatars, true);
+            IEnumerable<string> implementedAvatars = item.ImplementedAvatarsView
+                .Select(a => pathMapping.TryGetValue(a, out string? value) ? value : a);
+            item.UpdateImplementedAvatars(implementedAvatars);
         }
 
         List<CommonAvatar> commonAvatars = new();
@@ -76,10 +74,9 @@ internal static class DataImporter
 
         foreach (CommonAvatar commonAvatar in commonAvatars)
         {
-            IEnumerable<string> avatarPaths = commonAvatar.Avatars
-                .Select(a => pathMapping.TryGetValue(a, out string? value) ? value : a)
-                .ToArray();
-            commonAvatar.SetAvatars(avatarPaths, true);
+            IEnumerable<string> avatarPaths = commonAvatar.AvatarsView
+                .Select(a => pathMapping.TryGetValue(a, out string? value) ? value : a);
+            commonAvatar.UpdateAvatars(avatarPaths);
         }
 
         progress?.Report((LocalizationKey.Processing.Import.Copying, 100, string.Empty));
@@ -104,9 +101,9 @@ internal static class DataImporter
             UpdatedDate = item.UpdatedDate,
         };
 
-        migratedItem.SetSupportedAvatars(item.SupportedAvatar, true);
-        migratedItem.SetImplementedAvatars(item.ImplementedAvatars, true);
-        migratedItem.SetTags(item.Tags, true);
+        migratedItem.UpdateSupportedAvatars(item.SupportedAvatar);
+        migratedItem.UpdateImplementedAvatars(item.ImplementedAvatars);
+        migratedItem.UpdateTags(item.Tags);
 
         return migratedItem;
     }
@@ -117,7 +114,7 @@ internal static class DataImporter
             GroupName = commonAvatar.Name
         };
 
-        migratedCommonAvatar.SetAvatars(commonAvatar.Avatars, true);
+        migratedCommonAvatar.UpdateAvatars(commonAvatar.Avatars);
 
         return migratedCommonAvatar;
     }

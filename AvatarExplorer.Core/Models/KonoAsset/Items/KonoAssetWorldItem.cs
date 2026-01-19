@@ -13,7 +13,7 @@ public class KonoAssetWorldItem : IKonoAssetItem
     public KonoAssetDescription Description { get; set; } = new KonoAssetDescription();
 
     [JsonPropertyName("category")]
-    public string Category { get; set; } = "";
+    public string Category { get; set; } = string.Empty;
 
     public Item ToItem()
     {

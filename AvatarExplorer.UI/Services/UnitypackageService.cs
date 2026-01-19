@@ -32,6 +32,6 @@ internal static class UnitypackageService
             }
         });
 
-        await AvatarExplorerApp.ModifyUnityPackageFilePath(itemPath, Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? ""], progress);
+        await AvatarExplorerApp.ModifyUnityPackageFilePath(itemPath, Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? string.Empty], progress);
     }
 }

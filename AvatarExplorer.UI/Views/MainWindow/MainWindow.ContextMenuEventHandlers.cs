@@ -144,7 +144,7 @@ public partial class MainWindow
 
         _contextMenu_selectedItem = item;
 
-        EditImplementedAvatarsOverlay_Show(item.ImplementedAvatars);
+        EditImplementedAvatarsOverlay_Show(item.ImplementedAvatarsView);
 
         return Task.CompletedTask;
     }
@@ -155,7 +155,7 @@ public partial class MainWindow
 
         _contextMenu_selectedItem = item;
 
-        EditTagsOverlay_Show(item.Tags);
+        EditTagsOverlay_Show(item.TagsView);
 
         return Task.CompletedTask;
     }

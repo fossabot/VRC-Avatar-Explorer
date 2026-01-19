@@ -193,7 +193,7 @@ public partial class MainWindow
 
     private void AddItemOverlay_UpdateSupportedAvatarsLabel()
     {
-        AddItemOverlay_EditSupportedAvatarsButton.Content = string.Format(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Overlay.AddItem.SelectedAvatarsCount, _addItemOverlay_addItemWindowValues.SupportedAvatars.Count.ToString()));
+        AddItemOverlay_EditSupportedAvatarsButton.Content = string.Format(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Overlay.AddItem.SelectedAvatarsCount, _addItemOverlay_addItemWindowValues.SupportedAvatarsView.Count.ToString()));
     }
 
     private void AddItemOverlay_SetValuesToUi(AddItemOverlayWindowValues addItemWindowValues)
@@ -281,7 +281,7 @@ public partial class MainWindow
     }
     private void AddItemOverlay_EditSupportedAvatars_Click(object? sender, RoutedEventArgs e)
     {
-        EditSupportedAvatarsOverlay_Show(_addItemOverlay_addItemWindowValues.SupportedAvatars);
+        EditSupportedAvatarsOverlay_Show(_addItemOverlay_addItemWindowValues.SupportedAvatarsView);
     }
     private async void AddItemOverlay_AddFolder_Click(object? sender, RoutedEventArgs e)
     {
@@ -321,8 +321,8 @@ public partial class MainWindow
         itemCreationContext.ItemType = categoryInfo.Item1;
         if (categoryInfo.Item1 == ItemType.Custom) itemCreationContext.CustomCategory = categoryInfo.Item2;
 
-        itemCreationContext.SupportedAvatars.AddRange(_addItemOverlay_addItemWindowValues.SupportedAvatars);
-        itemCreationContext.LocalizedItemTypeName = categoryInfo.Item1 == ItemType.Custom ? categoryInfo.Item2 : Localizer.Instance[categoryInfo.Item1.GetLocalizationKey() ?? ""];
+        itemCreationContext.SupportedAvatars.AddRange(_addItemOverlay_addItemWindowValues.SupportedAvatarsView);
+        itemCreationContext.LocalizedItemTypeName = categoryInfo.Item1 == ItemType.Custom ? categoryInfo.Item2 : Localizer.Instance[categoryInfo.Item1.GetLocalizationKey() ?? string.Empty];
 
         if (_addItemOverlay_selectedItem == null)
         {

@@ -19,27 +19,23 @@ public class Item : ISelectableItem
     public string AuthorThumbnmailFileName { get; set; } = string.Empty;
     public ItemType Type { get; set; }
     public string CustomCategory { get; set; } = string.Empty;
-    [JsonInclude] public List<string> SupportedAvatars { get; private set; } = new List<string>();
-    [JsonInclude] public List<string> ImplementedAvatars { get; private set; } = new List<string>();
-    [JsonInclude] public List<string> Tags { get; private set; } = new List<string>();
+    [JsonInclude] private List<string> SupportedAvatars { get; set; } = new List<string>();
+    [JsonInclude] private List<string> ImplementedAvatars { get; set; } = new List<string>();
+    [JsonInclude] private List<string> Tags { get; set; } = new List<string>();
     public string ItemMemo { get; set; } = string.Empty;
     public string CreatedDate { get; set; } = string.Empty;
     public string UpdatedDate { get; set; } = string.Empty;
 
-    public string GetBoothLink()
-        => string.Format(BoothLink.ItemURLFormat, AuthorId, BoothId);
+    [JsonIgnore] public IReadOnlyList<string> SupportedAvatarsView => SupportedAvatars;
+    [JsonIgnore] public IReadOnlyList<string> ImplementedAvatarsView => ImplementedAvatars;
+    [JsonIgnore] public IReadOnlyList<string> TagsView => Tags;
 
-    public string GetBoothJsonLink()
-        => string.Format(BoothLink.ItemJsonURLFormat, BoothId);
-
-    public void SetSupportedAvatars(IEnumerable<string> avatars, bool clear)
-        => ListUtils.Add(SupportedAvatars, avatars, clear);
-
-    public void SetImplementedAvatars(IEnumerable<string> avatars, bool clear)
-        => ListUtils.Add(ImplementedAvatars, avatars, clear);
-
-    public void SetTags(IEnumerable<string> tags, bool clear)
-        => ListUtils.Add(Tags, tags, clear);
+    public void UpdateSupportedAvatars(IEnumerable<string> newList) => SupportedAvatars = newList.ToList();
+    public void UpdateImplementedAvatars(IEnumerable<string> newList) => ImplementedAvatars = newList.ToList();
+    public void UpdateTags(IEnumerable<string> newList) => Tags = newList.ToList();
+    
+    public string GetBoothLink() => string.Format(BoothLink.ItemURLFormat, AuthorId, BoothId);
+    public string GetBoothJsonLink() => string.Format(BoothLink.ItemJsonURLFormat, BoothId);
 
     [JsonIgnore]
     internal string SearchIndex { get; private set; } = string.Empty;
@@ -69,8 +65,7 @@ public class Item : ISelectableItem
         BoothId = itemCreationContext.BoothId;
         Type = itemCreationContext.ItemType;
         CustomCategory = itemCreationContext.CustomCategory;
-
-        SetSupportedAvatars(itemCreationContext.SupportedAvatars, true);
+        UpdateSupportedAvatars(itemCreationContext.SupportedAvatars);
 
         return this;
     }

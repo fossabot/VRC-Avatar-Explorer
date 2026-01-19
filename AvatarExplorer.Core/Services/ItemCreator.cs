@@ -33,7 +33,7 @@ internal static class ItemCreator
             newItem.AuthorThumbnmailFileName = authorThumbnailFileName;
         }
 
-        newItem.SetSupportedAvatars(itemCreationContext.SupportedAvatars, true);
+        newItem.UpdateSupportedAvatars(itemCreationContext.SupportedAvatars);
 
         return (newItem, processingFailedPaths);
     }
@@ -56,7 +56,7 @@ internal static class ItemCreator
             UpdatedDate = konoAssetDescription.CreatedAt.ToString()
         };
 
-        newItem.Tags.AddRange(konoAssetDescription.Tags);
+        newItem.UpdateTags(konoAssetDescription.Tags);
 
         return newItem;
     }

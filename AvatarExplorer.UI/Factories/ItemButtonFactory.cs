@@ -68,7 +68,7 @@ internal static class ItemButtonFactory
                 itemIcon.Width = userPreferences.HoverIconSize;
                 itemIcon.Height = double.NaN;
             };
-            
+
             itemIcon.PointerExited += (s, e) => {
                 itemIcon.Width = userPreferences.NormalIconSize;
                 itemIcon.Height = userPreferences.NormalIconSize;
@@ -124,7 +124,7 @@ internal static class ItemButtonFactory
             tagPanel.Children.Add(commonAvatarButton);
         }
 
-        foreach (string itemTag in item.ItemTags)
+        foreach (string itemTag in item.ItemTagsView)
         {
             Button tagButton = GetTagButton(itemTag, onClick: null);
             tagButton.Classes.Add("accent");

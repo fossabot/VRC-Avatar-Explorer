@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 
@@ -14,7 +15,8 @@ internal class AddItemOverlayWindowValues
     internal string BoothAuthorThumbnailUrl { get; set; } = string.Empty;
     internal int BoothId { get; set; } = -1;
     internal ItemType ItemType { get; set; } = ItemType.Avatar;
-    internal List<string> SupportedAvatars { get; set; } = new();
+    private List<string> SupportedAvatars { get; set; } = new();
+    internal IReadOnlyList<string> SupportedAvatarsView => SupportedAvatars;
 
     internal void Reset()
     {
@@ -29,6 +31,11 @@ internal class AddItemOverlayWindowValues
         SupportedAvatars.Clear();
     }
 
+    private void UpdateSupportedAvatars(IEnumerable<string> newList)
+    {
+        SupportedAvatars = newList.ToList();
+    }
+
     internal void FromItem(Item item)
     {
         Title = item.Title;
@@ -39,8 +46,7 @@ internal class AddItemOverlayWindowValues
         BoothId = item.BoothId;
         ItemType = item.Type;
 
-        SupportedAvatars.Clear();
-        SupportedAvatars.AddRange(item.SupportedAvatars);
+        UpdateSupportedAvatars(item.SupportedAvatarsView);
     }
 
     internal (bool, string) Validate()

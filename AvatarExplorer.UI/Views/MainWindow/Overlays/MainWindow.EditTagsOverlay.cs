@@ -13,7 +13,7 @@ public partial class MainWindow
     private readonly List<string> _editTagsOverlay_selectedTags = new();
     private static readonly Vector VectorMaxValue = new(double.MaxValue, double.MaxValue);
 
-    private void EditTagsOverlay_Show(List<string>? tags = null)
+    private void EditTagsOverlay_Show(IReadOnlyList<string>? tags = null)
     {
         EditTagsOverlay.IsVisible = true;
         EditTagsOverlay_TagTextBox.Text = string.Empty;
@@ -21,7 +21,7 @@ public partial class MainWindow
     }
     private void EditTagsOverlay_Hide() => EditTagsOverlay.IsVisible = false;
 
-    private void EditTagsOverlay_InitializeList(List<string>? tags = null)
+    private void EditTagsOverlay_InitializeList(IReadOnlyList<string>? tags = null)
     {
         _editTagsOverlay_selectedTags.Clear();
         if (tags != null) _editTagsOverlay_selectedTags.AddRange(tags);
@@ -32,7 +32,7 @@ public partial class MainWindow
     private void EditTagsOverlay_RefleshList()
     {
         EditTagsOverlay_TagComboBox.Items.Clear();
-        IEnumerable<string> tags = _avatarExplorerApp.GetAllItems().SelectMany(i => i.Tags).Distinct();
+        IEnumerable<string> tags = _avatarExplorerApp.GetAllItems().SelectMany(i => i.TagsView).Distinct();
 
         foreach (string tag in tags)
         {
@@ -96,9 +96,7 @@ public partial class MainWindow
     {
         if (_contextMenu_selectedItem != null)
         {
-            _contextMenu_selectedItem.Tags.Clear();
-            _contextMenu_selectedItem.Tags.AddRange(_editTagsOverlay_selectedTags);
-
+            _contextMenu_selectedItem.UpdateTags(_editTagsOverlay_selectedTags);
             _avatarExplorerApp.SaveItemDatabase();
         }
 

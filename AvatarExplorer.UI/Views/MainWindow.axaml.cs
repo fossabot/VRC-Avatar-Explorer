@@ -247,7 +247,7 @@ public partial class MainWindow : Window
     private void Main_OnSearchTimerTick(object? sender, EventArgs e)
     {
         _searchTimer.Stop();
-        _main_searchTextCache = Main_SearchTextBox.Text ?? "";
+        _main_searchTextCache = Main_SearchTextBox.Text ?? string.Empty;
         Main_ExecuteSearchItems();
     }
     private void Main_ExecuteSearchItems(string searchText = "")
