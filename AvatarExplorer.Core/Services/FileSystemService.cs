@@ -39,26 +39,45 @@ public static class FileSystemService
     #endregion
 
     #region Unitypackage Modifier
-    internal static async Task ModifyUnityPackageFilePathAsync(string itemPath, string itemCategoryName = "", IProgress<(string, int, string)>? progress = null)
+    internal static async Task ModifyUnityPackageFilePathAsync(string[] filePaths, string[] itemCategoryNames, IProgress<(string, int, string)>? progress = null)
     {
-        bool isUnitypackage = itemPath.ToLower().EndsWith(".unitypackage");
-        if (!isUnitypackage) return;
+        List<string> unitypackagePaths = new();
+        foreach (string filePath in filePaths)
+        {
+            bool isUnitypackage = filePath.ToLower().EndsWith(".unitypackage");
+            if (!isUnitypackage) continue;
 
-        await ModifyUnityPackageFilePathAsyncInternal(itemPath, itemCategoryName, progress);
+            unitypackagePaths.Add(filePath);
+        }
+
+        if (unitypackagePaths.Count == 0) return;
+        
+        await ModifyUnityPackageFilePathAsyncInternal(unitypackagePaths, itemCategoryNames, progress);
     }
-    private static async Task ModifyUnityPackageFilePathAsyncInternal(string itemPath, string itemCategoryName, IProgress<(string, int, string)>? progress = null)
+    private static async Task ModifyUnityPackageFilePathAsyncInternal(List<string> itemPaths, string[] itemCategoryNames, IProgress<(string, int, string)>? progress = null)
     {
+        if (itemPaths.Count == 0) return;
+
         await Task.Run(async () =>
         {
             progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Preparing, 0, string.Empty));
 
-            var (saveFolder, saveFilePath, unityPackagePath) = PrepareSavePaths(itemPath);
+            var (saveFolder, saveFilePath, unityPackagePath) = PrepareSavePaths(itemPaths[0]);
             PrepareSaveDirectory(saveFolder);
 
             progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Extracting, 10, string.Empty));
 
-            int totalEntries = await CountTarEntriesAsync(itemPath);
-            await ExtractTarToFolderAsync(itemPath, saveFilePath, itemCategoryName, totalEntries, progress);
+            int totalEntries = 0;
+            foreach (string itemPath in itemPaths)
+            {
+                totalEntries += await CountTarEntriesAsync(itemPath);
+            }
+
+            for (int i = 0; i < itemPaths.Count; i++)
+            {
+                string itemPath = itemPaths[i];
+                await ExtractTarToFolderAsync(itemPath, saveFilePath, itemCategoryNames[i], totalEntries, progress);
+            }
 
             progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Creating, 90, string.Empty));
 
