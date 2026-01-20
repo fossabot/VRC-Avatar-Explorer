@@ -49,6 +49,7 @@ public static class LocalizationKey
             {
                 public const string CreatedDate = "UI.Button.ToolTip.CreatedDate";
                 public const string UpdatedDate = "UI.Button.ToolTip.UpdatedDate";
+                public const string FilePath = "UI.Button.ToolTip.FilePath";
             }
         }
 

@@ -20,6 +20,7 @@
 
     "UI.Button.ToolTip.CreatedDate": "登録日時: {0}",
     "UI.Button.ToolTip.UpdatedDate": "更新日時: {0}",
+    "UI.Button.ToolTip.FilePath": "開くファイルのパス: {0}",
 
     "UI.ItemWindow.Page": "{0} / {1}ページ",
     "UI.ItemWindow.PageItemCount": "{0} - {1} / {2}個の項目",

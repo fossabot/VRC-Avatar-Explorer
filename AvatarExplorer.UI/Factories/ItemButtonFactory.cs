@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Text;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -37,7 +38,7 @@ internal static class ItemButtonFactory
         Grid.SetColumn(textGrid, 1);
 
         itemButton.Content = contentGrid;
-        SetupButtonInteractions(itemButton, item, contextMenu, onClick);
+        SetupButtonInteractions(itemButton, item, runtimeSettings, contextMenu, onClick);
 
         parent.Children.Add(itemButton);
         return itemButton;
@@ -136,11 +137,16 @@ internal static class ItemButtonFactory
         return tagPanel;
     }
 
-    private static void SetupButtonInteractions(Button button, UISelectableItem item, ContextMenu? contextMenu, EventHandler<RoutedEventArgs>? onClick)
+    private static void SetupButtonInteractions(Button button, UISelectableItem item, RuntimeSettings runtimeSettings, ContextMenu? contextMenu, EventHandler<RoutedEventArgs>? onClick)
     {
         if (StateFlagUtils.IsItemState(item.Tag.State))
         {
             ToolTip.SetTip(button, GetTooltipTextFromItem(item));
+            ToolTip.SetBetweenShowDelay(button, -1);
+        }
+        else if (item.Tag.State == ItemTagState.ItemFileCategoryOpen)
+        {
+            ToolTip.SetTip(button, Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.FilePath, Path.GetRelativePath(runtimeSettings.DataRootDirectory, item.Tag.Value)));
             ToolTip.SetBetweenShowDelay(button, -1);
         }
 
