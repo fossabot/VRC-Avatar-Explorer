@@ -89,11 +89,11 @@ internal static class ItemButtonFactory
 
         string itemTitle = GetFormattedTitle(item, runtimeSettings);
         
-        TextBlock titleTextBlock = new() { Text = itemTitle, FontSize = 16, FontWeight = FontWeight.Bold };
+        TextBlock titleTextBlock = new() { Text = itemTitle, FontSize = 16, FontWeight = FontWeight.Bold, TextTrimming = TextTrimming.CharacterEllipsis };
         Grid.SetRow(titleTextBlock, 0);
         textGrid.Children.Add(titleTextBlock);
 
-        TextBlock descriptionTextBlock = new() { Text = Localizer.Instance.GetDisplayName(item.Description.LocalizationKey, item.Description.Args), FontSize = 13 };
+        TextBlock descriptionTextBlock = new() { Text = Localizer.Instance.GetDisplayName(item.Description.LocalizationKey, item.Description.Args), FontSize = 13, TextTrimming = TextTrimming.CharacterEllipsis };
         Grid.SetRow(descriptionTextBlock, 1);
         textGrid.Children.Add(descriptionTextBlock);
 

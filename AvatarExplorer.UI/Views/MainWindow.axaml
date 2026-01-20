@@ -24,17 +24,17 @@
 
             <Grid Margin="0,10,0,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition MinWidth="200" Width="300"/>
+                    <ColumnDefinition MinWidth="250" Width="300"/>
                     <ColumnDefinition Width="5"/>
-                    <ColumnDefinition MinWidth="200" Width="*"/>
+                    <ColumnDefinition MinWidth="250" Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0" RowDefinitions="Auto,*">
-                    <ComboBox Grid.Row="0" HorizontalAlignment="Stretch" SelectedIndex="0" Margin="15,0,20,10" x:Name="Main_LeftFilter" SelectionChanged="Main_LeftFilter_SelectionChanged">
-                        <ComboBoxItem Content="アバター" Tag="Filter.Avatar"/>
-                        <ComboBoxItem Content="作者" Tag="Filter.Author"/>
-                        <ComboBoxItem Content="カテゴリ" Tag="Filter.Category"/>
-                    </ComboBox>
+                    <TabControl x:Name="Main_LeftFilter" Grid.Row="0" HorizontalAlignment="Stretch" SelectedIndex="0" Margin="5,-10,5,5" FontSize="18" SelectionChanged="Main_LeftFilter_SelectionChanged">
+                        <TabItem Header="アバター" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Tag="Filter.Avatar"/>
+                        <TabItem Header="作者" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Tag="Filter.Author"/>
+                        <TabItem Header="カテゴリ" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Tag="Filter.Category"/>
+                    </TabControl>
 
                     <ScrollViewer x:Name="Main_LeftPanelScrollViewer" Grid.Row="1">
                         <StackPanel x:Name="Main_LeftPanel" Spacing="5"/>
