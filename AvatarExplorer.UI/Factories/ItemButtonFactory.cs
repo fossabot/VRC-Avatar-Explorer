@@ -87,11 +87,11 @@ internal static class ItemButtonFactory
 
         string itemTitle = GetFormattedTitle(item, runtimeSettings);
         
-        TextBlock titleTextBlock = new TextBlock() { Text = itemTitle, FontSize = 16, FontWeight = FontWeight.Bold };
+        TextBlock titleTextBlock = new() { Text = itemTitle, FontSize = 16, FontWeight = FontWeight.Bold };
         Grid.SetRow(titleTextBlock, 0);
         textGrid.Children.Add(titleTextBlock);
 
-        TextBlock descriptionTextBlock = new TextBlock() { Text = Localizer.Instance.GetDisplayName(item.Description.LocalizationKey, item.Description.Args), FontSize = 13 };
+        TextBlock descriptionTextBlock = new() { Text = Localizer.Instance.GetDisplayName(item.Description.LocalizationKey, item.Description.Args), FontSize = 13 };
         Grid.SetRow(descriptionTextBlock, 1);
         textGrid.Children.Add(descriptionTextBlock);
 
@@ -156,7 +156,7 @@ internal static class ItemButtonFactory
 
     internal static Button GetTagButton(string text, EventHandler<RoutedEventArgs>? onClick = null)
     {
-        Button tagButton = new Button() { Content = text, CornerRadius = new(15), Height = 30, FontSize = 13.5, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+        Button tagButton = new() { Content = text, CornerRadius = new(15), Height = 30, FontSize = 13.5, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
 
         if (onClick != null) tagButton.Click += onClick;
         return tagButton;
