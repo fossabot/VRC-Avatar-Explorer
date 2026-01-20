@@ -75,13 +75,10 @@ public partial class MainWindow : Window
 
     public async Task SetApplicationArgs(string[]? args)
     {
-        if (args?.Length > 0)
-        {
-            if (string.IsNullOrEmpty(args[0])) return;
+        if (args == null || args.Length == 0 || string.IsNullOrEmpty(args[0])) return;
 
-            LaunchInfo launchInfo = LaunchInfoService.GetLaunchInfo(args[0]);
-            if (launchInfo.AssetDirs.Length != 0 && !string.IsNullOrEmpty(launchInfo.AssetId)) await AddItemOverlay_ShowAdd(launchInfo);
-        }
+        LaunchInfo launchInfo = LaunchInfoService.GetLaunchInfo(args[0]);
+        if (launchInfo.AssetDirs.Length != 0 && !string.IsNullOrEmpty(launchInfo.AssetId)) await AddItemOverlay_ShowAdd(launchInfo);
     }
 
     #region Left Panel
