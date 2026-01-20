@@ -10,7 +10,7 @@ namespace AvatarExplorer.UI.Services;
 
 internal static class PathService
 {
-    internal static string BuildPath(IEnumerable<Item> items, SelectionNode selectionNode)
+    internal static string BuildPath(IEnumerable<Item> items, SelectionNode selectionNode, bool removeBrackets)
     {
         ItemTagState state = selectionNode.State;
         string value = selectionNode.Key;
@@ -18,7 +18,7 @@ internal static class PathService
         if (StateFlagUtils.IsItemState(state))
         {
             Item? item = items.FirstOrDefault(item => item.ItemPath == value);
-            if (item != null) value = item.Title; // アイテムはパスからタイトルに変換する
+            if (item != null) value = removeBrackets ? ItemUtils.RemoveBrackets(item.Title) : item.Title; // アイテムはパスからタイトルに変換する
         }
 
         if (StateFlagUtils.IsCategoryState(state))

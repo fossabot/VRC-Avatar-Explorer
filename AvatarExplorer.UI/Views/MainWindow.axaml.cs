@@ -294,7 +294,7 @@ public partial class MainWindow : Window
         }
 
         IReadOnlyList<Item> items = _avatarExplorerApp.GetAllItems();
-        Main_PathTextBox.Text = string.Join(" > ", selectionNodes.Select(i => PathService.BuildPath(items, i)));
+        Main_PathTextBox.Text = string.Join(" > ", selectionNodes.Select(i => PathService.BuildPath(items, i, RuntimeSettings.RemoveBrackets)));
     }
     #endregion
     
