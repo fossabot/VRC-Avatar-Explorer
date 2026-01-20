@@ -68,7 +68,7 @@
 
     "UI.Scheme.PathChanged": "カスタムURLスキームの登録先が変更されているため、再登録しますか？",
     "UI.Scheme.RegisterAgain": "カスタムURLスキームは既に登録されていますが、内部的に未登録です。\n再登録しますか？",
-    "UI.Scheme.Register": "カスタムURLスキームを登録しますか？\n\n登録すると、ブラウザからこのソフトを起動できます。\n登録しない場合はURLスキームでの起動はできませんが、通常の起動は可能です.",
+    "UI.Scheme.Register": "カスタムURLスキームを登録しますか？\n\n登録すると、拡張機能やブラウザから直接このソフトを起動できます！\n登録しない場合はURLスキーム経由での起動はできませんが、通常の起動は可能です！",
     "UI.Scheme.RestartAsAdmin": "カスタムURLスキームの登録には管理者権限が必要です。\n再起動して管理者権限で起動しますか？",
     "UI.Scheme.RegisterSuccess": "カスタムURLスキームの登録に成功しました",
     "UI.Scheme.RegisterSkipped": "カスタムURLスキームの登録をスキップしました",
@@ -138,7 +138,7 @@
     "Error.Default": "エラー",
     "Error.NotImplemented": "この機能はまだ実装されていません",
     "Error.Nothing": "アイテムが見つからないよっ！",
-    "Error.BoothItemNotFound": "Boothのアイテムが見つかりませんでした。",
+    "Error.BoothItemNotFound": "Boothのアイテムが見つかりませんでした",
     "Error.BoothApiCooldown": "情報を取得する間隔が短すぎます",
     "Error.ItemNotFound": "アイテムが見つかりませんでした",
 
