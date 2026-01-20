@@ -36,7 +36,7 @@ internal static class BoothService
     private static ItemType SuggestItemType(string title, string type)
     {
         if (!BoothMapping.CategoryMappings.TryGetValue(type, out ItemType categorySuggestedType))
-            categorySuggestedType = ItemType.Unknown;
+            categorySuggestedType = default;
         
         IEnumerable<ItemType> titleSuggestedTypes = BoothMapping.TitleMappings
             .Where(mapping => mapping.Key.Any(title.Contains))
