@@ -22,6 +22,7 @@ internal static class BoothMapping
         { "3Dキャラクター", ItemType.Avatar },
         { "3Dモデル（その他）" , ItemType.Avatar },
         { "3Dモーション・アニメーション", ItemType.Animation },
+        { "3D衣装", ItemType.Clothing },
         { "3D小道具", ItemType.Gimmick },
         { "3D装飾品", ItemType.Accessory },
         { "3Dテクスチャ", ItemType.Texture },

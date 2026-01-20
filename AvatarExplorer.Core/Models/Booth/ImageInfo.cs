@@ -1,6 +1,6 @@
 namespace AvatarExplorer.Core.Models.Booth;
 
-public class ImageInfo
+public record ImageInfo
 {
-    public string Original { get; set; } = string.Empty;
+    public string Original { get; init; } = string.Empty;
 }

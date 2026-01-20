@@ -197,7 +197,7 @@ public partial class AvatarExplorerApp
         return _items.FirstOrDefault(i => i.ItemPath == itemSelectionNode.Key);
     }
 
-    private static List<ItemCountInfo> GetCategoryItemsFromPathInternal(string itemPath)
+    private static IReadOnlyList<ItemCountInfo> GetCategoryItemsFromPathInternal(string itemPath)
     {
         List<ItemCountInfo> categoryItems = new();
 
@@ -233,15 +233,15 @@ public partial class AvatarExplorerApp
 
         return categoryItems;
     }
-    private static List<ItemCountInfo> GetFilesFromPathInternal(string itemPath, string category)
+    private static IReadOnlyList<ItemCountInfo> GetFilesFromPathInternal(string itemPath, string category)
     {
         List<ItemCountInfo> categoryItems = new();
 
         FileCategory fileCategory = Enum.GetValues<FileCategory>().FirstOrDefault(i => i.GetLocalizationKey() == category);
-        if (fileCategory == default) return new();
+        if (fileCategory == default) return categoryItems;
 
         string[]? filters = fileCategory.GetExtensionFilters();
-        if (filters == null) return new();
+        if (filters == null) return categoryItems;
 
         string[]? fileNameFilters = fileCategory.GetFileNameFilters();
 
@@ -290,17 +290,16 @@ public partial class AvatarExplorerApp
     public async Task<(Item? newItem, List<string> processingFailedPaths)> AddItem(ItemCreationContext itemCreationContext)
     {
         var addItemResult = await ItemCreator.FromItemCreationContext(itemCreationContext, _runtimeSettings);
-        if (addItemResult.newItem != null)
-        {
-            string currentUnixTime = DatetimeUtils.GetCurrentUnixTime();
-            addItemResult.newItem.CreatedDate = currentUnixTime;
-            addItemResult.newItem.UpdatedDate = currentUnixTime;
-            
-            _items.Add(addItemResult.newItem); // アイテムの追加に失敗していなければここで追加してあげる
-        }
+        if (addItemResult.newItem == null) return addItemResult;
+
+        string currentUnixTime = DatetimeUtils.GetCurrentUnixTime();
+        addItemResult.newItem.CreatedDate = currentUnixTime;
+        addItemResult.newItem.UpdatedDate = currentUnixTime;
+        
+        _items.Add(addItemResult.newItem);
 
         SaveItemDatabase();
-        UpdateSearchIndex();
+        UpdateSearchIndex(addItemResult.newItem);
 
         return addItemResult;
     }
@@ -313,7 +312,7 @@ public partial class AvatarExplorerApp
         item.UpdatedDate = DatetimeUtils.GetCurrentUnixTime();
 
         SaveItemDatabase();
-        UpdateSearchIndex();
+        UpdateSearchIndex(item);
 
         return item;
     }

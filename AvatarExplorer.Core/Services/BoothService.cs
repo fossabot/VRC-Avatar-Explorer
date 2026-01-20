@@ -21,11 +21,12 @@ internal static class BoothService
 
             BoothItem? boothItem = JsonSerializer.Deserialize<BoothItem>(response, JsonSerializerOptions);
             if (boothItem == null) return null;
-            
-            boothItem.EstimatedCategory = SuggestItemType(boothItem.Title, boothItem.Category.Name);
-            boothItem.AuthorId = BoothUtils.GetAuthorIdFromUrl(boothItem.Shop.Url);
 
-            return boothItem;
+            return boothItem with
+            {
+                EstimatedCategory = SuggestItemType(boothItem.Title, boothItem.Category.Name),
+                AuthorId = BoothUtils.GetAuthorIdFromUrl(boothItem.Shop.Url)
+            };
         }
         catch
         {
@@ -37,7 +38,11 @@ internal static class BoothService
         if (!BoothMapping.CategoryMappings.TryGetValue(type, out ItemType categorySuggestedType))
             categorySuggestedType = ItemType.Unknown;
         
-        ItemType titleMatchedType = BoothMapping.TitleMappings.FirstOrDefault(mapping => mapping.Key.Any(title.Contains)).Value;
-        return titleMatchedType != ItemType.Unknown && titleMatchedType != default ? titleMatchedType : categorySuggestedType;
+        ItemType titleSuggestedType = BoothMapping.TitleMappings
+            .Where(mapping => mapping.Key.Any(title.Contains))
+            .Select(mapping => mapping.Value)
+            .FirstOrDefault();
+        
+        return titleSuggestedType != default && titleSuggestedType != ItemType.Unknown ? titleSuggestedType : categorySuggestedType;
     }
 }

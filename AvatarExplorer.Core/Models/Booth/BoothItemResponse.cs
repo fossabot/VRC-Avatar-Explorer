@@ -2,25 +2,25 @@ using System.Text.Json.Serialization;
 
 namespace AvatarExplorer.Core.Models.Booth;
 
-public class BoothItem
+public record BoothItem
 {
     [JsonPropertyName("name")]
-    public string Title { get; set; } = string.Empty;
+    public string Title { get; init; } = string.Empty;
 
-    public ShopInfo Shop { get; set; } = new();
+    public ShopInfo Shop { get; init; } = new();
 
     [JsonPropertyName("id")]
-    public int BoothId { get; set; } = -1;
+    public int BoothId { get; init; } = -1;
 
     [JsonPropertyName("images")]
-    public List<ImageInfo> Thumbnails { get; set; } = new();
+    public List<ImageInfo> Thumbnails { get; init; } = new();
 
-    public CategoryInfo Category { get; set; } = new();
+    public CategoryInfo Category { get; init; } = new();
 
     // これより下はAEの値
     [JsonIgnore]
-    public ItemType EstimatedCategory { get; set; } = ItemType.None;
+    public ItemType EstimatedCategory { get; init; } = ItemType.None;
 
     [JsonIgnore]
-    public string AuthorId { get; set; } = string.Empty;
+    public string AuthorId { get; init; } = string.Empty;
 }
