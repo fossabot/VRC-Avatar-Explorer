@@ -38,11 +38,10 @@ internal static class BoothService
         if (!BoothMapping.CategoryMappings.TryGetValue(type, out ItemType categorySuggestedType))
             categorySuggestedType = ItemType.Unknown;
         
-        ItemType titleSuggestedType = BoothMapping.TitleMappings
+        IEnumerable<ItemType> titleSuggestedTypes = BoothMapping.TitleMappings
             .Where(mapping => mapping.Key.Any(title.Contains))
-            .Select(mapping => mapping.Value)
-            .FirstOrDefault();
+            .Select(mapping => mapping.Value);
         
-        return titleSuggestedType != default && titleSuggestedType != ItemType.Unknown ? titleSuggestedType : categorySuggestedType;
+        return titleSuggestedTypes.Any() ? titleSuggestedTypes.First() : categorySuggestedType;
     }
 }
