@@ -18,12 +18,10 @@ internal static class ContextMenuFactory
         {
             MenuItem menuItem = new()
             {
+                Icon = GetMaterialIcon(contextMenuAction.ContextMenuIconType),
                 Header = Localizer.Instance[contextMenuAction.DisplayName],
                 Tag = contextMenuAction
             };
-
-            MaterialIcon? materialIcon = GetMaterialIcon(contextMenuAction.ContextMenuIconType);
-            if (materialIcon != null) menuItem.Icon = materialIcon;
 
             if (onClick != null) menuItem.Click += onClick;
 
@@ -35,7 +33,7 @@ internal static class ContextMenuFactory
         return contextMenu;
     }
 
-    private static MaterialIcon? GetMaterialIcon(ContextMenuIconType contextMenuIconType)
+    private static MaterialIcon? GetMaterialIcon(ContextMenuIconType contextMenuIconType, double size = 16)
     {
         MaterialIconKind? materialIconKind = GetMaterialIconKind(contextMenuIconType);
         if (materialIconKind == null) return null;
@@ -43,8 +41,8 @@ internal static class ContextMenuFactory
         return new MaterialIcon()
         {
             Kind = (MaterialIconKind)materialIconKind,
-            Width = 16,
-            Height = 16
+            Width = size,
+            Height = size
         };
     }
 
