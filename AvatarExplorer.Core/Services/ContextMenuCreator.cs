@@ -27,6 +27,7 @@ public static class ContextMenuCreator
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Booth.Copy, ActionKey.CopyBoothLink, ActionLayer.UI, ContextMenuIconType.Copy, item.ItemPath, addSeparator: true),
 
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Default, ActionKey.EditItem, ActionLayer.UI, ContextMenuIconType.Edit, item.ItemPath),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Title, ActionKey.EditItemTitle, ActionLayer.UI, ContextMenuIconType.Edit, item.ItemPath),
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Tag, ActionKey.EditItemTag, ActionLayer.UI, ContextMenuIconType.Edit, item.ItemPath),
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Memo, ActionKey.AddItemMemo, ActionLayer.UI, ContextMenuIconType.Edit, item.ItemPath),
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Implemented, ActionKey.EditImplementedAvatar, ActionLayer.UI, ContextMenuIconType.Edit, item.ItemPath, addSeparator: true),

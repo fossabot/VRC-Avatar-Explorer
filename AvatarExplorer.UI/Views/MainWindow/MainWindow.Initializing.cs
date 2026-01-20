@@ -73,6 +73,7 @@ public partial class MainWindow
             { ActionKey.ShowOtherItemsByAuthor, ItemButton_ContextMenu_ShowOtherItemsByAuthor },
             { ActionKey.ChangeThumbnail, ItemButton_ContextMenu_ChangeThumbnail },
             { ActionKey.EditItem, ItemButton_ContextMenu_EditItem },
+            { ActionKey.EditItemTitle, ItemButton_ContextMenu_EditItemTitle },
             { ActionKey.AddItemMemo, ItemButton_ContextMenu_AddMemo},
             { ActionKey.AddItemFolder, ItemButton_ContextMenu_AddItemFolder },
             { ActionKey.EditImplementedAvatar, ItemButton_ContextMenu_EditImplementedAvatar },

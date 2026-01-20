@@ -307,7 +307,7 @@ public partial class AvatarExplorerApp
         item.UpdatedDate = DatetimeUtils.GetCurrentUnixTime();
 
         SaveItemDatabase();
-        UpdateSearchIndex(item);
+        UpdateSearchIndex();
 
         return item;
     }

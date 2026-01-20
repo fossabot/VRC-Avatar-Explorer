@@ -11,6 +11,7 @@ public enum ActionKey
     ChangeThumbnail,
     FetchThumbnail,
     EditItem,
+    EditItemTitle,
     AddItemMemo,
     AddItemFolder,
     EditImplementedAvatar,

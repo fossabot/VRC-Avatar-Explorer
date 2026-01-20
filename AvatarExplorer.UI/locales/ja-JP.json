@@ -29,6 +29,7 @@
     "UI.Dialog.Confirmation.Remove": "本当にこのアイテムを削除しますか？",
     "UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented": "このアバターを対応アバターとしているアイテムの対応アバターからこのアバターを削除しますか？",
     "UI.Dialog.Confirmation.RemoveCommonAvatarGroup": "共通素体グループを削除しますか？\n共通素体グループ名: {0}",
+    "UI.Dialog.Title.NewItemTitle": "新しいタイトル",
 
     "UI.Dialog.Title.AddCustomCategory": "新しいカスタムカテゴリ",
     "UI.Dialog.Title.AddCommonAvatarGroup": "新しい共通素体グループ",
@@ -108,6 +109,7 @@
     "ContextMenu.Item.Booth.Copy": "Boothリンクのコピー",
 
     "ContextMenu.Item.Edit.Default": "アイテムを編集する",
+    "ContextMenu.Item.Edit.Title": "タイトルを編集する",
     "ContextMenu.Item.Edit.Tag": "アイテムタグを編集する",
     "ContextMenu.Item.Edit.Memo": "アイテムメモを編集する",
     "ContextMenu.Item.Edit.Implemented": "実装 / 未実装",

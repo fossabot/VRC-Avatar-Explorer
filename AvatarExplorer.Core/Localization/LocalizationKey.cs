@@ -74,6 +74,7 @@ public static class LocalizationKey
                 public const string AddCustomCategory = "UI.Dialog.Title.AddCustomCategory";
                 public const string AddCommonAvatarGroup = "UI.Dialog.Title.AddCommonAvatarGroup";
                 public const string NewCommonAvatarGroupName = "UI.Dialog.Title.NewCommonAvatarGroupName";
+                public const string NewItemTitle = "UI.Dialog.Title.NewItemTitle";
             }
 
             public static class Success
@@ -268,6 +269,7 @@ public static class LocalizationKey
             public static class Edit
             {
                 public const string Default = "ContextMenu.Item.Edit.Default";
+                public const string Title = "ContextMenu.Item.Edit.Title";
                 public const string Implemented = "ContextMenu.Item.Edit.Implemented";
                 public const string Tag = "ContextMenu.Item.Edit.Tag";
                 public const string Memo = "ContextMenu.Item.Edit.Memo";

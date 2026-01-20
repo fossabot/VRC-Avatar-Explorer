@@ -104,6 +104,21 @@ public partial class MainWindow
         AddItemOverlay_ShowEdit(item);
         return Task.CompletedTask;
     }
+    private async Task ItemButton_ContextMenu_EditItemTitle(string itemPath)
+    {
+        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        if (item == null) return;
+
+        string? newTitle = await Main_ShowTextDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Title.NewItemTitle], item.Title);
+        if (string.IsNullOrEmpty(newTitle)) return;
+
+        item.Title = newTitle;
+        _avatarExplorerApp.SaveItemDatabase();
+
+        _avatarExplorerApp.UpdateSearchIndex();
+
+        Main_ReloadCurrentWindow();
+    }
     private Task ItemButton_ContextMenu_AddMemo(string itemPath)
     {
         Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);

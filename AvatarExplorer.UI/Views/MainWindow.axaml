@@ -533,7 +533,7 @@
         
         <!-- OKダイアログ -->
         <Border x:Name="DialogOverlay" Classes="overlaybackground" IsVisible="False">
-            <Border Classes="overlay" Width="400">
+            <Border Classes="overlay" Width="500">
                 <StackPanel Spacing="15">
 
                     <!-- タイトル -->
@@ -552,7 +552,7 @@
         
         <!-- テキストダイアログ -->
         <Border x:Name="TextDialogOverlay" Classes="overlaybackground" IsVisible="False">
-            <Border Classes="overlay" Width="400">
+            <Border Classes="overlay" Width="500">
                 <StackPanel Spacing="15">
                     
                     <!-- タイトル -->
@@ -572,7 +572,7 @@
 
         <!-- Yes/Noダイアログ -->
         <Border x:Name="YesNoDialogOverlay" Classes="overlaybackground" IsVisible="False">
-            <Border Classes="overlay" Width="400">
+            <Border Classes="overlay" Width="500">
                 <StackPanel Spacing="15">
 
                     <!-- タイトル -->
