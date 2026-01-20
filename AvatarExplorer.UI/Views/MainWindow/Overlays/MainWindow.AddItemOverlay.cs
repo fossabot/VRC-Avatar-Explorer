@@ -264,7 +264,7 @@ public partial class MainWindow
         _addItemOverlay_addItemWindowValues.BoothId = boothItem.BoothId;
         _addItemOverlay_addItemWindowValues.BoothThumbnailUrl = boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty;
         _addItemOverlay_addItemWindowValues.BoothAuthorThumbnailUrl = boothItem.Shop.ThumbnailUrl;
-        _addItemOverlay_addItemWindowValues.ItemType = (boothItem.EstimatedCategory != ItemType.None && boothItem.EstimatedCategory != ItemType.Unknown) ? boothItem.EstimatedCategory : ItemType.Avatar;
+        _addItemOverlay_addItemWindowValues.ItemType = !CategoryUtils.InvalidItemTypes.Contains(boothItem.EstimatedCategory) ? boothItem.EstimatedCategory : ItemType.Avatar;
         
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
     }

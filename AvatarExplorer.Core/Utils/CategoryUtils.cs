@@ -5,7 +5,7 @@ namespace AvatarExplorer.Core.Utils;
 
 public static class CategoryUtils
 {
-    public static readonly ItemType[] InvalidItemTypes = [ItemType.None, ItemType.Unknown];
+    public static readonly ItemType[] InvalidItemTypes = [ItemType.None];
 
     public static bool IsCategoryMatch(Item item, string category)
     {
