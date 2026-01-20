@@ -61,7 +61,7 @@ internal static class ItemButtonFactory
             Stretch = Stretch.Fill,
             VerticalAlignment = VerticalAlignment.Top
         };
-        RenderOptions.SetBitmapInterpolationMode(itemIcon, BitmapInterpolationMode.HighQuality);
+        RenderOptions.SetBitmapInterpolationMode(itemIcon, BitmapInterpolationMode.MediumQuality);
 
         if (!IconUtils.IsSystemIcon(item.ImageFileName) && userPreferences.EnableHoverIconSize)
         {
@@ -83,7 +83,7 @@ internal static class ItemButtonFactory
 
     private static Grid CreateTextAndTagGrid(UISelectableItem item, RuntimeSettings runtimeSettings)
     {
-        Grid textGrid = new() { RowDefinitions = new("Auto,Auto,8,*") };
+        Grid textGrid = new() { RowDefinitions = new("Auto,Auto,5,*") };
 
         string itemTitle = GetFormattedTitle(item, runtimeSettings);
         
