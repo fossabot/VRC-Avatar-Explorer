@@ -38,9 +38,10 @@ public partial class AvatarExplorerApp
     }
 
     #region Database
-    public void LoadItemDatabase(string path = "")
+    public void LoadItemDatabase(string? path = null)
     {
-        List<Item> database = string.IsNullOrEmpty(path) ? ItemDatabaseService.Load(SystemPath.ItemDatabasePath) : ItemDatabaseService.Load(path);
+        string loadPath = path ?? SystemPath.ItemDatabasePath;
+        List<Item> database = ItemDatabaseService.Load(loadPath);
 
         _items.Clear();
         _items.AddRange(database);
@@ -48,23 +49,17 @@ public partial class AvatarExplorerApp
         UpdateSearchIndex();
     }
 
-    public void LoadCommonAvatarDatabase(string path = "")
+    public void LoadCommonAvatarDatabase(string? path = null)
     {
-        List<CommonAvatar> database = string.IsNullOrEmpty(path) ? CommonAvatarDatabaseService.Load(SystemPath.CommonAvatarDatabasePath) : CommonAvatarDatabaseService.Load(path);
+        string loadPath = path ?? SystemPath.CommonAvatarDatabasePath;
+        List<CommonAvatar> database = CommonAvatarDatabaseService.Load(loadPath);
 
         _commonAvatars.Clear();
         _commonAvatars.AddRange(database);
     }
 
-    public void SaveItemDatabase()
-    {
-        ItemDatabaseService.Save(_items);
-    }
-
-    public void SaveCommonAvatarDatabase()
-    {
-        CommonAvatarDatabaseService.Save(_commonAvatars);
-    }
+    public void SaveItemDatabase() => ItemDatabaseService.Save(_items);
+    public void SaveCommonAvatarDatabase() => CommonAvatarDatabaseService.Save(_commonAvatars);
     #endregion
 
     #region Runtime Settings
@@ -375,10 +370,8 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region File API
-    public static async Task<string> ModifyUnityPackageFilePath(string filePath, string itemCategoryName = "", IProgress<(string, int)>? progress = null)
-        => await FileSystemService.ModifyUnityPackageFilePathsAsync([filePath], [itemCategoryName], progress);
-    public static async Task<string> ModifyUnityPackageFilePaths(string[] filePaths, string[] itemCategoryNames, IProgress<(string, int)>? progress = null)
-        => await FileSystemService.ModifyUnityPackageFilePathsAsync(filePaths, itemCategoryNames, progress);
+    public static async Task<string> ModifyUnityPackageFilePath(string filePath, string itemCategoryName = "", IProgress<(string, int)>? progress = null)　=> await FileSystemService.ModifyUnityPackageFilePathsAsync([filePath], [itemCategoryName], progress);
+    public static async Task<string> ModifyUnityPackageFilePaths(string[] filePaths, string[] itemCategoryNames, IProgress<(string, int)>? progress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync(filePaths, itemCategoryNames, progress);
     #endregion
 
     #region Remove API
@@ -409,7 +402,7 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Data Importer API
-    public async Task ImportFromV1(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
+    public async Task ImportFromV1(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int)>? progress = null)
     {
         (List<Item>, List<CommonAvatar>) result = await DataImporter.FromV1(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, progress);
         
@@ -419,7 +412,7 @@ public partial class AvatarExplorerApp
         SaveItemDatabase();
         SaveCommonAvatarDatabase();
     }
-    public async Task ImportFromKonoAsset(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
+    public async Task ImportFromKonoAsset(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int)>? progress = null)
     {
         List<Item> items = await DataImporter.FromKonoAsset(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, progress);
         _items.AddRange(items);

@@ -13,10 +13,8 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    private void SelectImportTypeOverlay_Show()
-        => SelectImportTypeOverlay.IsVisible = true;
-    private void SelectImportTypeOverlay_Hide()
-        => SelectImportTypeOverlay.IsVisible = false;
+    private void SelectImportTypeOverlay_Show() => SelectImportTypeOverlay.IsVisible = true;
+    private void SelectImportTypeOverlay_Hide() => SelectImportTypeOverlay.IsVisible = false;
 
     private async Task SelectImportTypeOverlay_DataImportInternal(DataImportType dataImportType)
     {
@@ -29,21 +27,16 @@ public partial class MainWindow
 
         var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
 
-        var progress = new Progress<(string, int, string)>(tuple =>
+        var progress = new Progress<(string, int)>(tuple =>
         {
-            if (tuple.Item2 == 100)
-            {
-                ProgressOverlay_Hide();
-            }
-            else
-            {
-                ProgressOverlay_Show(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
-                ProgressOverlay_Update(tuple.Item2);
-            }
+            ProgressOverlay_Show(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
+            ProgressOverlay_Update(tuple.Item2);
         });
 
         if (dataImportType == DataImportType.V1) await _avatarExplorerApp.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
         else if (dataImportType == DataImportType.KonoAsset) await _avatarExplorerApp.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progress);
+
+        ProgressOverlay_Hide();
 
         Main_ReloadCurrentWindow();
     }

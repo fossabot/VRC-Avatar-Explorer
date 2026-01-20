@@ -13,17 +13,17 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class DataImporter
 {
-    internal static async Task<(List<Item>, List<CommonAvatar>)> FromV1(string dataFolderPath, RuntimeSettings runtimeSettings, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
+    internal static async Task<(List<Item>, List<CommonAvatar>)> FromV1(string dataFolderPath, RuntimeSettings runtimeSettings, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int)>? progress = null)
     {
-        progress?.Report((LocalizationKey.Processing.Import.Copying, 0, string.Empty));
+        progress?.Report((LocalizationKey.Processing.Import.Copying, 0));
 
         List<ItemV1> v1Items = FileSystemService.DeserializeClass<List<ItemV1>>(SystemPathV1.ItemDatabasePath(dataFolderPath)) ?? [];
         List<CommonAvatarV1> v1CommonAvatars = FileSystemService.DeserializeClass<List<CommonAvatarV1>>(SystemPathV1.CommonAvatarDatabasePath(dataFolderPath)) ?? [];
 
-        progress?.Report((LocalizationKey.Processing.Import.Copying, 10, string.Empty));
+        progress?.Report((LocalizationKey.Processing.Import.Copying, 10));
         await FileSystemService.CopyDirectory(SystemPathV1.AuthorThumbnailsPath(dataFolderPath), SystemPath.AuthorThumbnailsPath);
 
-        progress?.Report((LocalizationKey.Processing.Import.Copying, 20, string.Empty));
+        progress?.Report((LocalizationKey.Processing.Import.Copying, 20));
         await FileSystemService.CopyDirectory(SystemPathV1.ItemThumbnailsPath(dataFolderPath), SystemPath.ItemThumbnailsPath);
 
         List<Item> items = new();
@@ -54,7 +54,7 @@ internal static class DataImporter
             if (percent != lastPercent)
             {
                 lastPercent = percent;
-                progress?.Report((LocalizationKey.Processing.Import.Copying, percent, string.Empty));
+                progress?.Report((LocalizationKey.Processing.Import.Copying, percent));
             }
         }
 
@@ -79,7 +79,7 @@ internal static class DataImporter
             commonAvatar.UpdateAvatars(avatarPaths);
         }
 
-        progress?.Report((LocalizationKey.Processing.Import.Copying, 100, string.Empty));
+        progress?.Report((LocalizationKey.Processing.Import.Copying, 100));
 
         return (items, commonAvatars);
     }
@@ -119,9 +119,9 @@ internal static class DataImporter
         return migratedCommonAvatar;
     }
 
-    internal static async Task<List<Item>> FromKonoAsset(string dataFolderPath, RuntimeSettings runtimeSettings, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int, string)>? progress = null)
+    internal static async Task<List<Item>> FromKonoAsset(string dataFolderPath, RuntimeSettings runtimeSettings, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int)>? progress = null)
     {
-        progress?.Report((LocalizationKey.Processing.Import.Copying, 0, string.Empty));
+        progress?.Report((LocalizationKey.Processing.Import.Copying, 0));
 
         List<IKonoAssetItem> konoAssetItems = new();
         ListUtils.Add(konoAssetItems, (FileSystemService.DeserializeClass<KonoAssetAvatarDatabase>(KonoAssetPath.AvatarsDatabasePath(dataFolderPath)) ?? new()).Data, true);
@@ -168,11 +168,11 @@ internal static class DataImporter
             if (percent != lastPercent)
             {
                 lastPercent = percent;
-                progress?.Report((LocalizationKey.Processing.Import.Copying, percent, string.Empty));
+                progress?.Report((LocalizationKey.Processing.Import.Copying, percent));
             }
         }
 
-        progress?.Report((LocalizationKey.Processing.Import.Copying, 100, string.Empty));
+        progress?.Report((LocalizationKey.Processing.Import.Copying, 100));
 
         return items;
     }

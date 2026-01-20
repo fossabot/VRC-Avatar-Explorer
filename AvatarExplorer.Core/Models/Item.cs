@@ -42,8 +42,7 @@ public class Item : ISelectableItem
 
     internal void BuildSearchIndex(Dictionary<string, string> avatarMap)
     {
-        IEnumerable<string> avatars = SupportedAvatars
-            .Concat(ImplementedAvatars)
+        IEnumerable<string> avatars = SupportedAvatarsView.Concat(ImplementedAvatarsView)
             .Select(a => ItemUtils.GetAvatarNameFromDictionary(avatarMap, a))
             .Where(name => !string.IsNullOrEmpty(name));
 
@@ -52,7 +51,7 @@ public class Item : ISelectableItem
             Author,
             ItemMemo,
             BoothId.ToString(),
-            string.Join(" ", Tags),
+            string.Join(" ", TagsView),
             string.Join(" ", avatars)
         ).ToLowerInvariant();
     }
