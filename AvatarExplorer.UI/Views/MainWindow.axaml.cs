@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -21,28 +20,8 @@ namespace AvatarExplorer.UI;
 public partial class MainWindow : Window
 {
     private readonly AvatarExplorerApp _avatarExplorerApp = new();
-
-    private readonly Dictionary<ItemTagState, int> _main_currentPageStates = new()
-    {
-        { ItemTagState.SearchItem, 0 },
-        { ItemTagState.RootAvatar, 0 },
-        { ItemTagState.RootAuthor, 0 },
-        { ItemTagState.RootCategory, 0 },
-        { ItemTagState.RootSelectedCategory, 0 },
-        { ItemTagState.RootSelectedItem, 0 },
-        { ItemTagState.ItemFileCategoryOpen, 0 }
-    };
-    private readonly Dictionary<ItemTagState, Vector> _main_currentScrollValues = new()
-    {
-        { ItemTagState.SearchItem, new() },
-        { ItemTagState.RootAvatar, new() },
-        { ItemTagState.RootAuthor, new() },
-        { ItemTagState.RootCategory, new() },
-        { ItemTagState.RootSelectedCategory, new() },
-        { ItemTagState.RootSelectedItem, new() },
-        { ItemTagState.ItemFileCategory, new() },
-        { ItemTagState.ItemFileCategoryOpen, new() }
-    };
+    private readonly PageManager _main_pageManager = new();
+    private readonly ScrollManager _main_scrollManager = new();
 
     private string _main_lastSearchTextCache = string.Empty; // 最後に実行された検索のキャッシュ
     private string _main_searchTextCache = string.Empty;
@@ -52,9 +31,6 @@ public partial class MainWindow : Window
 
     private readonly UserPreferences _userPreferences = new();
     private int ItemsPerPage => _userPreferences.ItemsPerPage;
-
-    private bool IsPageSupported(ItemTagState itemTagState) => _main_currentPageStates.ContainsKey(itemTagState);
-    private int GetPage(ItemTagState itemTagState) => IsPageSupported(itemTagState) ? _main_currentPageStates[itemTagState] : -1;
 
     private RuntimeSettings RuntimeSettings => _avatarExplorerApp.GetRuntimeSettings();
 
@@ -140,9 +116,9 @@ public partial class MainWindow : Window
         }
 
         // スクロール位置をDictionaryから復元してあげる
-        Main_RestoreScrollViewerOffset(Main_LeftPanelScrollViewer, customState);
+        Main_LeftPanelScrollViewer.Offset = _main_scrollManager.GetScrollValue(customState);
 
-        int currentPage = GetPage(customState); // -1が返された場合は対応していないStateのため、全てのアイテムを表示してあげる
+        int currentPage = _main_pageManager.GetPage(customState); // -1が返された場合は対応していないStateのため、全てのアイテムを表示してあげる
 
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
@@ -161,15 +137,15 @@ public partial class MainWindow : Window
             _avatarExplorerApp.SelectClear();
             _avatarExplorerApp.Select(itemTagInfo.State, itemTagInfo.Value);
             Main_CheckPageStates();
-            Main_ResetAllScrollViewerOffset(); // 左のパネルのボタンは全てRootのため、スクロール状況を全てリセットしてしまう
+            _main_scrollManager.ResetAllScrollValues(); // 左のパネルのボタンは全てRootのため、スクロール状況を全てリセットしてしまう
 
             Main_RenderRightPanel();
         }
 
         if (button.Tag is PageButtonInfo pageButtonInfo)
         {
-            _main_currentPageStates[pageButtonInfo.ItemTagState] = pageButtonInfo.NextPageValue;
-            Main_ResetScrollViewerOffset(pageButtonInfo.ItemTagState); // 今のStateのページをリセットしてあげる
+            _main_pageManager.SetPage(pageButtonInfo.ItemTagState, pageButtonInfo.NextPageValue);
+            _main_scrollManager.SetScroll(pageButtonInfo.ItemTagState, new()); // 今のStateのページをリセットしてあげる
             Main_RenderLeftPanel();
         }
     }
@@ -191,9 +167,9 @@ public partial class MainWindow : Window
         _main_lastRightPanelItemTagState = itemTagState;
         
         // スクロール位置をDictionaryから復元してあげる
-        Main_RestoreScrollViewerOffset(Main_RightPanelScrollViewer, itemTagState);
+        Main_RightPanelScrollViewer.Offset = _main_scrollManager.GetScrollValue(itemTagState);
 
-        int currentPage = GetPage(itemTagState); // -1が返された場合は対応していないStateのため、全てのアイテムを表示してあげる
+        int currentPage = _main_pageManager.GetPage(itemTagState); // -1が返された場合は対応していないStateのため、全てのアイテムを表示してあげる
 
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
@@ -220,7 +196,7 @@ public partial class MainWindow : Window
             {
                 _avatarExplorerApp.Select(itemTagInfo.State, itemTagInfo.Value);
                 Main_CheckPageStates();
-                Main_SaveScrollViewerOffset(Main_RightPanelScrollViewer, itemTagInfo.State); // 次の画面に行くため、今のStateのスクロール位置を保存する
+                _main_scrollManager.SetScroll(itemTagInfo.State, Main_RightPanelScrollViewer.Offset); // 次の画面に行くため、今のStateのスクロール位置を保存する
 
                 Main_RenderRightPanel();
             }
@@ -228,8 +204,8 @@ public partial class MainWindow : Window
 
         if (button.Tag is PageButtonInfo pageButtonInfo)
         {
-            _main_currentPageStates[pageButtonInfo.ItemTagState] = pageButtonInfo.NextPageValue;
-            Main_ResetScrollViewerOffset(pageButtonInfo.ItemTagState); // ページは今のStateをリセットしてあげる
+            _main_pageManager.SetPage(pageButtonInfo.ItemTagState, pageButtonInfo.NextPageValue);
+            _main_scrollManager.SetScroll(pageButtonInfo.ItemTagState, new()); // ページは今のStateをリセットしてあげる
 
             if (pageButtonInfo.ItemTagState == ItemTagState.SearchItem) Main_ExecuteSearchItems();
             else Main_RenderRightPanel();
@@ -266,7 +242,7 @@ public partial class MainWindow : Window
         }
 
         // 検索画面に切り替わる時に、前の画面のスクロール位置を保存してあげる
-        if (!_main_isLastWindowSearch) Main_SaveScrollViewerOffset(Main_RightPanelScrollViewer, _main_lastRightPanelItemTagState);
+        if (!_main_isLastWindowSearch) _main_scrollManager.SetScroll( _main_lastRightPanelItemTagState, Main_RightPanelScrollViewer.Offset);
 
         Main_RightPanel.Children.Clear();
 
@@ -275,8 +251,8 @@ public partial class MainWindow : Window
         // 検索文字列が前回と違う場合はページ、スクロール位置をリセットする
         if (_main_searchTextCache != _main_lastSearchTextCache)
         {
-            _main_currentPageStates[ItemTagState.SearchItem] = 0;
-            _main_currentScrollValues[ItemTagState.SearchItem] = new();
+            _main_pageManager.SetPage(ItemTagState.SearchItem, 0);
+            _main_scrollManager.SetScroll(ItemTagState.SearchItem, new());
         }
         _main_lastSearchTextCache = _main_searchTextCache;
 
@@ -284,9 +260,9 @@ public partial class MainWindow : Window
         else Main_HideNoItemsLabel();
 
         // スクロール位置をDictionaryから復元してあげる
-        Main_RestoreScrollViewerOffset(Main_RightPanelScrollViewer, ItemTagState.SearchItem);
+        Main_RightPanelScrollViewer.Offset = _main_scrollManager.GetScrollValue(ItemTagState.SearchItem);
 
-        int currentPage = GetPage(ItemTagState.SearchItem); // SearchItemは必ずページが存在しているため
+        int currentPage = _main_pageManager.GetPage(ItemTagState.SearchItem); // SearchItemは必ずページが存在しているため
 
         foreach (Item item in items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage))
         {
@@ -335,7 +311,7 @@ public partial class MainWindow : Window
         else
         {
             // 再読込する前に、前の画面のスクロール位置を保存してあげる
-            Main_SaveScrollViewerOffset(Main_RightPanelScrollViewer, _main_lastRightPanelItemTagState);
+            _main_scrollManager.SetScroll(_main_lastRightPanelItemTagState, Main_RightPanelScrollViewer.Offset);
             Main_RenderRightPanel();
         }
     }
@@ -349,41 +325,18 @@ public partial class MainWindow : Window
             selectedItemTagStates.Add(selectionNode.State);
         }
 
-        foreach (var pageInfo in _main_currentPageStates.Where(i => !selectedItemTagStates.Contains(i.Key)))
+        foreach (var pageInfo in _main_pageManager.GetKeys().Where(i => !selectedItemTagStates.Contains(i)))
         {
-            _main_currentPageStates[pageInfo.Key] = 0;
+            _main_pageManager.ResetPageValue(pageInfo);
         }
-    }
-    
-    private void Main_RestoreScrollViewerOffset(ScrollViewer scrollViewer, ItemTagState itemTagState)
-    {
-        if (_main_currentScrollValues.TryGetValue(itemTagState, out Vector scrollValue))
-            scrollViewer.Offset = scrollValue;
-    }
-    private void Main_SaveScrollViewerOffset(ScrollViewer scrollViewer, ItemTagState itemTagState)
-    {
-        if (!_main_currentScrollValues.ContainsKey(itemTagState)) return;
-        _main_currentScrollValues[itemTagState] = scrollViewer.Offset;
-    }
-    private void Main_ResetScrollViewerOffset(ItemTagState itemTagState)
-    {
-        if (!_main_currentScrollValues.ContainsKey(itemTagState)) return;
-        _main_currentScrollValues[itemTagState] = new();
-    }
-    private void Main_ResetAllScrollViewerOffset()
-    {
-        foreach (ItemTagState key in _main_currentScrollValues.Keys)
-            _main_currentScrollValues[key] = new();
     }
 
     private void Main_ShowNoItemsLabel()
     {
-        if (Main_RightPanelParent == null) return;
         Main_RightPanelParent.IsVisible = true;
     }
     private void Main_HideNoItemsLabel()
     {
-        if (Main_RightPanelParent == null) return;
         Main_RightPanelParent.IsVisible = false;
     }
     
