@@ -9,6 +9,7 @@ using Avalonia.Media.Imaging;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Utils;
+using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
 using AvatarExplorer.UI.Services;
@@ -61,7 +62,8 @@ internal static class ItemButtonFactory
             Stretch = Stretch.Fill,
             VerticalAlignment = VerticalAlignment.Top
         };
-        RenderOptions.SetBitmapInterpolationMode(itemIcon, BitmapInterpolationMode.MediumQuality);
+        BitmapInterpolationMode bitmapInterpolationMode = userPreferences.AntiAliasingMode.GetInterpolationMode();
+        if (bitmapInterpolationMode != BitmapInterpolationMode.None && bitmapInterpolationMode != BitmapInterpolationMode.Unspecified) RenderOptions.SetBitmapInterpolationMode(itemIcon, bitmapInterpolationMode);
 
         if (!IconUtils.IsSystemIcon(item.ImageFileName) && userPreferences.EnableHoverIconSize)
         {

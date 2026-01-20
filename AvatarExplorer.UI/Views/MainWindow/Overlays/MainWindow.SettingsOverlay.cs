@@ -35,6 +35,7 @@ public partial class MainWindow
         SettingsOverlay_BackgroundImagePathTextBox.Text = userPreferences.BackgroundImage;
         SettingsOverlay_BackgroundImageOpacitySlider.Value = userPreferences.BackgroundOpacity;
         SettingsOverlay_ItemsPerPageTextBox.Text = userPreferences.ItemsPerPage.ToString();
+        SettingsOverlay_AntiAliasingModeComboBox.SelectedIndex = (int)userPreferences.AntiAliasingMode;
         SettingsOverlay_ThemeComboBox.SelectedIndex = (int)userPreferences.Theme;
         SettingsOverlay_DefaultLanguageComboBox.SelectedIndex = userPreferences.Language;
         SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex = (int)runtimeSettings.ItemSortOrder;
@@ -50,6 +51,7 @@ public partial class MainWindow
         _userPreferences.SetBackground(SettingsOverlay_BackgroundImagePathTextBox.Text ?? string.Empty);
         _userPreferences.SetBackgroundOpacity(Math.Clamp((int)SettingsOverlay_BackgroundImageOpacitySlider.Value, 0, 100));
         _userPreferences.SetItemsPerPage(int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var count) ? count : 30);
+        _userPreferences.SetAntialiasing((BitmapAntiAliasingMode)SettingsOverlay_AntiAliasingModeComboBox.SelectedIndex);
         _userPreferences.SetTheme((Theme)SettingsOverlay_ThemeComboBox.SelectedIndex);
         _userPreferences.SetLanguage(SettingsOverlay_DefaultLanguageComboBox.SelectedIndex);
         _avatarExplorerApp.SetItemsSortOrder((SortOrder)SettingsOverlay_DefaultSortOrderComboBox.SelectedIndex);

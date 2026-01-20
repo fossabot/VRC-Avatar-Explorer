@@ -31,6 +31,9 @@ public class UserPreferences
     [JsonInclude]
     public int ItemsPerPage { get; private set; } = 30;
 
+    [JsonInclude]
+    public BitmapAntiAliasingMode AntiAliasingMode { get; private set; } = BitmapAntiAliasingMode.None;
+
     internal void FromOther(UserPreferences userPreferences)
     {
         Language = userPreferences.Language;
@@ -42,6 +45,7 @@ public class UserPreferences
         BackgroundOpacity = userPreferences.BackgroundOpacity;
         Theme = userPreferences.Theme;
         ItemsPerPage = userPreferences.ItemsPerPage;
+        AntiAliasingMode = userPreferences.AntiAliasingMode;
     }
 
     internal void SetLanguage(int index) => Language = index;
@@ -56,4 +60,5 @@ public class UserPreferences
     internal void SetBackgroundOpacity(int value) => BackgroundOpacity = value;
     internal void SetTheme(Theme theme) => Theme = theme;
     internal void SetItemsPerPage(int value) => ItemsPerPage = value;
+    internal void SetAntialiasing(BitmapAntiAliasingMode value) => AntiAliasingMode = value;
 }
