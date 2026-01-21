@@ -84,7 +84,7 @@ internal class UISelectableItem
         ImageFileName = SystemIconKey.FolderIcon;
         
         Tag = new(ItemTagState.RootSelectedCategory, category.Type.GetLocalizationKey() ?? category.CustomCategory);
-        IconType = IconType.Author;
+        IconType = IconType.None;
     }
 
     private void FromFileCategoryItem(FileCategoryItem fileCategoryItem)
@@ -93,7 +93,7 @@ internal class UISelectableItem
         Description = (LocalizationKey.UI.Button.Description.Item.Count, [ItemCount.ToString()]);
         ImageFileName = SystemIconKey.FolderIcon;
         Tag = new(ItemTagState.ItemFileCategory, fileCategoryItem.FileCategory.GetLocalizationKey() ?? string.Empty);
-        IconType = IconType.Author;
+        IconType = IconType.None;
     }
 
     private void FromFileItemFile(ItemFile itemFile)
@@ -102,7 +102,7 @@ internal class UISelectableItem
         Description = (LocalizationKey.UI.Button.Description.File.Extension, [itemFile.Extension]);
         ImageFileName = SystemIconKey.FileIcon;
         Tag = new(ItemTagState.ItemFileCategoryOpen, itemFile.FullPath);
-        IconType = IconType.Author;
+        IconType = IconType.None;
     }
 
     private void FromCommonAvatar(CommonAvatar commonAvatar)
@@ -111,6 +111,6 @@ internal class UISelectableItem
         Description = (LocalizationKey.UI.Button.Description.CommonAvatar.Count, [commonAvatar.AvatarsView.Count.ToString()]);
         ImageFileName = SystemIconKey.GroupIcon;
         Tag = new(ItemTagState.None, commonAvatar.GetInternalPath());
-        IconType = IconType.Item;
+        IconType = IconType.None;
     }
 }
