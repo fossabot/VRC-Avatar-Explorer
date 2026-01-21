@@ -32,7 +32,8 @@ public partial class MainWindow
 
     private void Main_AdvancedSearchButton_Click(object? sender, RoutedEventArgs e)
     {
-        AdvancedSearchPanel.IsVisible = !AdvancedSearchPanel.IsVisible;
+        if (!AdvancedSearchPanel.IsVisible) AdvancedSearchPanel_Show();
+        else AdvancedSearchPanel.IsVisible = false;
         Main_SearchValue_Changed(sender, e);
     }
     #endregion

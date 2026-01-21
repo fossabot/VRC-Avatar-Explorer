@@ -47,7 +47,7 @@ internal static class ItemButtonFactory
 
     private static Button CreateBaseButton(UISelectableItem item)
     {
-        Button button = new() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Top, Tag = item.Tag, CornerRadius = new(8) };
+        Button button = new() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Top, Tag = item.Tag, CornerRadius = new(8), Padding = new(7) };
         button.Classes.Add(ButtonClass);
         return button;
     }
@@ -80,7 +80,7 @@ internal static class ItemButtonFactory
             };
         }
 
-        return new() { ClipToBounds = true, CornerRadius = new(7), Child = itemIcon };
+        return new() { ClipToBounds = true, CornerRadius = new(8), Child = itemIcon };
     }
 
     private static Grid CreateTextAndTagGrid(UISelectableItem item, RuntimeSettings runtimeSettings)
