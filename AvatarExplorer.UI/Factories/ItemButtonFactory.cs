@@ -47,7 +47,7 @@ internal static class ItemButtonFactory
 
     private static Button CreateBaseButton(UISelectableItem item)
     {
-        Button button = new() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Top, Tag = item.Tag, CornerRadius = new(10) };
+        Button button = new() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Top, Tag = item.Tag, CornerRadius = new(8) };
         button.Classes.Add(ButtonClass);
         return button;
     }

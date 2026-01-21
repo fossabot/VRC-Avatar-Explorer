@@ -13,14 +13,16 @@
 
     <Grid x:Name="WindowGrid">
         <DockPanel>
-            <Grid DockPanel.Dock="Top" Margin="15,10,15,0" ColumnDefinitions="Auto,10,3*,20,Auto,10,*,0,50,15,80">
-                <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="戻る" Width="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Main_UndoButton_Click"/>
-                <TextBox x:Name="Main_PathTextBox" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" Text="ここには現在のパスが表示されます"/>
-                <TextBlock Grid.Column="4" FontWeight="Bold" Text="検索" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
-                <TextBox x:Name="Main_SearchTextBox" Grid.Column="6" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="検索..." TextChanged="Main_SearchValue_Changed"/>
-                <Button Classes="accent" FontWeight="Bold" Grid.Column="8" Content="{materialIcons:MaterialIconExt Kind=LayersSearch}" ToolTip.Tip="詳細検索" VerticalAlignment="Stretch" Width="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Main_AdvancedSearchButton_Click"/>
-                <Button Classes="button" FontWeight="Bold" Grid.Column="10" Content="設定" Width="80" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Main_SettingsButton_Click"/>
-            </Grid>
+            <Border DockPanel.Dock="Top" Classes="panelbackground" Margin="15,10,15,0">
+                <Grid ColumnDefinitions="Auto,10,3*,20,Auto,10,*,0,50,15,80">
+                    <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="戻る" Width="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Click="Main_UndoButton_Click"/>
+                    <TextBox x:Name="Main_PathTextBox" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" Text="ここには現在のパスが表示されます" CornerRadius="8"/>
+                    <TextBlock Grid.Column="4" FontWeight="Bold" Text="検索" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                    <TextBox x:Name="Main_SearchTextBox" Grid.Column="6" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="検索..."  CornerRadius="8" TextChanged="Main_SearchValue_Changed"/>
+                    <Button Classes="accent" FontWeight="Bold" Grid.Column="8" Content="{materialIcons:MaterialIconExt Kind=LayersSearch}" ToolTip.Tip="詳細検索" VerticalAlignment="Stretch" Width="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  CornerRadius="8" Click="Main_AdvancedSearchButton_Click"/>
+                    <Button Classes="button" FontWeight="Bold" Grid.Column="10" Content="設定" Width="80" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  CornerRadius="8" Click="Main_SettingsButton_Click"/>
+                </Grid>
+            </Border>
 
             <Grid Margin="15">
                 <Grid.ColumnDefinitions>
