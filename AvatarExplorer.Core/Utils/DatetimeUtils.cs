@@ -17,6 +17,5 @@ public static class DatetimeUtils
         return "Invalid Date";
     }
 
-    public static string GetCurrentUnixTime()
-        => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
+    public static string GetCurrentUnixTime() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
 }

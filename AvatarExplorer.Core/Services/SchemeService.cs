@@ -6,6 +6,7 @@ using Microsoft.Win32;
 
 namespace AvatarExplorer.Core.Services;
 
+#pragma warning disable CA1416 // プラットフォームの互換性を検証
 public static class SchemeService
 {
     private static readonly string REG_PROTCOL = "VRCAE";
@@ -54,13 +55,9 @@ public static class SchemeService
     {
         if (!ProcessUtils.IsWindows()) return false;
 
-#pragma warning disable CA1416 // プラットフォームの互換性を検証
-
         using WindowsIdentity identity = WindowsIdentity.GetCurrent();
         WindowsPrincipal principal = new(identity);
         return principal.IsInRole(WindowsBuiltInRole.Administrator);
-
-#pragma warning restore CA1416 // プラットフォームの互換性を検証
     }
 
     public static void RestartAsAdmin()
@@ -83,8 +80,6 @@ public static class SchemeService
     {
         if (!ProcessUtils.IsWindows()) return;
 
-#pragma warning disable CA1416 // プラットフォームの互換性を検証
-
         using (RegistryKey key = Registry.ClassesRoot.CreateSubKey(protocol))
         {
             key.SetValue(string.Empty, "URL:" + protocol + " Protocol");
@@ -96,18 +91,13 @@ public static class SchemeService
         {
             key.SetValue(string.Empty, $"\"{processPath}\" \"%1\"");
         }
-
-#pragma warning restore CA1416 // プラットフォームの互換性を検証
     }
     private static bool IsSchemeRegistered(string protocol)
     {
         if (!ProcessUtils.IsWindows()) return false;
 
-#pragma warning disable CA1416 // プラットフォームの互換性を検証
-
         using RegistryKey? key = Registry.ClassesRoot.OpenSubKey(protocol);
         return key != null;
-
-#pragma warning restore CA1416 // プラットフォームの互換性を検証
     }
 }
+#pragma warning restore CA1416 // プラットフォームの互換性を検証

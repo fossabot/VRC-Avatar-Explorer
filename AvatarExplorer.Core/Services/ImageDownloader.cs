@@ -19,6 +19,5 @@ internal static class ImageDownloader
             // Ignored
         }
     }
-    private static async Task<byte[]> GetBytes(string url)
-        => await HttpClient.GetByteArrayAsync(url);
+    private static async Task<byte[]> GetBytes(string url) => await HttpClient.GetByteArrayAsync(url);
 }

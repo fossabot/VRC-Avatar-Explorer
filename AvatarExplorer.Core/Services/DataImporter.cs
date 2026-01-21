@@ -69,8 +69,7 @@ internal static class DataImporter
             item.UpdateImplementedAvatars(implementedAvatars);
         }
 
-        List<CommonAvatar> commonAvatars = new();
-        ListUtils.Add(commonAvatars, v1CommonAvatars.Select(FromV1), true);
+        List<CommonAvatar> commonAvatars = v1CommonAvatars.Select(FromV1).ToList();
 
         foreach (CommonAvatar commonAvatar in commonAvatars)
         {
@@ -123,10 +122,12 @@ internal static class DataImporter
     {
         progress?.Report((LocalizationKey.Processing.Import.Copying, 0));
 
-        List<IKonoAssetItem> konoAssetItems = new();
-        ListUtils.Add(konoAssetItems, (FileSystemService.DeserializeClass<KonoAssetAvatarDatabase>(KonoAssetPath.AvatarsDatabasePath(dataFolderPath)) ?? new()).Data, true);
-        ListUtils.Add(konoAssetItems, (FileSystemService.DeserializeClass<KonoAssetWearableDatabase>(KonoAssetPath.AvatarWearablesDatabasePath(dataFolderPath)) ?? new()).Data, false);
-        ListUtils.Add(konoAssetItems, (FileSystemService.DeserializeClass<KonoAssetWorldDatabase>(KonoAssetPath.WorldObjectsDatabasePath(dataFolderPath)) ?? new()).Data, false);
+        List<IKonoAssetItem> konoAssetItems =
+        [
+            .. (FileSystemService.DeserializeClass<KonoAssetAvatarDatabase>(KonoAssetPath.AvatarsDatabasePath(dataFolderPath)) ?? new()).Data,
+            .. (FileSystemService.DeserializeClass<KonoAssetWearableDatabase>(KonoAssetPath.AvatarWearablesDatabasePath(dataFolderPath)) ?? new()).Data,
+            .. (FileSystemService.DeserializeClass<KonoAssetWorldDatabase>(KonoAssetPath.WorldObjectsDatabasePath(dataFolderPath)) ?? new()).Data,
+        ];
 
         List<Item> items = new();
 

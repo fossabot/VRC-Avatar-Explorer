@@ -15,6 +15,5 @@ internal static class IconUtils
         { SystemIconKey.GroupIcon, ImageService.Load("Assets/GroupIcon.png") }
     };
 
-    internal static bool IsSystemIcon(string fileName)
-        => SystemIcons.ContainsKey(fileName);
+    internal static bool IsSystemIcon(string fileName) => SystemIcons.ContainsKey(fileName);
 }
