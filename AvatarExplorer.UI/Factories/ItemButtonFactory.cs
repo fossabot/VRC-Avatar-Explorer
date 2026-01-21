@@ -28,10 +28,10 @@ internal static class ItemButtonFactory
         
         Grid contentGrid = new() { ColumnSpacing = 10, ColumnDefinitions = new("Auto,*") };
 
-        // アイコン
-        Image itemIcon = CreateItemIcon(item, userPreferences);
-        contentGrid.Children.Add(itemIcon);
-        Grid.SetColumn(itemIcon, 0);
+        // アイコン (アイコンにCornerRadiusを適用するため、ChildにImageが指定されたBorderが返ってくる)
+        Border itemBorder = CreateItemIconBorder(item, userPreferences);
+        contentGrid.Children.Add(itemBorder);
+        Grid.SetColumn(itemBorder, 0);
 
         // テキスト + タグ部分
         Grid textGrid = CreateTextAndTagGrid(item, runtimeSettings);
@@ -47,12 +47,12 @@ internal static class ItemButtonFactory
 
     private static Button CreateBaseButton(UISelectableItem item)
     {
-        Button button = new() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Top, Margin = new(15, 0, 20, 0), Tag = item.Tag };
+        Button button = new() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Top, Tag = item.Tag, CornerRadius = new(10) };
         button.Classes.Add(ButtonClass);
         return button;
     }
 
-    private static Image CreateItemIcon(UISelectableItem item, UserPreferences userPreferences)
+    private static Border CreateItemIconBorder(UISelectableItem item, UserPreferences userPreferences)
     {
         Image itemIcon = new()
         {
@@ -80,7 +80,7 @@ internal static class ItemButtonFactory
             };
         }
 
-        return itemIcon;
+        return new() { ClipToBounds = true, CornerRadius = new(7), Child = itemIcon };
     }
 
     private static Grid CreateTextAndTagGrid(UISelectableItem item, RuntimeSettings runtimeSettings)
