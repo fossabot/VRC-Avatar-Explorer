@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
@@ -29,8 +30,11 @@ public partial class MainWindow
 
         var progress = new Progress<(string, int)>(tuple =>
         {
-            ProgressOverlay_Show(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
-            ProgressOverlay_Update(tuple.Item2);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                ProgressOverlay_Show(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
+                ProgressOverlay_Update(tuple.Item2);
+            });
         });
 
         if (dataImportType == DataImportType.V1) await _avatarExplorerApp.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
