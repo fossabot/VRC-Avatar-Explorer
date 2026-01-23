@@ -20,17 +20,7 @@ public partial class MainWindow
     #endregion
 
     #region Main Top Buttons
-    private void Main_UndoButton_Click(object? sender, RoutedEventArgs e)
-    {
-        // 選択されていたアイテムが検索結果時のものだったら、キャッシュを元にもう一度検索してあげる
-        bool isCurrentSearchNode = _avatarExplorerApp.GetCurrentPathState()?.State == ItemTagState.SearchItem;
-        
-        Main_CheckPageStates(); // SelectUndoより前にやってあげないと、戻った先の画面のページ情報がリセットされる
-        if (!_main_isLastWindowSearch) _avatarExplorerApp.SelectUndo(); // 最後の画面が検索画面だったら、検索だけやめて戻るようにする
-
-        if (isCurrentSearchNode) Main_ExecuteSearchItems();
-        else Main_RenderRightPanel();
-    }
+    private void Main_UndoButton_Click(object? sender, RoutedEventArgs e) => Main_ExecuteUndo();
     private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e) => SettingsOverlay_Show();
     #endregion
 
@@ -91,6 +81,14 @@ public partial class MainWindow
         if (storageItemPaths.Length == 1 && storageItemPaths[0] == _lastDragAndDropItem) return;
 
         AddItemOverlay_ShowAdd(storageItemPaths);
+    }
+    #endregion
+
+    #region Mouse Event
+    private void Main_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        PointerPointProperties pointerProperties = e.GetCurrentPoint(this).Properties;
+        if (pointerProperties.IsXButton1Pressed) Main_ExecuteUndo();
     }
     #endregion
 

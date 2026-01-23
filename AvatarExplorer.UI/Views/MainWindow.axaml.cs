@@ -308,6 +308,17 @@ public partial class MainWindow : Window
     #endregion
     
     #region Main Methods
+    private void Main_ExecuteUndo()
+    {
+        // 選択されていたアイテムが検索結果時のものだったら、キャッシュを元にもう一度検索してあげる
+        bool isCurrentSearchNode = _avatarExplorerApp.GetCurrentPathState()?.State == ItemTagState.SearchItem;
+        
+        Main_CheckPageStates(); // SelectUndoより前にやってあげないと、戻った先の画面のページ情報がリセットされる
+        if (!_main_isLastWindowSearch) _avatarExplorerApp.SelectUndo(); // 最後の画面が検索画面だったら、検索だけやめて戻るようにする
+
+        if (isCurrentSearchNode) Main_ExecuteSearchItems();
+        else Main_RenderRightPanel();
+    }
     private void Main_ReloadCurrentWindow()
     {
         Main_RenderLeftPanel();

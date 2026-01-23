@@ -13,7 +13,7 @@
         Width="1280"
         Height="720">
 
-    <Panel x:Name="WindowGrid">
+    <Panel x:Name="WindowGrid" PointerPressed="Main_PointerPressed">
 
         <!-- メイン画面 -->
         <DockPanel Margin="12">
