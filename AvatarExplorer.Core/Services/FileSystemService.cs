@@ -197,7 +197,7 @@ public static class FileSystemService
     #endregion
 
     #region Extract Item Folders
-    internal static async Task<(string, List<string>)> ExtractItemFolders(ItemCreationContext itemCreationContext, string dataRootDirectory, string destinationDirectory, bool removeOriginal = false)
+    internal static async Task<(string, List<string>)> ExtractItemFolders(ItemCreationContext itemCreationContext, string dataRootDirectory, bool removeOriginal = false)
     {
         List<string> processingFailedPaths = new();
 
@@ -210,7 +210,7 @@ public static class FileSystemService
             {
                 string extractedFolderPath = await ExtractItemFoldersInternal(
                     itemCreationContext.Folders[i],
-                    string.IsNullOrEmpty(parentFolder) ? destinationDirectory : othersFolder,
+                    string.IsNullOrEmpty(parentFolder) ? dataRootDirectory : othersFolder,
                     string.IsNullOrEmpty(parentFolder) ? (ItemUtils.GetSafeTitle(itemCreationContext.Title) ?? Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i])) : Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i]), // 親フォルダだけフォルダ名をタイトルに変換する
                     removeOriginal
                 );
@@ -234,7 +234,7 @@ public static class FileSystemService
 
         return ($"<sys>{Path.GetRelativePath(dataRootDirectory, parentFolder)}", processingFailedPaths);
     }
-    internal static async Task<List<string>> ExtractItemFolders(string parentFolderPath, string[] folders, bool removeOriginal = false)
+    internal static async Task<List<string>> ExtractItemPaths(string parentFolderPath, string[] folders, bool removeOriginal = false)
     {
         List<string> processingFailedPaths = new();
 

@@ -22,6 +22,7 @@ public static class ContextMenuCreator
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.ShowOtherItemsByAuthor, ActionKey.ShowOtherItemsByAuthor, ActionLayer.UI, ContextMenuIconType.Open, item.ItemPath, addSeparator: true),
             
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Add.BulkImportList, ActionKey.AddToBulkImportList, ActionLayer.UI, ContextMenuIconType.Add, item.ItemPath),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Add.File, ActionKey.AddItemFile, ActionLayer.UI, ContextMenuIconType.Add, item.ItemPath),
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Add.Folder, ActionKey.AddItemFolder, ActionLayer.UI, ContextMenuIconType.Add, item.ItemPath, addSeparator: true),
 
             new ContextMenuAction(LocalizationKey.ContextMenu.Item.Booth.Open, ActionKey.OpenBoothLink, ActionLayer.UI, ContextMenuIconType.Open, item.ItemPath),

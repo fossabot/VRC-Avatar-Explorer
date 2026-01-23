@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -135,6 +136,16 @@ public partial class MainWindow
         BulkImportItem_Add(itemPath);
         return Task.CompletedTask;
     }
+    private async Task ItemButton_ContextMenu_AddItemFile(string itemPath)
+    {
+        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        if (item == null) return;
+
+        string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFilePath], true);
+        if (files == null || files.Length == 0) return;
+
+        await ItemButton_ContextMenu_AddItemPathsInternal(item, files);
+    }
     private async Task ItemButton_ContextMenu_AddItemFolder(string itemPath)
     {
         Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
@@ -143,12 +154,16 @@ public partial class MainWindow
         string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
         if (folders == null || folders.Length == 0) return;
 
+        await ItemButton_ContextMenu_AddItemPathsInternal(item, folders);
+    }
+    private async Task ItemButton_ContextMenu_AddItemPathsInternal(Item item, string[] itemPaths)
+    {
         ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
         ProgressOverlay_Update(0);
-        IReadOnlyList<string> processingFailedPaths = await _avatarExplorerApp.AddFolders(item, folders);
+        IReadOnlyList<string> processingFailedPaths = await _avatarExplorerApp.AddItemPaths(item, itemPaths);
         ProgressOverlay_Hide();
 
-        if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
+        if (processingFailedPaths.Count > 0) // 処理に失敗したファイル、もしくはフォルダがあった時
         {
             Dialog_Show(
                 Localizer.Instance[LocalizationKey.Error.Default],

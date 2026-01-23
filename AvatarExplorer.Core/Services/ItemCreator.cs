@@ -39,8 +39,7 @@ internal static class ItemCreator
     }
     private static async Task<(string itemPath, List<string> processingFailedPaths)> ExtractInternal(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
     {
-        string extractDestinationFolderPath = Path.Combine(runtimeSettings.DataRootDirectory, itemCreationContext.LocalizedItemTypeName);
-        return await FileSystemService.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, extractDestinationFolderPath, runtimeSettings.RemoveOriginal);
+        return await FileSystemService.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, runtimeSettings.RemoveOriginal);
     }
 
     internal static Item FromKonoAssetDescription(KonoAssetDescription konoAssetDescription)

@@ -104,6 +104,7 @@
     "ContextMenu.Item.OpenFolder": "フォルダを開く",
     "ContextMenu.Item.ShowOtherItemsByAuthor": "この作者の他のアイテムを表示",
     "ContextMenu.Item.Add.BulkImportList": "一括インポートに追加する",
+    "ContextMenu.Item.Add.File": "アイテムファイルを追加する",
     "ContextMenu.Item.Add.Folder": "アイテムフォルダを追加する",
 
     "ContextMenu.Item.Booth.Open": "Boothリンクを開く",

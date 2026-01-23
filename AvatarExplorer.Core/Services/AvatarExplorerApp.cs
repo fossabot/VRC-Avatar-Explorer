@@ -308,7 +308,7 @@ public partial class AvatarExplorerApp
     public async Task<Item> EditItem(Item item, ItemCreationContext itemCreationContext)
     {
         item.SetValuesFromCreationContext(itemCreationContext);
-        if (itemCreationContext.Folders.Count > 1) await AddFolders(item, itemCreationContext.Folders.Skip(1).ToArray()); // １個より多い場合は、追加のアイテムとしてインポートしてあげる
+        if (itemCreationContext.Folders.Count > 1) await AddItemPaths(item, itemCreationContext.Folders.Skip(1).ToArray()); // １個より多い場合は、追加のアイテムとしてインポートしてあげる
 
         item.UpdatedDate = DatetimeUtils.GetCurrentUnixTime();
 
@@ -353,9 +353,9 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Add API
-    public async Task<IReadOnlyList<string>> AddFolders(Item item, string[] folders)
+    public async Task<IReadOnlyList<string>> AddItemPaths(Item item, string[] paths)
     {
-        List<string> processingFailedPaths = await FileSystemService.ExtractItemFolders(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), folders);
+        List<string> processingFailedPaths = await FileSystemService.ExtractItemPaths(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), paths);
         return processingFailedPaths;
     }
     #endregion

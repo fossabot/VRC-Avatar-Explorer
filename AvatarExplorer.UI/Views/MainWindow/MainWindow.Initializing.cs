@@ -77,6 +77,7 @@ public partial class MainWindow
             { ActionKey.EditItemTitle, ItemButton_ContextMenu_EditItemTitle },
             { ActionKey.AddItemMemo, ItemButton_ContextMenu_AddMemo},
             { ActionKey.AddToBulkImportList, ItemButton_ContextMenu_AddToBulkImportList },
+            { ActionKey.AddItemFile, ItemButton_ContextMenu_AddItemFile },
             { ActionKey.AddItemFolder, ItemButton_ContextMenu_AddItemFolder },
             { ActionKey.EditImplementedAvatar, ItemButton_ContextMenu_EditImplementedAvatar },
             { ActionKey.EditItemTag, ItemButton_ContextMenu_EditItemTag },

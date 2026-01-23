@@ -11,6 +11,5 @@ public class ItemCreationContext
     public int BoothId { get; set; } = -1;
     public ItemType ItemType { get; set; } = ItemType.Avatar;
     public string CustomCategory { get; set; } = string.Empty;
-    public string LocalizedItemTypeName { get; set; } = string.Empty;
     public List<string> SupportedAvatars { get; } = new();
 }

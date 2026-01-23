@@ -278,6 +278,7 @@ public static class LocalizationKey
             public static class Add
             {
                 public const string BulkImportList = "ContextMenu.Item.Add.BulkImportList";
+                public const string File = "ContextMenu.Item.Add.File";
                 public const string Folder = "ContextMenu.Item.Add.Folder";
             }
 
