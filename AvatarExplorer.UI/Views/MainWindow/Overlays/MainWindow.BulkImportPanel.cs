@@ -57,13 +57,15 @@ public partial class MainWindow
             List<string> filePaths = new();
             List<string> categories = new();
 
-            for (int i = 0; i < _bulkImportPanel_bulkImportItems.Count; i++)
+            foreach (BulkImportItem bulkImportItem in _bulkImportPanel_bulkImportItems)
             {
-                BulkImportItem bulkImportItem = _bulkImportPanel_bulkImportItems[i];
                 Item? item = _avatarExplorerApp.GetItemByPath(bulkImportItem.ItemPath);
                 if (item == null) continue;
 
-                filePaths.Add(UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath))[bulkImportItem.SelectedIndex]);
+                string filePath = UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath))[bulkImportItem.SelectedIndex];
+                if (filePaths.Contains(filePath)) continue;
+
+                filePaths.Add(filePath);
 
                 if (item.Type == ItemType.Custom) categories.Add(item.CustomCategory);
                 else categories.Add(Localizer.Instance[item.Type.GetLocalizationKey() ?? item.Type.ToString()]);
