@@ -5,24 +5,13 @@ namespace AvatarExplorer.Core.Extensions;
 
 public static class EnumExtensions
 {
-    public static string? GetLocalizationKey(this Enum value)
-    {
-        FieldInfo? field = value.GetType().GetField(value.ToString());
-        LocalizationKeyAttribute? attribute = field?.GetCustomAttributes(typeof(LocalizationKeyAttribute), false).FirstOrDefault() as LocalizationKeyAttribute;
-        return attribute?.Key ?? null;
-    }
+    public static string? GetLocalizationKey(this Enum value) => value.GetAttribute<LocalizationKeyAttribute>()?.Key;
+    internal static string[]? GetExtensionFilters(this Enum value) => value.GetAttribute<ExtensionsFilterAttribute>()?.Filter.Split('|') ?? null;
+    internal static string[]? GetFileNameFilters(this Enum value) => value.GetAttribute<FileNamesFilterAttribute>()?.Filter.Split('|') ?? null;
 
-    internal static string[]? GetExtensionFilters(this Enum value)
+    private static T? GetAttribute<T>(this Enum value) where T : class
     {
         FieldInfo? field = value.GetType().GetField(value.ToString());
-        ExtensionsFilterAttribute? attribute = field?.GetCustomAttributes(typeof(ExtensionsFilterAttribute), false).FirstOrDefault() as ExtensionsFilterAttribute;
-        return attribute?.Filter.Split('|') ?? null;
-    }
-
-    internal static string[]? GetFileNameFilters(this Enum value)
-    {
-        FieldInfo? field = value.GetType().GetField(value.ToString());
-        FileNamesFilterAttribute? attribute = field?.GetCustomAttributes(typeof(FileNamesFilterAttribute), false).FirstOrDefault() as FileNamesFilterAttribute;
-        return attribute?.Filter.Split('|') ?? null;
+        return field?.GetCustomAttributes(typeof(T), false).FirstOrDefault() as T;
     }
 }
