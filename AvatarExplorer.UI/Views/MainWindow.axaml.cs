@@ -43,6 +43,7 @@ public partial class MainWindow : Window
         TODO: 共通素体グループ作成時に、元のアバターを置き換えるかどうかをダイアログで決める
         TODO: 共通素体グループ削除時に、共通素体の中のアバターに置き換えるかどうかをダイアログで決める
         TODO: 自動バックアップ機能を作る
+        TODO: インポート時の重複ファイルの処理方法を変更できるようにする
         */
 
         InitializeCurrentPath();
@@ -358,7 +359,7 @@ public partial class MainWindow : Window
         Item? selectedItem = _avatarExplorerApp.GetSelectedItem();
         if (selectedItem == null) return;
 
-        await UnitypackageService.Import(itemPath, selectedItem.Type == ItemType.Custom ? selectedItem.CustomCategory : Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? string.Empty],
+        await UnitypackageService.Import(itemPath, selectedItem.Type == ItemType.Custom ? selectedItem.CustomCategory : Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? selectedItem.Type.ToString()],
             onProgress: async (name, percent) =>
             {
                 ProgressOverlay_Show(Localizer.Instance.GetDisplayName(name, percent.ToString()));

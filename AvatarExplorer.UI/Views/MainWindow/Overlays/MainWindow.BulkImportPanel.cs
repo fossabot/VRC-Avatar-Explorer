@@ -66,7 +66,7 @@ public partial class MainWindow
                 filePaths.Add(UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath))[bulkImportItem.SelectedIndex]);
 
                 if (item.Type == ItemType.Custom) categories.Add(item.CustomCategory);
-                else categories.Add(Localizer.Instance[item.Type.GetLocalizationKey() ?? ""]);
+                else categories.Add(Localizer.Instance[item.Type.GetLocalizationKey() ?? item.Type.ToString()]);
             }
 
             string[] itemFilePaths = filePaths.ToArray();
