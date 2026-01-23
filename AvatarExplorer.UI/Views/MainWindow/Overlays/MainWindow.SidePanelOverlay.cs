@@ -27,11 +27,6 @@ public partial class MainWindow
         Main_PanelGrid.ColumnDefinitions[4].MinWidth = 330 + 12;
     }
 
-    private void SidePanel_Hide_Click(object? sender, RoutedEventArgs e)
-    {
-        SidePanel_Hide();
-    }
-
     private void SidePanel_Hide()
     {
         if (!Main_SidePanelBorder.IsVisible) return;
@@ -39,7 +34,6 @@ public partial class MainWindow
         Main_SidePanelBorder.IsVisible = false;
         Main_PanelGrid.ColumnDefinitions[4].MinWidth = 50;
         Main_PanelGrid.ColumnDefinitions[4].Width = new(Main_PanelGrid.ColumnDefinitions[4].MinWidth);
-        Main_PanelGrid.ColumnDefinitions[4].Width = GridLength.Auto;
     }
 
     private void SidePanel_Tab_Click(object? sender, PointerPressedEventArgs e)

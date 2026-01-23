@@ -20,15 +20,15 @@ public partial class MainWindow
 
     private void BulkImportItem_Add(string itemPath)
     {
+        SidePanel_Show();
+        
+        int bulkImportPanelTabIndex = SidePanel_TabControl.Items.IndexOf(SidePanel_BulkImportPanelTab);
+        if (bulkImportPanelTabIndex != -1 && SidePanel_TabControl.SelectedIndex != bulkImportPanelTabIndex) SidePanel_TabControl.SelectedIndex = bulkImportPanelTabIndex;
+
         _bulkImportPanel_bulkImportItems.Add(new BulkImportItem(itemPath));
         ReloadBulkImportItemButtons();
         
         SidePanel_BulkImportPanelScrollViewer.Offset = AvaloniaVectorUtils.MaxValue;
-
-        SidePanel_Show();
-
-        int bulkImportPanelTabIndex = SidePanel_TabControl.Items.IndexOf(SidePanel_BulkImportPanelTab);
-        if (bulkImportPanelTabIndex != -1) SidePanel_TabControl.SelectedIndex = bulkImportPanelTabIndex;
     }
 
     private void BulkImportItemButton_Copy_Click(int itemIndex)

@@ -71,7 +71,7 @@ internal static class UnitypackageSelectorButtonFactory
         Panel iconPanel = new();
         StackPanel iconStackPanel = new() { Orientation = Orientation.Horizontal, Spacing = 5 };
         
-        Button copyButton = new Button()
+        Button copyButton = new()
         {
             Content = new MaterialIcon()
             {
@@ -120,7 +120,7 @@ internal static class UnitypackageSelectorButtonFactory
         string itemPath = item.Tag.Value;
         foreach (string filePath in UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(runtimeSettings.DataRootDirectory, itemPath)))
         {
-            ComboBoxItem unitypackageFileItem = new ComboBoxItem()
+            ComboBoxItem unitypackageFileItem = new()
             {
                 Content = Path.GetFileName(filePath),
                 Tag = filePath
