@@ -79,6 +79,7 @@ public partial class AvatarExplorerApp
         _runtimeSettings.SetSortOrder(runtimeSettings.ItemSortOrder);
         _runtimeSettings.SetRemoveOriginal(runtimeSettings.RemoveOriginal);
         _runtimeSettings.SetRemoveBrackets(runtimeSettings.RemoveBrackets);
+        _runtimeSettings.SetAutoBackupInterval(runtimeSettings.AutoBackupInterval);
     }
     #endregion
 
@@ -265,6 +266,11 @@ public partial class AvatarExplorerApp
     public void SetItemsSortOrder(SortOrder sortOrder) => _runtimeSettings.SetSortOrder(sortOrder);
     public void SetRemoveOriginal(bool value) => _runtimeSettings.SetRemoveOriginal(value);
     public void SetRemoveBrackets(bool value) => _runtimeSettings.SetRemoveBrackets(value);
+    public void SetAutoBackupInterval(int value)
+    {
+        _runtimeSettings.SetAutoBackupInterval(value);
+        _backupManager.SetAutoBackupInterval(value);
+    }
     #endregion
 
     #region Add API
@@ -451,5 +457,12 @@ public partial class AvatarExplorerApp
         await ImageDownloader.Download(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);
         item.ThumbnmailFileName = itemThumbnailFileName;
     }
+    #endregion
+
+    #region Backup API
+    private readonly BackupManager _backupManager = new();
+    public void StartAutoBackup() => _backupManager.StartAutoBackup(_runtimeSettings.AutoBackupInterval); // minutes
+    public async Task StopAutoBackup() => await _backupManager.StopAutoBackup();
+    public async Task ExecuteBackup() => await _backupManager.ExecuteBackup();
     #endregion
 }

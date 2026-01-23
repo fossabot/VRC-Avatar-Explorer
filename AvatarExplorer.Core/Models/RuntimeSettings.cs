@@ -16,9 +16,13 @@ public class RuntimeSettings
     
     [JsonInclude]
     public bool RemoveBrackets { get; private set; } = false;
+
+    [JsonInclude]
+    public int AutoBackupInterval { get; private set; } = 5;
     
     internal void SetDataRootDirectory(string path) => DataRootDirectory = path;
     internal void SetSortOrder(SortOrder sortOrder) => ItemSortOrder = sortOrder;
     internal void SetRemoveOriginal(bool value) => RemoveOriginal = value;
     internal void SetRemoveBrackets(bool value) => RemoveBrackets = value;
+    internal void SetAutoBackupInterval(int value) => AutoBackupInterval = value;
 }

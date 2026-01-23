@@ -28,6 +28,7 @@ public partial class MainWindow
             _avatarExplorerApp.LoadItemDatabase();
             _avatarExplorerApp.LoadCommonAvatarDatabase();
             _avatarExplorerApp.LoadRuntimeSettings();
+            _avatarExplorerApp.StartAutoBackup();
         }
         catch
         {

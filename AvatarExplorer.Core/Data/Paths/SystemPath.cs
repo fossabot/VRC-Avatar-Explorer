@@ -8,6 +8,7 @@ public static class SystemPath
     public static readonly string DatabaseFolderPath = DatabaseUtils.GetDataFolderPath(SoftwareDataPath);
     public static readonly string ImagesFolderPath = DatabaseUtils.GetImagesFolderPath(SoftwareDataPath);
     public static readonly string DefaultItemsFolderPath = DatabaseUtils.GetItemsFolderPath(SoftwareDataPath);
+    public static readonly string BackupFolderPath = DatabaseUtils.GetBackupFolderPath(SoftwareDataPath);
     public static readonly string SettingsFolderPath = DatabaseUtils.GetSettingsFolderPath(SoftwareDataPath);
 
     public static readonly string TempFolderPath = DatabaseUtils.GetSoftwareFolderPath(Path.GetTempPath());
