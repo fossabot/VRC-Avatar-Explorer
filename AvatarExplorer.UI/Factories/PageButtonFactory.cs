@@ -25,7 +25,7 @@ internal static class PageButtonFactory
 
         var pageInfo = CreatePageInfoPanel(currentPageValue, totalPages, itemsPerPage, totalItemCount);
         
-        Grid pageButtonGrid = new() { ColumnDefinitions = new("*,*,*,*"), ColumnSpacing = 10, Margin = new(50, 0, 50, 0) };
+        Grid pageButtonGrid = new() { ColumnDefinitions = new("*,*,*,*"), ColumnSpacing = 10, Margin = new(50,0,50,0) };
         AddNavigationButtons(pageButtonGrid, itemTagState, currentPageValue, totalPages, onClick);
         
         pageInfoPanel.Children.Add(pageButtonGrid);
