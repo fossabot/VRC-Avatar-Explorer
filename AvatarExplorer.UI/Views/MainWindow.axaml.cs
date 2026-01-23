@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
@@ -42,7 +43,6 @@ public partial class MainWindow : Window
         TODO: 共通素体グループ作成時に、元のアバターを置き換えるかどうかをダイアログで決める
         TODO: 共通素体グループ削除時に、共通素体の中のアバターに置き換えるかどうかをダイアログで決める
         TODO: 自動バックアップ機能を作る
-        TODO: 一括インポート画面を作る
         */
 
         InitializeCurrentPath();
@@ -120,10 +120,13 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            ItemButtonFactory.AddItemButton(Main_LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings, _userPreferences, itemContextMenu, LeftPanel_ItemButton_Click);
+            Button itemButton = ItemButtonFactory.AddItemButton(Main_LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings, _userPreferences, itemContextMenu, LeftPanel_ItemButton_Click);
+        
+            // アイテム(アバター)の場合はD&Dイベントを登録してあげる
+            if (customState == ItemTagState.RootAvatar) itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
 
-        if (currentPage != -1 && items.Count != 0) ItemButtonFactory.AddPageButton(Main_LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Click);
+        if (currentPage != -1 && items.Count != 0) PageButtonFactory.AddPageButton(Main_LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Click);
     }
     private void LeftPanel_ItemButton_Click(object? sender, RoutedEventArgs e)
     {
@@ -171,10 +174,13 @@ public partial class MainWindow : Window
         foreach (ItemCountInfo itemCountInfo in currentPage != -1 ? items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage) : items)
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
-            ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings, _userPreferences, itemContextMenu, RightPanel_ItemButton_Click);
+            Button itemButton = ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings, _userPreferences, itemContextMenu, RightPanel_ItemButton_Click);
+            
+            // アイテムの場合はD&Dイベントを登録してあげる
+            if (itemTagState == ItemTagState.RootSelectedItem) itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
 
-        if (currentPage != -1 && items.Count != 0) ItemButtonFactory.AddPageButton(Main_RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
+        if (currentPage != -1 && items.Count != 0) PageButtonFactory.AddPageButton(Main_RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
         _main_isLastWindowSearch = false;
         Main_LoadCurrentPath();
     }
@@ -230,7 +236,7 @@ public partial class MainWindow : Window
         if (!string.IsNullOrEmpty(searchText)) _main_searchTextCache = searchText;
 
         SearchFilter searchFilter = SearchFilterBuilder.Build(_main_searchTextCache);
-        if (AdvancedSearchPanel.IsVisible) AdvancedSearchPanel_ApplyValues(searchFilter);
+        if (AdvancedSearchPanel_Enable.IsChecked ?? false) AdvancedSearchPanel_ApplyValues(searchFilter);
 
         if (string.IsNullOrEmpty(_main_searchTextCache) && searchFilter.IsEmpty)
         {
@@ -264,10 +270,13 @@ public partial class MainWindow : Window
         foreach (Item item in items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage))
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(item), ItemButton_ContextMenuItem_Click);
-            ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RuntimeSettings, _userPreferences, itemContextMenu, RightPanel_ItemButton_Click);
+            Button itemButton = ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RuntimeSettings, _userPreferences, itemContextMenu, RightPanel_ItemButton_Click);
+
+            // D&Dイベントを登録してあげる
+            itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
 
-        if (items.Count != 0) ItemButtonFactory.AddPageButton(Main_RightPanel, ItemTagState.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
+        if (items.Count != 0) PageButtonFactory.AddPageButton(Main_RightPanel, ItemTagState.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
         _main_isLastWindowSearch = true;
         
         Main_PathTextBox.Text = searchFilter.ToPathString();
@@ -347,8 +356,9 @@ public partial class MainWindow : Window
     private async Task Main_OpenUnitypackageInternalAsync(string itemPath)
     {
         Item? selectedItem = _avatarExplorerApp.GetSelectedItem();
+        if (selectedItem == null) return;
 
-        await UnitypackageService.Open(this, itemPath, selectedItem,
+        await UnitypackageService.Import(itemPath, selectedItem.Type == ItemType.Custom ? selectedItem.CustomCategory : Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? string.Empty],
             onProgress: async (name, percent) =>
             {
                 ProgressOverlay_Show(Localizer.Instance.GetDisplayName(name, percent.ToString()));

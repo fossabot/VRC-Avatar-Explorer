@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -29,23 +30,47 @@ public partial class MainWindow
         else Main_RenderRightPanel();
     }
     private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e) => SettingsOverlay_Show();
-
-    private void Main_AdvancedSearchButton_Click(object? sender, RoutedEventArgs e)
-    {
-        if (!AdvancedSearchPanel.IsVisible) AdvancedSearchPanel_Show();
-        else AdvancedSearchPanel.IsVisible = false;
-        Main_SearchValue_Changed(sender, e);
-    }
     #endregion
 
     #region Main Bottom Buttons
+    private void Main_ShowSidePanel_Click(object? sender, PointerPressedEventArgs e)
+    {
+        if (!Main_SidePanelBorder.IsVisible) SidePanel_Show();
+        else SidePanel_Hide();
+    }
     private void Main_AddItem_Click(object? sender, RoutedEventArgs e) => AddItemOverlay_ShowAdd();
     #endregion
 
     #region Drag and Drop
-    private void Main_DragDrop_Enter(object? sender, DragEventArgs e) => e.DragEffects = DragDropEffects.Copy;
+    private async void ItemButton_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is not Button button) return;
+
+        if (button.Tag is ItemTagInfo itemTagInfo)
+        {
+            DataTransferItem item = new();
+            item.Set(DataFormat.Text, () => itemTagInfo.Value);
+
+            DataTransfer dragData = new();
+            dragData.Add(item);
+
+            await Task.Delay(300);
+
+            // 300ms後もそのボタンがクリックされていたら、長押しとみなしてD&D処理を開始する
+            if (!button.IsPressed) return;
+
+            await DragDrop.DoDragDropAsync(e, dragData, DragDropEffects.Copy);
+        }
+    }
+    private void Main_DragDrop_Over(object? sender, DragEventArgs e)
+    {
+        // ファイルのD&D: File | アイテムボタンのD&D: Text
+        if (e.DataTransfer.Contains(DataFormat.File) || e.DataTransfer.Contains(DataFormat.Text)) e.DragEffects = DragDropEffects.Copy;
+    }
     private void Main_DragDrop_Drop(object? sender, DragEventArgs e)
     {
+        if (!e.DataTransfer.Contains(DataFormat.File)) return;
+        
         IEnumerable<IStorageItem?> storageItems = e.DataTransfer.GetItems(DataFormat.File).Select(i => i.TryGetFile());
         if (storageItems == null) return;
 

@@ -4,7 +4,7 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class AvatarStatusResolver
 {
-    internal static AvatarStatus Resolve(string? avatarPath, Item item, List<CommonAvatar> commonAvatars)
+    internal static AvatarStatus Resolve(string? avatarPath, Item item, IReadOnlyList<CommonAvatar> commonAvatars)
     {
         AvatarStatus avatarStatus = new();
         if (string.IsNullOrEmpty(avatarPath)) return avatarStatus;

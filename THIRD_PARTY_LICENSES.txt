@@ -58,7 +58,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-- Avatar Explorer V1 (https://github.com/puk06/Avatar-Explorer)
+- Avatar Explorer V1 (https://github.com/puk06/VRC-Avatar-Explorer-V1)
 
 MIT License
 
@@ -130,7 +130,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-- All icons sourced from Material Design Icons Font - https://materialdesignicons.com/ - in accordance of ttps://github.com/Templarian/MaterialDesign/blob/master/LICENSE.
+- All icons sourced from Material Design Icons Font - https://materialdesignicons.com/ - in accordance of https://github.com/Templarian/MaterialDesign/blob/master/LICENSE.
 
 Pictogrammers Free License
 --------------------------

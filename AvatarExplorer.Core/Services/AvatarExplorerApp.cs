@@ -370,7 +370,7 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region File API
-    public static async Task<string> ModifyUnityPackageFilePath(string filePath, string itemCategoryName = "", IProgress<(string, int)>? progress = null)　=> await FileSystemService.ModifyUnityPackageFilePathsAsync([filePath], [itemCategoryName], progress);
+    public static async Task<string> ModifyUnityPackageFilePath(string filePath, string itemCategoryName = "", IProgress<(string, int)>? progress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync([filePath], [itemCategoryName], progress);
     public static async Task<string> ModifyUnityPackageFilePaths(string[] filePaths, string[] itemCategoryNames, IProgress<(string, int)>? progress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync(filePaths, itemCategoryNames, progress);
     #endregion
 

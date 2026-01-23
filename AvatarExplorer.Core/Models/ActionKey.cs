@@ -13,6 +13,7 @@ public enum ActionKey
     EditItem,
     EditItemTitle,
     AddItemMemo,
+    AddToBulkImportList,
     AddItemFolder,
     EditImplementedAvatar,
     EditItemTag,

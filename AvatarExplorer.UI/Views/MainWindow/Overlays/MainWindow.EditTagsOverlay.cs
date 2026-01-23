@@ -1,18 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Factories;
+using AvatarExplorer.UI.Models;
 
 namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
     private readonly List<string> _editTagsOverlay_selectedTags = new();
-    private static readonly Vector VectorMaxValue = new(double.MaxValue, double.MaxValue);
 
     private void EditTagsOverlay_Show(IReadOnlyList<string>? tags = null)
     {
@@ -51,7 +50,7 @@ public partial class MainWindow
             EditTagsOverlay_TagList.Children.Add(tagButton);
         }
 
-        EditTagsOverlay_TagListScrollViewer.Offset = VectorMaxValue;
+        EditTagsOverlay_TagListScrollViewer.Offset = AvaloniaVectorUtils.MaxValue;
     }
 
     #region Event Handler

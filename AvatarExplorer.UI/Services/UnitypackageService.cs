@@ -1,22 +1,27 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Avalonia.Controls;
-using AvatarExplorer.Core.Extensions;
-using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
-using AvatarExplorer.UI.Localization;
 
 namespace AvatarExplorer.UI.Services;
 
 internal static class UnitypackageService
 {
-    internal static async Task Open(Window window, string itemPath, Item? selectedItem, Func<string, int, Task>? onProgress = null, Func<string, Task>? onCompleted = null)
+    internal static async Task Import(string filePath, string localizedCategoryName, Func<string, int, Task>? onProgress = null, Func<string, Task>? onCompleted = null)
     {
-        if (selectedItem == null)
+        // Item1: LocalizationKey, Item2: ProgressValue
+        var progress = new Progress<(string, int)>(async tuple =>
         {
-            await LauncherService.OpenFile(window, itemPath);
-            return;
-        }
+            if (onProgress != null) await onProgress(tuple.Item1, tuple.Item2);
+        });
+
+        string unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePath(filePath, localizedCategoryName, progress);
+        if (onCompleted != null) await onCompleted(unityPackagePath);
+    }
+
+    internal static async Task BulkImport(string[] filePaths, string[] localizedCategoryNames, Func<string, int, Task>? onProgress = null, Func<string, Task>? onCompleted = null)
+    {
+        if (filePaths.Length != localizedCategoryNames.Length) return;
 
         // Item1: LocalizationKey, Item2: ProgressValue
         var progress = new Progress<(string, int)>(async tuple =>
@@ -24,7 +29,22 @@ internal static class UnitypackageService
             if (onProgress != null) await onProgress(tuple.Item1, tuple.Item2);
         });
 
-        string unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePath(itemPath, Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? string.Empty], progress);
+        string unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePaths(filePaths, localizedCategoryNames, progress);
         if (onCompleted != null) await onCompleted(unityPackagePath);
+    }
+
+    internal static IReadOnlyList<string> GetUnitypackagePaths(string itemPath)
+    {
+        List<string> unitypackageFilePaths = new();
+
+        foreach (string filePath in FileSystemService.EnumerateFiles(itemPath))
+        {
+            bool isUnitypackage = filePath.ToLower().EndsWith(".unitypackage");
+            if (!isUnitypackage) continue;
+
+            unitypackageFilePaths.Add(filePath);
+        }
+
+        return unitypackageFilePaths;
     }
 }

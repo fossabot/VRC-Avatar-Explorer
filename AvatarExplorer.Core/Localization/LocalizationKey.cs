@@ -233,6 +233,7 @@ public static class LocalizationKey
         public const string BoothItemNotFound = "Error.BoothItemNotFound";
         public const string BoothApiCooldown = "Error.BoothApiCooldown";
         public const string ItemNotFound = "Error.ItemNotFound";
+        public const string CategoryLengthNotMatched = "Error.CategoryLengthNotMatched";
 
         public static class Validation
         {
@@ -243,7 +244,6 @@ public static class LocalizationKey
 
         public const string ItemAddFailed = "Error.Item.Add.Failed";
         public const string ItemFolderProcessingFailedPaths = "Error.Item.Folder.ProcessingFailedPaths";
-
     }
 
     public static class ContextMenu
@@ -277,6 +277,7 @@ public static class LocalizationKey
 
             public static class Add
             {
+                public const string BulkImportList = "ContextMenu.Item.Add.BulkImportList";
                 public const string Folder = "ContextMenu.Item.Add.Folder";
             }
 

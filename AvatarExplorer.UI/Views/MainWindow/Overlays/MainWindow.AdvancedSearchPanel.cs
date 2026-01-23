@@ -7,17 +7,6 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    private void AdvancedSearchPanel_Show()
-    {
-        // 右のパネルと被らないように、GridSplitterの位置を修正してあげる
-        if (Main_RightPanelBorder.Bounds.Width < (AdvancedSearchPanel.Width + Main_PanelGrid.ColumnDefinitions[2].MinWidth))
-        {
-            double newLeftPanelWidth = Main_LeftPanelBorder.Bounds.Width - (AdvancedSearchPanel.Width + Main_PanelGrid.ColumnDefinitions[2].MinWidth - Main_RightPanelBorder.Bounds.Width) - 20;
-            if (newLeftPanelWidth > 0) Main_PanelGrid.ColumnDefinitions[0].Width = new(newLeftPanelWidth);
-        }
-
-        AdvancedSearchPanel.IsVisible = true;
-    }
     private void AdvancedSearchPanel_ApplyValues(SearchFilter searchFilter)
     {
         searchFilter.IsOrSearch = AdvancedSearchPanel_OrSearch.IsChecked ?? false;

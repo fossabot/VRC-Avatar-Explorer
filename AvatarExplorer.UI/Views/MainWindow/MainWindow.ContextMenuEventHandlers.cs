@@ -130,6 +130,11 @@ public partial class MainWindow
 
         return Task.CompletedTask;
     }
+    private Task ItemButton_ContextMenu_AddToBulkImportList(string itemPath)
+    {
+        BulkImportItem_Add(itemPath);
+        return Task.CompletedTask;
+    }
     private async Task ItemButton_ContextMenu_AddItemFolder(string itemPath)
     {
         Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);

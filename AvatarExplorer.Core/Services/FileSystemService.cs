@@ -73,10 +73,11 @@ public static class FileSystemService
                 totalEntries += await CountTarEntriesAsync(itemPath);
             }
 
+            int currentProcessedEntries = 0;
             for (int i = 0; i < itemPaths.Count; i++)
             {
                 string itemPath = itemPaths[i];
-                await ExtractTarToFolderAsync(itemPath, saveFilePath, itemCategoryNames[i], totalEntries, progress);
+                currentProcessedEntries = await ExtractTarToFolderAsync(itemPath, saveFilePath, itemCategoryNames[i], totalEntries, currentProcessedEntries, progress);
             }
 
             progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Creating, 90));
@@ -126,9 +127,9 @@ public static class FileSystemService
             count++;
         return count;
     }
-    private static async Task ExtractTarToFolderAsync(string tarGzFilePath, string saveFilePath, string category, int totalEntries, IProgress<(string, int)>? progress = null)
+    private static async Task<int> ExtractTarToFolderAsync(string tarGzFilePath, string saveFilePath, string category, int totalEntries, int currentProcessedEntries = 0, IProgress<(string, int)>? progress = null)
     {
-        int processedEntries = 0;
+        int processedEntries = currentProcessedEntries;
 
         await using Stream fileStream = File.OpenRead(tarGzFilePath);
         await using GZipStream gzipStream = new(fileStream, CompressionMode.Decompress);
@@ -172,6 +173,8 @@ public static class FileSystemService
                 lastProgress = currentProgress;
             }
         }
+
+        return processedEntries;
     }
     private static void CreateTarArchive(string sourceFolder, string outputTarFile)
     {

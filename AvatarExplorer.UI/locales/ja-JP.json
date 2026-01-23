@@ -103,6 +103,7 @@
 
     "ContextMenu.Item.OpenFolder": "フォルダを開く",
     "ContextMenu.Item.ShowOtherItemsByAuthor": "この作者の他のアイテムを表示",
+    "ContextMenu.Item.Add.BulkImportList": "一括インポートに追加する",
     "ContextMenu.Item.Add.Folder": "アイテムフォルダを追加する",
 
     "ContextMenu.Item.Booth.Open": "Boothリンクを開く",
@@ -144,6 +145,7 @@
     "Error.BoothItemNotFound": "Boothのアイテムが見つかりませんでした",
     "Error.BoothApiCooldown": "情報を取得する間隔が短すぎます",
     "Error.ItemNotFound": "アイテムが見つかりませんでした",
+    "Error.CategoryLengthNotMatched": "内部でファイル数とカテゴリ数が合っていなかったため、一括インポートに失敗しました。",
 
     "Error.Validation.NoFolders": "フォルダが選択されていません",
     "Error.Validation.EmptyTitle": "アイテムのタイトル欄が空です",

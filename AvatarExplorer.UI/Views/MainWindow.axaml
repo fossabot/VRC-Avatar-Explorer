@@ -4,131 +4,173 @@
         x:Class="AvatarExplorer.UI.MainWindow"
         WindowStartupLocation="CenterScreen"
         DragDrop.AllowDrop="True"
-        DragDrop.DragEnter="Main_DragDrop_Enter"
+        DragDrop.DragOver="Main_DragDrop_Over"
         DragDrop.Drop="Main_DragDrop_Drop"
         Closing="Main_Closing"
         Loaded="Main_Loaded"
+        MinWidth="1280"
+        MinHeight="720"
         Width="1280"
         Height="720">
 
-    <Grid x:Name="WindowGrid">
+    <Panel x:Name="WindowGrid">
+
+        <!-- メイン画面 -->
         <DockPanel Margin="12">
             <Border DockPanel.Dock="Top" Classes="panelbackground">
-                <Grid ColumnDefinitions="100,10,3*,20,Auto,10,*,50,15,80">
+                <Grid ColumnDefinitions="100,10,3*,20,Auto,10,*,15,80">
                     <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="戻る" HorizontalAlignment="Stretch" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Click="Main_UndoButton_Click"/>
                     <TextBox x:Name="Main_PathTextBox" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" Text="ここには現在のパスが表示されます" CornerRadius="8"/>
                     <TextBlock Grid.Column="4" FontWeight="Bold" Text="検索" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
-                    <TextBox x:Name="Main_SearchTextBox" Grid.Column="6" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="検索..." CornerRadius="8,0,0,8" TextChanged="Main_SearchValue_Changed"/>
-                    <Button Classes="accent" FontWeight="Bold" Grid.Column="7" Content="{materialIcons:MaterialIconExt Kind=LayersSearch}" ToolTip.Tip="詳細検索" VerticalAlignment="Stretch" Width="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="0,8,8,0" Click="Main_AdvancedSearchButton_Click"/>
+                    <TextBox x:Name="Main_SearchTextBox" Grid.Column="6" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="検索..." CornerRadius="8" TextChanged="Main_SearchValue_Changed"/>
                     <Button Classes="button" FontWeight="Bold" Grid.Column="9" Content="設定" Width="80" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Click="Main_SettingsButton_Click"/>
                 </Grid>
             </Border>
 
             <Border DockPanel.Dock="Bottom" Classes="panelbackground">
                 <Grid ColumnDefinitions="*,180">
-                    <Button Classes="accent" FontWeight="Bold" Grid.Column="1" Content="アイテムを追加する" FontSize="16" Tag="UI.AddItem" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="42" CornerRadius="8" Click="Main_AddItem_Click"/>
+                    <Button Classes="accent" FontWeight="Bold" Grid.Column="1" Content="アイテムを追加する" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="42" CornerRadius="8" Click="Main_AddItem_Click"/>
                 </Grid>
             </Border>
 
-            <Grid Margin="0,12,0,12">
-                <DockPanel>
-                    <Grid DockPanel.Dock="Right" x:Name="AdvancedSearchPanel" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="300" Margin="10,0,0,0" IsVisible="False">
-                        <Border Classes="panelbackground">
-                            <Grid RowDefinitions="30,20,*">
-                                <TextBlock Grid.Row="0" Text="詳細検索パネル" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
-                                <ScrollViewer Grid.Row="2" VerticalAlignment="Stretch">
-                                    <StackPanel Spacing="20" Margin="0,10,10,0">
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="OR検索" FontSize="15" VerticalAlignment="Center"/>
-                                            <ToggleSwitch x:Name="AdvancedSearchPanel_OrSearch" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" IsCheckedChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="タイトル" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_Title" Grid.Row="2" Grid.Column="1" Watermark="タイトル" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="作者名" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_Author" Grid.Row="2" Grid.Column="1" Watermark="作者名" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Booth Id" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_Booth" Grid.Row="2" Grid.Column="1" Watermark="Booth Id" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="対応アバター" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_Avatar" Grid.Row="2" Grid.Column="1" Watermark="対応アバター" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="カテゴリー" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_Category" Grid.Row="2" Grid.Column="1" Watermark="カテゴリー" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="メモ" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_Memo" Grid.Row="2" Grid.Column="1" Watermark="メモ" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="フォルダー" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_Folder" Grid.Row="2" Grid.Column="1" Watermark="フォルダー" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="ファイル" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_File" Grid.Row="2" Grid.Column="1" Watermark="ファイル" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="実装アバター" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_Implemented" Grid.Row="2" Grid.Column="1" Watermark="実装アバター" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="未実装アバター" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_NotImplemented" Grid.Row="2" Grid.Column="1" Watermark="未実装アバター" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="タグ" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_Tag" Grid.Row="2" Grid.Column="1" Watermark="タグ" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="共通素体" FontSize="15" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="AdvancedSearchPanel_CommonAvatar" Grid.Row="2" Grid.Column="1" Watermark="共通素体" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </ScrollViewer>
-                            </Grid>
-                        </Border>
-                    </Grid>
+            <Grid Margin="0,12,-12,12">
+                <Grid x:Name="Main_PanelGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="250" Width="300" MaxWidth="550"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition MinWidth="250" Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition MinWidth="50" Width="50" MaxWidth="550"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Border x:Name="Main_LeftPanelBorder" Grid.Column="0" Classes="panelbackground">
+                        <Grid RowDefinitions="Auto,*">
+                            <TabControl x:Name="Main_LeftFilter" Grid.Row="0" HorizontalAlignment="Stretch" SelectedIndex="0" Margin="-5,-10,5,5" FontSize="18" SelectionChanged="Main_LeftFilter_SelectionChanged">
+                                <TabItem Header="アバター" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Tag="Filter.Avatar"/>
+                                <TabItem Header="作者" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Tag="Filter.Author"/>
+                                <TabItem Header="カテゴリ" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Tag="Filter.Category"/>
+                            </TabControl>
 
-                    <Grid x:Name="Main_PanelGrid">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition MinWidth="250" Width="300"/>
-                            <ColumnDefinition Width="10"/>
-                            <ColumnDefinition MinWidth="250" Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <Border x:Name="Main_LeftPanelBorder" Grid.Column="0" Classes="panelbackground">
-                            <Grid RowDefinitions="Auto,*">
-                                <TabControl x:Name="Main_LeftFilter" Grid.Row="0" HorizontalAlignment="Stretch" SelectedIndex="0" Margin="-5,-10,5,5" FontSize="18" SelectionChanged="Main_LeftFilter_SelectionChanged">
-                                    <TabItem Header="アバター" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Tag="Filter.Avatar"/>
-                                    <TabItem Header="作者" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Tag="Filter.Author"/>
-                                    <TabItem Header="カテゴリ" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Tag="Filter.Category"/>
-                                </TabControl>
-
-                                <ScrollViewer x:Name="Main_LeftPanelScrollViewer" Grid.Row="1">
-                                    <StackPanel x:Name="Main_LeftPanel" Spacing="5" Margin="0,0,10,0"/>
-                                </ScrollViewer>
-                            </Grid>
-                        </Border>
-
-                        <GridSplitter Grid.Column="1" Opacity="0"/>
-
-                        <Border x:Name="Main_RightPanelBorder" Grid.Column="2" Classes="panelbackground">
-                            <ScrollViewer x:Name="Main_RightPanelScrollViewer">
-                                <Grid>
-                                    <StackPanel x:Name="Main_RightPanelParent" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" IsVisible="False"/>
-                                    <StackPanel x:Name="Main_RightPanel" Spacing="8" Margin="0,0,10,0"/>
-                                </Grid>
+                            <ScrollViewer x:Name="Main_LeftPanelScrollViewer" Grid.Row="1">
+                                <StackPanel x:Name="Main_LeftPanel" Spacing="5" Margin="0,0,10,0"/>
                             </ScrollViewer>
+                        </Grid>
+                    </Border>
+
+                    <GridSplitter Grid.Column="1" Opacity="0"/>
+
+                    <Border x:Name="Main_RightPanelBorder" Grid.Column="2" Classes="panelbackground">
+                        <ScrollViewer x:Name="Main_RightPanelScrollViewer">
+                            <Panel>
+                                <StackPanel x:Name="Main_RightPanelParent" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" IsVisible="False"/>
+                                <StackPanel x:Name="Main_RightPanel" Spacing="8" Margin="0,0,10,0"/>
+                            </Panel>
+                        </ScrollViewer>
+                    </Border>
+
+                    <GridSplitter Grid.Column="3" Opacity="0" IsVisible="{Binding #Main_SidePanelBorder.IsVisible}"/>
+
+                    <Panel x:Name="Main_SidePanel" Grid.Column="4" HorizontalAlignment="Stretch">
+                        <Border Classes="panelbackground" IsVisible="{Binding !#Main_SidePanelBorder.IsVisible}" CornerRadius="12,0,0,12" Width="50">
+                            <StackPanel Spacing="10">
+                                <Button Classes="button sidepanelbutton" Content="{materialIcons:MaterialIconExt Kind=TextSearch}" ToolTip.Tip="詳細検索" Tag="0" Click="SidePanel_Show_Click"/>
+                                <Button Classes="button sidepanelbutton" Content="{materialIcons:MaterialIconExt Kind=DownloadMultiple}" ToolTip.Tip="一括インポート" Tag="1" Click="SidePanel_Show_Click"/>
+                            </StackPanel>
                         </Border>
-                    </Grid>
-                </DockPanel>
+
+                        <Border x:Name="Main_SidePanelBorder" Classes="panelbackground" IsVisible="False" CornerRadius="12,0,0,12">
+                            <Grid RowSpacing="10">
+                                <Grid Grid.Row="2" ColumnSpacing="10">
+                                    <TabControl x:Name="SidePanel_TabControl" HorizontalAlignment="Stretch" SelectedIndex="0" FontSize="18" Margin="0,0,-10,0" TabStripPlacement="Right" SelectionChanged="Main_LeftFilter_SelectionChanged">
+                                        <TabItem Header="{materialIcons:MaterialIconExt Kind=TextSearch}" ToolTip.Tip="詳細検索" VerticalAlignment="Center" PointerPressed="SidePanel_Tab_Click">
+                                            <Grid RowDefinitions="Auto,Auto,*" RowSpacing="10" VerticalAlignment="Stretch">
+                                                <TextBlock Text="詳細検索" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                                                <Separator Grid.Row="1" Background="#22000000"/>
+
+                                                <ScrollViewer Grid.Row="2" VerticalAlignment="Stretch">
+                                                    <StackPanel Spacing="20" Margin="0,10,10,0">
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="有効化" FontSize="15" VerticalAlignment="Center"/>
+                                                            <ToggleSwitch x:Name="AdvancedSearchPanel_Enable" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" IsCheckedChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="OR検索" FontSize="15" VerticalAlignment="Center"/>
+                                                            <ToggleSwitch x:Name="AdvancedSearchPanel_OrSearch" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" IsCheckedChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="タイトル" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Title" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="タイトル" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="作者名" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Author" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="作者名" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Booth Id" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Booth" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="Booth Id" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="対応アバター" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Avatar" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="対応アバター" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="カテゴリー" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Category" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="カテゴリー" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="メモ" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Memo" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="メモ" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="フォルダー" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Folder" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="フォルダー" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="ファイル" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_File" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="ファイル" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="実装アバター" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Implemented" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="実装アバター" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="未実装アバター" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_NotImplemented" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="未実装アバター" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="タグ" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Tag" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="タグ" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                        <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="共通素体" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_CommonAvatar" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="共通素体" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                        </Grid>
+                                                    </StackPanel>
+                                                </ScrollViewer>
+                                            </Grid>
+                                        </TabItem>
+
+                                        <TabItem x:Name="SidePanel_BulkImportPanelTab" Header="{materialIcons:MaterialIconExt Kind=DownloadMultiple}" ToolTip.Tip="一括インポート" PointerPressed="SidePanel_Tab_Click">
+                                            <Grid RowDefinitions="Auto,Auto,*" RowSpacing="10" VerticalAlignment="Stretch">
+                                                <TextBlock Text="一括インポート" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                                                <Separator Grid.Row="1" Background="#22000000"/>
+
+                                                <Grid Grid.Row="2" RowDefinitions="*,Auto" RowSpacing="10" Margin="-10,0,-10,0" VerticalAlignment="Stretch">
+                                                    <ScrollViewer x:Name="SidePanel_BulkImportPanelScrollViewer" Grid.Row="0" DragDrop.AllowDrop="True" DragDrop.Drop="BulkImportPanel_DragDrop_Drop">
+                                                        <StackPanel x:Name="SidePanel_BulkImportPanel" Spacing="5" Margin="0,0,10,0"/>
+                                                    </ScrollViewer>
+                                                    <Button Grid.Row="1" Classes="accent" FontWeight="Bold" Content="一括インポート" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="42" CornerRadius="8" Click="BulkImportPanel_Import_Click"/>
+                                                </Grid>
+                                            </Grid>
+                                        </TabItem>
+                                    </TabControl>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </Panel>
+                </Grid>
             </Grid>
         </DockPanel>
 
@@ -168,7 +210,7 @@
 
                         <TabItem Header="表示">
                             <ScrollViewer Margin="0,10,0,0">
-                                <Grid  ColumnDefinitions="170,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="20" RowSpacing="20">
+                                <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="20" RowSpacing="20">
                                     <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="タイトルの括弧を削除する" FontSize="15" VerticalAlignment="Center"/>
                                     <ToggleSwitch x:Name="SettingsOverlay_RemoveBracketsCheckBox" Grid.Row="0" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                                     
@@ -272,8 +314,8 @@
         <!-- アイテム追加画面 -->
         <Border x:Name="AddItemOverlay" Classes="overlaybackground" IsVisible="False">
             <Border Classes="overlay" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="30" CornerRadius="12">
-                <Grid ColumnDefinitions="350, 20, 500">
-                    <Grid Grid.Column="0" RowDefinitions="Auto, 15, *">
+                <Grid ColumnDefinitions="350,20,500">
+                    <Grid Grid.Column="0" RowDefinitions="Auto,15,*">
                         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                             <Button Classes="accent" FontSize="12" Click="AddItemOverlay_AddFolder_Click">
                                 <StackPanel Orientation="Horizontal" Spacing="5">
@@ -301,18 +343,18 @@
                         <TextBlock Text="Booth アイテム情報" FontWeight="Bold" FontSize="22"/>
 
                         <StackPanel Spacing="15">
-                            <Grid ColumnDefinitions="100, *, 120" ColumnSpacing="12">
+                            <Grid ColumnDefinitions="100,*,120" ColumnSpacing="12">
                                 <TextBlock Grid.Column="0" Text="Booth URL" VerticalAlignment="Center" Opacity="0.7"/>
                                 <TextBox x:Name="AddItemOverlay_BoothLinkTextBox" Grid.Column="1" Watermark="URLを入力..."/>
                                 <Button Grid.Column="2" Content="情報取得" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="AddItemOverlay_GetBoothItemData_Click"/>
                             </Grid>
 
-                            <Grid ColumnDefinitions="100, *" ColumnSpacing="12">
+                            <Grid ColumnDefinitions="100,*" ColumnSpacing="12">
                                 <TextBlock Grid.Column="0" Text="タイトル" VerticalAlignment="Center" Opacity="0.7"/>
                                 <TextBox x:Name="AddItemOverlay_BoothItemTitleTextBox" Grid.Column="1" Watermark="タイトル"/>
                             </Grid>
 
-                            <Grid ColumnDefinitions="100, *" ColumnSpacing="12">
+                            <Grid ColumnDefinitions="100,*" ColumnSpacing="12">
                                 <TextBlock Grid.Column="0" Text="作者" VerticalAlignment="Center" Opacity="0.7"/>
                                 <TextBox x:Name="AddItemOverlay_BoothItemAuthorTextBox" Grid.Column="1" Watermark="作者名"/>
                             </Grid>
@@ -363,7 +405,7 @@
                             </StackPanel>
                         </StackPanel>
 
-                        <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="15" Margin="0,10,0,0">
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="15" Margin="0,10,0,0">
                             <Button Grid.Column="1" Content="キャンセル" Width="120" Height="40" Classes="button" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="AddItemOverlay_Close_Click" />
                             <Button Grid.Column="2" Content="確定して保存" Width="120" Height="40" Classes="accent" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="AddItemOverlay_Confirm_Click"/>
                         </Grid>
@@ -493,16 +535,16 @@
 
                     <!-- アイテムタグリスト -->
                     <ScrollViewer x:Name="EditTagsOverlay_TagListScrollViewer" Height="160" Margin="0,10,0,10">
-                        <Grid>
+                        <Panel>
                             <Border Background="{DynamicResource Background.Sub}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="10" Padding="10">
                                 <WrapPanel x:Name="EditTagsOverlay_TagList" VerticalAlignment="Stretch" LineSpacing="5" ItemSpacing="5"/>
                             </Border>
-                        </Grid>
+                        </Panel>
                     </ScrollViewer>
 
                     <!-- タグの追加 -->
                     <TextBlock Text="タグの追加" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold"/>
-                    <Grid Grid.Row="6" ColumnDefinitions="*,80" ColumnSpacing="5">
+                    <Grid ColumnDefinitions="*,80" ColumnSpacing="5">
                         <TextBox x:Name="EditTagsOverlay_TagTextBox" Grid.Column="0" Watermark="新しいタグ" KeyDown="EditTagsOverlay_TagTextBox_KeyDown"/>
                         <Button Grid.Column="1" Content="追加" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="EditTagsOverlay_AddTagButton_Click"/>
                     </Grid>
@@ -636,5 +678,5 @@
                 </StackPanel>
             </Border>
         </Border>
-    </Grid>
+    </Panel>
 </Window>
