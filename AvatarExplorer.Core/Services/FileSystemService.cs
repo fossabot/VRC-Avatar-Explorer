@@ -39,9 +39,10 @@ public static class FileSystemService
     #endregion
 
     #region Unitypackage Modifier
-    internal static async Task<string> ModifyUnityPackageFilePathsAsync(string[] filePaths, string[] itemCategoryNames, IProgress<(string, int)>? progress = null)
+    internal static async Task<string> ModifyUnityPackageFilePathsAsync(string[] filePaths, string[] itemCategoryNames, Action<(string, int)>? reportProgress = null)
     {
         List<string> unitypackagePaths = new();
+        
         foreach (string filePath in filePaths)
         {
             bool isUnitypackage = filePath.ToLower().EndsWith(".unitypackage");
@@ -52,20 +53,20 @@ public static class FileSystemService
 
         if (unitypackagePaths.Count == 0) return string.Empty;
         
-        return await ModifyUnityPackageFilePathsAsyncInternal(unitypackagePaths, itemCategoryNames, progress);
+        return await ModifyUnityPackageFilePathsAsyncInternal(unitypackagePaths, itemCategoryNames, reportProgress);
     }
-    private static async Task<string> ModifyUnityPackageFilePathsAsyncInternal(List<string> itemPaths, string[] itemCategoryNames, IProgress<(string, int)>? progress = null)
+    private static async Task<string> ModifyUnityPackageFilePathsAsyncInternal(List<string> itemPaths, string[] itemCategoryNames, Action<(string, int)>? reportProgress = null)
     {
         if (itemPaths.Count == 0) return string.Empty;
 
         string unityPackagePath = await Task.Run(async () =>
         {
-            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Preparing, 0));
+            reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Preparing, 0));
 
             var (saveFolder, saveFilePath, unityPackagePath) = PrepareSavePaths(itemPaths[0]);
             PrepareSaveDirectory(saveFolder);
 
-            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Extracting, 10));
+            reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Extracting, 10));
 
             int totalEntries = 0;
             foreach (string itemPath in itemPaths)
@@ -77,17 +78,17 @@ public static class FileSystemService
             for (int i = 0; i < itemPaths.Count; i++)
             {
                 string itemPath = itemPaths[i];
-                currentProcessedEntries = await ExtractTarToFolderAsync(itemPath, saveFilePath, itemCategoryNames[i], totalEntries, currentProcessedEntries, progress);
+                currentProcessedEntries = await ExtractTarToFolderAsync(itemPath, saveFilePath, itemCategoryNames[i], totalEntries, currentProcessedEntries, reportProgress);
             }
 
-            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Creating, 90));
+            reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Creating, 90));
 
             CreateTarArchive(saveFilePath, unityPackagePath);
 
             Directory.Delete(saveFilePath, true);
             
             // ここの3つ目の引数で出力先のアイテムパスをUI側に返してあげる
-            progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Completed, 100));
+            reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Completed, 100));
 
             return unityPackagePath;
         });
@@ -127,7 +128,7 @@ public static class FileSystemService
             count++;
         return count;
     }
-    private static async Task<int> ExtractTarToFolderAsync(string tarGzFilePath, string saveFilePath, string category, int totalEntries, int currentProcessedEntries = 0, IProgress<(string, int)>? progress = null)
+    private static async Task<int> ExtractTarToFolderAsync(string tarGzFilePath, string saveFilePath, string category, int totalEntries, int currentProcessedEntries = 0, Action<(string, int)>? reportProgress = null)
     {
         int processedEntries = currentProcessedEntries;
 
@@ -169,7 +170,7 @@ public static class FileSystemService
 
             if (currentProgress != lastProgress)
             {
-                progress?.Report((LocalizationKey.Processing.Unitypackage.Status.Extracting, currentProgress));
+                reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Extracting, currentProgress));
                 lastProgress = currentProgress;
             }
         }
@@ -387,7 +388,7 @@ public static class FileSystemService
     #endregion
 
     #region Copy
-    public static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, IProgress<(string, int, string)>? progress = null, int maxDegreeOfParallelism = 4)
+    public static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, Action<(string, int)>? reportProgress = null, int maxDegreeOfParallelism = 4)
     {
         if (sourceDirectory == destinationDirectory) return; // sourceとdestinationが同じ場合は無視
 
@@ -417,7 +418,7 @@ public static class FileSystemService
                     if (percent != lastPercent)
                     {
                         lastPercent = percent;
-                        progress?.Report((LocalizationKey.Processing.DirectoryCopy.Copying, percent, string.Empty));
+                        reportProgress?.Invoke((LocalizationKey.Processing.DirectoryCopy.Copying, percent));
                     }
                 }
                 catch

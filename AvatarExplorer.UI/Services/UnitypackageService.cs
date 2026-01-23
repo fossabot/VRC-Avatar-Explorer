@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using AvatarExplorer.Core.Services;
 
 namespace AvatarExplorer.UI.Services;
@@ -10,12 +11,15 @@ internal static class UnitypackageService
     internal static async Task Import(string filePath, string localizedCategoryName, Func<string, int, Task>? onProgress = null, Func<string, Task>? onCompleted = null)
     {
         // Item1: LocalizationKey, Item2: ProgressValue
-        var progress = new Progress<(string, int)>(async tuple =>
+        void progressAction((string, int) tuple)
         {
-            if (onProgress != null) await onProgress(tuple.Item1, tuple.Item2);
-        });
+            Dispatcher.UIThread.Invoke(async () =>
+            {
+                if (onProgress != null) await onProgress(tuple.Item1, tuple.Item2);
+            });
+        }
 
-        string unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePath(filePath, localizedCategoryName, progress);
+        string unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePath(filePath, localizedCategoryName, progressAction);
         if (onCompleted != null) await onCompleted(unityPackagePath);
     }
 
@@ -24,12 +28,15 @@ internal static class UnitypackageService
         if (filePaths.Length != localizedCategoryNames.Length) return;
 
         // Item1: LocalizationKey, Item2: ProgressValue
-        var progress = new Progress<(string, int)>(async tuple =>
+        void progressAction((string, int) tuple)
         {
-            if (onProgress != null) await onProgress(tuple.Item1, tuple.Item2);
-        });
+            Dispatcher.UIThread.Invoke(async () =>
+            {
+                if (onProgress != null) await onProgress(tuple.Item1, tuple.Item2);
+            });
+        }
 
-        string unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePaths(filePaths, localizedCategoryNames, progress);
+        string unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePaths(filePaths, localizedCategoryNames, progressAction);
         if (onCompleted != null) await onCompleted(unityPackagePath);
     }
 

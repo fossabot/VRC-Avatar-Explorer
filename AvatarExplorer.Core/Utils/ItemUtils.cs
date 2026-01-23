@@ -38,9 +38,11 @@ public static partial class ItemUtils
     {
         return items
             .Where(i => i.Type == ItemType.Avatar)
+            .Select(i => i.ItemPath)
+            .Distinct()
             .ToDictionary(
-                i => i.ItemPath,
-                i => GetAvatarNameFromPath(items, i.ItemPath)
+                i => i,
+                i => GetAvatarNameFromPath(items, i)
             );
     }
 }

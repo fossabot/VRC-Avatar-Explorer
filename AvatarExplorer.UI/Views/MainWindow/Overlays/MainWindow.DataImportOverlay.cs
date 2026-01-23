@@ -28,17 +28,18 @@ public partial class MainWindow
 
         var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
 
-        var progress = new Progress<(string, int)>(tuple =>
+        // Item1: LocalizationKey, Item2: ProgressValue
+        void progressAction((string, int) tuple)
         {
             Dispatcher.UIThread.Invoke(() =>
             {
                 ProgressOverlay_Show(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
                 ProgressOverlay_Update(tuple.Item2);
             });
-        });
+        }
 
-        if (dataImportType == DataImportType.V1) await _avatarExplorerApp.ImportFromV1(selectedFolder, localizedItemTypesMapping, progress);
-        else if (dataImportType == DataImportType.KonoAsset) await _avatarExplorerApp.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progress);
+        if (dataImportType == DataImportType.V1) await _avatarExplorerApp.ImportFromV1(selectedFolder, localizedItemTypesMapping, progressAction);
+        else if (dataImportType == DataImportType.KonoAsset) await _avatarExplorerApp.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progressAction);
 
         ProgressOverlay_Hide();
 

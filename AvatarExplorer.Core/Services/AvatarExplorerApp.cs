@@ -370,8 +370,8 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region File API
-    public static async Task<string> ModifyUnityPackageFilePath(string filePath, string itemCategoryName = "", IProgress<(string, int)>? progress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync([filePath], [itemCategoryName], progress);
-    public static async Task<string> ModifyUnityPackageFilePaths(string[] filePaths, string[] itemCategoryNames, IProgress<(string, int)>? progress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync(filePaths, itemCategoryNames, progress);
+    public static async Task<string> ModifyUnityPackageFilePath(string filePath, string itemCategoryName = "", Action<(string, int)>? reportProgress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync([filePath], [itemCategoryName], reportProgress);
+    public static async Task<string> ModifyUnityPackageFilePaths(string[] filePaths, string[] itemCategoryNames, Action<(string, int)>? reportProgress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync(filePaths, itemCategoryNames, reportProgress);
     #endregion
 
     #region Remove API
@@ -402,9 +402,12 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Data Importer API
-    public async Task ImportFromV1(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int)>? progress = null)
+    public async Task ImportFromV1(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, Action<(string, int)>? reportProgress = null)
     {
-        (List<Item>, List<CommonAvatar>) result = await DataImporter.FromV1(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, progress);
+        (List<Item>, List<CommonAvatar>) result = await DataImporter.FromV1(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, reportProgress);
+        
+        _items.Clear();
+        _commonAvatars.Clear();
         
         _items.AddRange(result.Item1);
         _commonAvatars.AddRange(result.Item2);
@@ -412,9 +415,9 @@ public partial class AvatarExplorerApp
         SaveItemDatabase();
         SaveCommonAvatarDatabase();
     }
-    public async Task ImportFromKonoAsset(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, IProgress<(string, int)>? progress = null)
+    public async Task ImportFromKonoAsset(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, Action<(string, int)>? reportProgress = null)
     {
-        List<Item> items = await DataImporter.FromKonoAsset(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, progress);
+        List<Item> items = await DataImporter.FromKonoAsset(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, reportProgress);
         _items.AddRange(items);
 
         SaveItemDatabase();
