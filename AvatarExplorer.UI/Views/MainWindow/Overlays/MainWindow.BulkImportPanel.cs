@@ -99,6 +99,12 @@ public partial class MainWindow
         }
     }
 
+    private void BulkImportPanel_Reset_Click(object? sender, RoutedEventArgs e)
+    {
+        _bulkImportPanel_bulkImportItems.Clear();
+        ReloadBulkImportItemButtons();
+    }
+
     private void ReloadBulkImportItemButtons()
     {
         SidePanel_BulkImportPanel.Children.Clear();
