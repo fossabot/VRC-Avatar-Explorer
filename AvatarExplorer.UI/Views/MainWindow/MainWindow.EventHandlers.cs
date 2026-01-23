@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Services;
+using AvatarExplorer.UI.Services;
 
 namespace AvatarExplorer.UI;
 
@@ -42,6 +44,7 @@ public partial class MainWindow
     #endregion
 
     #region Drag and Drop
+    private string _lastDragAndDropItem = string.Empty;
     private async void ItemButton_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Button button) return;
@@ -49,7 +52,12 @@ public partial class MainWindow
         if (button.Tag is ItemTagInfo itemTagInfo)
         {
             DataTransferItem item = new();
-            item.Set(DataFormat.Text, () => itemTagInfo.Value);
+
+            _lastDragAndDropItem = itemTagInfo.Value;
+
+            // ファイルの場合はUnityなどに対応するためにファイルをD&Dで追加する
+            if (itemTagInfo.State == ItemTagState.ItemFileCategoryOpen) item.Set(DataFormat.File, await StorageService.GetStorageFileFromPath(this, itemTagInfo.Value));
+            else item.Set(DataFormat.Text, () => itemTagInfo.Value);
 
             DataTransfer dragData = new();
             dragData.Add(item);
@@ -78,6 +86,9 @@ public partial class MainWindow
             .Select(i => i?.TryGetLocalPath())
             .Where(i => !string.IsNullOrEmpty(i) && (Directory.Exists(i) || File.Exists(i)))
             .ToArray()!;
+
+        // ソフト内からD&Dしたアイテムはスキップするように
+        if (storageItemPaths.Length == 1 && storageItemPaths[0] == _lastDragAndDropItem) return;
 
         AddItemOverlay_ShowAdd(storageItemPaths);
     }

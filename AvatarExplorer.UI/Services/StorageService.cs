@@ -62,6 +62,14 @@ internal static class StorageService
 
         return file?.TryGetLocalPath();
     }
+
+    internal static async Task<IStorageFile?> GetStorageFileFromPath(Visual visual, string filePath)
+    {
+        IStorageProvider? storageProvider = GetStorageProvider(visual);
+        if (storageProvider == null) return null;
+
+        return await storageProvider.TryGetFileFromPathAsync(filePath);
+    }
     
     private static IStorageProvider? GetStorageProvider(Visual visual)
         => TopLevel.GetTopLevel(visual)?.StorageProvider;

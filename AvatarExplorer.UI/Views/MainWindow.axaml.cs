@@ -123,7 +123,7 @@ public partial class MainWindow : Window
             Button itemButton = ItemButtonFactory.AddItemButton(Main_LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings, _userPreferences, itemContextMenu, LeftPanel_ItemButton_Click);
         
             // アイテム(アバター)の場合はD&Dイベントを登録してあげる
-            if (customState == ItemTagState.RootAvatar) itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
+            if (StateFlagUtils.IsDraggableState(customState)) itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
 
         if (currentPage != -1 && items.Count != 0) PageButtonFactory.AddPageButton(Main_LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Click);
@@ -177,7 +177,7 @@ public partial class MainWindow : Window
             Button itemButton = ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings, _userPreferences, itemContextMenu, RightPanel_ItemButton_Click);
             
             // アイテムの場合はD&Dイベントを登録してあげる
-            if (itemTagState == ItemTagState.RootSelectedItem) itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
+            if (StateFlagUtils.IsDraggableState(itemTagState)) itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
 
         if (currentPage != -1 && items.Count != 0) PageButtonFactory.AddPageButton(Main_RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
