@@ -321,6 +321,8 @@ public partial class MainWindow : Window
             _main_scrollManager.SetScroll(_main_lastRightPanelItemTagState, Main_RightPanelScrollViewer.Offset);
             Main_RenderRightPanel();
         }
+
+        ReloadBulkImportItemButtons();
     }
 
     private void Main_CheckPageStates()
