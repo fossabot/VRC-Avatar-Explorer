@@ -11,6 +11,8 @@ namespace AvatarExplorer.UI.Services;
 
 internal static class StorageService
 {
+    private static IStorageProvider? GetStorageProvider(Visual visual) => TopLevel.GetTopLevel(visual)?.StorageProvider;
+    
     internal static async Task<string[]?> OpenFileDialog(Visual visual, string titleKey, bool allowMultiple = false)
     {
         IStorageProvider? storageProvider = GetStorageProvider(visual);
@@ -70,7 +72,4 @@ internal static class StorageService
 
         return await storageProvider.TryGetFileFromPathAsync(filePath);
     }
-    
-    private static IStorageProvider? GetStorageProvider(Visual visual)
-        => TopLevel.GetTopLevel(visual)?.StorageProvider;
 }

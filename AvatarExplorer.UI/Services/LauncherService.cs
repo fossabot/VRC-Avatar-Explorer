@@ -9,9 +9,8 @@ namespace AvatarExplorer.UI.Services;
 
 internal static class LauncherService
 {
-    private static ILauncher? GetLauncher(Visual visual)
-        => TopLevel.GetTopLevel(visual)?.Launcher;
-        
+    private static ILauncher? GetLauncher(Visual visual) => TopLevel.GetTopLevel(visual)?.Launcher;
+    
     internal static async Task OpenFile(Visual visual, string filePath)
     {
         ILauncher? launcher = GetLauncher(visual);
