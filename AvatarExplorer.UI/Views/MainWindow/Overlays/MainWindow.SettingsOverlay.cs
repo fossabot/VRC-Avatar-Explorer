@@ -17,7 +17,11 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    private void SettingsOverlay_Show() => SettingsOverlay.IsVisible = true;
+    private void SettingsOverlay_Show()
+    {
+        SettingsOverlay_SetUiValueFromCurrentSettings();
+        SettingsOverlay.IsVisible = true;
+    }
     private void SettingsOverlay_Hide() => SettingsOverlay.IsVisible = false;
 
     private void SettingsOverlay_SetUiValueFromCurrentSettings()

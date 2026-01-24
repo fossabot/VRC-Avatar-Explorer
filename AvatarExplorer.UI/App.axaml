@@ -118,6 +118,22 @@
             <Setter Property="ShowDelay" Value="00:00:00"/>
         </Style>
 
+        <Style Selector="TextBlock.settingslabel">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <Style Selector="TextBlock.settingslabel.title">
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text.Primary}"/>
+        </Style>
+
+        <Style Selector="TextBlock.settingslabel.description">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}"/>
+        </Style>
+
         <materialIcons:MaterialIconStyles />
         
         <FluentTheme />

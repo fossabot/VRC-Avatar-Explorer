@@ -91,7 +91,7 @@ public partial class MainWindow
         _editCommonAvatarsOverlay_SelectedGroup.GroupName = commonAvatarGroupName;
         string newInternalGroupPath = _editCommonAvatarsOverlay_SelectedGroup.GetInternalPath();
 
-        _avatarExplorerApp.RenameCommonAvatarGroupName(previousInternalGroupPath, newInternalGroupPath); // TODO: CommonAvatarのクラスはRecordでやってしまってもいいかも
+        _avatarExplorerApp.RenameCommonAvatarGroupName(previousInternalGroupPath, newInternalGroupPath);
         
         int previousIndex = EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex;
         EditCommonAvatarsOverlay_RefleshGroupList();

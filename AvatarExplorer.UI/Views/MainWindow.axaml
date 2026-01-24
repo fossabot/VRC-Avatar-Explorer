@@ -177,138 +177,273 @@
 
         <!-- 設定画面 -->
         <Border x:Name="SettingsOverlay" Classes="overlaybackground" IsVisible="False">
-            <Border Classes="overlay" Width="700" Height="600">
+            <Border Classes="overlay" Width="800" Height="600">
                 <Grid RowDefinitions="*,5,Auto">
-                    <TabControl Grid.Row="0">
-                        <TabItem Header="基本">
-                            <ScrollViewer Margin="0,10,0,0">
-                                <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="20" RowSpacing="20">
-                                    <TextBlock Grid.Column="0" TextWrapping="Wrap" Text="データ保存先フォルダ" FontSize="15" VerticalAlignment="Center"/>
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
-                                        <TextBox x:Name="SettingsOverlay_ItemsFolderPathTextBox" IsReadOnly="True" Width="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                                        <Button Classes="button" FontWeight="Bold" Grid.Column="4" Content="フォルダを変更する" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,20,0" Click="SettingsOverlay_OpenFolder_Click"/>
+                    <TabControl Grid.Row="0" TabStripPlacement="Left">
+
+                        <TabItem Header="基本" FontWeight="Bold">
+                            <Panel>
+                                <ScrollViewer>
+                                    <StackPanel Spacing="20">
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="データ保存先フォルダ"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="フォルダの展開先です"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                                <TextBox x:Name="SettingsOverlay_ItemsFolderPathTextBox" IsReadOnly="True" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                                <Button Classes="button" Grid.Column="1" Content="参照" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="SettingsOverlay_OpenFolder_Click"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="言語"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="ソフト内の言語です" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*">
+                                                <ComboBox Grid.Column="1" x:Name="SettingsOverlay_DefaultLanguageComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                            </Grid>
+                                        </Grid>
+                                        
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="並び替え順"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="アイテムの並び順です"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*">
+                                                <ComboBox Grid.Column="1" x:Name="SettingsOverlay_DefaultSortOrderComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                                    <ComboBoxItem Content="タイトル" Tag="UI.SortOrder.Title"/>
+                                                    <ComboBoxItem Content="作者" Tag="UI.SortOrder.Author"/>
+                                                    <ComboBoxItem Content="登録日時" Tag="UI.SortOrder.Created"/>
+                                                    <ComboBoxItem Content="更新日時" Tag="UI.SortOrder.Updated"/>
+                                                </ComboBox>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="テーマ"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="ソフト内で使用されるテーマです"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*">
+                                                <ComboBox Grid.Column="1" x:Name="SettingsOverlay_ThemeComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                                    <ComboBoxItem Content="ダーク"/>
+                                                    <ComboBoxItem Content="ライト"/>
+                                                </ComboBox>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
-
-                                    <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Text="言語" Margin="0,0,10,0" FontSize="15" VerticalAlignment="Center"/>
-                                    <ComboBox x:Name="SettingsOverlay_DefaultLanguageComboBox" Grid.Row="1" Grid.Column="1" MinWidth="150" VerticalAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Center"/>
-
-                                    <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="並び替え順" Margin="0,0,10,0" FontSize="15" VerticalAlignment="Center"/>
-                                    <ComboBox x:Name="SettingsOverlay_DefaultSortOrderComboBox" Grid.Row="2" Grid.Column="1" SelectedIndex="0" MinWidth="150" VerticalAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Center">
-                                        <ComboBoxItem Content="タイトル" Tag="UI.SortOrder.Title"/>
-                                        <ComboBoxItem Content="作者" Tag="UI.SortOrder.Author"/>
-                                        <ComboBoxItem Content="登録日時" Tag="UI.SortOrder.Created"/>
-                                        <ComboBoxItem Content="更新日時" Tag="UI.SortOrder.Updated"/>
-                                    </ComboBox>
-
-                                    <TextBlock Grid.Row="3" Grid.Column="0" TextWrapping="Wrap" Text="テーマ" Margin="0,0,10,0" FontSize="15" VerticalAlignment="Center"/>
-                                    <ComboBox x:Name="SettingsOverlay_ThemeComboBox" Grid.Row="3" Grid.Column="1" SelectedIndex="0" MinWidth="150" VerticalAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Center">
-                                        <ComboBoxItem Content="ダーク"/>
-                                        <ComboBoxItem Content="ライト"/>
-                                    </ComboBox>
-                                </Grid>
-                            </ScrollViewer>
+                                </ScrollViewer>
+                            </Panel>
                         </TabItem>
 
-                        <TabItem Header="表示">
-                            <ScrollViewer Margin="0,10,0,0">
-                                <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="20" RowSpacing="20">
-                                    <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="タイトルの括弧を削除する" FontSize="15" VerticalAlignment="Center"/>
-                                    <ToggleSwitch x:Name="SettingsOverlay_RemoveBracketsCheckBox" Grid.Row="0" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                                    
-                                    <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Text="アイコンサイズ" FontSize="15" VerticalAlignment="Center"/>
-                                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="10">
-                                        <Slider x:Name="SettingsOverlay_NormalIconSizeSlider" Value="70" Maximum="200" Minimum="0" Width="300"/>
-                                        <TextBlock Text="{Binding #SettingsOverlay_NormalIconSizeSlider.Value, StringFormat={}{0:0}}" VerticalAlignment="Center"/>
+                        <TabItem Header="表示" FontWeight="Bold">
+                            <Panel>
+                                <ScrollViewer>
+                                    <StackPanel Spacing="20">
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="タイトルの括弧を削除する"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="アイテムタイトルの【】を削除します"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                                <ToggleSwitch x:Name="SettingsOverlay_RemoveBracketsCheckBox" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="アイコンサイズ"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="通常時のアイコンサイズです"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,30" ColumnSpacing="5">
+                                                <Slider x:Name="SettingsOverlay_NormalIconSizeSlider" Value="70" Minimum="0" Maximum="200" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding #SettingsOverlay_NormalIconSizeSlider.Value, StringFormat={}{0:0}}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="アイコンの拡大を有効化"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="アイコンにカーソルを当てた時にアイコンを拡大します"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                                <ToggleSwitch x:Name="SettingsOverlay_EnableHoverIconSizeCheckBox" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding #SettingsOverlay_EnableHoverIconSizeCheckBox.IsChecked}">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="アイコンサイズ(拡大時)"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="拡大時のアイコンサイズです"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,30" ColumnSpacing="5">
+                                                <Slider x:Name="SettingsOverlay_HoverIconSizeSlider" Value="200" Minimum="0" Maximum="800" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding #SettingsOverlay_HoverIconSizeSlider.Value, StringFormat={}{0:0}}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="アイコンのアンチエイリアス"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="アイコン画像の輪郭のギザギザをどれほど滑らかにするかの設定です"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*">
+                                                <ComboBox Grid.Column="1" x:Name="SettingsOverlay_AntiAliasingModeComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                                    <ComboBoxItem Content="無効"/>
+                                                    <ComboBoxItem Content="低品質"/>
+                                                    <ComboBoxItem Content="中品質"/>
+                                                    <ComboBoxItem Content="高品質"/>
+                                                </ComboBox>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
-
-                                    <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="アイコンの拡大を有効化する" FontSize="15" VerticalAlignment="Center"/>
-                                    <ToggleSwitch x:Name="SettingsOverlay_EnableHoverIconSizeCheckBox" Grid.Row="2" Grid.Column="2" MinWidth="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-
-                                    <TextBlock Grid.Row="3" Grid.Column="0" TextWrapping="Wrap" Text="アイコンサイズ(拡大時)" FontSize="15" VerticalAlignment="Center"/>
-                                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Spacing="10">
-                                        <Slider x:Name="SettingsOverlay_HoverIconSizeSlider" Value="200" Maximum="800" Minimum="0" Width="300"/>
-                                        <TextBlock Text="{Binding #SettingsOverlay_HoverIconSizeSlider.Value, StringFormat={}{0:0}}" VerticalAlignment="Center"/>
-                                    </StackPanel>
-
-                                    <TextBlock Grid.Row="4" Grid.Column="0" TextWrapping="Wrap" Text="アイコンのアンチエイリアシング" Margin="0,0,10,0" FontSize="15" VerticalAlignment="Center"/>
-                                    <ComboBox x:Name="SettingsOverlay_AntiAliasingModeComboBox" Grid.Row="4" Grid.Column="1" SelectedIndex="0" MinWidth="150" VerticalAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Center">
-                                        <ComboBoxItem Content="無効"/>
-                                        <ComboBoxItem Content="低品質（低負荷）"/>
-                                        <ComboBoxItem Content="中品質"/>
-                                        <ComboBoxItem Content="高品質（高負荷）"/>
-                                    </ComboBox>
-                                </Grid>
-                            </ScrollViewer>
+                                </ScrollViewer>
+                            </Panel>
                         </TabItem>
 
-                        <!-- TODO: MinWidthとかでよく分からなくなってるからここ全体を書き直す -->
-                        <TabItem Header="アイテム">
-                            <ScrollViewer Margin="0,10,0,0">
-                                <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto" ColumnSpacing="20" RowSpacing="20">
-                                    <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="インポート時にオリジナルファイルを削除する" FontSize="15" VerticalAlignment="Center"/>
-                                    <ToggleSwitch x:Name="SettingsOverlay_RemoveOriginalCheckBox" Grid.Row="0" Grid.Column="1"  Width="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <TabItem Header="アイテム" FontWeight="Bold">
+                            <Panel>
+                                <ScrollViewer>
+                                    <StackPanel Spacing="20">
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="インポート時に元ファイルを削除する"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="アイテムをインポートした時に、元ファイルを自動で削除するかどうかの設定です"/>
+                                            </Grid>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Text="ページあたりのアイテム表示数" FontSize="15" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="SettingsOverlay_ItemsPerPageTextBox" Grid.Row="1" Grid.Column="1" Text="30" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Center"/>
-                                </Grid>
-                            </ScrollViewer>
-                        </TabItem>
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                                <ToggleSwitch x:Name="SettingsOverlay_RemoveOriginalCheckBox" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                            </Grid>
+                                        </Grid>
 
-                        <TabItem Header="背景">
-                            <ScrollViewer Margin="0,10,0,0">
-                                <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="20" RowSpacing="20">
-                                    <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="背景を使用する" FontSize="15" VerticalAlignment="Center"/>
-                                    <ToggleSwitch x:Name="SettingsOverlay_UseBackgroundImageCheckBox" Grid.Row="0" Grid.Column="1" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="ページあたりのアイテム表示数"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="1ページに表示する最大アイテム数です"/>
+                                            </Grid>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Text="背景写真ファイル" FontSize="15" VerticalAlignment="Center"/>
-                                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Spacing="10">
-                                        <TextBox x:Name="SettingsOverlay_BackgroundImagePathTextBox" IsReadOnly="True" Width="300" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                                        <Button Classes="button" FontWeight="Bold" Content="ファイルを変更する" VerticalAlignment="Center" Margin="0,0,20,0" Click="SettingsOverlay_OpenBackgroundFile_Click"/>
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <TextBox Grid.Column="1" x:Name="SettingsOverlay_ItemsPerPageTextBox" Text="30" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
+                                </ScrollViewer>
+                            </Panel>
+                        </TabItem>
 
-                                    <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="不透明度" FontSize="15" VerticalAlignment="Center"/>
-                                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="10">
-                                        <Slider x:Name="SettingsOverlay_BackgroundImageOpacitySlider" Value="20" Maximum="100" Minimum="0" Width="300"/>
-                                        <TextBlock Text="{Binding #SettingsOverlay_BackgroundImageOpacitySlider.Value, StringFormat={}{0:0}}" VerticalAlignment="Center"/>
+                        <TabItem Header="背景" FontWeight="Bold">
+                            <Panel>
+                                <ScrollViewer>
+                                    <StackPanel Spacing="20">
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="カスタム背景を使用する"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="ソフトの背景を変更します"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                                <ToggleSwitch x:Name="SettingsOverlay_UseBackgroundImageCheckBox" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding #SettingsOverlay_UseBackgroundImageCheckBox.IsChecked}">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="背景写真ファイル"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="背景写真のパスです"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                                <TextBox x:Name="SettingsOverlay_BackgroundImagePathTextBox" IsReadOnly="True" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                                <Button Classes="button" Grid.Column="1" Content="参照" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="SettingsOverlay_OpenBackgroundFile_Click"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding #SettingsOverlay_UseBackgroundImageCheckBox.IsChecked}">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="不透明度"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="背景画像の不透明度です"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,30" ColumnSpacing="5">
+                                                <Slider x:Name="SettingsOverlay_BackgroundImageOpacitySlider" Value="20" Minimum="0" Maximum="100" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding #SettingsOverlay_BackgroundImageOpacitySlider.Value, StringFormat={}{0:0}}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
-                                </Grid>
-                            </ScrollViewer>
+                                </ScrollViewer>
+                            </Panel>
                         </TabItem>
 
-                        <TabItem Header="共通素体">
-                            <ScrollViewer Margin="0,10,0,0">
-                                <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="20" RowSpacing="20">
-                                    <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="共通素体の管理" FontSize="15" VerticalAlignment="Center"/>
-                                    <Button Grid.Row="0" Grid.Column="1" Classes="accent" Content="管理画面を開く" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" Click="SettingsOverlay_EditCommonAvatars_Click"/>
-                                </Grid>
-                            </ScrollViewer>
+                        <TabItem Header="共通素体" FontWeight="Bold">
+                            <Panel>
+                                <ScrollViewer>
+                                    <StackPanel Spacing="20">
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="共通素体の管理"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="共通素体の管理画面を開きます"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <Button Grid.Column="1" Classes="accent" Content="管理画面を開く" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_EditCommonAvatars_Click"/>
+                                            </Grid>
+                                        </Grid>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Panel>
                         </TabItem>
 
-                        <TabItem Header="データ">
-                            <ScrollViewer Margin="0,10,0,0">
-                                <StackPanel VerticalAlignment="Top">
-                                    <TextBlock Text="バックアップ" FontSize="22" VerticalAlignment="Center" Margin="0,0,0,10" FontWeight="Bold"/>
-                                    <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto" ColumnSpacing="20" RowSpacing="20">
-                                        <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="自動バックアップ（分）" FontSize="15" VerticalAlignment="Center"/>
-                                        <TextBox x:Name="SettingsOverlay_AutoBackupIntervalTextBox" Grid.Row="0" Grid.Column="1" Text="5" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Center"/>
-                                    </Grid>
+                        <TabItem Header="データ" FontWeight="Bold">
+                            <Panel>
+                                <ScrollViewer>
+                                    <StackPanel Spacing="20">
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="自動バックアップ頻度"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="自動バックアップの頻度(分)を設定します"/>
+                                            </Grid>
 
-                                    <TextBlock Text="データのインポート" FontSize="22" VerticalAlignment="Center" Margin="0,0,0,10" FontWeight="Bold"/>
-                                    <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto" ColumnSpacing="20" RowSpacing="20">
-                                        <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="他のソフトからインポート" FontSize="15" VerticalAlignment="Center"/>
-                                        <Button Grid.Row="0" Grid.Column="1" Classes="accent" Content="インポート" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ImportData_Click"/>
-                                    </Grid>
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <TextBox Grid.Column="1" x:Name="SettingsOverlay_AutoBackupIntervalTextBox" Text="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                                            </Grid>
+                                        </Grid>
 
-                                    <TextBlock Text="データのエクスポート" FontSize="22" VerticalAlignment="Center" Margin="0,0,0,10" FontWeight="Bold"/>
-                                    <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto" ColumnSpacing="20" RowSpacing="20">
-                                        <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="CSV" FontSize="15" VerticalAlignment="Center"/>
-                                        <Button Grid.Row="0" Grid.Column="1" Classes="accent" Content="CSVとして出力" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" Click="SettingsOverlay_ExportDataToCsv_Click"/>
-                                    </Grid>
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="他のツールからインポート"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="現在のデータベースに追加でデータをインポートします"/>
+                                            </Grid>
 
-                                    <!-- TODO: データベース削除の欄を作る -->
-                                </StackPanel>
-                                
-                            </ScrollViewer>
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <Button Grid.Column="1" Classes="accent" Content="インポート画面を開く" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ImportData_Click"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="CSVデータの出力"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="現在のデータベースをCSV形式でエクスポートします"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <Button Grid.Column="1" Classes="accent" Content="エクスポート画面を開く" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ExportDataToCsv_Click"/>
+                                            </Grid>
+                                        </Grid>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Panel>
                         </TabItem>
                     </TabControl>
 
@@ -660,6 +795,7 @@
             </Border>
         </Border>
 
+        <!-- アップデートダイアログ -->
         <Border x:Name="UpdateDialogOverlay" Classes="overlaybackground" IsVisible="False">
             <Border Classes="overlay" Width="500" Padding="20">
                 <StackPanel Spacing="15">
