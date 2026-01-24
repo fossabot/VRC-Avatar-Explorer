@@ -149,7 +149,7 @@ public partial class MainWindow
 
         Button folderRemoveButton = new()
         {
-            Content = Localizer.Instance[LocalizationKey.UI.Overlay.EditFolder.RemoveFolder],
+            Content = Localizer.Instance[LocalizationKey.UI.Overlay.AddItem.RemoveFolder],
             FontSize = 14,
             Padding = new Thickness(10, 4),
             Background = new SolidColorBrush(Color.FromRgb(210, 0, 0)),

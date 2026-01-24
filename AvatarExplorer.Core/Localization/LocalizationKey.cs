@@ -64,7 +64,9 @@ public static class LocalizationKey
             public static class Confirmation
             {
                 public const string Default = "UI.Dialog.Confirmation.Default";
-                public const string Remove = "UI.Dialog.Confirmation.Remove";
+                public const string RemoveItem = "UI.Dialog.Confirmation.RemoveItem";
+                public const string ResetItemDatabase = "UI.Dialog.Confirmation.ResetItemDatabase";
+                public const string ResetCommonAvatarDatabase = "UI.Dialog.Confirmation.ResetCommonAvatarDatabase";
                 public const string RemoveAvatarFromSupportedAndImplemented = "UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented";
                 public const string RemoveCommonAvatarGroup = "UI.Dialog.Confirmation.RemoveCommonAvatarGroup";
             }
@@ -120,11 +122,6 @@ public static class LocalizationKey
 
         public static class Overlay
         {
-            public static class EditFolder
-            {
-                public const string RemoveFolder = "UI.Overlay.EditFolder.RemoveFolder";
-            }
-
             public static class ExportToCsv
             {
                 public const string IncludeImplementedToSupported = "UI.Overlay.ExportToCsv.IncludeImplementedToSupported";
@@ -133,6 +130,7 @@ public static class LocalizationKey
             public static class AddItem
             {
                 public const string SelectedAvatarsCount = "UI.Overlay.AddItem.SelectedAvatarsCount";
+                public const string RemoveFolder = "UI.Overlay.AddItem.RemoveFolder";
             }
         }
 

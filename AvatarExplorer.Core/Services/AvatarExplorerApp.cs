@@ -60,6 +60,9 @@ public partial class AvatarExplorerApp
 
     public void SaveItemDatabase() => ItemDatabaseService.Save(_items);
     public void SaveCommonAvatarDatabase() => CommonAvatarDatabaseService.Save(_commonAvatars);
+
+    public void ResetItemDatabase() => _items.Clear();
+    public void ResetCommonAvatarDatabase() => _commonAvatars.Clear();
     #endregion
 
     #region Runtime Settings
@@ -76,6 +79,7 @@ public partial class AvatarExplorerApp
     private void SetRuntimeSettingsInternal(RuntimeSettings runtimeSettings)
     {
         RuntimeSettingsService.TrySetDataRootDirectory(_runtimeSettings, runtimeSettings.DataRootDirectory);
+        _runtimeSettings.SetAutoBackupRootDirectory(runtimeSettings.AutoBackupRootDirectory);
         _runtimeSettings.SetSortOrder(runtimeSettings.ItemSortOrder);
         _runtimeSettings.SetRemoveOriginal(runtimeSettings.RemoveOriginal);
         _runtimeSettings.SetRemoveBrackets(runtimeSettings.RemoveBrackets);
@@ -263,6 +267,11 @@ public partial class AvatarExplorerApp
 
     #region Set API
     public bool SetDataRootDirectory(string path) => RuntimeSettingsService.TrySetDataRootDirectory(_runtimeSettings, path);
+    public void SetAutoBackupRootDirectory(string path)
+    {
+        _runtimeSettings.SetAutoBackupRootDirectory(path);
+        _backupManager.SetAutoBackupPath(path);
+    }
     public void SetItemsSortOrder(SortOrder sortOrder) => _runtimeSettings.SetSortOrder(sortOrder);
     public void SetRemoveOriginal(bool value) => _runtimeSettings.SetRemoveOriginal(value);
     public void SetRemoveBrackets(bool value) => _runtimeSettings.SetRemoveBrackets(value);
@@ -461,8 +470,8 @@ public partial class AvatarExplorerApp
 
     #region Backup API
     private readonly BackupManager _backupManager = new();
-    public void StartAutoBackup() => _backupManager.StartAutoBackup(_runtimeSettings.AutoBackupInterval); // minutes
+    public void StartAutoBackup() => _backupManager.StartAutoBackup(_runtimeSettings.AutoBackupInterval, _runtimeSettings.AutoBackupRootDirectory); // minutes
     public async Task StopAutoBackup() => await _backupManager.StopAutoBackup();
-    public async Task ExecuteBackup() => await _backupManager.ExecuteBackup();
+    public async Task ExecuteBackup(string path) => await _backupManager.ExecuteBackup(path);
     #endregion
 }

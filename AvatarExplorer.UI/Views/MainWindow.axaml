@@ -192,7 +192,7 @@
                         <TabItem Header="基本" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
-                                    <StackPanel Spacing="20">
+                                    <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
                                                 <TextBlock Classes="settingslabel title" Grid.Row="0" Text="データ保存先フォルダ"/>
@@ -254,7 +254,7 @@
                         <TabItem Header="表示" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
-                                    <StackPanel Spacing="20">
+                                    <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
                                                 <TextBlock Classes="settingslabel title" Grid.Row="0" Text="タイトルの括弧を削除する"/>
@@ -335,7 +335,7 @@
                         <TabItem Header="アイテム" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
-                                    <StackPanel Spacing="20">
+                                    <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
                                                 <TextBlock Classes="settingslabel title" Grid.Row="0" Text="インポート時に元ファイルを削除する"/>
@@ -354,7 +354,7 @@
                         <TabItem Header="背景" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
-                                    <StackPanel Spacing="20">
+                                    <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
                                                 <TextBlock Classes="settingslabel title" Grid.Row="0" Text="カスタム背景を使用する"/>
@@ -397,7 +397,7 @@
                         <TabItem Header="共通素体" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
-                                    <StackPanel Spacing="20">
+                                    <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
                                                 <TextBlock Classes="settingslabel title" Grid.Row="0" Text="共通素体の管理"/>
@@ -416,7 +416,19 @@
                         <TabItem Header="データ" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
-                                    <StackPanel Spacing="20">
+                                    <StackPanel Spacing="20" Margin="0,0,10,0">
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="自動バックアップ保存先"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="自動バックアップの保存先"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                                <TextBox x:Name="SettingsOverlay_AutoBackupPathTextBox" IsReadOnly="True" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                                <Button Classes="button" Grid.Column="1" Content="参照" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="SettingsOverlay_OpenAutoBackupRootFolder_Click"/>
+                                            </Grid>
+                                        </Grid>
+
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
                                                 <TextBlock Classes="settingslabel title" Grid.Row="0" Text="自動バックアップ頻度"/>
@@ -447,6 +459,39 @@
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
                                                 <Button Grid.Column="1" Classes="accent" Content="エクスポート画面を開く" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ExportDataToCsv_Click"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="自動バックアップから復元"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="自動バックアップからデータベース情報を復元します"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <Button Grid.Column="1" Classes="accent" Content="バックアップの選択" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_RestoreDataFromBackup_Click"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="アイテムデータベースのリセット"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="アイテムのデータベースをリセットします。アセットデータ自体は削除されません。"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <Button Grid.Column="1" Background="Red" Foreground="White" FontWeight="Bold" Content="リセット" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ResetItemDatabase_Click"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="共通素体データベースのリセット"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="共通素体のデータベースをリセットします。アセットデータ自体は削除されません。"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <Button Grid.Column="1" Background="Red" Foreground="White" FontWeight="Bold" Content="リセット" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ResetCommonAvatarDatabase_Click"/>
                                             </Grid>
                                         </Grid>
                                     </StackPanel>

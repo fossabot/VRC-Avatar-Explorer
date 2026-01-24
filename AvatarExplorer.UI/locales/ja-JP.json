@@ -26,7 +26,9 @@
     "UI.ItemWindow.PageItemCount": "{0} - {1} / {2}個の項目",
 
     "UI.Dialog.Confirmation.Default": "確認",
-    "UI.Dialog.Confirmation.Remove": "本当にこのアイテムを削除しますか？",
+    "UI.Dialog.Confirmation.RemoveItem": "アイテム名: {0}\n\n本当にこのアイテムを削除しますか？",
+    "UI.Dialog.Confirmation.ResetItemDatabase": "本当にアイテムデータベースをリセットしますか？\n※アセットデータは削除されません。自動バックアップから復元可能です。",
+    "UI.Dialog.Confirmation.ResetCommonAvatarDatabase": "本当に共通素体データベースをリセットしますか？\n※アセットデータは削除されません。自動バックアップから復元可能です。",
     "UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented": "このアバターを対応アバターとしているアイテムの対応アバターからこのアバターを削除しますか？",
     "UI.Dialog.Confirmation.RemoveCommonAvatarGroup": "共通素体グループを削除しますか？\n共通素体グループ名: {0}",
     "UI.Dialog.Title.NewItemTitle": "新しいタイトル",
@@ -62,11 +64,10 @@
     "UI.Dialog.SelectFolderPath": "フォルダを選択してください",
     "UI.Dialog.SelectFilePath": "ファイルを選択してください",
 
-    "UI.Overlay.EditFolder.RemoveFolder": "削除",
-
     "UI.Overlay.ExportToCsv.IncludeImplementedToSupported": "対応アバターの欄に共通素体アバターを含めますか？",
 
     "UI.Overlay.AddItem.SelectedAvatarsCount": "選択中: {0}アバター",
+    "UI.Overlay.AddItem.RemoveFolder": "削除",
 
     "UI.Scheme.PathChanged": "カスタムURLスキームの登録先が変更されているため、再登録しますか？",
     "UI.Scheme.RegisterAgain": "カスタムURLスキームは既に登録されていますが、内部的に未登録です。\n再登録しますか？",

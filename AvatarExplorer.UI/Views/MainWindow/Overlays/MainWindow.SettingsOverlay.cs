@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Styling;
+using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
@@ -30,6 +31,7 @@ public partial class MainWindow
         UserPreferences userPreferences = _userPreferences;
 
         SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory;
+        SettingsOverlay_AutoBackupPathTextBox.Text = runtimeSettings.AutoBackupRootDirectory;
         SettingsOverlay_RemoveBracketsCheckBox.IsChecked = runtimeSettings.RemoveBrackets;
         SettingsOverlay_RemoveOriginalCheckBox.IsChecked = runtimeSettings.RemoveOriginal;
         SettingsOverlay_AutoBackupIntervalTextBox.Text = runtimeSettings.AutoBackupInterval.ToString();
@@ -48,6 +50,7 @@ public partial class MainWindow
     private void SettingsOverlay_ApplySettingsValues()
     {
         _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? string.Empty);
+        _avatarExplorerApp.SetAutoBackupRootDirectory(SettingsOverlay_AutoBackupPathTextBox.Text ?? string.Empty);
         _avatarExplorerApp.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
         _avatarExplorerApp.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
         _avatarExplorerApp.SetAutoBackupInterval(int.TryParse(SettingsOverlay_AutoBackupIntervalTextBox.Text, out var interval) ? interval : 5);
@@ -124,6 +127,13 @@ public partial class MainWindow
 
         SettingsOverlay_BackgroundImagePathTextBox.Text = files[0];
     }
+    private async void SettingsOverlay_OpenAutoBackupRootFolder_Click(object? sender, RoutedEventArgs e)
+    {
+        string[]? folders = await StorageService.OpenFolderDialog(this, "フォルダを選択してください", false);
+        if (folders == null || folders.Length == 0) return;
+
+        SettingsOverlay_AutoBackupPathTextBox.Text = folders[0];
+    }
     
     private void SettingsOverlay_Close_Click(object? sender, RoutedEventArgs e) => SettingsOverlay_Hide();
     private void SettingsOverlay_Apply_Click(object? sender, RoutedEventArgs e)
@@ -152,5 +162,68 @@ public partial class MainWindow
         Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Export]);
     }
     private async void SettingsOverlay_EditCommonAvatars_Click(object? sender, RoutedEventArgs e) => EditCommonAvatarsOverlay_Show();
+
+    private async void SettingsOverlay_ResetItemDatabase_Click(object? sender, RoutedEventArgs e)
+    {
+        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.ResetItemDatabase]);
+        if (result != YesNoResult.Yes) return;
+
+        _avatarExplorerApp.ResetItemDatabase();
+        Main_ReloadCurrentWindow();
+    }
+    
+    private async void SettingsOverlay_ResetCommonAvatarDatabase_Click(object? sender, RoutedEventArgs e)
+    {
+        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.ResetCommonAvatarDatabase]);
+        if (result != YesNoResult.Yes) return;
+
+        _avatarExplorerApp.ResetCommonAvatarDatabase();
+        Main_ReloadCurrentWindow();
+    }
+
+    private async void SettingsOverlay_RestoreDataFromBackup_Click(object? sender, RoutedEventArgs e)
+    {
+        string[]? folderPaths = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], false, RuntimeSettings.AutoBackupRootDirectory);
+        if (folderPaths == null || folderPaths.Length == 0) return;
+
+        // バックアップを復元する前に、今の状態をバックアップしておく
+        await _avatarExplorerApp.ExecuteBackup(RuntimeSettings.AutoBackupRootDirectory);
+
+        string backupRootPath = folderPaths[0];
+
+        string itemDatabasePath = Path.Join(backupRootPath, SystemFileName.Database.Items);
+        string commonAvatarDatabasePath = Path.Join(backupRootPath, SystemFileName.Database.CommonAvatars);
+        string runtimeSettingsFilePath = Path.Join(backupRootPath, SystemFileName.Settings.Runtime);
+        string userPreferencesFilePath = Path.Join(backupRootPath, SystemFileName.Settings.Preferences);
+
+        if (File.Exists(itemDatabasePath))
+        {
+            _avatarExplorerApp.LoadItemDatabase(itemDatabasePath);
+            _avatarExplorerApp.SaveItemDatabase();
+        }
+
+        if (File.Exists(commonAvatarDatabasePath))
+        {
+            _avatarExplorerApp.LoadCommonAvatarDatabase(commonAvatarDatabasePath);
+            _avatarExplorerApp.SaveCommonAvatarDatabase();
+        }
+
+        if (File.Exists(runtimeSettingsFilePath))
+        {
+            _avatarExplorerApp.LoadRuntimeSettings(runtimeSettingsFilePath);
+            _avatarExplorerApp.SaveRuntimeSettings();
+        }
+
+        if (File.Exists(userPreferencesFilePath))
+        {
+            _userPreferences.FromOther(UserPreferencesService.Load(userPreferencesFilePath));
+            UserPreferencesService.Save(_userPreferences);
+        }
+
+        SettingsOverlay_SetUiValueFromCurrentSettings();
+        SettingsOverlay_ApplySettingsValues();
+
+        Main_ReloadCurrentWindow();
+    }
     #endregion
 }
