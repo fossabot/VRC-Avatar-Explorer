@@ -421,9 +421,6 @@ public partial class AvatarExplorerApp
     {
         (List<Item>, List<CommonAvatar>) result = await DataImporter.FromV1(dataFolderPath, _runtimeSettings, reportProgress);
         
-        _items.Clear();
-        _commonAvatars.Clear();
-        
         _items.AddRange(result.Item1);
         _commonAvatars.AddRange(result.Item2);
 

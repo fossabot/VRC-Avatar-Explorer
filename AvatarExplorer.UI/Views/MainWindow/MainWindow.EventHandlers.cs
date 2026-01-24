@@ -20,21 +20,21 @@ public partial class MainWindow
     #endregion
 
     #region Main Top Buttons
-    private void Main_UndoButton_Click(object? sender, RoutedEventArgs e) => Main_ExecuteUndo();
     private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e) => SettingsOverlay_Show();
+    private void Main_UndoButton_Click(object? sender, RoutedEventArgs e) => Main_ExecuteUndo();
+    private void Main_AddItem_Click(object? sender, RoutedEventArgs e) => AddItemOverlay_ShowAdd();
     #endregion
 
-    #region Main Bottom Buttons
+    #region Side Panel
     private void Main_ShowSidePanel_Click(object? sender, PointerPressedEventArgs e)
     {
         if (!Main_SidePanelBorder.IsVisible) SidePanel_Show();
         else SidePanel_Hide();
     }
-    private void Main_AddItem_Click(object? sender, RoutedEventArgs e) => AddItemOverlay_ShowAdd();
     #endregion
 
     #region Drag and Drop
-    private string _lastDragAndDropItem = string.Empty;
+    private string _main_lastDragAndDropItem = string.Empty;
     private async void ItemButton_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Button button) return;
@@ -43,11 +43,11 @@ public partial class MainWindow
         {
             DataTransferItem item = new();
 
-            _lastDragAndDropItem = itemTagInfo.Value;
-
             // ファイルの場合はUnityなどに対応するためにファイルをD&Dで追加する
             if (itemTagInfo.State == ItemTagState.ItemFileCategoryOpen) item.Set(DataFormat.File, await StorageService.GetStorageFileFromPath(this, itemTagInfo.Value));
             else item.Set(DataFormat.Text, () => itemTagInfo.Value);
+            
+            _main_lastDragAndDropItem = itemTagInfo.Value;
 
             DataTransfer dragData = new();
             dragData.Add(item);
@@ -78,7 +78,7 @@ public partial class MainWindow
             .ToArray()!;
 
         // ソフト内からD&Dしたアイテムはスキップするように
-        if (storageItemPaths.Length == 1 && storageItemPaths[0] == _lastDragAndDropItem) return;
+        if (storageItemPaths.Length == 1 && storageItemPaths[0] == _main_lastDragAndDropItem) return;
 
         AddItemOverlay_ShowAdd(storageItemPaths);
     }
@@ -88,7 +88,7 @@ public partial class MainWindow
     private void Main_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         PointerPointProperties pointerProperties = e.GetCurrentPoint(this).Properties;
-        if (pointerProperties.IsXButton1Pressed) Main_ExecuteUndo();
+        if (pointerProperties.IsXButton1Pressed) Main_ExecuteUndo(); // XButton1はマウスの横ボタンなので戻る処理を実行する
     }
     #endregion
 

@@ -248,10 +248,6 @@ public partial class MainWindow : Window
 
         // 検索画面に切り替わる時に、前の画面のスクロール位置を保存してあげる
         if (!_main_isLastWindowSearch) _main_scrollManager.SetScroll( _main_lastRightPanelItemTagState, Main_RightPanelScrollViewer.Offset);
-
-        Main_RightPanel.Children.Clear();
-
-        IReadOnlyList<Item> items = _avatarExplorerApp.SearchItems(searchFilter);
         
         // 検索文字列が前回と違う場合はページ、スクロール位置をリセットする
         if (_main_searchTextCache != _main_lastSearchTextCache)
@@ -260,6 +256,11 @@ public partial class MainWindow : Window
             _main_scrollManager.SetScroll(ItemTagState.SearchItem, new());
         }
         _main_lastSearchTextCache = _main_searchTextCache;
+
+        
+        Main_RightPanel.Children.Clear();
+
+        IReadOnlyList<Item> items = _avatarExplorerApp.SearchItems(searchFilter);
 
         if (items.Count == 0) Main_ShowNoItemsLabel();
         else Main_HideNoItemsLabel();
