@@ -159,7 +159,7 @@ internal static class DataImporter
                     item.AuthorThumbnmailFileName = authorThumbnailFileName;
                 }
 
-                await Task.Delay(5000);
+                await Task.Delay(2250); // 750 * 3ms
             }
 
             items.Add(item);
