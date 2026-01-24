@@ -17,23 +17,31 @@
 
         <!-- メイン画面 -->
         <DockPanel Margin="12">
-            <Border DockPanel.Dock="Top" Classes="panelbackground">
-                <Grid ColumnDefinitions="100,10,3*,20,Auto,10,*,15,60">
-                    <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{materialIcons:MaterialIconExt Kind=ArrowLeft}" HorizontalAlignment="Stretch" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Click="Main_UndoButton_Click"/>
-                    <TextBox x:Name="Main_PathTextBox" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" Watermark="ここには現在のパスが表示されます" CornerRadius="8"/>
-                    <materialIcons:MaterialIcon Grid.Column="4" Kind="Magnify" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <TextBox x:Name="Main_SearchTextBox" Grid.Column="6" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="検索..." CornerRadius="8" TextChanged="Main_SearchValue_Changed"/>
-                    <Button Classes="button" FontWeight="Bold" Grid.Column="9" Content="{materialIcons:MaterialIconExt Kind=CogOutline}" HorizontalAlignment="Stretch" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Click="Main_SettingsButton_Click"/>
-                </Grid>
-            </Border>
+            <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                <Border Grid.Column="1" Classes="panelbackground">
+                    <Grid ColumnDefinitions="Auto,2.3*,Auto,*,Auto" ColumnSpacing="10">
+                        <Button Classes="button" Grid.Column="0" Content="{materialIcons:MaterialIconExt Kind=ArrowLeft}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" CornerRadius="8" Padding="20,0,20,0" Click="Main_UndoButton_Click"/>
+                        
+                        <TextBox x:Name="Main_PathTextBox" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" Watermark="ここには現在のパスが表示されます" FontSize="14" CornerRadius="8"/>
+                        
+                        <materialIcons:MaterialIcon Grid.Column="2" Kind="Magnify" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                        <TextBox x:Name="Main_SearchTextBox" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="入力して検索..." FontSize="14" CornerRadius="8" TextChanged="Main_SearchValue_Changed"/>
+                        
+                        <Button Classes="accent" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Margin="5,0,0,0" Click="Main_AddItem_Click">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <materialIcons:MaterialIcon Kind="Plus" Width="25" Height="25" VerticalAlignment="Center"/>
+                                <TextBlock Classes="accent" FontSize="15" FontWeight="Bold" Text="アイテムを追加する" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
 
-            <Border DockPanel.Dock="Bottom" Classes="panelbackground">
-                <Grid ColumnDefinitions="*,180">
-                    <Button Classes="accent" FontWeight="Bold" Grid.Column="1" Content="アイテムを追加する" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="42" CornerRadius="8" Click="Main_AddItem_Click"/>
-                </Grid>
-            </Border>
+                <Border Classes="panelbackground">
+                    <Button Classes="button" FontWeight="Bold" Content="{materialIcons:MaterialIconExt Kind=CogOutline}" HorizontalAlignment="Stretch" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" Width="35" CornerRadius="8" Click="Main_SettingsButton_Click"/>
+                </Border>
+            </Grid>
 
-            <Grid Margin="0,12,-12,12">
+            <Grid Margin="0,12,-12,0">
                 <Grid x:Name="Main_PanelGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition MinWidth="250" Width="300" MaxWidth="550"/>
@@ -308,6 +316,17 @@
                                                 </ComboBox>
                                             </Grid>
                                         </Grid>
+                                        
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="ページあたりのアイテム表示数"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="1ページに表示する最大アイテム数です"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <TextBox Grid.Column="1" x:Name="SettingsOverlay_ItemsPerPageTextBox" Text="30" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
                                 </ScrollViewer>
                             </Panel>
@@ -325,17 +344,6 @@
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
                                                 <ToggleSwitch x:Name="SettingsOverlay_RemoveOriginalCheckBox" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="ページあたりのアイテム表示数"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="1ページに表示する最大アイテム数です"/>
-                                            </Grid>
-
-                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <TextBox Grid.Column="1" x:Name="SettingsOverlay_ItemsPerPageTextBox" Text="30" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
                                             </Grid>
                                         </Grid>
                                     </StackPanel>
