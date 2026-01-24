@@ -30,6 +30,8 @@ public partial class MainWindow
         RuntimeSettings runtimeSettings = _avatarExplorerApp.GetRuntimeSettings();
         UserPreferences userPreferences = _userPreferences;
 
+        // TODO: リファクタリングする
+
         SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory;
         SettingsOverlay_AutoBackupPathTextBox.Text = runtimeSettings.AutoBackupRootDirectory;
         SettingsOverlay_RemoveBracketsCheckBox.IsChecked = runtimeSettings.RemoveBrackets;

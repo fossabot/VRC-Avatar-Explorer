@@ -417,9 +417,9 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Data Importer API
-    public async Task ImportFromV1(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, Action<(string, int)>? reportProgress = null)
+    public async Task ImportFromV1(string dataFolderPath, Action<(string, int)>? reportProgress = null)
     {
-        (List<Item>, List<CommonAvatar>) result = await DataImporter.FromV1(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, reportProgress);
+        (List<Item>, List<CommonAvatar>) result = await DataImporter.FromV1(dataFolderPath, _runtimeSettings, reportProgress);
         
         _items.Clear();
         _commonAvatars.Clear();
@@ -430,9 +430,9 @@ public partial class AvatarExplorerApp
         SaveItemDatabase();
         SaveCommonAvatarDatabase();
     }
-    public async Task ImportFromKonoAsset(string dataFolderPath, Dictionary<ItemType, string> localizedItemTypesMapping, Action<(string, int)>? reportProgress = null)
+    public async Task ImportFromKonoAsset(string dataFolderPath, Action<(string, int)>? reportProgress = null)
     {
-        List<Item> items = await DataImporter.FromKonoAsset(dataFolderPath, _runtimeSettings, localizedItemTypesMapping, reportProgress);
+        List<Item> items = await DataImporter.FromKonoAsset(dataFolderPath, _runtimeSettings, reportProgress);
         _items.AddRange(items);
 
         SaveItemDatabase();

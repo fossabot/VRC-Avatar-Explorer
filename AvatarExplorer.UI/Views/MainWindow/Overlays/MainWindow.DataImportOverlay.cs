@@ -1,11 +1,7 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
-using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
-using AvatarExplorer.Core.Models;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
 using AvatarExplorer.UI.Services;
@@ -26,8 +22,6 @@ public partial class MainWindow
         
         SelectImportTypeOverlay.IsVisible = false;
 
-        var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
-
         // Item1: LocalizationKey, Item2: ProgressValue
         void progressAction((string, int) tuple)
         {
@@ -38,8 +32,8 @@ public partial class MainWindow
             });
         }
 
-        if (dataImportType == DataImportType.V1) await _avatarExplorerApp.ImportFromV1(selectedFolder, localizedItemTypesMapping, progressAction);
-        else if (dataImportType == DataImportType.KonoAsset) await _avatarExplorerApp.ImportFromKonoAsset(selectedFolder, localizedItemTypesMapping, progressAction);
+        if (dataImportType == DataImportType.V1) await _avatarExplorerApp.ImportFromV1(selectedFolder, progressAction);
+        else if (dataImportType == DataImportType.KonoAsset) await _avatarExplorerApp.ImportFromKonoAsset(selectedFolder, progressAction);
 
         ProgressOverlay_Hide();
 

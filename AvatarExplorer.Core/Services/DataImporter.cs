@@ -13,7 +13,7 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class DataImporter
 {
-    internal static async Task<(List<Item>, List<CommonAvatar>)> FromV1(string dataFolderPath, RuntimeSettings runtimeSettings, Dictionary<ItemType, string> localizedItemTypesMapping, Action<(string, int)>? reportProgress = null)
+    internal static async Task<(List<Item>, List<CommonAvatar>)> FromV1(string dataFolderPath, RuntimeSettings runtimeSettings, Action<(string, int)>? reportProgress = null)
     {
         reportProgress?.Invoke((LocalizationKey.Processing.Import.Copying, 0));
 
@@ -36,9 +36,10 @@ internal static class DataImporter
             ItemV1 item = v1Items[i];
             string previousItemPath = item.ItemPath;
 
-            string LocalizedCategoryName = item.Type == ItemType.Custom ? item.CustomCategory : localizedItemTypesMapping[item.Type];
             string safeItemTitle = ItemUtils.GetSafeTitle(item.Title) ?? Path.GetFileNameWithoutExtension(item.ItemPath);
-            string newItemPath = Path.Combine(runtimeSettings.DataRootDirectory, LocalizedCategoryName, safeItemTitle);
+            string? newItemPath = FileSystemService.GetUniquePath(runtimeSettings.DataRootDirectory, safeItemTitle, isFolder: true);
+            if (newItemPath == null) continue; // 滅多に起こらないが、一応
+
             string newItemMaterialPath = Path.Combine(newItemPath, "AE_Materials");
 
             await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.ItemPath)), newItemPath);
@@ -117,7 +118,7 @@ internal static class DataImporter
         return migratedCommonAvatar;
     }
 
-    internal static async Task<List<Item>> FromKonoAsset(string dataFolderPath, RuntimeSettings runtimeSettings, Dictionary<ItemType, string> localizedItemTypesMapping, Action<(string, int)>? reportProgress = null)
+    internal static async Task<List<Item>> FromKonoAsset(string dataFolderPath, RuntimeSettings runtimeSettings, Action<(string, int)>? reportProgress = null)
     {
         reportProgress?.Invoke((LocalizationKey.Processing.Import.Copying, 0));
 
@@ -135,9 +136,9 @@ internal static class DataImporter
         {
             Item item = konoAssetItems[i].ToItem();
 
-            string LocalizedCategoryName = item.Type == ItemType.Custom ? item.CustomCategory : localizedItemTypesMapping[item.Type];
             string safeItemTitle = ItemUtils.GetSafeTitle(item.Title) ?? Path.GetFileNameWithoutExtension(item.ItemPath);
-            string newItemPath = Path.Combine(runtimeSettings.DataRootDirectory, LocalizedCategoryName, safeItemTitle);
+            string? newItemPath = FileSystemService.GetUniquePath(runtimeSettings.DataRootDirectory, safeItemTitle);
+            if (newItemPath == null) continue; // 滅多に起こらないが、一応
 
             await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(KonoAssetPath.ItemsPath(dataFolderPath), item.ItemPath), newItemPath);
             item.ItemPath = newItemPath;

@@ -434,7 +434,7 @@ public static class FileSystemService
     {
         try
         {
-            string? uniqueFilePath = unique ? GetUniqueFilePath(Path.GetDirectoryName(destinationFile), Path.GetFileName(destinationFile)) : destinationFile;
+            string? uniqueFilePath = unique ? GetUniquePath(Path.GetDirectoryName(destinationFile), Path.GetFileName(destinationFile)) : destinationFile;
             if (uniqueFilePath == null) return null;
 
             using Stream sourceStream = File.OpenRead(sourceFile);
@@ -452,16 +452,8 @@ public static class FileSystemService
     
     private static string PrepareUniqueDestinationDirectoryPathInternal(string extractDirectory, string folderName)
     {
-        string extractDirectoryFolder = Path.Combine(extractDirectory, folderName);
-
-        if (Directory.Exists(extractDirectoryFolder))
-        {
-            int i = 1;
-            while (Directory.Exists(extractDirectoryFolder + " - " + i)) i++;
-            extractDirectoryFolder += " - " + i;
-        }
-
-        Directory.CreateDirectory(extractDirectoryFolder);
+        string? extractDirectoryFolder = GetUniquePath(extractDirectory, folderName, true);
+        if (string.IsNullOrEmpty(extractDirectoryFolder)) throw new DirectoryNotFoundException();
 
         return extractDirectoryFolder;
     }
@@ -506,7 +498,7 @@ public static class FileSystemService
         }
     }
 
-    public static string? GetUniqueFilePath(string? directory, string? fileName)
+    public static string? GetUniquePath(string? directory, string? fileName, bool isFolder = false)
     {
         if (string.IsNullOrEmpty(directory) || string.IsNullOrEmpty(fileName)) return null;
 
@@ -515,7 +507,7 @@ public static class FileSystemService
 
         string path = Path.Combine(directory, fileName);
 
-        if (!File.Exists(path) && !Directory.Exists(path))
+        if ((!isFolder && !File.Exists(path)) || (isFolder && !Directory.Exists(path)))
             return path;
 
         int index = 1;
@@ -525,7 +517,7 @@ public static class FileSystemService
             string newName = $"{fileNameWithoutExtension} - {index}{extension}";
             string newPath = Path.Combine(directory, newName);
 
-            if (!File.Exists(newPath) && !Directory.Exists(newPath))
+            if ((!isFolder && !File.Exists(newPath)) || (isFolder && !Directory.Exists(newPath)))
                 return newPath;
 
             index++;
