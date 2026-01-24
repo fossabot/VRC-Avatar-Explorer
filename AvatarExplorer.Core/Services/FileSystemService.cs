@@ -39,7 +39,7 @@ public static class FileSystemService
     #endregion
 
     #region Unitypackage Modifier
-    internal static async Task<string> ModifyUnityPackageFilePathsAsync(string[] filePaths, string[] itemCategoryNames, Action<(string, int)>? reportProgress = null)
+    internal static async Task<string> ModifyUnityPackageFilePathsAsync(string[] filePaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null)
     {
         List<string> unitypackagePaths = new();
         
@@ -55,18 +55,18 @@ public static class FileSystemService
         
         return await ModifyUnityPackageFilePathsAsyncInternal(unitypackagePaths, itemCategoryNames, reportProgress);
     }
-    private static async Task<string> ModifyUnityPackageFilePathsAsyncInternal(List<string> itemPaths, string[] itemCategoryNames, Action<(string, int)>? reportProgress = null)
+    private static async Task<string> ModifyUnityPackageFilePathsAsyncInternal(List<string> itemPaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null)
     {
         if (itemPaths.Count == 0) return string.Empty;
 
         string unityPackagePath = await Task.Run(async () =>
         {
-            reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Preparing, 0));
+            if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Unitypackage.Status.Preparing, 0));
 
             var (saveFolder, saveFilePath, unityPackagePath) = PrepareSavePaths(itemPaths[0]);
             PrepareSaveDirectory(saveFolder);
 
-            reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Extracting, 10));
+            if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Unitypackage.Status.Extracting, 10));
 
             int totalEntries = 0;
             foreach (string itemPath in itemPaths)
@@ -130,7 +130,7 @@ public static class FileSystemService
             count++;
         return count;
     }
-    private static async Task<int> ExtractTarToFolderAsync(string tarGzFilePath, string saveFilePath, string category, int totalEntries, int currentProcessedEntries = 0, Action<(string, int)>? reportProgress = null)
+    private static async Task<int> ExtractTarToFolderAsync(string tarGzFilePath, string saveFilePath, string category, int totalEntries, int currentProcessedEntries = 0, Func<(string, int), Task>? reportProgress = null)
     {
         int processedEntries = currentProcessedEntries;
 
@@ -172,7 +172,7 @@ public static class FileSystemService
 
             if (currentProgress != lastProgress)
             {
-                reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Extracting, currentProgress));
+                if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Unitypackage.Status.Extracting, currentProgress));
                 lastProgress = currentProgress;
             }
         }

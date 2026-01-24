@@ -75,14 +75,13 @@ public partial class MainWindow
             { ActionKey.ChangeThumbnail, ItemButton_ContextMenu_ChangeThumbnail },
             { ActionKey.EditItem, ItemButton_ContextMenu_EditItem },
             { ActionKey.EditItemTitle, ItemButton_ContextMenu_EditItemTitle },
-            { ActionKey.AddItemMemo, ItemButton_ContextMenu_AddMemo},
+            { ActionKey.AddItemMemo, ItemButton_ContextMenu_AddMemo },
             { ActionKey.AddToBulkImportList, ItemButton_ContextMenu_AddToBulkImportList },
             { ActionKey.AddItemFile, ItemButton_ContextMenu_AddItemFile },
             { ActionKey.AddItemFolder, ItemButton_ContextMenu_AddItemFolder },
             { ActionKey.EditImplementedAvatar, ItemButton_ContextMenu_EditImplementedAvatar },
             { ActionKey.EditItemTag, ItemButton_ContextMenu_EditItemTag },
             { ActionKey.RemoveItem, ItemButton_ContextMenu_RemoveItem },
-
             { ActionKey.OpenFile, ItemButton_ContextMenu_OpenFile },
             { ActionKey.OpenFileInExplorer, ItemButton_ContextMenu_OpenFileInExplorer }
         };
@@ -93,11 +92,6 @@ public partial class MainWindow
 
         SettingsOverlay_DefaultLanguageComboBox.Items.Clear();
         SettingsOverlay_DefaultLanguageComboBox.Items.AddRange(Localizer.Instance.GetLanguageList());
-    }
-    private void InitializeCurrentPath()
-    {
-        string? currentDirectory = Path.GetDirectoryName(ProcessUtils.GetCurrentProcessPath());
-        if (currentDirectory != null) Directory.SetCurrentDirectory(currentDirectory);
     }
     private void CheckFirstLaunching()
     {

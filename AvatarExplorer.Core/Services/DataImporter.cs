@@ -13,9 +13,9 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class DataImporter
 {
-    internal static async Task<(List<Item>, List<CommonAvatar>)> FromV1(string dataFolderPath, RuntimeSettings runtimeSettings, Action<(string, int)>? reportProgress = null)
+    internal static async Task<(List<Item>, List<CommonAvatar>)> FromV1(string dataFolderPath, RuntimeSettings runtimeSettings, Func<(string, int), Task>? reportProgress = null)
     {
-        reportProgress?.Invoke((LocalizationKey.Processing.Import.Copying, 0));
+        if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Import.Copying, 0));
 
         List<ItemV1> v1Items = FileSystemService.DeserializeClass<List<ItemV1>>(SystemPathV1.ItemDatabasePath(dataFolderPath)) ?? [];
         List<CommonAvatarV1> v1CommonAvatars = FileSystemService.DeserializeClass<List<CommonAvatarV1>>(SystemPathV1.CommonAvatarDatabasePath(dataFolderPath)) ?? [];
@@ -54,7 +54,7 @@ internal static class DataImporter
             if (percent != lastPercent)
             {
                 lastPercent = percent;
-                reportProgress?.Invoke((LocalizationKey.Processing.Import.Copying, percent));
+                if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Import.Copying, percent));
             }
         }
 
@@ -78,7 +78,7 @@ internal static class DataImporter
             commonAvatar.UpdateAvatars(avatarPaths);
         }
 
-        reportProgress?.Invoke((LocalizationKey.Processing.Import.Copying, 100));
+        if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Import.Copying, 100));
 
         return (items, commonAvatars);
     }
@@ -118,9 +118,9 @@ internal static class DataImporter
         return migratedCommonAvatar;
     }
 
-    internal static async Task<List<Item>> FromKonoAsset(string dataFolderPath, RuntimeSettings runtimeSettings, Action<(string, int)>? reportProgress = null)
+    internal static async Task<List<Item>> FromKonoAsset(string dataFolderPath, RuntimeSettings runtimeSettings, Func<(string, int), Task>? reportProgress = null)
     {
-        reportProgress?.Invoke((LocalizationKey.Processing.Import.Copying, 0));
+        if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Import.Copying, 0));
 
         List<IKonoAssetItem> konoAssetItems =
         [
@@ -169,11 +169,11 @@ internal static class DataImporter
             if (percent != lastPercent)
             {
                 lastPercent = percent;
-                reportProgress?.Invoke((LocalizationKey.Processing.Import.Copying, percent));
+                if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Import.Copying, percent));
             }
         }
 
-        reportProgress?.Invoke((LocalizationKey.Processing.Import.Copying, 100));
+        if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Import.Copying, 100));
 
         return items;
     }

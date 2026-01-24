@@ -11,9 +11,9 @@ internal static class UnitypackageService
     internal static async Task Import(string filePath, string localizedCategoryName, Func<string, int, Task>? onProgress = null, Func<string, Task>? onCompleted = null)
     {
         // Item1: LocalizationKey, Item2: ProgressValue
-        void progressAction((string, int) tuple)
+        async Task progressAction((string, int) tuple)
         {
-            Dispatcher.UIThread.Invoke(async () =>
+            await Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 if (onProgress != null) await onProgress(tuple.Item1, tuple.Item2);
             });
@@ -28,9 +28,9 @@ internal static class UnitypackageService
         if (filePaths.Length != localizedCategoryNames.Length) return;
 
         // Item1: LocalizationKey, Item2: ProgressValue
-        void progressAction((string, int) tuple)
+        async Task progressAction((string, int) tuple)
         {
-            Dispatcher.UIThread.Invoke(async () =>
+            await Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 if (onProgress != null) await onProgress(tuple.Item1, tuple.Item2);
             });

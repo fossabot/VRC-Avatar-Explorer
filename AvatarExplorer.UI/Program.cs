@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using AvatarExplorer.Core.Services;
+using AvatarExplorer.Core.Utils;
 using System;
+using System.IO;
 using System.Threading;
 
 namespace AvatarExplorer.UI;
@@ -23,6 +25,10 @@ static class Program
             SingleInstanceService.SendToServer(args);
             return;
         }
+
+        // Set Current Directory
+        string? currentProcessPath = Path.GetDirectoryName(ProcessUtils.GetCurrentProcessPath());
+        if (currentProcessPath != null) Directory.SetCurrentDirectory(currentProcessPath);
 
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);

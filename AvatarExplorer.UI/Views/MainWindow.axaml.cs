@@ -46,14 +46,15 @@ public partial class MainWindow : Window
         TODO: Reload関連の関数などを、イベント経由で行うようにしたい。OnDatabaseUpdateみたいな
         */
 
-        InitializeCurrentPath();
         InitializeComponent();
+        InitializeContextMenuHandlers();
+        
         InitializeTitle();
         InitializeLanguageBox();
         InitializeAvatarExplorer();
-        InitializeContextMenuHandlers();
         InitializeNoItemsLabel();
         InitializeUserPreferences();
+
         InitializePipeServer();
 
         // 設定画面の設定

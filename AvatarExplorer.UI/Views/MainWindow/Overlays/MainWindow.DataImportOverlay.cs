@@ -23,9 +23,9 @@ public partial class MainWindow
         SelectImportTypeOverlay.IsVisible = false;
 
         // Item1: LocalizationKey, Item2: ProgressValue
-        void progressAction((string, int) tuple)
+        async Task progressAction((string, int) tuple)
         {
-            Dispatcher.UIThread.Invoke(() =>
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 ProgressOverlay_Show(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
                 ProgressOverlay_Update(tuple.Item2);

@@ -385,8 +385,8 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region File API
-    public static async Task<string> ModifyUnityPackageFilePath(string filePath, string itemCategoryName = "", Action<(string, int)>? reportProgress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync([filePath], [itemCategoryName], reportProgress);
-    public static async Task<string> ModifyUnityPackageFilePaths(string[] filePaths, string[] itemCategoryNames, Action<(string, int)>? reportProgress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync(filePaths, itemCategoryNames, reportProgress);
+    public static async Task<string> ModifyUnityPackageFilePath(string filePath, string itemCategoryName = "", Func<(string, int), Task>? reportProgress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync([filePath], [itemCategoryName], reportProgress);
+    public static async Task<string> ModifyUnityPackageFilePaths(string[] filePaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync(filePaths, itemCategoryNames, reportProgress);
     #endregion
 
     #region Remove API
@@ -417,7 +417,7 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Data Importer API
-    public async Task ImportFromV1(string dataFolderPath, Action<(string, int)>? reportProgress = null)
+    public async Task ImportFromV1(string dataFolderPath, Func<(string, int), Task>? reportProgress = null)
     {
         (List<Item>, List<CommonAvatar>) result = await DataImporter.FromV1(dataFolderPath, _runtimeSettings, reportProgress);
         
@@ -430,7 +430,7 @@ public partial class AvatarExplorerApp
         SaveItemDatabase();
         SaveCommonAvatarDatabase();
     }
-    public async Task ImportFromKonoAsset(string dataFolderPath, Action<(string, int)>? reportProgress = null)
+    public async Task ImportFromKonoAsset(string dataFolderPath, Func<(string, int), Task>? reportProgress = null)
     {
         List<Item> items = await DataImporter.FromKonoAsset(dataFolderPath, _runtimeSettings, reportProgress);
         _items.AddRange(items);
