@@ -89,7 +89,7 @@ public partial class MainWindow
     {
         if (userPreferences.UseBackgroundImage && File.Exists(userPreferences.BackgroundImage))
         {
-            WindowGrid.Background = new ImageBrush()
+            WindowPanel.Background = new ImageBrush()
             {
                 Source = new Bitmap(userPreferences.BackgroundImage),
                 Opacity = Math.Clamp(userPreferences.BackgroundOpacity / 100.0, 0, 1),
@@ -98,7 +98,7 @@ public partial class MainWindow
         }
         else
         {
-            WindowGrid.Background = null;
+            WindowPanel.Background = null;
         }
     }
     private void SettingsOverlay_ApplyLanguage(int language)
