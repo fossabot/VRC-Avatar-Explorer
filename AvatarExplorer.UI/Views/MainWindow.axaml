@@ -18,12 +18,12 @@
         <!-- メイン画面 -->
         <DockPanel Margin="12">
             <Border DockPanel.Dock="Top" Classes="panelbackground">
-                <Grid ColumnDefinitions="100,10,3*,20,Auto,10,*,15,80">
-                    <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="戻る" HorizontalAlignment="Stretch" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Click="Main_UndoButton_Click"/>
-                    <TextBox x:Name="Main_PathTextBox" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" Text="ここには現在のパスが表示されます" CornerRadius="8"/>
-                    <TextBlock Grid.Column="4" FontWeight="Bold" Text="検索" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                <Grid ColumnDefinitions="100,10,3*,20,Auto,10,*,15,60">
+                    <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{materialIcons:MaterialIconExt Kind=ArrowLeft}" HorizontalAlignment="Stretch" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Click="Main_UndoButton_Click"/>
+                    <TextBox x:Name="Main_PathTextBox" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" Watermark="ここには現在のパスが表示されます" CornerRadius="8"/>
+                    <materialIcons:MaterialIcon Grid.Column="4" Kind="Magnify" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <TextBox x:Name="Main_SearchTextBox" Grid.Column="6" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="検索..." CornerRadius="8" TextChanged="Main_SearchValue_Changed"/>
-                    <Button Classes="button" FontWeight="Bold" Grid.Column="9" Content="設定" Width="80" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Click="Main_SettingsButton_Click"/>
+                    <Button Classes="button" FontWeight="Bold" Grid.Column="9" Content="{materialIcons:MaterialIconExt Kind=CogOutline}" HorizontalAlignment="Stretch" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Click="Main_SettingsButton_Click"/>
                 </Grid>
             </Border>
 
