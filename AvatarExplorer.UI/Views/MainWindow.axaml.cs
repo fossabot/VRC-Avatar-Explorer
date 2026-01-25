@@ -37,11 +37,8 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
-        /* プロジェクトTODO
-        TODO: UIのタグを使った翻訳機能を追加する
-        */
-
         InitializeComponent();
+        DataContext = Localizer.Instance;
         InitializeContextMenuHandlers();
         
         InitializeTitle();

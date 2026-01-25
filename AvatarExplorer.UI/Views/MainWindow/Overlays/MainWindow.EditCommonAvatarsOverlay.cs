@@ -78,6 +78,7 @@ public partial class MainWindow
         _avatarExplorerApp.AddCommonAvatar(commonAvatarGroupName);
         
         EditCommonAvatarsOverlay_RefleshGroupList();
+        EditCommonAvatarsOverlay_RefleshAvatarList();
 
         // 追加された共通素体グループを選択してあげる
         EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex = _avatarExplorerApp.GetCommonAvatars().Count - 1;

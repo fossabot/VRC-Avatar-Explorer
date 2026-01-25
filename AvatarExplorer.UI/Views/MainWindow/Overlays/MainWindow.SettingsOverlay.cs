@@ -131,21 +131,21 @@ public partial class MainWindow
     #region Event Handler
     private async void SettingsOverlay_OpenFolder_Click(object? sender, RoutedEventArgs e)
     {
-        string[]? folders = await StorageService.OpenFolderDialog(this, "フォルダを選択してください", false);
+        string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], false);
         if (folders == null || folders.Length == 0) return;
 
         SettingsOverlay_ItemsFolderPathTextBox.Text = folders[0];
     }
     private async void SettingsOverlay_OpenBackgroundFile_Click(object? sender, RoutedEventArgs e)
     {
-        string[]? files = await StorageService.OpenFileDialog(this, "ファイルを選択してください", false);
+        string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFilePath], false);
         if (files == null || files.Length == 0) return;
 
         SettingsOverlay_BackgroundImagePathTextBox.Text = files[0];
     }
     private async void SettingsOverlay_OpenAutoBackupRootFolder_Click(object? sender, RoutedEventArgs e)
     {
-        string[]? folders = await StorageService.OpenFolderDialog(this, "フォルダを選択してください", false);
+        string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], false, RuntimeSettings.AutoBackupRootDirectory);
         if (folders == null || folders.Length == 0) return;
 
         SettingsOverlay_AutoBackupPathTextBox.Text = folders[0];
