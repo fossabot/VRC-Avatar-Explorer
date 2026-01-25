@@ -97,11 +97,14 @@ public partial class MainWindow
         if (string.IsNullOrEmpty(commonAvatarGroupName)) return;
 
         commonAvatar.GroupName = commonAvatarGroupName;
+        _avatarExplorerApp.SaveCommonAvatarDatabase();
         
         int previousIndex = EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex;
         EditCommonAvatarsOverlay_RefleshGroupList();
         if (previousIndex != -1) EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex = previousIndex;
         EditCommonAvatarsOverlay_RefleshAvatarList();
+
+        Main_ReloadCurrentWindow();
     }
     private async void EditCommonAvatarsOverlay_ReplaceAvatarsToGroup_Click(object? sender, RoutedEventArgs e)
     {
@@ -136,10 +139,13 @@ public partial class MainWindow
         if (result2 == YesNoResult.Yes) _avatarExplorerApp.ReplaceCommonAvatarGroupToSupportedAvatars(commonAvatar.Id);
 
         _avatarExplorerApp.RemoveCommonAvatar(commonAvatar.Id);
+        _avatarExplorerApp.SaveCommonAvatarDatabase();
         
         EditCommonAvatarsOverlay_RefleshGroupList();
         if (EditCommonAvatarsOverlay_GroupComboBox.Items.Count > 0) EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex = 0;
         EditCommonAvatarsOverlay_RefleshAvatarList();
+
+        Main_ReloadCurrentWindow();
     }
     private void EditCommonAvatarsOverlay_GroupComboBox_Changed(object? sender, RoutedEventArgs e)
     {
