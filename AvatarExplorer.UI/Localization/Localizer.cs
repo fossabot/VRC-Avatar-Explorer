@@ -35,24 +35,22 @@ public class Localizer : INotifyPropertyChanged
     public void LoadFromFolder(string path)
     {
         if (!Directory.Exists(path)) return;
-        _map.Clear();
+
+        List<Dictionary<string, string>> languageMaps = new();
 
         foreach (string filePath in FileSystemService.EnumerateFiles(path))
         {
-            var dictionary = FileSystemService.DeserializeClass<Dictionary<string, string>>(filePath);
-            if (dictionary != null) _map.Add(dictionary);
+            Dictionary<string, string>? dictionary = FileSystemService.DeserializeClass<Dictionary<string, string>>(filePath);
+            if (dictionary != null) languageMaps.Add(dictionary);
         }
+
+        _map.Clear();
+        _map.AddRange(languageMaps.OrderBy(i => int.Parse(i.TryGetValue("LanguagePriority", out string? value) ? value : "999")).ToList());
     }
     
-    public string[] GetLanguageList()
-    {
-        return _map.Select(i => i[LocalizationKey.LanguageName]).ToArray();
-    }
+    public string[] GetLanguageList() => _map.Select(i => i[LocalizationKey.LanguageName]).ToArray();
 
-    public void SetLanguage(int index)
-    {
-        CurrentLanguageIndex = index;
-    }
+    public void SetLanguage(int index) => CurrentLanguageIndex = index;
 
     public string GetDisplayName(string localizationKey) => this[localizationKey];
     public string GetDisplayName(string localizationKey, string arg)

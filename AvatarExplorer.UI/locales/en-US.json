@@ -1,5 +1,6 @@
 {
     "LanguageName": "English",
+    "LanguagePriority": "1",
 
     "ItemCategory.Avatar": "Avatar",
     "ItemCategory.Clothing": "Clothing",
