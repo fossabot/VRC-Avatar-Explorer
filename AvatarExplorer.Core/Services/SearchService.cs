@@ -128,8 +128,8 @@ internal static class SearchService
 
         bool matchWord = searchFilter.SearchWords.Count == 0
             || (searchFilter.IsOrSearch
-                ? searchFilter.SearchWords.Any(w => SearchUtils.GetWordSearchResult(searchIndex, w))
-                : searchFilter.SearchWords.All(w => SearchUtils.GetWordSearchResult(searchIndex, w)));
+                ? searchFilter.SearchWords.Any(word => SearchUtils.GetWordSearchResult(searchIndex, word))
+                : searchFilter.SearchWords.All(word => SearchUtils.GetWordSearchResult(searchIndex, word)));
 
         return matchTitle
             && matchAuthor
@@ -151,7 +151,6 @@ internal static class SearchService
     {
         IEnumerable<string> avatars = SupportedAvatarService.GetAllAvatarIds(item.SupportedAvatarsView, commonAvatars, includeCommonToSupported: true)
             .Concat(item.ImplementedAvatarsView)
-            .Where(name => !string.IsNullOrEmpty(name))
             .Select(a => ItemUtils.GetAvatarNameFromDictionary(avatarMap, a))
             .Where(name => !string.IsNullOrEmpty(name));
 

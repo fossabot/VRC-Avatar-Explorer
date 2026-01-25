@@ -499,7 +499,7 @@ public partial class AvatarExplorerApp
         if (boothItem == null) return;
 
         string itemThumbnailFileName = item.BoothId + ".png";
-        await ImageDownloader.Download(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);
+        await ImageDownloader.Fetch(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);
         item.ThumbnmailFileName = itemThumbnailFileName;
     }
     #endregion

@@ -90,7 +90,7 @@ public static class FileSystemService
             // ここの3つ目の引数で出力先のアイテムパスをUI側に返してあげる
             reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Completed, 100));
 
-            await Task.Delay(1000); // すぐ閉じるのではなく、100%の表記を出してから1秒経って返すようにする
+            await Task.Delay(750); // すぐ閉じるのではなく、100%の表記を出してから0.75秒経って返すようにする
 
             return unityPackagePath;
         });

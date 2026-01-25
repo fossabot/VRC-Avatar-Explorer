@@ -155,11 +155,11 @@ internal static class DataImporter
                     item.AuthorId = boothItem.AuthorId; // IKonoAssetItem.ToItem()ではAuthorIdは移行されないためここで設定する必要がある。
 
                     string itemThumbnailFileName = item.BoothId + ".png";
-                    await ImageDownloader.Download(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), false);
+                    await ImageDownloader.Fetch(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), false);
                     item.ThumbnmailFileName = itemThumbnailFileName;
 
                     string authorThumbnailFileName = item.AuthorId + ".png";
-                    await ImageDownloader.Download(boothItem.Shop.ThumbnailUrl, Path.Combine(SystemPath.AuthorThumbnailsPath, authorThumbnailFileName), false);
+                    await ImageDownloader.Fetch(boothItem.Shop.ThumbnailUrl, Path.Combine(SystemPath.AuthorThumbnailsPath, authorThumbnailFileName), false);
                     item.AuthorThumbnmailFileName = authorThumbnailFileName;
                 }
 

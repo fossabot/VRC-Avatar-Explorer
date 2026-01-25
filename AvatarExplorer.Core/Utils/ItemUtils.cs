@@ -16,8 +16,8 @@ public static partial class ItemUtils
 
     internal static string GetAvatarNameFromDictionary(Dictionary<string, string> avatarNamesDictionary, string avatarPath)
     {
-        avatarNamesDictionary.TryGetValue(avatarPath, out string? avatarName);
-        return avatarName ?? string.Empty;
+        if (string.IsNullOrEmpty(avatarPath)) return string.Empty;
+        return avatarNamesDictionary.TryGetValue(avatarPath, out string? avatarName) ? avatarName : string.Empty;
     }
 
     public static string GetItemPath(string parentFolder, string itemPath)

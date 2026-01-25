@@ -1,11 +1,12 @@
 using System.Globalization;
 using AvatarExplorer.Core.Data.Paths;
+using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.Core.Services;
 
 internal class BackupManager
 {
-    private int _backupInterval = 300000;
+    private int _backupInterval = TimeUtils.MinToMs(5);
     private CancellationTokenSource? _backupCts;
     private Task? _backupTask;
     private DateTime _lastBackupDate = DateTime.MinValue;
@@ -14,7 +15,7 @@ internal class BackupManager
     internal void StartAutoBackup(int interval, string backupRootFolderPath)
     {
         SetAutoBackupPath(backupRootFolderPath);
-        SetAutoBackupInterval(interval * 60 * 1000); // min to ms
+        SetAutoBackupInterval(TimeUtils.MinToMs(interval));
 
         if (_backupTask != null) return;
 
@@ -50,7 +51,7 @@ internal class BackupManager
     public void SetAutoBackupInterval(int interval)
     {
         if (interval < 0) return;
-        _backupInterval = interval * 60 * 1000;
+        _backupInterval = TimeUtils.MinToMs(interval);
     }
 
     public void SetAutoBackupPath(string path)
@@ -60,7 +61,7 @@ internal class BackupManager
 
     private async Task AutoBackupLoop(CancellationToken token)
     {
-        await Task.Delay(60 * 1000, token); // 1分は待機する
+        await Task.Delay(TimeUtils.MinToMs(1), token); // 1分は待機する
 
         while (!token.IsCancellationRequested)
         {

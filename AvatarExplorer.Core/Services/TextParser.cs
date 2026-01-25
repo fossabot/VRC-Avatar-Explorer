@@ -6,7 +6,7 @@ public static class TextParser
 {
     public static string[] Parse(string text)
     {
-        List<string> result = [];
+        List<string> result = new();
 
         StringBuilder currentArg = new();
         bool inQuotes = false;
@@ -37,6 +37,7 @@ public static class TextParser
                     result.Add(currentArg.ToString());
                     currentArg.Clear();
                 }
+                
                 continue;
             }
 
