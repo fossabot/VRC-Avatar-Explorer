@@ -31,55 +31,55 @@ public partial class MainWindow
         UserPreferences userPreferences = _userPreferences;
 
         // 基本
-        SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory;
-        SettingsOverlay_LanguageComboBox.SelectedIndex = userPreferences.Language;
-        SettingsOverlay_SortOrderComboBox.SelectedIndex = (int)runtimeSettings.ItemSortOrder;
-        SettingsOverlay_ThemeComboBox.SelectedIndex = (int)userPreferences.Theme;
+        if (SettingsOverlay_ItemsFolderPathTextBox != null) SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory ?? string.Empty;
+        if (SettingsOverlay_LanguageComboBox != null) SettingsOverlay_LanguageComboBox.SelectedIndex = userPreferences.Language;
+        if (SettingsOverlay_SortOrderComboBox != null) SettingsOverlay_SortOrderComboBox.SelectedIndex = (int)runtimeSettings.ItemSortOrder;
+        if (SettingsOverlay_ThemeComboBox != null) SettingsOverlay_ThemeComboBox.SelectedIndex = (int)userPreferences.Theme;
 
         // 表示
-        SettingsOverlay_RemoveBracketsCheckBox.IsChecked = runtimeSettings.RemoveBrackets;
-        SettingsOverlay_NormalIconSizeSlider.Value = userPreferences.NormalIconSize;
-        SettingsOverlay_EnableHoverIconSizeCheckBox.IsChecked = userPreferences.EnableHoverIconSize;
-        SettingsOverlay_HoverIconSizeSlider.Value = userPreferences.HoverIconSize;
-        SettingsOverlay_AntiAliasingModeComboBox.SelectedIndex = (int)userPreferences.AntiAliasingMode;
-        SettingsOverlay_ItemsPerPageTextBox.Text = userPreferences.ItemsPerPage.ToString();
+        if (SettingsOverlay_RemoveBracketsCheckBox != null) SettingsOverlay_RemoveBracketsCheckBox.IsChecked = runtimeSettings.RemoveBrackets;
+        if (SettingsOverlay_NormalIconSizeSlider != null) SettingsOverlay_NormalIconSizeSlider.Value = userPreferences.NormalIconSize;
+        if (SettingsOverlay_EnableHoverIconSizeCheckBox != null) SettingsOverlay_EnableHoverIconSizeCheckBox.IsChecked = userPreferences.EnableHoverIconSize;
+        if (SettingsOverlay_HoverIconSizeSlider != null) SettingsOverlay_HoverIconSizeSlider.Value = userPreferences.HoverIconSize;
+        if (SettingsOverlay_AntiAliasingModeComboBox != null) SettingsOverlay_AntiAliasingModeComboBox.SelectedIndex = (int)userPreferences.AntiAliasingMode;
+        if (SettingsOverlay_ItemsPerPageTextBox != null) SettingsOverlay_ItemsPerPageTextBox.Text = userPreferences.ItemsPerPage.ToString();
 
         // アイテム
-        SettingsOverlay_RemoveOriginalCheckBox.IsChecked = runtimeSettings.RemoveOriginal;
+        if (SettingsOverlay_RemoveOriginalCheckBox != null) SettingsOverlay_RemoveOriginalCheckBox.IsChecked = runtimeSettings.RemoveOriginal;
 
         // 背景
-        SettingsOverlay_UseBackgroundImageCheckBox.IsChecked = userPreferences.UseBackgroundImage;
-        SettingsOverlay_BackgroundImagePathTextBox.Text = userPreferences.BackgroundImage;
-        SettingsOverlay_BackgroundImageOpacitySlider.Value = userPreferences.BackgroundOpacity;
+        if (SettingsOverlay_UseBackgroundImageCheckBox != null) SettingsOverlay_UseBackgroundImageCheckBox.IsChecked = userPreferences.UseBackgroundImage;
+        if (SettingsOverlay_BackgroundImagePathTextBox != null) SettingsOverlay_BackgroundImagePathTextBox.Text = userPreferences.BackgroundImage ?? string.Empty;
+        if (SettingsOverlay_BackgroundImageOpacitySlider != null) SettingsOverlay_BackgroundImageOpacitySlider.Value = userPreferences.BackgroundOpacity;
         
         // データ
-        SettingsOverlay_AutoBackupPathTextBox.Text = runtimeSettings.AutoBackupRootDirectory;
-        SettingsOverlay_AutoBackupIntervalTextBox.Text = runtimeSettings.AutoBackupInterval.ToString();
+        if (SettingsOverlay_AutoBackupPathTextBox != null) SettingsOverlay_AutoBackupPathTextBox.Text = runtimeSettings.AutoBackupRootDirectory ?? string.Empty;
+        if (SettingsOverlay_AutoBackupIntervalTextBox != null) SettingsOverlay_AutoBackupIntervalTextBox.Text = runtimeSettings.AutoBackupInterval.ToString();
     }
     private void SettingsOverlay_ApplySettingsValues()
     {
         // 基本
-        _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? string.Empty);
-        _userPreferences.SetLanguage(SettingsOverlay_LanguageComboBox.SelectedIndex);
-        _avatarExplorerApp.SetItemsSortOrder((SortOrder)SettingsOverlay_SortOrderComboBox.SelectedIndex);
-        _userPreferences.SetTheme((Theme)SettingsOverlay_ThemeComboBox.SelectedIndex);
+        if (SettingsOverlay_ItemsFolderPathTextBox != null) _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? string.Empty);
+        if (SettingsOverlay_LanguageComboBox != null) _userPreferences.SetLanguage(SettingsOverlay_LanguageComboBox.SelectedIndex);
+        if (SettingsOverlay_SortOrderComboBox != null) _avatarExplorerApp.SetItemsSortOrder((SortOrder)SettingsOverlay_SortOrderComboBox.SelectedIndex);
+        if (SettingsOverlay_ThemeComboBox != null) _userPreferences.SetTheme((Theme)SettingsOverlay_ThemeComboBox.SelectedIndex);
 
         // 表示
-        _avatarExplorerApp.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
-        _userPreferences.SetIconSize((int)SettingsOverlay_NormalIconSizeSlider.Value, (int)SettingsOverlay_HoverIconSizeSlider.Value);
-        _userPreferences.UseHoverIconSize(SettingsOverlay_EnableHoverIconSizeCheckBox.IsChecked ?? false);
-        _userPreferences.SetAntialiasing((BitmapAntiAliasingMode)SettingsOverlay_AntiAliasingModeComboBox.SelectedIndex);
-        _userPreferences.SetItemsPerPage(int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var count) ? count : 30);
-        _avatarExplorerApp.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
+        if (SettingsOverlay_RemoveBracketsCheckBox != null) _avatarExplorerApp.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
+        if (SettingsOverlay_NormalIconSizeSlider != null && SettingsOverlay_HoverIconSizeSlider != null) _userPreferences.SetIconSize((int)SettingsOverlay_NormalIconSizeSlider.Value, (int)SettingsOverlay_HoverIconSizeSlider.Value);
+        if (SettingsOverlay_EnableHoverIconSizeCheckBox != null) _userPreferences.UseHoverIconSize(SettingsOverlay_EnableHoverIconSizeCheckBox.IsChecked ?? false);
+        if (SettingsOverlay_AntiAliasingModeComboBox != null) _userPreferences.SetAntialiasing((BitmapAntiAliasingMode)SettingsOverlay_AntiAliasingModeComboBox.SelectedIndex);
+        if (SettingsOverlay_ItemsPerPageTextBox != null) _userPreferences.SetItemsPerPage(int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var count) ? count : 30);
+        if (SettingsOverlay_RemoveOriginalCheckBox != null) _avatarExplorerApp.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
 
         // 背景
-        _userPreferences.UseBackground(SettingsOverlay_UseBackgroundImageCheckBox.IsChecked ?? false);
-        _userPreferences.SetBackground(SettingsOverlay_BackgroundImagePathTextBox.Text ?? string.Empty);
-        _userPreferences.SetBackgroundOpacity(Math.Clamp((int)SettingsOverlay_BackgroundImageOpacitySlider.Value, 0, 100));
+        if (SettingsOverlay_UseBackgroundImageCheckBox != null) _userPreferences.UseBackground(SettingsOverlay_UseBackgroundImageCheckBox.IsChecked ?? false);
+        if (SettingsOverlay_BackgroundImagePathTextBox != null) _userPreferences.SetBackground(SettingsOverlay_BackgroundImagePathTextBox.Text ?? string.Empty);
+        if (SettingsOverlay_BackgroundImageOpacitySlider != null) _userPreferences.SetBackgroundOpacity(Math.Clamp((int)SettingsOverlay_BackgroundImageOpacitySlider.Value, 0, 100));
 
         // データ
-        _avatarExplorerApp.SetAutoBackupRootDirectory(SettingsOverlay_AutoBackupPathTextBox.Text ?? string.Empty);
-        _avatarExplorerApp.SetAutoBackupInterval(int.TryParse(SettingsOverlay_AutoBackupIntervalTextBox.Text, out var interval) ? interval : 5);
+        if (SettingsOverlay_AutoBackupPathTextBox != null) _avatarExplorerApp.SetAutoBackupRootDirectory(SettingsOverlay_AutoBackupPathTextBox.Text ?? string.Empty);
+        if (SettingsOverlay_AutoBackupIntervalTextBox != null) _avatarExplorerApp.SetAutoBackupInterval(int.TryParse(SettingsOverlay_AutoBackupIntervalTextBox.Text, out var interval) ? interval : 5);
 
         SettingsOverlay_ApplyPreferenceSettingsToUi();
     }
@@ -106,7 +106,7 @@ public partial class MainWindow
     }
     private void SettingsOverlay_ApplyBackgroundImage(UserPreferences userPreferences)
     {
-        if (userPreferences.UseBackgroundImage && File.Exists(userPreferences.BackgroundImage))
+        if (userPreferences.UseBackgroundImage && !string.IsNullOrEmpty(userPreferences.BackgroundImage) && File.Exists(userPreferences.BackgroundImage))
         {
             WindowPanel.Background = new ImageBrush()
             {
@@ -134,21 +134,21 @@ public partial class MainWindow
         string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], false);
         if (folders == null || folders.Length == 0) return;
 
-        SettingsOverlay_ItemsFolderPathTextBox.Text = folders[0];
+        if (SettingsOverlay_ItemsFolderPathTextBox != null) SettingsOverlay_ItemsFolderPathTextBox.Text = folders[0];
     }
     private async void SettingsOverlay_OpenBackgroundFile_Click(object? sender, RoutedEventArgs e)
     {
         string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFilePath], false);
         if (files == null || files.Length == 0) return;
 
-        SettingsOverlay_BackgroundImagePathTextBox.Text = files[0];
+        if (SettingsOverlay_BackgroundImagePathTextBox != null) SettingsOverlay_BackgroundImagePathTextBox.Text = files[0];
     }
     private async void SettingsOverlay_OpenAutoBackupRootFolder_Click(object? sender, RoutedEventArgs e)
     {
         string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], false, RuntimeSettings.AutoBackupRootDirectory);
         if (folders == null || folders.Length == 0) return;
 
-        SettingsOverlay_AutoBackupPathTextBox.Text = folders[0];
+        if (SettingsOverlay_AutoBackupPathTextBox != null) SettingsOverlay_AutoBackupPathTextBox.Text = folders[0];
     }
     
     private void SettingsOverlay_Close_Click(object? sender, RoutedEventArgs e) => SettingsOverlay_Hide();
