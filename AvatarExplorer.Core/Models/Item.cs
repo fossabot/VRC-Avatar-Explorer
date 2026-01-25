@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using AvatarExplorer.Core.Interfaces;
-using AvatarExplorer.Core.Utils;
 using AvatarExplorer.Core.Data.Links;
 
 namespace AvatarExplorer.Core.Models;
@@ -10,6 +9,7 @@ namespace AvatarExplorer.Core.Models;
 /// </summary>
 public class Item : ISelectableItem
 {
+    [JsonInclude] public string Id { get; private set; } = Guid.NewGuid().ToString();
     public string Title { get; set; } = string.Empty;
     public string Author { get; set; } = string.Empty;
     public string AuthorId { get; set; } = string.Empty;
@@ -17,7 +17,7 @@ public class Item : ISelectableItem
     public string ItemPath { get; set; } = string.Empty;
     public string ThumbnmailFileName { get; set; } = string.Empty;
     public string AuthorThumbnmailFileName { get; set; } = string.Empty;
-    public ItemType Type { get; set; }
+    public ItemType Type { get; set; } = ItemType.None;
     public string CustomCategory { get; set; } = string.Empty;
     [JsonInclude] private List<string> SupportedAvatars { get; set; } = new List<string>();
     [JsonInclude] private List<string> ImplementedAvatars { get; set; } = new List<string>();
@@ -35,26 +35,6 @@ public class Item : ISelectableItem
     public void UpdateTags(IEnumerable<string> newList) => Tags = newList.ToList();
     
     public string GetBoothLink() => string.Format(BoothLink.ItemURLFormat, AuthorId, BoothId);
-    public string GetBoothJsonLink() => string.Format(BoothLink.ItemJsonURLFormat, BoothId);
-
-    [JsonIgnore]
-    internal string SearchIndex { get; private set; } = string.Empty;
-
-    internal void BuildSearchIndex(Dictionary<string, string> avatarMap)
-    {
-        IEnumerable<string> avatars = SupportedAvatarsView.Concat(ImplementedAvatarsView)
-            .Select(a => ItemUtils.GetAvatarNameFromDictionary(avatarMap, a))
-            .Where(name => !string.IsNullOrEmpty(name));
-
-        SearchIndex = string.Join("\n",
-            Title,
-            Author,
-            ItemMemo,
-            BoothId.ToString(),
-            string.Join(" ", TagsView),
-            string.Join(" ", avatars)
-        ).ToLowerInvariant();
-    }
     
     internal Item SetValuesFromCreationContext(ItemCreationContext itemCreationContext)
     {

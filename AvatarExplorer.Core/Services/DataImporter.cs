@@ -38,7 +38,7 @@ internal static class DataImporter
 
             string safeItemTitle = ItemUtils.GetSafeTitle(item.Title) ?? Path.GetFileNameWithoutExtension(item.ItemPath);
             string? newItemPath = FileSystemService.GetUniquePath(runtimeSettings.DataRootDirectory, safeItemTitle, isFolder: true);
-            if (newItemPath == null) continue; // 滅多に起こらないが、一応
+            if (newItemPath == null) continue;
 
             string newItemMaterialPath = Path.Combine(newItemPath, "AE_Materials");
 
@@ -46,9 +46,12 @@ internal static class DataImporter
             if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.MaterialPath)), newItemMaterialPath);
 
             item.ItemPath = $"<sys>{Path.GetRelativePath(runtimeSettings.DataRootDirectory, newItemPath)}";
-            pathMapping[previousItemPath] = item.ItemPath;
             
-            items.Add(FromV1(item));
+            Item newItem = FromV1(item);
+            
+            pathMapping[previousItemPath] = newItem.Id;
+            
+            items.Add(newItem);
 
             int percent = 20 + (int)(80.0 * i / v1Items.Count);
             if (percent != lastPercent)
@@ -97,7 +100,7 @@ internal static class DataImporter
             CustomCategory = item.CustomCategory,
             ItemMemo = item.ItemMemo,
             CreatedDate = item.CreatedDate,
-            UpdatedDate = item.UpdatedDate,
+            UpdatedDate = item.UpdatedDate
         };
 
         migratedItem.UpdateSupportedAvatars(item.SupportedAvatar);
@@ -137,8 +140,8 @@ internal static class DataImporter
             Item item = konoAssetItems[i].ToItem();
 
             string safeItemTitle = ItemUtils.GetSafeTitle(item.Title) ?? Path.GetFileNameWithoutExtension(item.ItemPath);
-            string? newItemPath = FileSystemService.GetUniquePath(runtimeSettings.DataRootDirectory, safeItemTitle);
-            if (newItemPath == null) continue; // 滅多に起こらないが、一応
+            string? newItemPath = FileSystemService.GetUniquePath(runtimeSettings.DataRootDirectory, safeItemTitle, isFolder: true);
+            if (newItemPath == null) continue;
 
             await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(KonoAssetPath.ItemsPath(dataFolderPath), item.ItemPath), newItemPath);
             item.ItemPath = newItemPath;
@@ -160,7 +163,7 @@ internal static class DataImporter
                     item.AuthorThumbnmailFileName = authorThumbnailFileName;
                 }
 
-                await Task.Delay(2250); // 750 * 3ms
+                await Task.Delay(2250); // (750 * 3)ms
             }
 
             items.Add(item);

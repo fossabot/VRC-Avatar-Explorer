@@ -12,6 +12,7 @@ public partial class AvatarExplorerApp
     
     private readonly List<Item> _items = new();
     private readonly List<CommonAvatar> _commonAvatars = new();
+    private readonly Dictionary<string, string> _itemSearchIndexDictionary = new();
 
     private readonly SelectionState _selectionState = new();
     private readonly Dictionary<ItemTagState, Func<SelectionNode, IReadOnlyList<ItemCountInfo>>> _stateHandlers;
@@ -90,13 +91,16 @@ public partial class AvatarExplorerApp
     #region Update API
     public void UpdateSearchIndex()
     {
-        var avatarNameMaps = ItemUtils.GetAvatarNameMaps(_items);
-        _items.ForEach(i => i.BuildSearchIndex(avatarNameMaps));
+        Dictionary<string, string> avatarNameMaps = ItemUtils.GetAvatarNameMaps(_items);
+        _items.ForEach(item => _itemSearchIndexDictionary[item.Id] = SearchService.BuildItemSearchIndex(item, avatarNameMaps, _commonAvatars));
     }
-    public void UpdateSearchIndex(Item item)
+    public void UpdateSearchIndex(string itemId)
     {
-        var avatarNameMaps = ItemUtils.GetAvatarNameMaps(_items);
-        item.BuildSearchIndex(avatarNameMaps);
+        Item? item = GetItemById(itemId);
+        if (item == null) return;
+
+        Dictionary<string, string> avatarNameMaps = ItemUtils.GetAvatarNameMaps(_items);
+        _itemSearchIndexDictionary[item.Id] = SearchService.BuildItemSearchIndex(item, avatarNameMaps, _commonAvatars);
     }
     #endregion
 
@@ -112,7 +116,7 @@ public partial class AvatarExplorerApp
     public IReadOnlyList<ItemCountInfo> GetCategories() => ItemCategoryAggregator.Aggregate(_items);
 
     public IReadOnlyList<Item> GetAllItems() => _items;
-    public Item? GetItemByPath(string itemPath) => _items.FirstOrDefault(i => i.ItemPath == itemPath);
+    public Item? GetItemById(string? itemId) => itemId != null ? _items.FirstOrDefault(i => i.Id == itemId) : null;
     public IReadOnlyList<ItemCountInfo> GetItemsForCurrentState()
     {
         SelectionNode? current = _selectionState.Current;
@@ -127,9 +131,10 @@ public partial class AvatarExplorerApp
     }
 
     public IReadOnlyList<CommonAvatar> GetCommonAvatars() => _commonAvatars;
+    public CommonAvatar? GetCommonAvatarById(string? groupId) => groupId != null ? _commonAvatars.FirstOrDefault(i => i.Id == groupId) : null;
     
     #region Current State Internal Handler
-    private IReadOnlyList<ItemCountInfo> HandleRootAvatar(SelectionNode selectionNode) => ItemCategoryAggregator.Aggregate(_items.Where(i => AvatarStatusResolver.Resolve(selectionNode.Key, i, _commonAvatars).IsSupportedOrCommon));
+    private IReadOnlyList<ItemCountInfo> HandleRootAvatar(SelectionNode selectionNode) => ItemCategoryAggregator.Aggregate(_items.Where(i => AvatarStatusResolver.Resolve(i, selectionNode.Key, _commonAvatars).IsSupportedOrCommon));
     private IReadOnlyList<ItemCountInfo> HandleRootAuthor(SelectionNode selectionNode) => ItemCategoryAggregator.Aggregate(_items.Where(i => i.Author == selectionNode.Key));
     private IReadOnlyList<ItemCountInfo> HandleRootCategory(SelectionNode selectionNode)
     {
@@ -152,7 +157,7 @@ public partial class AvatarExplorerApp
             {
                 if (!CategoryUtils.IsCategoryMatch(item, selectionNode.Key)) continue;
 
-                AvatarStatus avatarStatus = AvatarStatusResolver.Resolve(rootSelectionNode.Key, item, _commonAvatars);
+                AvatarStatus avatarStatus = AvatarStatusResolver.Resolve(item, rootSelectionNode.Key, _commonAvatars);
                 if (!avatarStatus.IsSupportedOrCommon) continue;
                 
                 filteredResult.Add(new ItemCountInfo(item, 0, avatarStatus.IsOnlyCommon ? avatarStatus.CommonAvatarName : string.Empty));
@@ -175,14 +180,20 @@ public partial class AvatarExplorerApp
     }
     private IReadOnlyList<ItemCountInfo> HandleRootSelectedItem(SelectionNode selectionNode)
     {
-        return GetCategoryItemsFromPathInternal(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, selectionNode.Key));
+        Item? item = GetItemById(selectionNode.Key);
+        if (item == null) return new List<ItemCountInfo>();
+
+        return GetCategoryItemsFromPathInternal(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath));
     }
     private IReadOnlyList<ItemCountInfo> HandleItemFileCategory(SelectionNode selectionNode)
     {
         SelectionNode? fileSelectionNode = _selectionState.Search(ItemTagState.RootSelectedItem | ItemTagState.SearchItem);
         if (fileSelectionNode == null) return new List<ItemCountInfo>();
 
-        return GetFilesFromPathInternal(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, fileSelectionNode.Key), selectionNode.Key);
+        Item? item = GetItemById(fileSelectionNode.Key);
+        if (item == null) return new List<ItemCountInfo>();
+
+        return GetFilesFromPathInternal(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), selectionNode.Key);
     }
     #endregion
 
@@ -194,7 +205,7 @@ public partial class AvatarExplorerApp
         SelectionNode? itemSelectionNode = _selectionState.Search(ItemTagState.RootSelectedItem | ItemTagState.SearchItem);
         if (itemSelectionNode == null) return null;
 
-        return _items.FirstOrDefault(i => i.ItemPath == itemSelectionNode.Key);
+        return _items.FirstOrDefault(i => i.Id == itemSelectionNode.Key);
     }
 
     private static IReadOnlyList<ItemCountInfo> GetCategoryItemsFromPathInternal(string itemPath)
@@ -225,10 +236,7 @@ public partial class AvatarExplorerApp
                 categoryItem.FilePaths.Add(file);
             }
 
-            if (categoryItem.FilePaths.Count > 0)
-            {
-                categoryItems.Add(new ItemCountInfo(categoryItem, categoryItem.FilePaths.Count));
-            }
+            if (categoryItem.FilePaths.Count > 0) categoryItems.Add(new ItemCountInfo(categoryItem, categoryItem.FilePaths.Count));
         }
 
         return categoryItems;
@@ -283,23 +291,26 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Add API
-    public CommonAvatar? AddCommonAvatar(string groupName, IEnumerable<string> avatars)
+    public void AddCommonAvatar(string groupName, IEnumerable<string>? avatars = null)
     {
-        if (_commonAvatars.Any(i => i.GroupName == groupName)) return null;
-
         CommonAvatar commonAvatar = new()
         {
             GroupName = groupName
         };
-        commonAvatar.UpdateAvatars(avatars);
+
+        if (avatars != null)
+        {
+            commonAvatar.UpdateAvatars(avatars);
+            UpdateSearchIndex();
+        }
 
         _commonAvatars.Add(commonAvatar);
 
-        return commonAvatar;
+        SaveCommonAvatarDatabase();
     }
     public async Task<(Item? newItem, List<string> processingFailedPaths)> AddItem(ItemCreationContext itemCreationContext)
     {
-        var addItemResult = await ItemCreator.FromItemCreationContext(itemCreationContext, _runtimeSettings);
+        (Item? newItem, List<string> processingFailedPaths) addItemResult = await ItemCreator.FromItemCreationContext(itemCreationContext, _runtimeSettings);
         if (addItemResult.newItem == null) return addItemResult;
 
         string currentUnixTime = DatetimeUtils.GetCurrentUnixTime();
@@ -307,63 +318,67 @@ public partial class AvatarExplorerApp
         addItemResult.newItem.UpdatedDate = currentUnixTime;
         
         _items.Add(addItemResult.newItem);
+        UpdateSearchIndex(addItemResult.newItem.Id);
 
         SaveItemDatabase();
-        UpdateSearchIndex(addItemResult.newItem);
 
         return addItemResult;
     }
 
-    public async Task<Item> EditItem(Item item, ItemCreationContext itemCreationContext)
+    public async Task<Item?> EditItem(string itemId, ItemCreationContext itemCreationContext)
     {
+        Item? item = GetItemById(itemId);
+        if (item == null) return null;
+
         item.SetValuesFromCreationContext(itemCreationContext);
-        if (itemCreationContext.Folders.Count > 1) await AddItemPaths(item, itemCreationContext.Folders.Skip(1).ToArray()); // １個より多い場合は、追加のアイテムとしてインポートしてあげる
+
+        // １個より多い場合は追加のアイテムとしてインポートしてあげる
+        if (itemCreationContext.Folders.Count > 1) await AddItemPaths(item.Id, itemCreationContext.Folders.Skip(1).ToArray());
 
         item.UpdatedDate = DatetimeUtils.GetCurrentUnixTime();
-
-        SaveItemDatabase();
         UpdateSearchIndex();
 
-        return item;
-    }
-    #endregion
+        SaveItemDatabase();
 
-    #region Rename CommonAvatar Group Name
-    public void RenameCommonAvatarGroupName(string previousInternalGroupPath, string newInternalGroupPath)
-    {
-        foreach (Item item in _items.Where(i => i.SupportedAvatarsView.Contains(previousInternalGroupPath)))
-        {
-            IEnumerable<string> newSupportedAvatars = item.SupportedAvatarsView
-                .Select(i => i == previousInternalGroupPath ? newInternalGroupPath : i);
-            item.UpdateSupportedAvatars(newSupportedAvatars);
-        }
+        return item;
     }
     #endregion
 
     #region Update API
-    public async Task<Item?> UpdateItemThumbnail(Item item, string imageFilePath)
+    public async Task<Item?> UpdateItemThumbnail(string itemId, string imageFilePath)
     {
+        Item? item = GetItemById(itemId);
+        if (item == null) return null;
+
         string? newFileFullPath = await FileSystemService.CopyFile(imageFilePath, Path.Combine(SystemPath.ItemThumbnailsPath, Path.GetFileName(imageFilePath)), true);
         if (newFileFullPath == null) return null;
 
         item.ThumbnmailFileName = Path.GetFileName(newFileFullPath);
+        SaveItemDatabase();
 
         return item;
     }
-    public async Task<Item?> UpdateAuthorThumbnail(Item item, string imageFilePath)
+    public async Task<Item?> UpdateAuthorThumbnail(string itemId, string imageFilePath)
     {
+        Item? item = GetItemById(itemId);
+        if (item == null) return null;
+
         string? newFileFullPath = await FileSystemService.CopyFile(imageFilePath, Path.Combine(SystemPath.AuthorThumbnailsPath, Path.GetFileName(imageFilePath)), true);
         if (newFileFullPath == null) return null;
 
-        item.ThumbnmailFileName = Path.GetFileName(newFileFullPath);
+        item.AuthorThumbnmailFileName = Path.GetFileName(newFileFullPath);
+        SaveItemDatabase();
 
         return item;
     }
     #endregion
 
     #region Add API
-    public async Task<IReadOnlyList<string>> AddItemPaths(Item item, string[] paths)
+    public async Task<IReadOnlyList<string>> AddItemPaths(string itemId, string[] paths)
     {
+        Item? item = GetItemById(itemId);
+        if (item == null) return paths.ToList();
+
         List<string> processingFailedPaths = await FileSystemService.ExtractItemPaths(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), paths);
         return processingFailedPaths;
     }
@@ -390,26 +405,26 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Remove API
-    public bool RemoveItem(string itemPath, bool removeFromSupportedAndImplemented = false)
+    public bool RemoveItem(string itemId, bool removeFromSupportedAndImplemented = false)
     {
-        int removed = _items.RemoveAll(i => i.ItemPath == itemPath);
+        int removed = _items.RemoveAll(i => i.Id == itemId);
         if (removeFromSupportedAndImplemented)
         {
             _items.ForEach(i =>
             {
-                i.UpdateSupportedAvatars(i.SupportedAvatarsView.Where(a => a != itemPath));
-                i.UpdateImplementedAvatars(i.ImplementedAvatarsView.Where(a => a != itemPath));
+                i.UpdateSupportedAvatars(i.SupportedAvatarsView.Where(a => a != itemId));
+                i.UpdateImplementedAvatars(i.ImplementedAvatarsView.Where(a => a != itemId));
             });
         }
 
         return removed > 0;
     }
 
-    public bool RemoveCommonAvatar(string commonAvatarName) => _commonAvatars.RemoveAll(i => i.GroupName == commonAvatarName) > 0;
+    public bool RemoveCommonAvatar(string commonAvatarId) => _commonAvatars.RemoveAll(i => i.Id == commonAvatarId) > 0;
     #endregion
 
     #region Search API
-    public IReadOnlyList<Item> SearchItems(SearchFilter searchFilter) => SearchService.ExecuteSearch(_items, _commonAvatars, _runtimeSettings, searchFilter);
+    public IReadOnlyList<Item> SearchItems(SearchFilter searchFilter) => SearchService.ExecuteSearch(_items, _commonAvatars, _itemSearchIndexDictionary, _runtimeSettings, searchFilter);
     #endregion
 
     #region Save API
@@ -438,7 +453,7 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Data Exporter API
-    public async Task ExportToCsv(string filePath, Dictionary<ItemType, string> localizedItemTypesMapping, bool includeImplementedToSupported) => await DataExporter.ToCsv(_items, _commonAvatars, localizedItemTypesMapping, filePath, includeImplementedToSupported);
+    public async Task ExportToCsv(string filePath, Dictionary<ItemType, string> localizedItemTypesMapping, bool includeCommonToSupported) => await DataExporter.ToCsv(_items, _commonAvatars, localizedItemTypesMapping, filePath, includeCommonToSupported);
     #endregion
     
     #region Clear API
@@ -451,11 +466,14 @@ public partial class AvatarExplorerApp
         if (_contextMenuHandlers.TryGetValue(contextMenuAction.ActionKey, out var handler))
             await handler(contextMenuAction.Tag);
     }
-    private async Task ItemButton_ContextMenu_FetchThumbnail(string itemPath)
+    private async Task ItemButton_ContextMenu_FetchThumbnail(string itemId)
     {
-        Item? item = GetItemByPath(itemPath);
+        Item? item = GetItemById(itemId);
         if (item == null || item.BoothId == -1) return;
 
+        if (IsApiCooldownNow) return;
+        
+        _lastBoothApiGetTime = DateTime.Now; // 時間を更新する
         BoothItem? boothItem = await BoothService.GetItem(item.BoothId.ToString());
         if (boothItem == null) return;
 

@@ -33,7 +33,7 @@ public partial class MainWindow
         foreach (ItemCountInfo itemCountInfo in avatars)
         {
             Button button = ItemButtonFactory.AddItemButton(EditImplementedAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings, _userPreferences, onClick: EditImplementedAvatarsOverlay_ItemButton_Click);
-            if (_editImplementedAvatarsOverlay_selectedAvatars.Contains(((Item)itemCountInfo.Item).ItemPath)) button.Classes.Add("selected");
+            if (_editImplementedAvatarsOverlay_selectedAvatars.Contains(((Item)itemCountInfo.Item).Id)) button.Classes.Add("selected");
         }
     }
 
@@ -41,9 +41,10 @@ public partial class MainWindow
     private void EditImplementedAvatarsOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => EditImplementedAvatarsOverlay_Hide();
     private void EditImplementedAvatarsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
-        if (_contextMenu_selectedItem != null)
+        Item? item = _avatarExplorerApp.GetItemById(_addItemOverlay_selectedItemId);
+        if (item != null)
         {
-            _contextMenu_selectedItem.UpdateImplementedAvatars(_editImplementedAvatarsOverlay_selectedAvatars);
+            item.UpdateImplementedAvatars(_editImplementedAvatarsOverlay_selectedAvatars);
             _avatarExplorerApp.SaveItemDatabase();
         }
 

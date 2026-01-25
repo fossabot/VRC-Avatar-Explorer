@@ -11,8 +11,7 @@ public partial class MainWindow
 
     private Task<YesNoResult> Main_ShowYesNoDialogAsync(string title, string content)
     {
-        if (_yesNoTcs != null)
-            throw new InvalidOperationException("YesNoDialog is already shown.");
+        if (_yesNoTcs != null) throw new InvalidOperationException("YesNoDialog is already shown.");
 
         _yesNoTcs = new TaskCompletionSource<YesNoResult>();
 
@@ -27,7 +26,7 @@ public partial class MainWindow
     {
         YesNoDialogOverlay.IsVisible = false;
 
-        var tcs = _yesNoTcs;
+        TaskCompletionSource<YesNoResult>? tcs = _yesNoTcs;
         _yesNoTcs = null;
 
         tcs?.TrySetResult(result);

@@ -9,11 +9,11 @@ internal static class ItemCategoryAggregator
     {
         List<ItemCountInfo> categories = new();
 
-        var itemsByType = items
+        Dictionary<ItemType, int> itemsByType = items
             .GroupBy(i => i.Type)
             .ToDictionary(g => g.Key, g => g.Count());
 
-        var itemsByCustomCategory = items
+        Dictionary<string, int> itemsByCustomCategory = items
             .Where(i => !string.IsNullOrEmpty(i.CustomCategory))
             .GroupBy(i => i.CustomCategory)
             .ToDictionary(g => g.Key, g => g.Count());

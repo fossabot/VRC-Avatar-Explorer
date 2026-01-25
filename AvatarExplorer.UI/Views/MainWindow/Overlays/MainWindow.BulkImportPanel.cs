@@ -18,14 +18,14 @@ public partial class MainWindow
 {
     private readonly List<BulkImportItem> _bulkImportPanel_bulkImportItems = new();
 
-    private void BulkImportItem_Add(string itemPath)
+    private void BulkImportItem_Add(string itemId)
     {
         SidePanel_Show();
         
         int bulkImportPanelTabIndex = SidePanel_TabControl.Items.IndexOf(SidePanel_BulkImportPanelTab);
         if (bulkImportPanelTabIndex != -1 && SidePanel_TabControl.SelectedIndex != bulkImportPanelTabIndex) SidePanel_TabControl.SelectedIndex = bulkImportPanelTabIndex;
 
-        _bulkImportPanel_bulkImportItems.Add(new BulkImportItem(itemPath));
+        _bulkImportPanel_bulkImportItems.Add(new BulkImportItem(itemId));
         ReloadBulkImportItemButtons();
         
         SidePanel_BulkImportPanelScrollViewer.Offset = AvaloniaVectorUtils.MaxValue;
@@ -34,9 +34,7 @@ public partial class MainWindow
     private void BulkImportItemButton_Copy_Click(int itemIndex)
     {
         BulkImportItem item = _bulkImportPanel_bulkImportItems[itemIndex];
-        string itemPath = item.ItemPath;
-
-        BulkImportItem_Add(itemPath);
+        BulkImportItem_Add(item.ItemId);
     }
 
     private void BulkImportItemButton_Remove_Click(int itemIndex)
@@ -59,7 +57,7 @@ public partial class MainWindow
 
             foreach (BulkImportItem bulkImportItem in _bulkImportPanel_bulkImportItems)
             {
-                Item? item = _avatarExplorerApp.GetItemByPath(bulkImportItem.ItemPath);
+                Item? item = _avatarExplorerApp.GetItemById(bulkImportItem.ItemId);
                 if (item == null) continue;
 
                 string filePath = UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath))[bulkImportItem.SelectedIndex];
@@ -114,7 +112,7 @@ public partial class MainWindow
         for (int i = 0; i < _bulkImportPanel_bulkImportItems.Count; i++)
         {
             BulkImportItem bulkImportItem = _bulkImportPanel_bulkImportItems[i];
-            Item? item = _avatarExplorerApp.GetItemByPath(bulkImportItem.ItemPath);
+            Item? item = _avatarExplorerApp.GetItemById(bulkImportItem.ItemId);
             if (item == null) continue;
 
             UnitypackageSelectorButtonFactory.AddItemButton(SidePanel_BulkImportPanel, new UISelectableItem(new ItemCountInfo(item, 0)), RuntimeSettings, _userPreferences, i, bulkImportItem.SelectedIndex, BulkImportItemButton_Copy_Click, BulkImportItemButton_Remove_Click, BulkImportItemButton_SelectionChanged);
@@ -125,9 +123,9 @@ public partial class MainWindow
     {
         if (!e.DataTransfer.Contains(DataFormat.Text)) return;
 
-        string? itemPath = e.DataTransfer.TryGetText();
-        if (string.IsNullOrEmpty(itemPath)) return;
+        string? itemId = e.DataTransfer.TryGetText();
+        if (string.IsNullOrEmpty(itemId)) return;
 
-        if (_avatarExplorerApp.GetItemByPath(itemPath) != null) BulkImportItem_Add(itemPath);
+        if (_avatarExplorerApp.GetItemById(itemId) != null) BulkImportItem_Add(itemId);
     }
 }

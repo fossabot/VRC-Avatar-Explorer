@@ -4,7 +4,6 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvatarExplorer.Core.Data.Links;
-using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
 using AvatarExplorer.Core.Models.Booth;
@@ -23,14 +22,14 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    internal Item? _addItemOverlay_selectedItem = null;
+    internal string? _addItemOverlay_selectedItemId = null;
     internal readonly AddItemOverlayWindowValues _addItemOverlay_addItemWindowValues = new();
 
     private void AddItemOverlay_ShowEdit(Item item)
     {
         AddItemOverlay_InitializeAddItemWindowCategories();
 
-        _addItemOverlay_selectedItem = item;
+        _addItemOverlay_selectedItemId = item.Id;
         AddItemOverlay_BoothLinkTextBox.Text = item.BoothId == -1 ? string.Empty : item.GetBoothLink();
 
         _addItemOverlay_addItemWindowValues.Folders.Clear();
@@ -55,7 +54,7 @@ public partial class MainWindow
 
         AddItemOverlay_InitializeAddItemWindowCategories();
         
-        _addItemOverlay_selectedItem = null;
+        _addItemOverlay_selectedItemId = null;
         AddItemOverlay_BoothLinkTextBox.Text = string.Empty;
 
         _addItemOverlay_addItemWindowValues.Reset();
@@ -73,7 +72,7 @@ public partial class MainWindow
     {
         AddItemOverlay_InitializeAddItemWindowCategories();
 
-        _addItemOverlay_selectedItem = null;
+        _addItemOverlay_selectedItemId = null;
         AddItemOverlay_BoothLinkTextBox.Text = string.Format(BoothLink.ItemURLWithoutAuthorFormat, launchInfo.AssetId);
 
         _addItemOverlay_addItemWindowValues.Reset();
@@ -91,7 +90,7 @@ public partial class MainWindow
     }
     private void AddItemOverlay_Hide()
     {
-        _addItemOverlay_selectedItem = null;
+        _addItemOverlay_selectedItemId = null;
         _addItemOverlay_addItemWindowValues.Reset();
         _editSupportedAvatarsOverlay_selectedAvatars.Clear();
         AddItemOverlay.IsVisible = false;
@@ -162,7 +161,7 @@ public partial class MainWindow
         folderRemoveButton.Click += AddItemOverlay_RemoveButton_Click;
         folderPanel.Children.Add(folderRemoveButton);
 
-        if (_addItemOverlay_selectedItem != null && index == 0)
+        if (_addItemOverlay_selectedItemId != null && index == 0)
         {
             folderRemoveButton.IsEnabled = false; // 親フォルダは削除できないように
         }
@@ -228,10 +227,10 @@ public partial class MainWindow
     }
     private bool AddItemOverlay_ValidateAddItemWindowValues()
     {
-        var validationResult = _addItemOverlay_addItemWindowValues.Validate();
-        if (!validationResult.Item1) Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[validationResult.Item2]);
+        (bool result, string errorMessageLocalizationKey) = _addItemOverlay_addItemWindowValues.Validate();
+        if (!result) Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[errorMessageLocalizationKey]);
 
-        return validationResult.Item1;
+        return result;
     }
 
     #region Event Handler
@@ -314,17 +313,17 @@ public partial class MainWindow
         itemCreationContext.AuthorThumbnailUrl = _addItemOverlay_addItemWindowValues.BoothAuthorThumbnailUrl;
         itemCreationContext.BoothId = _addItemOverlay_addItemWindowValues.BoothId;
 
-        var categoryInfo = AddItemOverlay_GetCategoryFromItemWindow();
-        itemCreationContext.ItemType = categoryInfo.Item1;
-        if (categoryInfo.Item1 == ItemType.Custom) itemCreationContext.CustomCategory = categoryInfo.Item2;
+        (ItemType itemType, string customCategory) = AddItemOverlay_GetCategoryFromItemWindow();
+        itemCreationContext.ItemType = itemType;
+        if (itemType == ItemType.Custom) itemCreationContext.CustomCategory = customCategory;
 
         itemCreationContext.SupportedAvatars.AddRange(_addItemOverlay_addItemWindowValues.SupportedAvatarsView);
 
-        if (_addItemOverlay_selectedItem == null)
+        if (_addItemOverlay_selectedItemId == null)
         {
             ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
             ProgressOverlay_Update(0);
-            var (newItem, processingFailedPaths) = await _avatarExplorerApp.AddItem(itemCreationContext);
+            (Item? newItem, List<string> processingFailedPaths) = await _avatarExplorerApp.AddItem(itemCreationContext);
             ProgressOverlay_Hide();
 
             if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
@@ -342,9 +341,11 @@ public partial class MainWindow
         {
             ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
             ProgressOverlay_Update(0);
-            await _avatarExplorerApp.EditItem(_addItemOverlay_selectedItem, itemCreationContext);
+            Item? edittedItem = await _avatarExplorerApp.EditItem(_addItemOverlay_selectedItemId, itemCreationContext);
             ProgressOverlay_Hide();
-            Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemEdit]);
+
+            if (edittedItem != null) Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemEdit]);
+            else Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Failed.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Failed.ItemEdit]);
         }
 
         AddItemOverlay_Hide();

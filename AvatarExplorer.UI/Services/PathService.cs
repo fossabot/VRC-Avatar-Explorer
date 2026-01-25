@@ -17,7 +17,7 @@ internal static class PathService
 
         if (StateFlagUtils.IsItemState(state))
         {
-            Item? item = items.FirstOrDefault(item => item.ItemPath == value);
+            Item? item = items.FirstOrDefault(item => item.Id == value);
             if (item != null) value = removeBrackets ? ItemUtils.RemoveBrackets(item.Title) : item.Title; // アイテムはパスからタイトルに変換する
         }
 

@@ -6,16 +6,25 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class SearchService
 {
-    internal static IReadOnlyList<Item> ExecuteSearch(IReadOnlyList<Item> items, IReadOnlyList<CommonAvatar> commonAvatars, RuntimeSettings runtimeSettings, SearchFilter searchFilter)
+    internal static IReadOnlyList<Item> ExecuteSearch(IReadOnlyList<Item> items, IReadOnlyList<CommonAvatar> commonAvatars, Dictionary<string, string> searchIndexDictionary, RuntimeSettings runtimeSettings, SearchFilter searchFilter)
     {
-        var avatarNameMaps = ItemUtils.GetAvatarNameMaps(items);
+        Dictionary<string, string> avatarNameMaps = ItemUtils.GetAvatarNameMaps(items);
 
-        return items
-            .Where(i => Matches(searchFilter, avatarNameMaps, commonAvatars, i, runtimeSettings.DataRootDirectory))
-            .OrderByDescending(i => SearchUtils.GetScore(i, searchFilter.SearchWords))
+        List<Item> matchedItems = new();
+        foreach (Item item in items)
+        {
+            string searchIndex = searchIndexDictionary.TryGetValue(item.Id, out string? value) ? value : string.Empty;
+            if (Matches(item, searchFilter, searchIndex, avatarNameMaps, commonAvatars, runtimeSettings.DataRootDirectory))
+            {
+                matchedItems.Add(item);
+            }
+        }
+
+        return matchedItems
+            .OrderByDescending(i => !searchIndexDictionary.TryGetValue(i.Id, out string? value) ? 0 : SearchUtils.GetScore(value, searchFilter.SearchWords))
             .ToList();
     }
-    private static bool Matches(SearchFilter searchFilter, Dictionary<string, string> avatarNameMaps, IReadOnlyList<CommonAvatar> commonAvatars, Item item, string parentFolder)
+    private static bool Matches(Item item, SearchFilter searchFilter, string searchIndex, Dictionary<string, string> avatarNameMaps, IReadOnlyList<CommonAvatar> commonAvatars, string parentFolder)
     {
         bool matchTitle = searchFilter.Titles.Count == 0 || SearchUtils.MatchesFilter(
             [item.Title], searchFilter.Titles,
@@ -36,7 +45,9 @@ internal static class SearchService
         );
 
         bool matchAvatar = searchFilter.SupportedAvatars.Count == 0 || SearchUtils.MatchesFilter(
-            item.SupportedAvatarsView.Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar)), searchFilter.SupportedAvatars,
+            SupportedAvatarService.GetAllAvatarIds(item.SupportedAvatarsView, commonAvatars, includeCommonToSupported: true)
+                .Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar)),
+            searchFilter.SupportedAvatars,
             searchFilter.IsOrSearch,
             (target, filter) => !string.IsNullOrEmpty(target) && target.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
         );
@@ -117,8 +128,8 @@ internal static class SearchService
 
         bool matchWord = searchFilter.SearchWords.Count == 0
             || (searchFilter.IsOrSearch
-                ? searchFilter.SearchWords.Any(w => SearchUtils.GetWordSearchResult(avatarNameMaps, item, w))
-                : searchFilter.SearchWords.All(w => SearchUtils.GetWordSearchResult(avatarNameMaps, item, w)));
+                ? searchFilter.SearchWords.Any(w => SearchUtils.GetWordSearchResult(searchIndex, w))
+                : searchFilter.SearchWords.All(w => SearchUtils.GetWordSearchResult(searchIndex, w)));
 
         return matchTitle
             && matchAuthor
@@ -134,5 +145,23 @@ internal static class SearchService
             && matchCommon
             && matchBroken
             && matchWord;
+    }
+
+    internal static string BuildItemSearchIndex(Item item, Dictionary<string, string> avatarMap, IReadOnlyList<CommonAvatar> commonAvatars)
+    {
+        IEnumerable<string> avatars = SupportedAvatarService.GetAllAvatarIds(item.SupportedAvatarsView, commonAvatars, includeCommonToSupported: true)
+            .Concat(item.ImplementedAvatarsView)
+            .Where(name => !string.IsNullOrEmpty(name))
+            .Select(a => ItemUtils.GetAvatarNameFromDictionary(avatarMap, a))
+            .Where(name => !string.IsNullOrEmpty(name));
+
+        return string.Join("\n",
+            item.Title,
+            item.Author,
+            item.ItemMemo,
+            item.BoothId.ToString(),
+            string.Join(" ", item.TagsView),
+            string.Join(" ", avatars)
+        ).ToLowerInvariant();
     }
 }

@@ -18,26 +18,26 @@ public static class ContextMenuCreator
     {
         ContextMenuAction[] contextMenuActions =
         [
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.OpenFolder, ActionKey.OpenItemFolder, ActionLayer.UI, ContextMenuIconType.Open, item.ItemPath),
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.ShowOtherItemsByAuthor, ActionKey.ShowOtherItemsByAuthor, ActionLayer.UI, ContextMenuIconType.Open, item.ItemPath, addSeparator: true),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.OpenFolder, ActionKey.OpenItemFolder, ActionLayer.UI, ContextMenuIconType.Open, item.Id),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.ShowOtherItemsByAuthor, ActionKey.ShowOtherItemsByAuthor, ActionLayer.UI, ContextMenuIconType.Open, item.Id, addSeparator: true),
             
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Add.BulkImportList, ActionKey.AddToBulkImportList, ActionLayer.UI, ContextMenuIconType.Add, item.ItemPath),
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Add.File, ActionKey.AddItemFile, ActionLayer.UI, ContextMenuIconType.Add, item.ItemPath),
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Add.Folder, ActionKey.AddItemFolder, ActionLayer.UI, ContextMenuIconType.Add, item.ItemPath, addSeparator: true),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Add.BulkImportList, ActionKey.AddToBulkImportList, ActionLayer.UI, ContextMenuIconType.Add, item.Id),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Add.File, ActionKey.AddItemFile, ActionLayer.UI, ContextMenuIconType.Add, item.Id),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Add.Folder, ActionKey.AddItemFolder, ActionLayer.UI, ContextMenuIconType.Add, item.Id, addSeparator: true),
 
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Booth.Open, ActionKey.OpenBoothLink, ActionLayer.UI, ContextMenuIconType.Open, item.ItemPath),
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Booth.Copy, ActionKey.CopyBoothLink, ActionLayer.UI, ContextMenuIconType.Copy, item.ItemPath, addSeparator: true),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Booth.Open, ActionKey.OpenBoothLink, ActionLayer.UI, ContextMenuIconType.Open, item.Id),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Booth.Copy, ActionKey.CopyBoothLink, ActionLayer.UI, ContextMenuIconType.Copy, item.Id, addSeparator: true),
 
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Default, ActionKey.EditItem, ActionLayer.UI, ContextMenuIconType.Edit, item.ItemPath),
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Title, ActionKey.EditItemTitle, ActionLayer.UI, ContextMenuIconType.Edit, item.ItemPath),
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Tag, ActionKey.EditItemTag, ActionLayer.UI, ContextMenuIconType.Edit, item.ItemPath),
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Memo, ActionKey.AddItemMemo, ActionLayer.UI, ContextMenuIconType.Edit, item.ItemPath),
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Implemented, ActionKey.EditImplementedAvatar, ActionLayer.UI, ContextMenuIconType.Edit, item.ItemPath, addSeparator: true),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Default, ActionKey.EditItem, ActionLayer.UI, ContextMenuIconType.Edit, item.Id),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Title, ActionKey.EditItemTitle, ActionLayer.UI, ContextMenuIconType.Edit, item.Id),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Tag, ActionKey.EditItemTag, ActionLayer.UI, ContextMenuIconType.Edit, item.Id),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Memo, ActionKey.AddItemMemo, ActionLayer.UI, ContextMenuIconType.Edit, item.Id),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Edit.Implemented, ActionKey.EditImplementedAvatar, ActionLayer.UI, ContextMenuIconType.Edit, item.Id, addSeparator: true),
 
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Thumbnail.Change, ActionKey.ChangeThumbnail, ActionLayer.UI, ContextMenuIconType.Edit, item.ItemPath),
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Thumbnail.Fetch, ActionKey.FetchThumbnail, ActionLayer.Core, ContextMenuIconType.Fetch, item.ItemPath, addSeparator: true),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Thumbnail.Change, ActionKey.ChangeThumbnail, ActionLayer.UI, ContextMenuIconType.Edit, item.Id),
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Thumbnail.Fetch, ActionKey.FetchThumbnail, ActionLayer.Core, ContextMenuIconType.Fetch, item.Id, addSeparator: true),
 
-            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Remove, ActionKey.RemoveItem, ActionLayer.UI, ContextMenuIconType.Delete, item.ItemPath)
+            new ContextMenuAction(LocalizationKey.ContextMenu.Item.Remove, ActionKey.RemoveItem, ActionLayer.UI, ContextMenuIconType.Delete, item.Id)
         ];
 
         return contextMenuActions;

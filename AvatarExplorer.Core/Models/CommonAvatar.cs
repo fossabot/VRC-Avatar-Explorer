@@ -5,6 +5,7 @@ namespace AvatarExplorer.Core.Models;
 
 public class CommonAvatar : ISelectableItem
 {
+    [JsonInclude] public string Id { get; private set; } = Guid.NewGuid().ToString();
     public string GroupName { get; set; } = string.Empty;
     [JsonInclude] private List<string> Avatars { get; set; } = new List<string>();
 
@@ -13,15 +14,15 @@ public class CommonAvatar : ISelectableItem
     public void UpdateAvatars(IEnumerable<string> avatars) => Avatars = avatars.ToList();
 
     [JsonIgnore] public static readonly string InternalPathPrefix = "<sys:commonavatar>";
-    public string GetInternalPath() => InternalPathPrefix + GroupName;
-    public static string? GetGroupName(string internalPath)
+    public string GetInternalId() => InternalPathPrefix + Id;
+    public static string? GetGroupId(string internalId)
     {
-        if (string.IsNullOrEmpty(internalPath))
+        if (string.IsNullOrEmpty(internalId))
             return null;
 
-        if (!internalPath.StartsWith(InternalPathPrefix))
+        if (!internalId.StartsWith(InternalPathPrefix))
             return null;
 
-        return internalPath[InternalPathPrefix.Length..];
+        return internalId[InternalPathPrefix.Length..];
     }
 }

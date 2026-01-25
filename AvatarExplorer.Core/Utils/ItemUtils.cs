@@ -8,10 +8,10 @@ public static partial class ItemUtils
     [GeneratedRegex(@"\u3010[^\u3011]+\u3011")]
     private static partial Regex TextBracketsRegex();
 
-    internal static string GetAvatarNameFromPath(IReadOnlyList<Item> items, string? path)
+    internal static string GetAvatarNameFromId(IReadOnlyList<Item> items, string? id)
     {
-        if (string.IsNullOrEmpty(path)) return string.Empty;
-        return items.Where(i => i.Type == ItemType.Avatar).FirstOrDefault(x => x.ItemPath == path)?.Title ?? string.Empty;
+        if (string.IsNullOrEmpty(id)) return string.Empty;
+        return items.Where(i => i.Type == ItemType.Avatar).FirstOrDefault(x => x.Id == id)?.Title ?? string.Empty;
     }
 
     internal static string GetAvatarNameFromDictionary(Dictionary<string, string> avatarNamesDictionary, string avatarPath)
@@ -38,11 +38,11 @@ public static partial class ItemUtils
     {
         return items
             .Where(i => i.Type == ItemType.Avatar)
-            .Select(i => i.ItemPath)
+            .Select(i => i.Id)
             .Distinct()
             .ToDictionary(
                 i => i,
-                i => GetAvatarNameFromPath(items, i)
+                i => GetAvatarNameFromId(items, i)
             );
     }
 }

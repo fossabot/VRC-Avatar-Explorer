@@ -4,12 +4,12 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class AvatarStatusResolver
 {
-    internal static AvatarStatus Resolve(string? avatarPath, Item item, IReadOnlyList<CommonAvatar> commonAvatars)
+    internal static AvatarStatus Resolve(Item item, string? avatarId, IReadOnlyList<CommonAvatar> commonAvatars)
     {
         AvatarStatus avatarStatus = new();
-        if (string.IsNullOrEmpty(avatarPath)) return avatarStatus;
+        if (string.IsNullOrEmpty(avatarId)) return avatarStatus;
         
-        if (item.SupportedAvatarsView.Count == 0 || item.SupportedAvatarsView.Contains(avatarPath))
+        if (item.SupportedAvatarsView.Count == 0 || item.SupportedAvatarsView.Contains(avatarId))
             avatarStatus.IsSupported = true;
 
         if (item.Type != ItemType.Clothing) return avatarStatus;
@@ -19,8 +19,8 @@ internal static class AvatarStatusResolver
         {
             if (!supportedAvatar.StartsWith(CommonAvatar.InternalPathPrefix)) continue;
 
-            CommonAvatar? group = commonAvatars.FirstOrDefault(g => g.GroupName == CommonAvatar.GetGroupName(supportedAvatar));
-            if (group != null && group.AvatarsView.Contains(avatarPath))
+            CommonAvatar? group = commonAvatars.FirstOrDefault(g => g.Id == CommonAvatar.GetGroupId(supportedAvatar));
+            if (group != null && group.AvatarsView.Contains(avatarId))
             {
                 avatarStatus.IsCommon = true;
                 avatarStatus.CommonAvatarName = group.GroupName;
@@ -28,11 +28,10 @@ internal static class AvatarStatusResolver
             }
         }
 
-        CommonAvatar[] groupsForPath = commonAvatars
-            .Where(x => x.AvatarsView.Contains(avatarPath))
-            .ToArray();
+        IEnumerable<CommonAvatar> groupsForPath = commonAvatars
+            .Where(x => x.AvatarsView.Contains(avatarId));
 
-        if (groupsForPath.Length == 0) return avatarStatus;
+        if (!groupsForPath.Any()) return avatarStatus;
 
         foreach (string supportedAvatar in item.SupportedAvatarsView)
         {
@@ -41,7 +40,7 @@ internal static class AvatarStatusResolver
             {
                 avatarStatus.IsCommon = true;
                 avatarStatus.CommonAvatarName = group.GroupName;
-                break;
+                return avatarStatus;
             }
         }
 

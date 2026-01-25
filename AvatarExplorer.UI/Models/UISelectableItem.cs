@@ -20,12 +20,13 @@ internal class UISelectableItem
 
     internal int ItemCount { get; set; } = 0; // カテゴリなどの数表記用
 
-    internal string CommonAvatarName { get; set; } // アイテム表記用
-    internal string CreatedDate { get; set; } = string.Empty; // アイテムTooltip表記用
-    internal string UpdatedDate { get; set; } = string.Empty; // アイテムTooltip表記用
+    internal string CommonAvatarName { get; private set; } // アイテム表記用
+    internal string CreatedDate { get; private set; } = string.Empty; // アイテムTooltip表記用
+    internal string UpdatedDate { get; private set; } = string.Empty; // アイテムTooltip表記用
     private List<string> ItemTags { get; set; } = new(); // アイテムのタグ
     internal IReadOnlyList<string> ItemTagsView => ItemTags;
-    internal string ItemMemo { get; set; } = string.Empty; // アイテムTooltip表記用
+    internal string ItemMemo { get; private set; } = string.Empty; // アイテムTooltip表記用
+    internal string ItemPath { get; private set; } = string.Empty; // Unitypackageの一覧を取得するためのアイテムのパス
 
     internal UISelectableItem(ISelectableItem source, int itemCount, string commonAvatarName = "")
     {
@@ -56,15 +57,15 @@ internal class UISelectableItem
         Title = item.Title;
         Description = (LocalizationKey.UI.Button.Description.Item.Author, [item.Author]);
         ImageFileName = item.ThumbnmailFileName;
-        Tag = new(ItemTagState.RootSelectedItem, item.ItemPath);
+        Tag = new(ItemTagState.RootSelectedItem, item.Id);
         IconType = IconType.Item;
 
         CreatedDate = DatetimeUtils.GetDateStringFromUnixTime(item.CreatedDate);
         UpdatedDate = DatetimeUtils.GetDateStringFromUnixTime(item.UpdatedDate);
         
         ItemTags = item.TagsView.ToList();
-        
         ItemMemo = item.ItemMemo;
+        ItemPath = item.ItemPath;
     }
 
     private void FromAuthor(Author author)
@@ -82,7 +83,6 @@ internal class UISelectableItem
         Title = category.ToString();
         Description = (LocalizationKey.UI.Button.Description.Item.Count, [ItemCount.ToString()]);
         ImageFileName = SystemIconKey.FolderIcon;
-        
         Tag = new(ItemTagState.RootSelectedCategory, category.Type.GetLocalizationKey() ?? category.CustomCategory);
         IconType = IconType.None;
     }
@@ -110,7 +110,7 @@ internal class UISelectableItem
         Title = Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, commonAvatar.GroupName);
         Description = (LocalizationKey.UI.Button.Description.CommonAvatar.Count, [commonAvatar.AvatarsView.Count.ToString()]);
         ImageFileName = SystemIconKey.GroupIcon;
-        Tag = new(ItemTagState.None, commonAvatar.GetInternalPath());
+        Tag = new(ItemTagState.None, commonAvatar.GetInternalId());
         IconType = IconType.None;
     }
 }

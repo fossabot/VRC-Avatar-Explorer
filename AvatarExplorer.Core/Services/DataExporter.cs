@@ -6,51 +6,32 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class DataExporter
 {
-    internal static async Task ToCsv(List<Item> items, List<CommonAvatar> commonAvatars, Dictionary<ItemType, string> localizedItemTypesMapping, string filePath, bool includeImplementedToSupported)
+    internal static async Task ToCsv(List<Item> items, List<CommonAvatar> commonAvatars, Dictionary<ItemType, string> localizedItemTypesMapping, string filePath, bool includeCommonToSupported)
     {
         using StreamWriter sw = new(filePath, false, Encoding.UTF8);
-        await sw.WriteLineAsync("Title,AuthorName,AuthorImageFilePath,ImagePath,Type,Memo,SupportedAvatars,ImplementedAvatars,BoothId,ItemPath,Tags");
+        await sw.WriteLineAsync("Id,Title,AuthorName,AuthorImageFilePath,ImagePath,Type,Memo,SupportedAvatars,ImplementedAvatars,BoothId,ItemPath,Tags");
 
         foreach (Item item in items)
         {
             List<string> supportedAvatarNames = new();
-            List<string> supportedAvatarPaths = new();
-
-            foreach (string avatar in item.SupportedAvatarsView)
+            foreach (string supportedAvatarId in SupportedAvatarService.GetAllAvatarIds(item.SupportedAvatarsView, commonAvatars, includeCommonToSupported))
             {
-                string avatarName = ItemUtils.GetAvatarNameFromPath(items, avatar);
+                string avatarName = ItemUtils.GetAvatarNameFromId(items, supportedAvatarId);
                 if (avatarName == null) continue;
 
                 supportedAvatarNames.Add(avatarName);
-                supportedAvatarPaths.Add(avatar);
-
-                if (!includeImplementedToSupported) continue;
-
-                IEnumerable<CommonAvatar> commonAvatarGroup = commonAvatars.Where(commonAvatar => commonAvatar.AvatarsView.Contains(avatar));
-                foreach (CommonAvatar commonAvatar in commonAvatarGroup)
-                {
-                    foreach (string commonAvatarPath in commonAvatar.AvatarsView)
-                    {
-                        if (supportedAvatarPaths.Contains(commonAvatarPath)) continue;
-
-                        string name = ItemUtils.GetAvatarNameFromPath(items, commonAvatarPath);
-                        if (name == null) continue;
-
-                        supportedAvatarNames.Add(name);
-                        supportedAvatarPaths.Add(commonAvatarPath);
-                    }
-                }
             }
 
             List<string> implementedAvatarNames = new();
-            foreach (string implementedAvatar in item.ImplementedAvatarsView)
+            foreach (string implementedAvatarId in item.ImplementedAvatarsView.Distinct())
             {
-                string avatarName = ItemUtils.GetAvatarNameFromPath(items, implementedAvatar);
+                string avatarName = ItemUtils.GetAvatarNameFromId(items, implementedAvatarId);
                 if (avatarName == null) continue;
 
                 implementedAvatarNames.Add(avatarName);
             }
 
+            string itemId = CsvUtils.EscapeCsv(item.Id);
             string itemTitle = CsvUtils.EscapeCsv(item.Title);
             string authorName = CsvUtils.EscapeCsv(item.Author);
             string authorImageFilePath = CsvUtils.EscapeCsv(item.AuthorThumbnmailFileName);
@@ -63,7 +44,7 @@ internal static class DataExporter
             string itemPath = CsvUtils.EscapeCsv(item.ItemPath);
             string tags = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, item.TagsView));
 
-            await sw.WriteLineAsync($"{itemTitle},{authorName},{authorImageFilePath},{imagePath},{type},{memo},{supportedAvatarsList},{implementedAvatarsList},{boothId},{itemPath},{tags}");
+            await sw.WriteLineAsync($"{itemId},{itemTitle},{authorName},{authorImageFilePath},{imagePath},{type},{memo},{supportedAvatarsList},{implementedAvatarsList},{boothId},{itemPath},{tags}");
         }
     }
 }

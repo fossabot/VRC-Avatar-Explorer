@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -39,23 +38,23 @@ public partial class MainWindow
     }
     
     #region Context Menu Commands
-    private Item? ItemButton_ContextMenu_GetItemByPath(string itemPath)
+    private Item? ItemButton_ContextMenu_GetItemById(string itemId)
     {
-        Item? item = _avatarExplorerApp.GetItemByPath(itemPath);
+        Item? item = _avatarExplorerApp.GetItemById(itemId);
         if (item == null) Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemNotFound]);
 
         return item;
     }
-    private async Task ItemButton_ContextMenu_OpenItemFolder(string itemPath)
+    private async Task ItemButton_ContextMenu_OpenItemFolder(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return;
 
         await LauncherService.OpenFolder(this, ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath));
     }
-    private async Task ItemButton_ContextMenu_CopyBoothLink(string itemPath)
+    private async Task ItemButton_ContextMenu_CopyBoothLink(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return;
 
         string boothLink = item.GetBoothLink();
@@ -69,45 +68,45 @@ public partial class MainWindow
             // Ignored
         }
     }
-    private async Task ItemButton_ContextMenu_OpenBoothLink(string itemPath)
+    private async Task ItemButton_ContextMenu_OpenBoothLink(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return;
 
         await LauncherService.OpenLink(this, item.GetBoothLink());
     }
-    private Task ItemButton_ContextMenu_ShowOtherItemsByAuthor(string itemPath)
+    private Task ItemButton_ContextMenu_ShowOtherItemsByAuthor(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return Task.CompletedTask;
 
         if (Main_SearchTextBox != null) Main_SearchTextBox.Text = string.Format("Author=\"{0}\"", item.Author);
 
         return Task.CompletedTask;
     }
-    private async Task ItemButton_ContextMenu_ChangeThumbnail(string itemPath)
+    private async Task ItemButton_ContextMenu_ChangeThumbnail(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return;
 
         string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFilePath], false);
         if (files == null || files.Length == 0) return;
 
         string selectedFile = files[0];
-        await _avatarExplorerApp.UpdateItemThumbnail(item, selectedFile);
+        await _avatarExplorerApp.UpdateItemThumbnail(item.Id, selectedFile);
         Main_ReloadCurrentWindow();
     }
-    private Task ItemButton_ContextMenu_EditItem(string itemPath)
+    private Task ItemButton_ContextMenu_EditItem(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return Task.CompletedTask;
 
         AddItemOverlay_ShowEdit(item);
         return Task.CompletedTask;
     }
-    private async Task ItemButton_ContextMenu_EditItemTitle(string itemPath)
+    private async Task ItemButton_ContextMenu_EditItemTitle(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return;
 
         string? newTitle = await Main_ShowTextDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Title.NewItemTitle], item.Title);
@@ -120,25 +119,25 @@ public partial class MainWindow
 
         Main_ReloadCurrentWindow();
     }
-    private Task ItemButton_ContextMenu_AddMemo(string itemPath)
+    private Task ItemButton_ContextMenu_AddMemo(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return Task.CompletedTask;
 
-        _contextMenu_selectedItem = item;
+        _contextMenu_selectedItemId = item.Id;
 
         AddMemoOverlay_Show(item.ItemMemo);
 
         return Task.CompletedTask;
     }
-    private Task ItemButton_ContextMenu_AddToBulkImportList(string itemPath)
+    private Task ItemButton_ContextMenu_AddToBulkImportList(string itemId)
     {
-        BulkImportItem_Add(itemPath);
+        BulkImportItem_Add(itemId);
         return Task.CompletedTask;
     }
-    private async Task ItemButton_ContextMenu_AddItemFile(string itemPath)
+    private async Task ItemButton_ContextMenu_AddItemFile(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return;
 
         string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFilePath], true);
@@ -146,9 +145,9 @@ public partial class MainWindow
 
         await ItemButton_ContextMenu_AddItemPathsInternal(item, files);
     }
-    private async Task ItemButton_ContextMenu_AddItemFolder(string itemPath)
+    private async Task ItemButton_ContextMenu_AddItemFolder(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return;
 
         string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
@@ -160,7 +159,7 @@ public partial class MainWindow
     {
         ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
         ProgressOverlay_Update(0);
-        IReadOnlyList<string> processingFailedPaths = await _avatarExplorerApp.AddItemPaths(item, itemPaths);
+        IReadOnlyList<string> processingFailedPaths = await _avatarExplorerApp.AddItemPaths(item.Id, itemPaths);
         ProgressOverlay_Hide();
 
         if (processingFailedPaths.Count > 0) // 処理に失敗したファイル、もしくはフォルダがあった時
@@ -172,40 +171,40 @@ public partial class MainWindow
         }
     }
 
-    internal Item? _contextMenu_selectedItem = null;
-    private Task ItemButton_ContextMenu_EditImplementedAvatar(string itemPath)
+    internal string? _contextMenu_selectedItemId = null;
+    private Task ItemButton_ContextMenu_EditImplementedAvatar(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return Task.CompletedTask;
 
-        _contextMenu_selectedItem = item;
+        _contextMenu_selectedItemId = item.Id;
 
-        EditImplementedAvatarsOverlay_Show(item.ImplementedAvatarsView); //TODO: ここらへんも全部Taskで管理するべき
+        EditImplementedAvatarsOverlay_Show(item.ImplementedAvatarsView);
 
         return Task.CompletedTask;
     }
-    private Task ItemButton_ContextMenu_EditItemTag(string itemPath)
+    private Task ItemButton_ContextMenu_EditItemTag(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return Task.CompletedTask;
 
-        _contextMenu_selectedItem = item;
+        _contextMenu_selectedItemId = item.Id;
 
-        EditTagsOverlay_Show(item.TagsView); //TODO: ここらへんも全部Taskで管理するべき
+        EditTagsOverlay_Show(item.TagsView);
 
         return Task.CompletedTask;
     }
-    private async Task ItemButton_ContextMenu_RemoveItem(string itemPath)
+    private async Task ItemButton_ContextMenu_RemoveItem(string itemId)
     {
-        Item? item = ItemButton_ContextMenu_GetItemByPath(itemPath);
+        Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return;
 
         YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance.GetDisplayName(LocalizationKey.UI.Dialog.Confirmation.RemoveItem, item.Title));
         if (result != YesNoResult.Yes) return;
 
         YesNoResult result2 = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented]);
-        if (result2 == YesNoResult.Yes) _avatarExplorerApp.RemoveItem(item.ItemPath, true);
-        else _avatarExplorerApp.RemoveItem(item.ItemPath, false);
+        if (result2 == YesNoResult.Yes) _avatarExplorerApp.RemoveItem(item.Id, true);
+        else _avatarExplorerApp.RemoveItem(item.Id, false);
 
         Main_ReloadCurrentWindow();
         Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Remove]);

@@ -34,12 +34,12 @@ public partial class MainWindow
         {
             Button button = ItemButtonFactory.AddItemButton(EditSupportedAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings, _userPreferences, onClick: EditSupportedAvatarsOverlay_ItemButton_Click);
 
-            string avatarPath = string.Empty;
+            string avatarId = string.Empty;
             
-            if (itemCountInfo.Item is Item item) avatarPath = item.ItemPath;
-            else if (itemCountInfo.Item is CommonAvatar commonAvatar) avatarPath = commonAvatar.GetInternalPath();
+            if (itemCountInfo.Item is Item item) avatarId = item.Id;
+            else if (itemCountInfo.Item is CommonAvatar commonAvatar) avatarId = commonAvatar.GetInternalId();
 
-            if (!string.IsNullOrEmpty(avatarPath) && _editSupportedAvatarsOverlay_selectedAvatars.Contains(avatarPath)) button.Classes.Add("selected");
+            if (!string.IsNullOrEmpty(avatarId) && _editSupportedAvatarsOverlay_selectedAvatars.Contains(avatarId)) button.Classes.Add("selected");
         }
     }
 
@@ -47,10 +47,12 @@ public partial class MainWindow
     private void EditSupportedAvatarsOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => EditSupportedAvatarsOverlay_Hide();
     private void EditSupportedAvatarsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
-        if (_addItemOverlay_selectedItem != null)
+        Item? item = _avatarExplorerApp.GetItemById(_addItemOverlay_selectedItemId);
+        if (item != null)
         {
-            _addItemOverlay_selectedItem.UpdateSupportedAvatars(_editSupportedAvatarsOverlay_selectedAvatars);
-            _avatarExplorerApp.UpdateSearchIndex(_addItemOverlay_selectedItem);
+            item.UpdateSupportedAvatars(_editSupportedAvatarsOverlay_selectedAvatars);
+            _avatarExplorerApp.UpdateSearchIndex(item.Id);
+            _avatarExplorerApp.SaveItemDatabase();
         }
 
         AddItemOverlay_UpdateSupportedAvatarsLabel();

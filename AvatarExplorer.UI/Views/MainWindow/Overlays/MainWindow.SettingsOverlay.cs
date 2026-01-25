@@ -171,6 +171,7 @@ public partial class MainWindow
         if (result != YesNoResult.Yes) return;
 
         _avatarExplorerApp.ResetItemDatabase();
+        _avatarExplorerApp.SaveItemDatabase();
         Main_ReloadCurrentWindow();
     }
     
@@ -180,6 +181,7 @@ public partial class MainWindow
         if (result != YesNoResult.Yes) return;
 
         _avatarExplorerApp.ResetCommonAvatarDatabase();
+        _avatarExplorerApp.SaveCommonAvatarDatabase();
         Main_ReloadCurrentWindow();
     }
 

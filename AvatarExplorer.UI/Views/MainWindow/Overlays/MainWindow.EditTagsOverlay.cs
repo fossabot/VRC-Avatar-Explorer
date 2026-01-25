@@ -3,6 +3,7 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using AvatarExplorer.Core.Models;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Models;
@@ -95,11 +96,12 @@ public partial class MainWindow
     private void EditTagsOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => EditTagsOverlay_Hide();
     private void EditTagsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
-        if (_contextMenu_selectedItem != null)
+        Item? item = _avatarExplorerApp.GetItemById(_addItemOverlay_selectedItemId);
+        if (item != null)
         {
-            _contextMenu_selectedItem.UpdateTags(_editTagsOverlay_selectedTags);
+            item.UpdateTags(_editTagsOverlay_selectedTags);
+            _avatarExplorerApp.UpdateSearchIndex(item.Id);
             _avatarExplorerApp.SaveItemDatabase();
-            _avatarExplorerApp.UpdateSearchIndex(_contextMenu_selectedItem);
         }
 
         EditTagsOverlay_Hide();

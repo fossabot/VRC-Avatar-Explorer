@@ -31,10 +31,7 @@ internal class AddItemOverlayWindowValues
         SupportedAvatars.Clear();
     }
 
-    private void UpdateSupportedAvatars(IEnumerable<string> newList)
-    {
-        SupportedAvatars = newList.ToList();
-    }
+    private void UpdateSupportedAvatars(IEnumerable<string> newList) => SupportedAvatars = newList.ToList();
 
     internal void FromItem(Item item)
     {

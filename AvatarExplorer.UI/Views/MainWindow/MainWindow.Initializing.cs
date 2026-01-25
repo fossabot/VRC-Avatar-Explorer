@@ -1,4 +1,3 @@
-using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -37,7 +36,7 @@ public partial class MainWindow
     }
     private void InitializeUserPreferences()
     {
-        var userPreferences = UserPreferencesService.Load(SystemPath.UserPreferencesFilePath);
+        UserPreferences userPreferences = UserPreferencesService.Load(SystemPath.UserPreferencesFilePath);
         _userPreferences.FromOther(userPreferences);
     }
     private void InitializeNoItemsLabel()

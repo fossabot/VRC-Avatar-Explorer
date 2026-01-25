@@ -8,11 +8,11 @@ public static class TextParser
     {
         List<string> result = [];
 
-        var currentArg = new StringBuilder();
+        StringBuilder currentArg = new();
         bool inQuotes = false;
         char quoteChar = '\0';
 
-        foreach (var c in text)
+        foreach (char c in text)
         {
             if (c == '"' || c == '\'')
             {
@@ -43,9 +43,8 @@ public static class TextParser
             currentArg.Append(c);
         }
 
-        if (currentArg.Length > 0)
-            result.Add(currentArg.ToString());
+        if (currentArg.Length > 0) result.Add(currentArg.ToString());
 
-        return [.. result];
+        return result.ToArray();
     }
 }

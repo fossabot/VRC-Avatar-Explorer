@@ -1,4 +1,5 @@
 using Avalonia.Interactivity;
+using AvatarExplorer.Core.Models;
 
 namespace AvatarExplorer.UI;
 
@@ -15,11 +16,12 @@ public partial class MainWindow
     private void AddMemoOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => AddMemoOverlay_Hide();
     private void AddMemoOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
-        if (_contextMenu_selectedItem != null)
+        Item? item = _avatarExplorerApp.GetItemById(_addItemOverlay_selectedItemId);
+        if (item != null)
         {
-            _contextMenu_selectedItem.ItemMemo = AddMemoOverlay_MemoTextBox.Text ?? string.Empty;
+            item.ItemMemo = AddMemoOverlay_MemoTextBox.Text ?? string.Empty;
+            _avatarExplorerApp.UpdateSearchIndex(item.Id);
             _avatarExplorerApp.SaveItemDatabase();
-            _avatarExplorerApp.UpdateSearchIndex(_contextMenu_selectedItem);
         }
 
         AddMemoOverlay_Hide();

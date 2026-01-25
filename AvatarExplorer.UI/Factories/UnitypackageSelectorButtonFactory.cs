@@ -116,9 +116,8 @@ internal static class UnitypackageSelectorButtonFactory
     internal static ComboBox CreateUnitypackageList(UISelectableItem item, RuntimeSettings runtimeSettings, int itemIndex, int selectedIndex, Action<int, int>? onSelectedIndexChanged = null)
     {
         ComboBox unitypackageComboBox = new() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, CornerRadius = new(8), FontSize = 14 };
-
-        string itemPath = item.Tag.Value;
-        foreach (string filePath in UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(runtimeSettings.DataRootDirectory, itemPath)))
+        
+        foreach (string filePath in UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(runtimeSettings.DataRootDirectory, item.ItemPath)))
         {
             ComboBoxItem unitypackageFileItem = new()
             {
