@@ -41,7 +41,7 @@ public partial class MainWindow
     private void EditImplementedAvatarsOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => EditImplementedAvatarsOverlay_Hide();
     private void EditImplementedAvatarsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
-        Item? item = _avatarExplorerApp.GetItemById(_addItemOverlay_selectedItemId);
+        Item? item = _avatarExplorerApp.GetItemById(_contextMenu_selectedItemId);
         if (item != null)
         {
             item.UpdateImplementedAvatars(_editImplementedAvatarsOverlay_selectedAvatars);
