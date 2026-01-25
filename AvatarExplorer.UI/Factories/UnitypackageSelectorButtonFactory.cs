@@ -15,7 +15,6 @@ namespace AvatarExplorer.UI.Factories;
 
 internal static class UnitypackageSelectorButtonFactory
 {
-    // TODO: クラスのインスタンスとかでイベントは追加するべきかも。staticでやるのがだめ。AddHandler()とか、これはInterfaceでやってもいいかもね
     internal static Button AddItemButton(
         StackPanel parent,
         UISelectableItem item,

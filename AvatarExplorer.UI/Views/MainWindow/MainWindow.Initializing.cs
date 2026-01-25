@@ -89,8 +89,8 @@ public partial class MainWindow
     {
         Localizer.Instance.LoadFromFolder("locales");
 
-        SettingsOverlay_DefaultLanguageComboBox.Items.Clear();
-        SettingsOverlay_DefaultLanguageComboBox.Items.AddRange(Localizer.Instance.GetLanguageList());
+        SettingsOverlay_LanguageComboBox.Items.Clear();
+        SettingsOverlay_LanguageComboBox.Items.AddRange(Localizer.Instance.GetLanguageList());
     }
     private void CheckFirstLaunching()
     {

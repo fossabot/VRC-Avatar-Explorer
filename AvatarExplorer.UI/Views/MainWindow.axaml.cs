@@ -41,9 +41,6 @@ public partial class MainWindow : Window
         TODO: UIのタグを使った翻訳機能を追加する
         TODO: 共通素体グループ作成時に、元のアバターを置き換えるかどうかをダイアログで決める
         TODO: 共通素体グループ削除時に、共通素体の中のアバターに置き換えるかどうかをダイアログで決める
-        TODO: インポート時の重複ファイルの処理方法を変更できるようにする
-        TODO: 設定画面の処理をリファクタリングする
-        TODO: Reload関連の関数などを、イベント経由で行うようにしたい。OnDatabaseUpdateみたいな
         */
 
         InitializeComponent();

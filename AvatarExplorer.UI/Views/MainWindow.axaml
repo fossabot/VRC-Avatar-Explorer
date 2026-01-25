@@ -212,7 +212,7 @@
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*">
-                                                <ComboBox Grid.Column="1" x:Name="SettingsOverlay_DefaultLanguageComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                                <ComboBox Grid.Column="1" x:Name="SettingsOverlay_LanguageComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                                             </Grid>
                                         </Grid>
                                         
@@ -224,7 +224,7 @@
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*">
-                                                <ComboBox Grid.Column="1" x:Name="SettingsOverlay_DefaultSortOrderComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                                <ComboBox Grid.Column="1" x:Name="SettingsOverlay_SortOrderComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                                                     <ComboBoxItem Content="タイトル" Tag="UI.SortOrder.Title"/>
                                                     <ComboBoxItem Content="作者" Tag="UI.SortOrder.Author"/>
                                                     <ComboBoxItem Content="登録日時" Tag="UI.SortOrder.Created"/>
