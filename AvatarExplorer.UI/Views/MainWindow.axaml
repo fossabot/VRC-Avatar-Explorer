@@ -771,7 +771,7 @@
                     <!-- インポートタイプ選択ボタン -->
                     <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [UI.SelectImportType.V1]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16" Padding="10" Click="SelectImportTypeOverlay_FromV1_Click"/>
                     <Button Classes="button" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.SelectImportType.KonoAsset]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16" Padding="10" Click="SelectImportTypeOverlay_FromKonoAsset_Click"/>
-                    <Button Classes="button" FontWeight="Bold" Grid.Column="4" Content="{Binding [UI.SelectImportType.Title]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16" Padding="10" Click="SelectImportTypeOverlay_Cancel_Click"/>
+                    <Button Classes="button" FontWeight="Bold" Grid.Column="4" Content="{Binding [UI.SelectImportType.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16" Padding="10" Click="SelectImportTypeOverlay_Cancel_Click"/>
                 </StackPanel>
             </Border>
         </Border>
