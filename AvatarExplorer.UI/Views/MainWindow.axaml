@@ -447,7 +447,7 @@
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Classes="accent" Content="インポート画面を開く" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ImportData_Click"/>
+                                                <Button Grid.Column="1" Classes="accent" Content="インポート" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ImportData_Click"/>
                                             </Grid>
                                         </Grid>
 
@@ -458,7 +458,7 @@
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Classes="accent" Content="エクスポート画面を開く" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ExportDataToCsv_Click"/>
+                                                <Button Grid.Column="1" Classes="accent" Content="エクスポート" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ExportDataToCsv_Click"/>
                                             </Grid>
                                         </Grid>
 
