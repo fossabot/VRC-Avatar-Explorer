@@ -116,6 +116,7 @@ public partial class MainWindow
         if (result == YesNoResult.Yes)
         {
             _avatarExplorerApp.ReplaceSupportedAvatarsToCommonAvatarGroup(commonAvatar.Id);
+            _avatarExplorerApp.SaveItemDatabase();
             Main_ReloadCurrentWindow();
         }
     }
