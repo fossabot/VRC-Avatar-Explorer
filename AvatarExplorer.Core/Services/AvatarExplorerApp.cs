@@ -373,6 +373,27 @@ public partial class AvatarExplorerApp
     }
     #endregion
 
+    #region Replace API
+    public void ReplaceCommonAvatarGroupToSupportedAvatars(string groupId)
+    {
+        CommonAvatar? commonAvatar = GetCommonAvatarById(groupId);
+        if (commonAvatar == null) return;
+
+        string internalId = commonAvatar.GetInternalId();
+
+        _items.ForEach(i => i.UpdateSupportedAvatars(i.SupportedAvatarsView.SelectMany(i => i == internalId ? commonAvatar.AvatarsView : [i]).Distinct()));
+    }
+    public void ReplaceSupportedAvatarsToCommonAvatarGroup(string groupId)
+    {
+        CommonAvatar? commonAvatar = GetCommonAvatarById(groupId);
+        if (commonAvatar == null) return;
+
+        string internalId = commonAvatar.GetInternalId();
+
+        _items.ForEach(i => i.UpdateSupportedAvatars(i.SupportedAvatarsView.Select(i => commonAvatar.AvatarsView.Contains(i) ? internalId : i).Distinct()));
+    }
+    #endregion
+
     #region Add API
     public async Task<IReadOnlyList<string>> AddItemPaths(string itemId, string[] paths)
     {

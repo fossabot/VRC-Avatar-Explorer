@@ -69,6 +69,17 @@ public static class LocalizationKey
                 public const string ResetCommonAvatarDatabase = "UI.Dialog.Confirmation.ResetCommonAvatarDatabase";
                 public const string RemoveAvatarFromSupportedAndImplemented = "UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented";
                 public const string RemoveCommonAvatarGroup = "UI.Dialog.Confirmation.RemoveCommonAvatarGroup";
+
+                public static class ExportToCsv
+                {
+                    public const string IncludeImplementedToSupported = "UI.Dialog.Confirmation.ExportToCsv.IncludeImplementedToSupported";
+                }
+
+                public static class EditCommonAvatars
+                {
+                    public const string ReplaceAvatarsToGroup = "UI.Dialog.Confirmation.EditCommonAvatars.ReplaceAvatarsToGroup";
+                    public const string ReplaceGroupToAvatars = "UI.Dialog.Confirmation.EditCommonAvatars.ReplaceGroupToAvatars";
+                }
             }
 
             public static class Title
@@ -122,11 +133,6 @@ public static class LocalizationKey
 
         public static class Overlay
         {
-            public static class ExportToCsv
-            {
-                public const string IncludeImplementedToSupported = "UI.Overlay.ExportToCsv.IncludeImplementedToSupported";
-            }
-
             public static class AddItem
             {
                 public const string SelectedAvatarsCount = "UI.Overlay.AddItem.SelectedAvatarsCount";

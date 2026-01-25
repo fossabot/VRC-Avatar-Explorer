@@ -51,7 +51,7 @@ public partial class MainWindow
         foreach (ItemCountInfo itemCountInfo in avatars)
         {
             Button button = ItemButtonFactory.AddItemButton(EditCommonAvatarsOverlay_AvatarsList, new UISelectableItem(itemCountInfo), RuntimeSettings, _userPreferences, onClick: EditCommonAvatarsOverlay_ItemButton_Click);
-            if (commonAvatar.AvatarsView.Contains(((Item)itemCountInfo.Item).Id)) button.Classes.Add("selected");
+            if (commonAvatar.AvatarsView.Contains(((Item)itemCountInfo.Item).Id)) button.Classes.Add("accent");
         }
     }
 
@@ -80,7 +80,7 @@ public partial class MainWindow
         EditCommonAvatarsOverlay_RefleshGroupList();
 
         // 追加された共通素体グループを選択してあげる
-        EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex = _avatarExplorerApp.GetCommonAvatars().Count;
+        EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex = _avatarExplorerApp.GetCommonAvatars().Count - 1;
 
         EditCommonAvatarsOverlay_RefleshAvatarList();
     }
@@ -103,6 +103,22 @@ public partial class MainWindow
         if (previousIndex != -1) EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex = previousIndex;
         EditCommonAvatarsOverlay_RefleshAvatarList();
     }
+    private async void EditCommonAvatarsOverlay_ReplaceAvatarsToGroup_Click(object? sender, RoutedEventArgs e)
+    {
+        CommonAvatar? commonAvatar = _avatarExplorerApp.GetCommonAvatarById(_editCommonAvatarsOverlay_SelectedGroupId);
+        if (commonAvatar == null)
+        {
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Failed.GetCommonAvatarGroup]);
+            return;
+        }
+
+        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance.GetDisplayName(LocalizationKey.UI.Dialog.Confirmation.EditCommonAvatars.ReplaceAvatarsToGroup));
+        if (result == YesNoResult.Yes)
+        {
+            _avatarExplorerApp.ReplaceSupportedAvatarsToCommonAvatarGroup(commonAvatar.Id);
+            Main_ReloadCurrentWindow();
+        }
+    }
     private async void EditCommonAvatarsOverlay_RemoveGroup_Click(object? sender, RoutedEventArgs e)
     {
         CommonAvatar? commonAvatar = _avatarExplorerApp.GetCommonAvatarById(_editCommonAvatarsOverlay_SelectedGroupId);
@@ -114,6 +130,9 @@ public partial class MainWindow
 
         YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance.GetDisplayName(LocalizationKey.UI.Dialog.Confirmation.RemoveCommonAvatarGroup, commonAvatar.GroupName));
         if (result != YesNoResult.Yes) return;
+
+        YesNoResult result2 = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance.GetDisplayName(LocalizationKey.UI.Dialog.Confirmation.EditCommonAvatars.ReplaceGroupToAvatars));
+        if (result2 == YesNoResult.Yes) _avatarExplorerApp.ReplaceCommonAvatarGroupToSupportedAvatars(commonAvatar.Id);
 
         _avatarExplorerApp.RemoveCommonAvatar(commonAvatar.Id);
         

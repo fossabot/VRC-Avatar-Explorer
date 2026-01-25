@@ -105,10 +105,6 @@
             <Setter Property="Height" Value="35"/>
         </Style>
 
-        <Style Selector="Button.selected">
-            <Setter Property="Background" Value="{DynamicResource Button.Selected}"/>
-        </Style>
-
         <Style Selector="ScrollBar /template/ Rectangle#TrackRect">
             <Setter Property="IsVisible" Value="False"/>
         </Style>

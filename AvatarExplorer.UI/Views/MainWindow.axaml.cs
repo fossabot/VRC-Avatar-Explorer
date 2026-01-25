@@ -39,8 +39,6 @@ public partial class MainWindow : Window
     {
         /* プロジェクトTODO
         TODO: UIのタグを使った翻訳機能を追加する
-        TODO: 共通素体グループ作成時に、元のアバターを置き換えるかどうかをダイアログで決める
-        TODO: 共通素体グループ削除時に、共通素体の中のアバターに置き換えるかどうかをダイアログで決める
         */
 
         InitializeComponent();

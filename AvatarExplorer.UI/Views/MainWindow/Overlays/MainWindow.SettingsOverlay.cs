@@ -172,8 +172,9 @@ public partial class MainWindow
 
         var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
 
-        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Overlay.ExportToCsv.IncludeImplementedToSupported]);
-        await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, result == YesNoResult.Yes);
+        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.ExportToCsv.IncludeImplementedToSupported]);
+        if (result == YesNoResult.Yes) await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, true);
+        else await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, false);
 
         Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Export]);
     }

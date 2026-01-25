@@ -39,7 +39,7 @@ public partial class MainWindow
             if (itemCountInfo.Item is Item item) avatarId = item.Id;
             else if (itemCountInfo.Item is CommonAvatar commonAvatar) avatarId = commonAvatar.GetInternalId();
 
-            if (!string.IsNullOrEmpty(avatarId) && _editSupportedAvatarsOverlay_selectedAvatars.Contains(avatarId)) button.Classes.Add("selected");
+            if (!string.IsNullOrEmpty(avatarId) && _editSupportedAvatarsOverlay_selectedAvatars.Contains(avatarId)) button.Classes.Add("accent");
         }
     }
 

@@ -676,12 +676,12 @@
                         <TextBlock Grid.Row="0" Text="共通素体アバターの管理" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
 
                         <!-- グループ選択欄 -->
-                        <Grid ColumnDefinitions="100,20,*,20,Auto,10,Auto,10,Auto" Margin="10,0,10,0" Grid.Row="2">
-                            <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Text="共通素体グループ" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="Bold"/>
-                            <ComboBox x:Name="EditCommonAvatarsOverlay_GroupComboBox" Grid.Column="2" SelectedIndex="0" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" SelectionChanged="EditCommonAvatarsOverlay_GroupComboBox_Changed"/>
-                            <Button Classes="button" FontWeight="Bold" Grid.Column="4" Content="追加" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_AddGroup_Click"/>
-                            <Button Classes="button" FontWeight="Bold" Grid.Column="6" Content="改名" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_RenameGroup_Click"/>
-                            <Button Classes="button" FontWeight="Bold" Grid.Column="8" Content="削除" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_RemoveGroup_Click"/>
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="10,0,10,0" Grid.Row="2" ColumnSpacing="10">
+                            <TextBlock Text="共通素体グループ" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="Bold"/>
+                            <ComboBox x:Name="EditCommonAvatarsOverlay_GroupComboBox" Grid.Column="1" SelectedIndex="0" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Margin="10,0,10,0" SelectionChanged="EditCommonAvatarsOverlay_GroupComboBox_Changed"/>
+                            <Button Classes="button" FontWeight="Bold" Grid.Column="2" Content="追加" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_AddGroup_Click"/>
+                            <Button Classes="button" FontWeight="Bold" Grid.Column="3" Content="改名" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_RenameGroup_Click"/>
+                            <Button Classes="button" FontWeight="Bold" Grid.Column="4" Content="削除" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_RemoveGroup_Click"/>
                         </Grid>
                         
                         <!-- 検索バー -->
@@ -693,7 +693,8 @@
                         </ScrollViewer>
 
                         <!-- 下のボタン -->
-                        <Grid ColumnDefinitions="*,120" Grid.Row="8">
+                        <Grid ColumnDefinitions="Auto,*,120" Grid.Row="8">
+                            <Button Classes="button" FontWeight="Bold" Content="対応アバターをグループに置き換え" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="10,7" FontSize="15" Click="EditCommonAvatarsOverlay_ReplaceAvatarsToGroup_Click"/>
                             <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="閉じる" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditCommonAvatarsOverlay_Close_Click"/>
                         </Grid>
                     </Grid>
