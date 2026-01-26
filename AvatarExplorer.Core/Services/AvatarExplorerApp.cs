@@ -113,7 +113,7 @@ public partial class AvatarExplorerApp
     #region Get API
     public IReadOnlyList<ItemCountInfo> GetAvatars(bool includeCommonAvatar = false) => ItemAvatarAggregator.Aggregate(_items, _commonAvatars, _runtimeSettings, includeCommonAvatar);
     public IReadOnlyList<ItemCountInfo> GetAuthors() => ItemAuthorAggregator.Aggregate(_items);
-    public IReadOnlyList<ItemCountInfo> GetCategories() => ItemCategoryAggregator.Aggregate(_items);
+    public IReadOnlyList<ItemCountInfo> GetCategories(bool includeEmptyCategory = false) => ItemCategoryAggregator.Aggregate(_items, includeEmptyCategory);
 
     public IReadOnlyList<Item> GetAllItems() => _items;
     public Item? GetItemById(string? itemId) => itemId != null ? _items.FirstOrDefault(i => i.Id == itemId) : null;

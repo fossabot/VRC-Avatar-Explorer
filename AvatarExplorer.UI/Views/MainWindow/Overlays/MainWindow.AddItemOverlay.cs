@@ -182,7 +182,7 @@ public partial class MainWindow
     private void AddItemOverlay_InitializeAddItemWindowCategories()
     {
         AddItemOverlay_ItemTypeComboBox.Items.Clear();
-        AddItemOverlay_ItemTypeComboBox.Items.AddRange(_avatarExplorerApp.GetCategories().Select(i => Localizer.Instance[((Category)i.Item).ToString()]));
+        AddItemOverlay_ItemTypeComboBox.Items.AddRange(_avatarExplorerApp.GetCategories(includeEmptyCategory: true).Select(i => Localizer.Instance[((Category)i.Item).ToString()]));
 
         if (AddItemOverlay_ItemTypeComboBox.Items.Count > 0) AddItemOverlay_ItemTypeComboBox.SelectedIndex = 0;
     }

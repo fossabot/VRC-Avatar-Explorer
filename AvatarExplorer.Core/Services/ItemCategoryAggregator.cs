@@ -5,7 +5,7 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class ItemCategoryAggregator
 {
-    internal static IReadOnlyList<ItemCountInfo> Aggregate(IEnumerable<Item> items)
+    internal static IReadOnlyList<ItemCountInfo> Aggregate(IEnumerable<Item> items, bool includeEmptyCategory = false)
     {
         List<ItemCountInfo> categories = new();
 
@@ -21,7 +21,7 @@ internal static class ItemCategoryAggregator
         categories.AddRange(
             Enum.GetValues<ItemType>()
                 .Where(i => !CategoryUtils.InvalidItemTypes.Contains(i) && i != ItemType.Custom)
-                .Where(itemsByType.ContainsKey)
+                .Where(i => includeEmptyCategory || itemsByType.ContainsKey(i))
                 .Select(i => new ItemCountInfo(new Category(i), itemsByType[i]))
         );
 
