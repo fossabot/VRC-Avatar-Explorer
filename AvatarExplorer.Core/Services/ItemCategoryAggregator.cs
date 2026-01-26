@@ -22,7 +22,7 @@ internal static class ItemCategoryAggregator
             Enum.GetValues<ItemType>()
                 .Where(i => !CategoryUtils.InvalidItemTypes.Contains(i) && i != ItemType.Custom)
                 .Where(i => includeEmptyCategory || itemsByType.ContainsKey(i))
-                .Select(i => new ItemCountInfo(new Category(i), itemsByType[i]))
+                .Select(i => new ItemCountInfo(new Category(i), itemsByType.TryGetValue(i, out int count) ? count : 0))
         );
 
         categories.AddRange(
