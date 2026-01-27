@@ -385,7 +385,7 @@ public partial class AvatarExplorerApp
         item.SetValuesFromCreationContext(itemCreationContext);
 
         // １個より多い場合は追加のアイテムとしてインポートしてあげる(0がRootフォルダー想定)
-        if (itemCreationContext.Folders.Count > 1) await AddItemPaths(item.Id, itemCreationContext.Folders.Skip(1).ToArray());
+        if (itemCreationContext.ItemPaths.Count > 1) await AddItemPaths(item.Id, itemCreationContext.ItemPaths.Skip(1).ToArray());
 
         item.UpdatedDate = DatetimeUtils.GetCurrentUnixTime();
         UpdateSearchIndex();

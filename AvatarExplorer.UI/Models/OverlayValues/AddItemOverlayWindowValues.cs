@@ -7,7 +7,7 @@ namespace AvatarExplorer.UI.Models.OverlayValues;
 
 internal class AddItemOverlayWindowValues
 {
-    internal List<string> Folders { get; set; } = new(); // 新規作成のときにしか使わない
+    internal List<string> ItemPaths { get; set; } = new();
     internal string Title { get; set; } = string.Empty;
     internal string Author { get; set; } = string.Empty;
     internal string BoothAuthorId { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ internal class AddItemOverlayWindowValues
 
     internal void Reset()
     {
-        Folders.Clear();
+        ItemPaths.Clear();
         Title = string.Empty;
         Author = string.Empty;
         BoothAuthorId = string.Empty;
@@ -48,7 +48,7 @@ internal class AddItemOverlayWindowValues
 
     internal string Validate()
     {
-        if (Folders.Count == 0) return LocalizationKey.Error.Validation.NoFolders;
+        if (ItemPaths.Count == 0) return LocalizationKey.Error.Validation.NoFolders;
         if (string.IsNullOrEmpty(Title)) return LocalizationKey.Error.Validation.EmptyTitle;
         if (string.IsNullOrEmpty(Author)) return LocalizationKey.Error.Validation.EmptyAuthor;
 

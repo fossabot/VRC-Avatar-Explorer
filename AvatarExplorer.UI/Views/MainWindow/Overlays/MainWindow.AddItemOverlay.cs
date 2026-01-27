@@ -32,8 +32,8 @@ public partial class MainWindow
         _addItemOverlay_selectedItemId = item.Id;
         AddItemOverlay_BoothLinkTextBox.Text = item.BoothId == -1 ? string.Empty : item.GetBoothLink();
 
-        _addItemOverlay_addItemWindowValues.Folders.Clear();
-        _addItemOverlay_addItemWindowValues.Folders.Add(ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath));
+        _addItemOverlay_addItemWindowValues.ItemPaths.Clear();
+        _addItemOverlay_addItemWindowValues.ItemPaths.Add(ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath));
         _addItemOverlay_addItemWindowValues.FromItem(item);
         AddItemOverlay_UpdateFolderList();
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
@@ -47,7 +47,7 @@ public partial class MainWindow
         // もし表示されてる状態でD&Dされたら、フォルダ追加だけしてあげる
         if (AddItemOverlay.IsVisible && filePaths != null)
         {
-            _addItemOverlay_addItemWindowValues.Folders.AddRange(filePaths);
+            _addItemOverlay_addItemWindowValues.ItemPaths.AddRange(filePaths);
             AddItemOverlay_UpdateFolderList();
             return;
         }
@@ -59,7 +59,7 @@ public partial class MainWindow
 
         _addItemOverlay_addItemWindowValues.Reset();
         
-        if (filePaths != null) _addItemOverlay_addItemWindowValues.Folders.AddRange(filePaths);
+        if (filePaths != null) _addItemOverlay_addItemWindowValues.ItemPaths.AddRange(filePaths);
         AddItemOverlay_UpdateFolderList();
 
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
@@ -77,7 +77,7 @@ public partial class MainWindow
 
         _addItemOverlay_addItemWindowValues.Reset();
         
-        _addItemOverlay_addItemWindowValues.Folders.AddRange(launchInfo.AssetDirs);
+        _addItemOverlay_addItemWindowValues.ItemPaths.AddRange(launchInfo.AssetDirs);
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
 
         AddItemOverlay.IsVisible = true;
@@ -101,9 +101,9 @@ public partial class MainWindow
         AddItemOverlay_FolderList.Children.Clear();
         AddItemOverlay_FolderList.RowDefinitions.Clear();
 
-        for (int i = 0; i < _addItemOverlay_addItemWindowValues.Folders.Count; i++)
+        for (int i = 0; i < _addItemOverlay_addItemWindowValues.ItemPaths.Count; i++)
         {
-            string folder = _addItemOverlay_addItemWindowValues.Folders[i];
+            string folder = _addItemOverlay_addItemWindowValues.ItemPaths[i];
             AddItemOverlay_AddFolderRow(AddItemOverlay_FolderList, i, folder);
         }
     }
@@ -174,7 +174,7 @@ public partial class MainWindow
     {
         if (sender is Button button && button.Tag is string folderPath)
         {
-            _addItemOverlay_addItemWindowValues.Folders.RemoveAll(i => i == folderPath);
+            _addItemOverlay_addItemWindowValues.ItemPaths.RemoveAll(i => i == folderPath);
             AddItemOverlay_UpdateFolderList();
         }
     }
@@ -285,7 +285,7 @@ public partial class MainWindow
         string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
         if (folders == null || folders.Length == 0) return;
 
-        _addItemOverlay_addItemWindowValues.Folders.AddRange(folders);
+        _addItemOverlay_addItemWindowValues.ItemPaths.AddRange(folders);
         AddItemOverlay_UpdateFolderList();
     }
     private async void AddItemOverlay_AddFile_Click(object? sender, RoutedEventArgs e)
@@ -293,7 +293,7 @@ public partial class MainWindow
         string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
         if (files == null || files.Length == 0) return;
 
-        _addItemOverlay_addItemWindowValues.Folders.AddRange(files);
+        _addItemOverlay_addItemWindowValues.ItemPaths.AddRange(files);
         AddItemOverlay_UpdateFolderList();
     }
 
@@ -306,7 +306,7 @@ public partial class MainWindow
         if (!AddItemOverlay_ValidateAddItemWindowValues()) return;
 
         ItemCreationContext itemCreationContext = new();
-        itemCreationContext.Folders.AddRange(_addItemOverlay_addItemWindowValues.Folders);
+        itemCreationContext.ItemPaths.AddRange(_addItemOverlay_addItemWindowValues.ItemPaths);
         itemCreationContext.Title = _addItemOverlay_addItemWindowValues.Title;
         itemCreationContext.Author = _addItemOverlay_addItemWindowValues.Author;
         itemCreationContext.AuthorId = _addItemOverlay_addItemWindowValues.BoothAuthorId;

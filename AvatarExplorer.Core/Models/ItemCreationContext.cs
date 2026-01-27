@@ -2,7 +2,7 @@ namespace AvatarExplorer.Core.Models;
 
 public class ItemCreationContext
 {
-    public List<string> Folders { get; set; } = new();
+    public List<string> ItemPaths { get; set; } = new();
     public string Title { get; set; } = string.Empty;
     public string Author { get; set; } = string.Empty;
     public string AuthorId { get; set; } = string.Empty;

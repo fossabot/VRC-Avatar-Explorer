@@ -231,14 +231,14 @@ public static class FileSystemService
         string parentFolder = string.Empty;
         string othersFolder = string.Empty;
     
-        for (int i = 0; i < itemCreationContext.Folders.Count; i++)
+        for (int i = 0; i < itemCreationContext.ItemPaths.Count; i++)
         {
             try
             {
-                string extractedFolderPath = await ExtractItemFoldersInternal(
-                    itemCreationContext.Folders[i],
+                string extractedFolderPath = await ExtractItemInternalAsync(
+                    itemCreationContext.ItemPaths[i],
                     string.IsNullOrEmpty(parentFolder) ? dataRootDirectory : othersFolder,
-                    string.IsNullOrEmpty(parentFolder) ? (ItemUtils.GetSafeTitle(itemCreationContext.Title) ?? Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i])) : Path.GetFileNameWithoutExtension(itemCreationContext.Folders[i]), // 親フォルダだけフォルダ名をタイトルに変換する
+                    string.IsNullOrEmpty(parentFolder) ? (ItemUtils.GetSafeTitle(itemCreationContext.Title) ?? Path.GetFileNameWithoutExtension(itemCreationContext.ItemPaths[i])) : Path.GetFileNameWithoutExtension(itemCreationContext.ItemPaths[i]), // 親フォルダだけフォルダ名をタイトルに変換する
                     removeOriginal
                 );
 
@@ -250,8 +250,8 @@ public static class FileSystemService
             }
             catch (Exception ex)
             {
-                ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing folder '{0}'.", itemCreationContext.Folders[i]), ex);
-                processingFailedPaths.Add(itemCreationContext.Folders[i]);
+                ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing folder '{0}'.", itemCreationContext.ItemPaths[i]), ex);
+                processingFailedPaths.Add(itemCreationContext.ItemPaths[i]);
             }
         }
 
@@ -262,35 +262,35 @@ public static class FileSystemService
 
         return ($"<sys>{Path.GetRelativePath(dataRootDirectory, parentFolder)}", processingFailedPaths);
     }
-    internal static async Task<List<string>> ExtractItemPaths(string parentFolderPath, string[] folders, bool removeOriginal = false)
+    internal static async Task<List<string>> ExtractItemPaths(string parentFolderPath, string[] itemPaths, bool removeOriginal = false)
     {
         List<string> processingFailedPaths = new();
 
         string destinationDirectory = Path.Combine(parentFolderPath, "AE_Others");
 
-        foreach (string folder in folders)
+        foreach (string itemPath in itemPaths)
         {
             try
             {
-                await ExtractItemFoldersInternal(
-                    folder,
+                await ExtractItemInternalAsync(
+                    itemPath,
                     destinationDirectory,
-                    Path.GetFileNameWithoutExtension(folder),
+                    Path.GetFileNameWithoutExtension(itemPath),
                     removeOriginal
                 );
             }
             catch (Exception ex)
             {
-                ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing folder '{0}'.", folder), ex);
-                processingFailedPaths.Add(folder);
+                ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing folder '{0}'.", itemPath), ex);
+                processingFailedPaths.Add(itemPath);
             }
         }
 
         return processingFailedPaths;
     }
-    private static async Task<string> ExtractItemFoldersInternal(string filePath, string destinationFolderPath, string folderName, bool removeOriginal)
+    private static async Task<string> ExtractItemInternalAsync(string filePath, string destinationFolderPath, string folderName, bool removeOriginal)
     {
-        var (extractedDestinationFolderPath, isDirectory) = await FileExtractorInternal(filePath, destinationFolderPath, folderName, removeOriginal);
+        var (extractedDestinationFolderPath, isDirectory) = await FileExtractorInternalAsync(filePath, destinationFolderPath, folderName, removeOriginal);
         if (isDirectory)
         {
             string copiedFolderPath = GetUniquePath(destinationFolderPath, folderName, true);
@@ -303,7 +303,7 @@ public static class FileSystemService
     #endregion
     
     #region Extractor
-    private static async Task<(string extractedFolderPath, bool isDirectory)> FileExtractorInternal(string filePath, string extractDirectory, string folderName, bool removeOriginalFile)
+    private static async Task<(string extractedFolderPath, bool isDirectory)> FileExtractorInternalAsync(string filePath, string extractDirectory, string folderName, bool removeOriginalFile)
     {
         if (Directory.Exists(filePath)) return (filePath, true); // フォルダが渡された場合はそのフォルダをそのまま返して上げる
         
@@ -312,7 +312,7 @@ public static class FileSystemService
         else if (filePath.ToLower().EndsWith(".rar")) extractedFolderPath = await RarExtractorAsync(filePath, extractDirectory, folderName);
         else if (filePath.ToLower().EndsWith(".7z")) extractedFolderPath = await SevenZipExtractorAsync(filePath, extractDirectory, folderName);
         else if (filePath.ToLower().EndsWith(".gz")) extractedFolderPath = await GzipExtractorAsync(filePath, extractDirectory, folderName);
-        else if (filePath.ToLower().EndsWith(".tar")) extractedFolderPath = await TarExtractor(filePath, extractDirectory, folderName);
+        else if (filePath.ToLower().EndsWith(".tar")) extractedFolderPath = await TarExtractorAsync(filePath, extractDirectory, folderName);
         else throw new NotImplementedException(string.Format("Unsupported File Extension: {0}", Path.GetFileName(filePath)));
 
         if (removeOriginalFile)
@@ -367,7 +367,7 @@ public static class FileSystemService
 
         return extractDirectoryFolder;
     }
-    private static async Task<string> TarExtractor(string filePath, string extractDirectory, string folderName)
+    private static async Task<string> TarExtractorAsync(string filePath, string extractDirectory, string folderName)
     {
         string extractDirectoryFolder = GetUniquePath(extractDirectory, folderName, true);
         
@@ -388,11 +388,11 @@ public static class FileSystemService
                 string fullPath = Path.Combine(extractDirectoryFolder, entry.Key!);
                 PrepareDirectory(fullPath);
 
-                using Stream inStream = entry.OpenEntryStream();
+                using Stream inStream = await entry.OpenEntryStreamAsync();
                 using Stream outStream = File.Create(fullPath);
 
                 int read;
-                while ((read = inStream.Read(buffer, 0, buffer.Length)) > 0)
+                while ((read = await inStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
                 {
                     await outStream.WriteAsync(buffer, 0, read);
                 }
@@ -409,6 +409,8 @@ public static class FileSystemService
     public static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, Action<(string, int)>? reportProgress = null, int maxDegreeOfParallelism = 4)
     {
         if (sourceDirectory == destinationDirectory) return; // sourceとdestinationが同じ場合は無視
+
+        Directory.CreateDirectory(destinationDirectory); // ファイル数が0の時、フォルダが生成されないため
 
         List<string> allFiles = EnumerateFiles(sourceDirectory).ToList();
         int totalFiles = allFiles.Count;
