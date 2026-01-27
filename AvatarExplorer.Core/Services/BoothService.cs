@@ -9,7 +9,6 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class BoothService
 {
-    private static readonly HttpClient HttpClient = new();
     private static readonly JsonSerializerOptions JsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
     internal static async Task<BoothItem?> GetItem(string boothId)
@@ -17,7 +16,7 @@ internal static class BoothService
         try
         {
             string url = string.Format(BoothLink.ItemJsonURLFormat, boothId);
-            string response = await HttpClient.GetStringAsync(url);
+            string response = await HttpService.Client.GetStringAsync(url);
 
             BoothItem? boothItem = JsonSerializer.Deserialize<BoothItem>(response, JsonSerializerOptions);
             if (boothItem == null) return null;
@@ -28,8 +27,9 @@ internal static class BoothService
                 AuthorId = BoothUtils.GetAuthorIdFromUrl(boothItem.Shop.Url)
             };
         }
-        catch
+        catch (Exception ex)
         {
+            ErrorManager.Instance.PostInternalError(string.Format("Failed to retrieve booth item information: '{0}'.", boothId), ex);
             return null;
         }
     }

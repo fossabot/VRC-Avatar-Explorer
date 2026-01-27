@@ -86,6 +86,8 @@
     "FileCategory.Document": "ドキュメント",
     "FileCategory.Unitypackage": "Unitypackage",
     "FileCategory.Material": "マテリアル",
+    "FileCategory.UrlShortcut": "URLショートカット",
+    "FileCategory.Unknown": "不明",
 
     "Processing.Unitypackage.Status.Preparing": "ファイルの準備中です... {0}%",
     "Processing.Unitypackage.Status.Extracting": "ファイルの展開中です... {0}%",
@@ -175,6 +177,7 @@
     "UI.Settings.ThemeDescription": "ソフト内で使用されるテーマです",
     "UI.Settings.Theme.Dark": "ダーク",
     "UI.Settings.Theme.Light": "ライト",
+
     "UI.Settings.Display": "表示",
     "UI.Settings.RemoveBrackets": "タイトルの括弧を削除する",
     "UI.Settings.RemoveBracketsDescription": "アイテムタイトルの【】を削除します",
@@ -195,6 +198,7 @@
     "UI.Settings.Item": "アイテム",
     "UI.Settings.RemoveOriginal": "インポート時に元ファイルを削除する",
     "UI.Settings.RemoveOriginalDescription": "アイテムをインポートした時に、元ファイルを自動で削除するかどうかの設定です",
+
     "UI.Settings.Background": "背景",
     "UI.Settings.UseCustomBackground": "カスタム背景を使用する",
     "UI.Settings.UseCustomBackgroundDescription": "ソフトの背景を変更します",
@@ -202,10 +206,12 @@
     "UI.Settings.BackgroundImageDescription": "背景写真のパスです",
     "UI.Settings.Opacity": "不透明度",
     "UI.Settings.OpacityDescription": "背景画像の不透明度です",
+
     "UI.Settings.CommonAvatar": "共通素体",
     "UI.Settings.CommonAvatarManagement": "共通素体の管理",
     "UI.Settings.CommonAvatarManagementDescription": "共通素体の管理画面を開きます",
     "UI.Settings.OpenManagement": "管理画面を開く",
+
     "UI.Settings.Data": "データ",
     "UI.Settings.AutoBackupPath": "自動バックアップ保存先",
     "UI.Settings.AutoBackupPathDescription": "自動バックアップの保存先",
@@ -224,9 +230,11 @@
     "UI.Settings.ResetItemDatabaseDescription": "アイテムのデータベースをリセットします。アセットデータ自体は削除されません。自動バックアップから復元可能です。",
     "UI.Settings.ResetCommonAvatarDatabase": "共通素体データベースのリセット",
     "UI.Settings.ResetCommonAvatarDatabaseDescription": "共通素体のデータベースをリセットします。アセットデータ自体は削除されません。自動バックアップから復元可能です。",
-    "UI.Settings.Reset": "リセット",
-    "UI.Settings.Close": "閉じる",
-    "UI.Settings.Apply": "適用",
+    
+    "UI.Settings.Log": "ログ",
+    "UI.Settings.ErrorLog": "エラーログ",
+    "UI.Settings.ErrorLogDescription": "ソフト内で起きたエラーのログを見ることが出来ます。",
+    "UI.Settings.OpenErrorLog": "ログを開く",
 
     "UI.Search.Watermark": "入力して検索...",
 
@@ -288,6 +296,8 @@
     "UI.EditCommonAvatars.RemoveGroup": "削除",
     "UI.EditCommonAvatars.ReplaceToGroup": "対応アバターをグループに置き換え",
 
+    "UI.ErrorLog.Title": "エラーログ",
+
     "UI.AddMemo.Title": "メモの追加",
     "UI.AddMemo.Memo": "メモ",
 
@@ -305,5 +315,10 @@
 
     "UI.Dialog.OK": "OK",
     "UI.Dialog.Yes": "はい",
-    "UI.Dialog.No": "いいえ"
+    "UI.Dialog.No": "いいえ",
+    
+    "UI.Button.Reset": "リセット",
+    "UI.Button.Close": "閉じる",
+    "UI.Button.Apply": "適用",
+    "UI.Button.Reflesh": "更新"
 }

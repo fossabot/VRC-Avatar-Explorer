@@ -2,22 +2,25 @@ namespace AvatarExplorer.Core.Services;
 
 internal static class ImageDownloader
 {
-    private static readonly HttpClient HttpClient = new();
-
-    internal static async Task Fetch(string url, string filePath, bool overwrite = false)
+    internal static async Task<bool> Fetch(string url, string filePath, bool overwrite = false)
     {
-        if ((!overwrite && File.Exists(filePath)) || string.IsNullOrEmpty(url)) return;
+        if (string.IsNullOrEmpty(filePath)) return false;
+        
+        if (!overwrite && File.Exists(filePath)) return true;
 
         try
         {
             byte[] imageBytes = await GetBytes(url);
             FileSystemService.PrepareDirectory(filePath);
             await File.WriteAllBytesAsync(filePath, imageBytes);
+
+            return true;
         }
-        catch
+        catch (Exception ex)
         {
-            // Ignored
+            ErrorManager.Instance.PostInternalError(string.Format("Failed to download image: '{0}'.", url), ex);
+            return false;
         }
     }
-    private static async Task<byte[]> GetBytes(string url) => await HttpClient.GetByteArrayAsync(url);
+    private static async Task<byte[]> GetBytes(string url) => await HttpService.Client.GetByteArrayAsync(url);
 }

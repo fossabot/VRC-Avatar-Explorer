@@ -6,7 +6,7 @@ namespace AvatarExplorer.Core.Services;
 
 public static class LaunchInfoService
 {
-    public static LaunchInfo GetLaunchInfo(string url)
+    public static LaunchInfo? GetLaunchInfo(string url)
     {
         try
         {
@@ -22,9 +22,10 @@ public static class LaunchInfoService
                 AssetId = id
             };
         }
-        catch
+        catch (Exception ex)
         {
-            return new();
+            ErrorManager.Instance.PostInternalError(string.Format("Failed to parse url: '{0}.'", url), ex);
+            return null;
         }
     }
 }

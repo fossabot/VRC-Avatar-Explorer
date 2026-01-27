@@ -99,7 +99,7 @@ public partial class MainWindow
     }
     private void InitializePipeServer()
     {
-        SingleInstanceService.OnPipeMessageReceived += (_, args) => OnPipeMessageReceived(args);
+        SingleInstanceService.OnPipeMessageReceived += OnPipeMessageReceived;
         SingleInstanceService.StartServer();
     }
     private void OnPipeMessageReceived(string[] args)

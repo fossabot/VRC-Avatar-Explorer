@@ -31,10 +31,7 @@ public static class FileNameUtils
             else builder.Append(rune.ToString());
         }
 
-        string safe = builder.ToString();
-
-        safe = safe.Trim(' ', '　', '.');
-
+        string safe = builder.ToString().Trim(' ', '　', '.');
         if (safe.Length > maxLength) safe = safe[..maxLength];
 
         string nameWithoutExt = Path.GetFileNameWithoutExtension(safe);

@@ -28,6 +28,11 @@ public enum FileCategory
     [LocalizationKey(LocalizationKey.FileCategory.Material)]
     Material,
 
+    [ExtensionsFilter(".url")]
+    [LocalizationKey(LocalizationKey.FileCategory.UrlShortcut)]
+    UrlShortcut,
+
+    [LocalizationKey(LocalizationKey.FileCategory.Unknown)]
     Unknown
 }
 

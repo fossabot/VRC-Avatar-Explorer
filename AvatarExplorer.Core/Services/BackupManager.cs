@@ -74,9 +74,9 @@ internal class BackupManager
             {
                 break;
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex.ToString());
+                // Ignored
             }
         }
     }
@@ -90,20 +90,27 @@ internal class BackupManager
 
     internal async Task ExecuteBackup(string backupRootFolderPath, CancellationToken token = default)
     {
-        string now = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss", CultureInfo.InvariantCulture);
-        string backupFolderPath = Path.Combine(backupRootFolderPath, now);
-        Directory.CreateDirectory(backupFolderPath);
-
-        foreach (string filePath in _backupFiles.Where(File.Exists))
+        try
         {
-            if (token.IsCancellationRequested) return;
+            string now = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss", CultureInfo.InvariantCulture);
+            string backupFolderPath = Path.Combine(backupRootFolderPath, now);
+            Directory.CreateDirectory(backupFolderPath);
 
-            string fileName = Path.GetFileName(filePath);
-            string backupPath = Path.Combine(backupFolderPath, fileName);
+            foreach (string filePath in _backupFiles.Where(File.Exists))
+            {
+                if (token.IsCancellationRequested) return;
 
-            await FileSystemService.CopyFile(filePath, backupPath);
+                string fileName = Path.GetFileName(filePath);
+                string backupPath = Path.Combine(backupFolderPath, fileName);
+
+                await FileSystemService.CopyFile(filePath, backupPath);
+            }
+
+            _lastBackupDate = DateTime.Now;
         }
-
-        _lastBackupDate = DateTime.Now;
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostInternalError("Failed to execute backup.", ex);
+        }
     }
 }

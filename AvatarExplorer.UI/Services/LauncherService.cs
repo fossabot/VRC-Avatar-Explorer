@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using AvatarExplorer.Core.Services;
 
 namespace AvatarExplorer.UI.Services;
 
@@ -18,7 +19,14 @@ internal static class LauncherService
 
         FileInfo fileInfo = new(filePath);
 
-        await launcher.LaunchFileInfoAsync(fileInfo);
+        try
+        {
+            await launcher.LaunchFileInfoAsync(fileInfo);
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostError(string.Format("Failed to open file. '{0}'", filePath), ex);
+        }
     }
 
     internal static async Task OpenFolder(Visual visual, string folderPath)
@@ -28,16 +36,30 @@ internal static class LauncherService
 
         DirectoryInfo folderInfo = new(folderPath);
 
-        await launcher.LaunchDirectoryInfoAsync(folderInfo);
+        try
+        {
+            await launcher.LaunchDirectoryInfoAsync(folderInfo);
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostError(string.Format("Failed to open directory. '{0}'", folderPath), ex);
+        }
     }
 
-    internal static async Task OpenLink(Visual visual, string itemLink)
+    internal static async Task OpenUri(Visual visual, string uri)
     {
         ILauncher? launcher = GetLauncher(visual);
         if (launcher == null) return;
 
-        Uri itemLinkUri = new(itemLink);
+        Uri uriInfo = new(uri);
 
-        await launcher.LaunchUriAsync(itemLinkUri);
+        try
+        {
+            await launcher.LaunchUriAsync(uriInfo);
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostError(string.Format("Failed to open Uri. '{0}'", uri), ex);
+        }
     }
 }

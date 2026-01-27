@@ -179,14 +179,12 @@ public partial class MainWindow
         Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Export]);
     }
     private async void SettingsOverlay_EditCommonAvatars_Click(object? sender, RoutedEventArgs e) => EditCommonAvatarsOverlay_Show();
-
     private async void SettingsOverlay_ResetItemDatabase_Click(object? sender, RoutedEventArgs e)
     {
         YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.ResetItemDatabase]);
         if (result != YesNoResult.Yes) return;
 
         _avatarExplorerApp.ResetItemDatabase();
-        _avatarExplorerApp.SaveItemDatabase();
         Main_ReloadCurrentWindow();
     }
     
@@ -196,7 +194,6 @@ public partial class MainWindow
         if (result != YesNoResult.Yes) return;
 
         _avatarExplorerApp.ResetCommonAvatarDatabase();
-        _avatarExplorerApp.SaveCommonAvatarDatabase();
         Main_ReloadCurrentWindow();
     }
 
@@ -244,5 +241,6 @@ public partial class MainWindow
 
         Main_ReloadCurrentWindow();
     }
+    private async void SettingsOverlay_ShowErrorLog_Click(object? sender, RoutedEventArgs e) => ErrorLogOverlay_Show();
     #endregion
 }

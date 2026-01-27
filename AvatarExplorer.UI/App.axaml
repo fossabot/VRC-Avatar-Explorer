@@ -130,9 +130,10 @@
             <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}"/>
         </Style>
 
-        <materialIcons:MaterialIconStyles />
+        <materialIcons:MaterialIconStyles/>
         
-        <FluentTheme />
+        <FluentTheme/>
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
     </Application.Styles>
 
 </Application>

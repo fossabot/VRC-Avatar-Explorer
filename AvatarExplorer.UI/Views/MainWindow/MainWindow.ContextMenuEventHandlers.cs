@@ -73,7 +73,7 @@ public partial class MainWindow
         Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return;
 
-        await LauncherService.OpenLink(this, item.GetBoothLink());
+        await LauncherService.OpenUri(this, item.GetBoothLink());
     }
     private Task ItemButton_ContextMenu_ShowOtherItemsByAuthor(string itemId)
     {

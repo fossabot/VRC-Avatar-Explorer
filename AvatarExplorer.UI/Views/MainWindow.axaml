@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:localization="clr-namespace:AvatarExplorer.UI.Localization"
+        xmlns:models="clr-namespace:AvatarExplorer.Core.Models;assembly=AvatarExplorer.Core"
         x:Class="AvatarExplorer.UI.MainWindow"
         x:DataType="localization:Localizer"
         WindowStartupLocation="CenterScreen"
@@ -482,7 +483,7 @@
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Background="Red" Foreground="White" FontWeight="Bold" Content="{Binding [UI.Settings.Reset]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ResetItemDatabase_Click"/>
+                                                <Button Grid.Column="1" Background="Red" Foreground="White" FontWeight="Bold" Content="{Binding [UI.Button.Reset]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ResetItemDatabase_Click"/>
                                             </Grid>
                                         </Grid>
 
@@ -493,7 +494,26 @@
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Background="Red" Foreground="White" FontWeight="Bold" Content="{Binding [UI.Settings.Reset]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ResetCommonAvatarDatabase_Click"/>
+                                                <Button Grid.Column="1" Background="Red" Foreground="White" FontWeight="Bold" Content="{Binding [UI.Button.Reset]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ResetCommonAvatarDatabase_Click"/>
+                                            </Grid>
+                                        </Grid>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Panel>
+                        </TabItem>
+
+                        <TabItem Header="{Binding [UI.Settings.Log]}" FontWeight="Bold">
+                            <Panel>
+                                <ScrollViewer>
+                                    <StackPanel Spacing="20" Margin="0,0,10,0">
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.ErrorLog]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.ErrorLogDescription]}"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.OpenErrorLog]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ShowErrorLog_Click"/>
                                             </Grid>
                                         </Grid>
                                     </StackPanel>
@@ -504,8 +524,8 @@
 
                     <!-- 下のボタン -->
                     <Grid Grid.Row="2" ColumnDefinitions="200,*,200" Margin="10,50,10,0">
-                        <Button Classes="button" FontWeight="Bold" CornerRadius="20" Grid.Column="0" Content="{Binding [UI.Settings.Close]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="15" Padding="10" Click="SettingsOverlay_Close_Click" />
-                        <Button Classes="accent" FontWeight="Bold" CornerRadius="20" Grid.Column="2" Content="{Binding [UI.Settings.Apply]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="15" Padding="10" Click="SettingsOverlay_Apply_Click" />
+                        <Button Classes="button" FontWeight="Bold" CornerRadius="20" Grid.Column="0" Content="{Binding [UI.Button.Close]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="15" Padding="10" Click="SettingsOverlay_Close_Click" />
+                        <Button Classes="accent" FontWeight="Bold" CornerRadius="20" Grid.Column="2" Content="{Binding [UI.Button.Apply]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="15" Padding="10" Click="SettingsOverlay_Apply_Click" />
                     </Grid>
                 </Grid>
             </Border>
@@ -697,7 +717,7 @@
                         <!-- 下のボタン -->
                         <Grid ColumnDefinitions="Auto,*,180" Grid.Row="8">
                             <Button Classes="button" FontWeight="Bold" Content="{Binding [UI.EditCommonAvatars.ReplaceToGroup]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="10,7" FontSize="15" Click="EditCommonAvatarsOverlay_ReplaceAvatarsToGroup_Click"/>
-                            <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.Settings.Close]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditCommonAvatarsOverlay_Close_Click"/>
+                            <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.Button.Close]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditCommonAvatarsOverlay_Close_Click"/>
                         </Grid>
                     </Grid>
                 </StackPanel>
@@ -878,6 +898,42 @@
                         <Button Grid.Column="4" Classes="accent" Content="{Binding [UI.Dialog.Update.UpdateNow]}" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="UpdateDialogOverlay_UpdateNow_Click"/>
                     </Grid>
                 </StackPanel>
+            </Border>
+        </Border>
+
+        <!-- エラーログオーバーレイ -->
+        <Border x:Name="ErrorLogOverlay" Classes="overlaybackground" IsVisible="False">
+            <Border Classes="overlay" Width="900" Height="600" Padding="20">
+                <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="15">
+
+                    <!-- タイトル -->
+                    <TextBlock Text="{Binding [UI.ErrorLog.Title]}" FontSize="22" FontWeight="Bold"/>
+
+                    <Separator Grid.Row="1" Background="#22000000"/>
+
+                    <Panel Grid.Row="2">
+                        <ScrollViewer>
+                            <DataGrid x:Name="ErrorLogOverlay_ErrorLogGrid" GridLinesVisibility="All" x:DataType="models:ErrorContext">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Timestamp" Binding="{Binding Date, StringFormat={}{0:yyyy/MM/dd HH:mm:ss}}"/>
+                                    <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"/>
+                                </DataGrid.Columns>
+
+                                <DataGrid.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
+                                    </Style>
+                                </DataGrid.Styles>
+                            </DataGrid>
+                        </ScrollViewer>
+                    </Panel>
+
+                    <!-- 下のボタン -->
+                    <Grid Grid.Row="3" ColumnDefinitions="120,*,120">
+                        <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [UI.Button.Close]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="ErrorLogOverlay_Close_Click"/>
+                        <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.Button.Reflesh]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="ErrorLogOverlay_Reflesh_Click"/>
+                    </Grid>
+                </Grid>
             </Border>
         </Border>
     </Panel>

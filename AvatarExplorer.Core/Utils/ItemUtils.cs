@@ -8,21 +8,16 @@ public static partial class ItemUtils
     [GeneratedRegex(@"\u3010[^\u3011]+\u3011")]
     private static partial Regex TextBracketsRegex();
 
-    internal static string GetAvatarNameFromId(IReadOnlyList<Item> items, string? id)
+    internal static string GetTitleFromDictionary(Dictionary<string, string> itemTitleMaps, string itemId)
     {
-        if (string.IsNullOrEmpty(id)) return string.Empty;
-        return items.Where(i => i.Type == ItemType.Avatar).FirstOrDefault(x => x.Id == id)?.Title ?? string.Empty;
-    }
-
-    internal static string GetAvatarNameFromDictionary(Dictionary<string, string> avatarNamesDictionary, string avatarPath)
-    {
-        if (string.IsNullOrEmpty(avatarPath)) return string.Empty;
-        return avatarNamesDictionary.TryGetValue(avatarPath, out string? avatarName) ? avatarName : string.Empty;
+        if (string.IsNullOrEmpty(itemId)) return string.Empty;
+        return itemTitleMaps.TryGetValue(itemId, out string? avatarName) ? avatarName : string.Empty;
     }
 
     public static string GetItemPath(string parentFolder, string itemPath)
     {
-        // <sys>で始まっていないものはフルパスと認識する
+        // <sys>で始まっていたら相対パスと認識して親フォルダに置き換える
+        // 始まっていないものはフルパスと認識してそのまま変えす
         return itemPath.StartsWith("<sys>") ? Path.Join(parentFolder, itemPath.Replace("<sys>", string.Empty)) : itemPath;
     }
 
@@ -34,15 +29,5 @@ public static partial class ItemUtils
         return FileNameUtils.GetSafeTitle(itemTitle);
     }
     
-    internal static Dictionary<string, string> GetAvatarNameMaps(IReadOnlyList<Item> items)
-    {
-        return items
-            .Where(i => i.Type == ItemType.Avatar)
-            .Select(i => i.Id)
-            .Distinct()
-            .ToDictionary(
-                i => i,
-                i => GetAvatarNameFromId(items, i)
-            );
-    }
+    internal static Dictionary<string, string> GetItemTitleMaps(IEnumerable<Item> items) => items.ToDictionary(i => i.Id, i => i.Title);
 }

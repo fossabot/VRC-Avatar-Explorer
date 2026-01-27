@@ -158,6 +158,8 @@ public static class LocalizationKey
         public const string Document = "FileCategory.Document";
         public const string Unitypackage = "FileCategory.Unitypackage";
         public const string Material = "FileCategory.Material";
+        public const string UrlShortcut = "FileCategory.UrlShortcut";
+        public const string Unknown = "FileCategory.Unknown";
     }
 
     public static class Processing

@@ -4,7 +4,7 @@ namespace AvatarExplorer.Core.Services;
 
 public static class SupportedAvatarService
 {
-    public static List<string> GetAllAvatarIds(IEnumerable<string> avatars, IReadOnlyList<CommonAvatar> commonAvatars, bool includeCommonToSupported = false)
+    public static IReadOnlyList<string> GetAllAvatarIds(IEnumerable<string> avatars, IReadOnlyList<CommonAvatar> commonAvatars, bool includeCommonAvatarToSupported = false)
     {
         List<string> avatarIds = new();
 
@@ -23,7 +23,7 @@ public static class SupportedAvatarService
 
             avatarIds.Add(avatarId);
 
-            if (!includeCommonToSupported) continue;
+            if (!includeCommonAvatarToSupported) continue;
 
             IEnumerable<CommonAvatar> commonAvatarGroup = commonAvatars.Where(commonAvatar => commonAvatar.AvatarsView.Contains(avatarId));
             foreach (string commonAvatarId in commonAvatarGroup.SelectMany(i => i.AvatarsView))

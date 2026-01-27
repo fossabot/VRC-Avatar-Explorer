@@ -7,27 +7,11 @@ internal static class CommonAvatarDatabaseService
 {
     internal static List<CommonAvatar> Load(string path)
     {
-        try
-        {
-            if (!File.Exists(path)) throw new FileNotFoundException();
-            return FileSystemService.DeserializeClass<List<CommonAvatar>>(path) ?? [];
-        }
-        catch
-        {
-            return [];
-        }
-
+        return FileSystemService.DeserializeClass<List<CommonAvatar>>(path) ?? [];
     }
 
     internal static void Save(List<CommonAvatar> commonAvatars)
     {
-        try
-        {
-            FileSystemService.SerializeClass(commonAvatars, SystemPath.CommonAvatarDatabasePath);
-        }
-        catch
-        {
-            // Ignored
-        }
+        FileSystemService.SerializeClass(commonAvatars, SystemPath.CommonAvatarDatabasePath);
     }
 }

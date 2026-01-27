@@ -7,5 +7,5 @@ public class VersionData
     public string LatestVersion { get; set; } = string.Empty;
 
     [JsonPropertyName("ChangeLog")]
-    public string[] ChangeLogs { get; set; } = [];
+    public string[] ChangeLogs { get; set; } = Array.Empty<string>();
 }

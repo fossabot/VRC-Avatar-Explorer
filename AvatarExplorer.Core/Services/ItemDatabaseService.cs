@@ -7,27 +7,11 @@ internal static class ItemDatabaseService
 {
     internal static List<Item> Load(string path)
     {
-        try
-        {
-            if (!File.Exists(path)) throw new FileNotFoundException();
-            return FileSystemService.DeserializeClass<List<Item>>(path) ?? [];
-        }
-        catch
-        {
-            return [];
-        }
-
+        return FileSystemService.DeserializeClass<List<Item>>(path) ?? [];
     }
 
     internal static void Save(List<Item> items)
     {
-        try
-        {
-            FileSystemService.SerializeClass(items, SystemPath.ItemDatabasePath);
-        }
-        catch
-        {
-            // Ignored
-        }
+        FileSystemService.SerializeClass(items, SystemPath.ItemDatabasePath);
     }
 }

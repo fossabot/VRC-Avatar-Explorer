@@ -46,12 +46,12 @@ internal class AddItemOverlayWindowValues
         UpdateSupportedAvatars(item.SupportedAvatarsView);
     }
 
-    internal (bool, string) Validate()
+    internal string Validate()
     {
-        if (Folders.Count == 0) return (false, LocalizationKey.Error.Validation.NoFolders);
-        if (string.IsNullOrEmpty(Title)) return (false, LocalizationKey.Error.Validation.EmptyTitle);
-        if (string.IsNullOrEmpty(Author)) return (false, LocalizationKey.Error.Validation.EmptyAuthor);
+        if (Folders.Count == 0) return LocalizationKey.Error.Validation.NoFolders;
+        if (string.IsNullOrEmpty(Title)) return LocalizationKey.Error.Validation.EmptyTitle;
+        if (string.IsNullOrEmpty(Author)) return LocalizationKey.Error.Validation.EmptyAuthor;
 
-        return (true, string.Empty);
+        return string.Empty;
     }
 }

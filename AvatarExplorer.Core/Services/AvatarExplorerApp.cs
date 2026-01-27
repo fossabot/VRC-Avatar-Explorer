@@ -36,6 +36,9 @@ public partial class AvatarExplorerApp
         {
             { ActionKey.FetchThumbnail, ItemButton_ContextMenu_FetchThumbnail }
         };
+
+        ErrorManager.Instance.OnErrorOccured += ErrorLogWriter.Instance.Write;
+        ErrorManager.Instance.OnInternalErrorOccured += ErrorLogWriter.Instance.InternalWrite;
     }
 
     #region Database
@@ -62,8 +65,16 @@ public partial class AvatarExplorerApp
     public void SaveItemDatabase() => ItemDatabaseService.Save(_items);
     public void SaveCommonAvatarDatabase() => CommonAvatarDatabaseService.Save(_commonAvatars);
 
-    public void ResetItemDatabase() => _items.Clear();
-    public void ResetCommonAvatarDatabase() => _commonAvatars.Clear();
+    public void ResetItemDatabase()
+    {
+        _items.Clear();
+        SaveItemDatabase();
+    }
+    public void ResetCommonAvatarDatabase()
+    {
+        _commonAvatars.Clear();
+        SaveCommonAvatarDatabase();
+    }
     #endregion
 
     #region Runtime Settings
@@ -79,7 +90,7 @@ public partial class AvatarExplorerApp
     }
     private void SetRuntimeSettingsInternal(RuntimeSettings runtimeSettings)
     {
-        RuntimeSettingsService.TrySetDataRootDirectory(_runtimeSettings, runtimeSettings.DataRootDirectory);
+        _runtimeSettings.SetDataRootDirectory(runtimeSettings.DataRootDirectory);
         _runtimeSettings.SetAutoBackupRootDirectory(runtimeSettings.AutoBackupRootDirectory);
         _runtimeSettings.SetSortOrder(runtimeSettings.ItemSortOrder);
         _runtimeSettings.SetRemoveOriginal(runtimeSettings.RemoveOriginal);
@@ -91,15 +102,15 @@ public partial class AvatarExplorerApp
     #region Update API
     public void UpdateSearchIndex()
     {
-        Dictionary<string, string> avatarNameMaps = ItemUtils.GetAvatarNameMaps(_items);
-        _items.ForEach(item => _itemSearchIndexDictionary[item.Id] = SearchService.BuildItemSearchIndex(item, avatarNameMaps, _commonAvatars));
+        Dictionary<string, string> avatarTitleMaps = ItemUtils.GetItemTitleMaps(_items.Where(i => i.Type == ItemType.Avatar));
+        _items.ForEach(item => _itemSearchIndexDictionary[item.Id] = SearchService.BuildItemSearchIndex(item, avatarTitleMaps, _commonAvatars));
     }
     public void UpdateSearchIndex(string itemId)
     {
         Item? item = GetItemById(itemId);
         if (item == null) return;
 
-        Dictionary<string, string> avatarNameMaps = ItemUtils.GetAvatarNameMaps(_items);
+        Dictionary<string, string> avatarNameMaps = ItemUtils.GetItemTitleMaps(_items.Where(i => i.Type == ItemType.Avatar));
         _itemSearchIndexDictionary[item.Id] = SearchService.BuildItemSearchIndex(item, avatarNameMaps, _commonAvatars);
     }
     #endregion
@@ -116,22 +127,36 @@ public partial class AvatarExplorerApp
     public IReadOnlyList<ItemCountInfo> GetCategories(bool includeEmptyCategory = false) => ItemCategoryAggregator.Aggregate(_items, includeEmptyCategory);
 
     public IReadOnlyList<Item> GetAllItems() => _items;
-    public Item? GetItemById(string? itemId) => itemId != null ? _items.FirstOrDefault(i => i.Id == itemId) : null;
+    public Item? GetItemById(string? itemId)
+    {
+        if (itemId == null) return null;
+
+        Item? item = _items.FirstOrDefault(i => i.Id == itemId);
+        if (item == null) ErrorManager.Instance.PostInternalError(string.Format("The item with the specified ID '{0}' was not found.", itemId));
+
+        return item;
+    }
     public IReadOnlyList<ItemCountInfo> GetItemsForCurrentState()
     {
         SelectionNode? current = _selectionState.Current;
-
-        if (current == null)
-            return new List<ItemCountInfo>();
+        if (current == null) return Array.Empty<ItemCountInfo>();
 
         if (_stateHandlers.TryGetValue(current.State, out var handler))
             return handler(current);
 
-        return new List<ItemCountInfo>();
+        return Array.Empty<ItemCountInfo>();
     }
 
     public IReadOnlyList<CommonAvatar> GetCommonAvatars() => _commonAvatars;
-    public CommonAvatar? GetCommonAvatarById(string? groupId) => groupId != null ? _commonAvatars.FirstOrDefault(i => i.Id == groupId) : null;
+    public CommonAvatar? GetCommonAvatarById(string? groupId)
+    {
+        if (groupId == null) return null;
+
+        CommonAvatar? commonAvatar = _commonAvatars.FirstOrDefault(i => i.Id == groupId);
+        if (commonAvatar == null) ErrorManager.Instance.PostInternalError(string.Format("The common avatar group with the specified ID '{0}' was not found.", groupId));
+        
+        return commonAvatar;
+    }
     
     #region Current State Internal Handler
     private IReadOnlyList<ItemCountInfo> HandleRootAvatar(SelectionNode selectionNode) => ItemCategoryAggregator.Aggregate(_items.Where(i => AvatarStatusResolver.Resolve(i, selectionNode.Key, _commonAvatars).IsSupportedOrCommon));
@@ -210,71 +235,88 @@ public partial class AvatarExplorerApp
 
     private static IReadOnlyList<ItemCountInfo> GetCategoryItemsFromPathInternal(string itemPath)
     {
-        List<ItemCountInfo> categoryItems = new();
-
-        FileCategory[] extensionFilters = Enum.GetValues<FileCategory>();
-        foreach (FileCategory filter in extensionFilters)
-        {
-            string[]? filters = filter.GetExtensionFilters();
-            if (filters == null) continue;
-
-            string[]? fileNameFilters = filter.GetFileNameFilters();
-
-            FileCategoryItem categoryItem = new(filter);
-
-            foreach (string file in FileSystemService.EnumerateFiles(itemPath))
+        List<ItemFileCategoryDefinition> categoryDefinitions = Enum.GetValues<FileCategory>()
+            .Select(c => new ItemFileCategoryDefinition()
             {
-                string fileExtension = Path.GetExtension(file);
-                if (!filters.Contains(fileExtension)) continue;
-                
-                if (fileNameFilters != null)
-                {
-                    string fileName = Path.GetFileNameWithoutExtension(file);
-                    if (!fileNameFilters.Any(f => fileName.Contains(f, StringComparison.CurrentCultureIgnoreCase))) continue;
-                }
+                FileCategory = c,
+                ExtensionFilters = c.GetExtensionFilters(),
+                FilenameFilters = c.GetFileNameFilters(),
+                Item = new FileCategoryItem(c)
+            })
+            .Where(x => x.ExtensionFilters != null)
+            .ToList();
 
-                categoryItem.FilePaths.Add(file);
-            }
-
-            if (categoryItem.FilePaths.Count > 0) categoryItems.Add(new ItemCountInfo(categoryItem, categoryItem.FilePaths.Count));
-        }
-
-        return categoryItems;
-    }
-    private static IReadOnlyList<ItemCountInfo> GetFilesFromPathInternal(string itemPath, string category)
-    {
-        List<ItemCountInfo> categoryItems = new();
-
-        FileCategory fileCategory = Enum.GetValues<FileCategory>().FirstOrDefault(i => i.GetLocalizationKey() == category);
-        if (fileCategory == default) return categoryItems;
-
-        string[]? filters = fileCategory.GetExtensionFilters();
-        if (filters == null) return categoryItems;
-
-        string[]? fileNameFilters = fileCategory.GetFileNameFilters();
+        List<string> unknownFiles = new();
 
         foreach (string file in FileSystemService.EnumerateFiles(itemPath))
         {
-            string fileExtension = Path.GetExtension(file);
-            if (!filters.Contains(fileExtension)) continue;
+            string extension = Path.GetExtension(file);
+            string fileName = Path.GetFileNameWithoutExtension(file);
+            ItemFileCategoryDefinition? matched = categoryDefinitions.FirstOrDefault(def => def.ExtensionFilters!.Contains(extension) && (def.FilenameFilters == null || def.FilenameFilters.Any(f => fileName.Contains(f, StringComparison.CurrentCultureIgnoreCase))));
 
-            if (fileNameFilters != null)
-            {
-                string fileName = Path.GetFileNameWithoutExtension(file);
-                if (!fileNameFilters.Any(f => fileName.Contains(f, StringComparison.CurrentCultureIgnoreCase))) continue;
-            }
-
-            categoryItems.Add(new ItemCountInfo(new ItemFile(Path.GetFullPath(file)), 0));
+            if (matched != null) matched.Item.FilePaths.Add(file);
+            else unknownFiles.Add(file);
         }
 
-        return categoryItems;
+        List<ItemCountInfo> result = categoryDefinitions
+            .Where(x => x.Item.FilePaths.Count > 0)
+            .Select(x => new ItemCountInfo(x.Item, x.Item.FilePaths.Count))
+            .ToList();
+
+        if (unknownFiles.Count > 0)
+        {
+            FileCategoryItem unknownItem = new(FileCategory.Unknown);
+            unknownItem.FilePaths.AddRange(unknownFiles);
+            result.Add(new ItemCountInfo(unknownItem, unknownFiles.Count));
+        }
+
+        return result;
+    }
+    private static IReadOnlyList<ItemCountInfo> GetFilesFromPathInternal(string itemPath, string category)
+    {
+        FileCategory targetCategory = Enum.GetValues<FileCategory>()
+            .FirstOrDefault(i => i.GetLocalizationKey() == category);
+
+        if (targetCategory == default) return Array.Empty<ItemCountInfo>();
+
+        string[]? extensionFilters = targetCategory.GetExtensionFilters();
+        string[]? fileNameFilters = targetCategory.GetFileNameFilters();
+
+        List<ItemCountInfo> result = new();
+
+        foreach (string file in FileSystemService.EnumerateFiles(itemPath))
+        {
+            bool isMatch;
+            
+            if (targetCategory == FileCategory.Unknown)
+            {
+                isMatch = !Enum.GetValues<FileCategory>()
+                    .Where(c => c != FileCategory.Unknown && c.GetExtensionFilters() != null)
+                    .Any(c =>
+                    {
+                        var exts = c.GetExtensionFilters();
+                        var names = c.GetFileNameFilters();
+                        return exts!.Contains(Path.GetExtension(file)) && (names == null || names.Any(f => Path.GetFileNameWithoutExtension(file).Contains(f, StringComparison.CurrentCultureIgnoreCase)));
+                    });
+            }
+            else
+            {
+                string extension = Path.GetExtension(file);
+                string fileName = Path.GetFileNameWithoutExtension(file);
+                isMatch = extensionFilters != null && extensionFilters.Contains(extension) && (fileNameFilters == null || fileNameFilters.Any(f => fileName.Contains(f, StringComparison.CurrentCultureIgnoreCase)));
+            }
+
+            if (isMatch) result.Add(new ItemCountInfo(new ItemFile(Path.GetFullPath(file)), 0));
+        }
+
+        return result;
     }
 
     public RuntimeSettings GetRuntimeSettings() => _runtimeSettings;
     #endregion
 
     #region Set API
-    public bool SetDataRootDirectory(string path) => RuntimeSettingsService.TrySetDataRootDirectory(_runtimeSettings, path);
+    public void SetDataRootDirectory(string path) => _runtimeSettings.SetDataRootDirectory(path);
     public void SetAutoBackupRootDirectory(string path)
     {
         _runtimeSettings.SetAutoBackupRootDirectory(path);
@@ -324,7 +366,17 @@ public partial class AvatarExplorerApp
 
         return addItemResult;
     }
+    public async Task<IReadOnlyList<string>> AddItemPaths(string itemId, string[] paths)
+    {
+        Item? item = GetItemById(itemId);
+        if (item == null) return paths.ToList();
 
+        List<string> processingFailedPaths = await FileSystemService.ExtractItemPaths(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), paths);
+        return processingFailedPaths;
+    }
+    #endregion
+
+    #region Edit API
     public async Task<Item?> EditItem(string itemId, ItemCreationContext itemCreationContext)
     {
         Item? item = GetItemById(itemId);
@@ -332,7 +384,7 @@ public partial class AvatarExplorerApp
 
         item.SetValuesFromCreationContext(itemCreationContext);
 
-        // １個より多い場合は追加のアイテムとしてインポートしてあげる
+        // １個より多い場合は追加のアイテムとしてインポートしてあげる(0がRootフォルダー想定)
         if (itemCreationContext.Folders.Count > 1) await AddItemPaths(item.Id, itemCreationContext.Folders.Skip(1).ToArray());
 
         item.UpdatedDate = DatetimeUtils.GetCurrentUnixTime();
@@ -344,7 +396,7 @@ public partial class AvatarExplorerApp
     }
     #endregion
 
-    #region Update API
+    #region Update Thumbnail API
     public async Task<Item?> UpdateItemThumbnail(string itemId, string imageFilePath)
     {
         Item? item = GetItemById(itemId);
@@ -394,17 +446,6 @@ public partial class AvatarExplorerApp
     }
     #endregion
 
-    #region Add API
-    public async Task<IReadOnlyList<string>> AddItemPaths(string itemId, string[] paths)
-    {
-        Item? item = GetItemById(itemId);
-        if (item == null) return paths.ToList();
-
-        List<string> processingFailedPaths = await FileSystemService.ExtractItemPaths(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), paths);
-        return processingFailedPaths;
-    }
-    #endregion
-
     #region Booth API
     private DateTime _lastBoothApiGetTime;
     public bool IsApiCooldownNow => _lastBoothApiGetTime.AddSeconds(5) > DateTime.Now;
@@ -421,15 +462,15 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region File API
-    public static async Task<string> ModifyUnityPackageFilePath(string filePath, string itemCategoryName = "", Func<(string, int), Task>? reportProgress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync([filePath], [itemCategoryName], reportProgress);
-    public static async Task<string> ModifyUnityPackageFilePaths(string[] filePaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync(filePaths, itemCategoryNames, reportProgress);
+    public static async Task<string?> ModifyUnityPackageFilePath(string filePath, string itemCategoryName = "", Func<(string, int), Task>? reportProgress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync([filePath], [itemCategoryName], reportProgress);
+    public static async Task<string?> ModifyUnityPackageFilePaths(string[] filePaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null) => await FileSystemService.ModifyUnityPackageFilePathsAsync(filePaths, itemCategoryNames, reportProgress);
     #endregion
 
     #region Remove API
-    public bool RemoveItem(string itemId, bool removeFromSupportedAndImplemented = false)
+    public bool RemoveItem(string itemId, bool removeItemFromSupportedAndImplemented = false)
     {
         int removed = _items.RemoveAll(i => i.Id == itemId);
-        if (removeFromSupportedAndImplemented)
+        if (removeItemFromSupportedAndImplemented)
         {
             _items.ForEach(i =>
             {
@@ -474,7 +515,7 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Data Exporter API
-    public async Task ExportToCsv(string filePath, Dictionary<ItemType, string> localizedItemTypesMapping, bool includeCommonToSupported) => await DataExporter.ToCsv(_items, _commonAvatars, localizedItemTypesMapping, filePath, includeCommonToSupported);
+    public async Task ExportToCsv(string filePath, Dictionary<ItemType, string> localizedItemTypesMapping, bool includeCommonToSupported) => await DataExporter.ToCsv(_items, _commonAvatars, localizedItemTypesMapping, _runtimeSettings, filePath, includeCommonToSupported);
     #endregion
     
     #region Clear API
@@ -499,8 +540,8 @@ public partial class AvatarExplorerApp
         if (boothItem == null) return;
 
         string itemThumbnailFileName = item.BoothId + ".png";
-        await ImageDownloader.Fetch(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);
-        item.ThumbnmailFileName = itemThumbnailFileName;
+        bool result = await ImageDownloader.Fetch(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);
+        if (result) item.ThumbnmailFileName = itemThumbnailFileName;
     }
     #endregion
 

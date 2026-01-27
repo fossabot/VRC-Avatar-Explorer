@@ -25,12 +25,12 @@ internal static class ItemCreator
         if (itemCreationContext.BoothId != -1) // Boothの情報を取得している状態が確定している
         {
             string itemThumbnailFileName = newItem.Id + ".png";
-            await ImageDownloader.Fetch(itemCreationContext.ThumbnailUrl, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);
-            newItem.ThumbnmailFileName = itemThumbnailFileName;
+            bool thumbnailResult = await ImageDownloader.Fetch(itemCreationContext.ThumbnailUrl, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);
+            if (thumbnailResult) newItem.ThumbnmailFileName = itemThumbnailFileName;
 
             string authorThumbnailFileName = itemCreationContext.AuthorId + ".png";
-            await ImageDownloader.Fetch(itemCreationContext.AuthorThumbnailUrl, Path.Combine(SystemPath.AuthorThumbnailsPath, authorThumbnailFileName), false);
-            newItem.AuthorThumbnmailFileName = authorThumbnailFileName;
+            bool authorThumbnailResult = await ImageDownloader.Fetch(itemCreationContext.AuthorThumbnailUrl, Path.Combine(SystemPath.AuthorThumbnailsPath, authorThumbnailFileName), false);
+            if (authorThumbnailResult) newItem.AuthorThumbnmailFileName = authorThumbnailFileName;
         }
 
         newItem.UpdateSupportedAvatars(itemCreationContext.SupportedAvatars);

@@ -208,7 +208,7 @@ public partial class MainWindow
         addItemWindowValues.Title = AddItemOverlay_BoothItemTitleTextBox.Text ?? string.Empty;
         addItemWindowValues.Author = AddItemOverlay_BoothItemAuthorTextBox.Text ?? string.Empty;
         addItemWindowValues.BoothAuthorId = AddItemOverlay_InternalAuthorIdTextBox.Text ?? string.Empty;
-        addItemWindowValues.BoothId = int.TryParse( AddItemOverlay_InternalBoothIdTextBox.Text ?? string.Empty, out int id) ? id : -1;
+        addItemWindowValues.BoothId = int.TryParse(AddItemOverlay_InternalBoothIdTextBox.Text ?? string.Empty, out int id) ? id : -1;
         addItemWindowValues.BoothThumbnailUrl = AddItemOverlay_InternalImageURLTextBox.Text ?? string.Empty;
         addItemWindowValues.BoothAuthorThumbnailUrl = AddItemOverlay_InternalAuthorImageURLTextBox.Text ??string.Empty;
     }
@@ -218,7 +218,7 @@ public partial class MainWindow
         int selectedIndex = AddItemOverlay_ItemTypeComboBox.SelectedIndex;
 
         // カスタムカテゴリかどうかのチェック(式: ItemTypeの数 - 無効なItemType数 - カスタムカテゴリ)
-        if (selectedIndex >= (Enum.GetValues<ItemType>().Length - CategoryUtils.InvalidItemTypes.Length - 1)) // ここの1はカスタムカテゴリ分
+        if (selectedIndex >= (Enum.GetValues<ItemType>().Length - CategoryUtils.InvalidItemTypes.Length - 1))
         {
             return (ItemType.Custom, AddItemOverlay_ItemTypeComboBox.SelectedItem?.ToString() ?? string.Empty);
         }
@@ -227,8 +227,9 @@ public partial class MainWindow
     }
     private bool AddItemOverlay_ValidateAddItemWindowValues()
     {
-        (bool result, string errorMessageLocalizationKey) = _addItemOverlay_addItemWindowValues.Validate();
-        if (!result) Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[errorMessageLocalizationKey]);
+        string errorMessage = _addItemOverlay_addItemWindowValues.Validate();
+        bool result = string.IsNullOrEmpty(errorMessage);
+        if (!result) Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[errorMessage]);
 
         return result;
     }
@@ -263,7 +264,7 @@ public partial class MainWindow
         _addItemOverlay_addItemWindowValues.BoothId = boothItem.BoothId;
         _addItemOverlay_addItemWindowValues.BoothThumbnailUrl = boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty;
         _addItemOverlay_addItemWindowValues.BoothAuthorThumbnailUrl = boothItem.Shop.ThumbnailUrl;
-        _addItemOverlay_addItemWindowValues.ItemType = !CategoryUtils.InvalidItemTypes.Contains(boothItem.EstimatedCategory) ? boothItem.EstimatedCategory : ItemType.Avatar;
+        _addItemOverlay_addItemWindowValues.ItemType = CategoryUtils.InvalidItemTypes.Contains(boothItem.EstimatedCategory) ? ItemType.Avatar : boothItem.EstimatedCategory;
         
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
     }

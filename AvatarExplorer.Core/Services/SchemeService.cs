@@ -30,11 +30,8 @@ public static class SchemeService
         }
     }
 
-    public static bool IsSkipped(string text)
-        => text == SKIPPED_TEXT;
-
-    public static bool IsSchemeRegistered()
-        => IsSchemeRegistered(REG_PROTCOL);
+    public static bool IsSkipped(string text) => text == SKIPPED_TEXT;
+    public static bool IsSchemeRegistered() => IsSchemeRegistered(REG_PROTCOL);
 
     public static void RegisterScheme()
     {

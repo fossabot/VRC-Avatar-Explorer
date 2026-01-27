@@ -25,6 +25,7 @@ internal static class DataImporter
 
         reportProgress?.Invoke((LocalizationKey.Processing.Import.Copying, 20));
         await FileSystemService.CopyDirectory(SystemPathV1.ItemThumbnailsPath(dataFolderPath), SystemPath.ItemThumbnailsPath);
+        
         List<Item> items = new();
 
         Dictionary<string, string> pathMapping = new();
@@ -36,22 +37,27 @@ internal static class DataImporter
             ItemV1 item = v1Items[i];
             string previousItemPath = item.ItemPath;
 
-            string safeItemTitle = ItemUtils.GetSafeTitle(item.Title) ?? Path.GetFileNameWithoutExtension(item.ItemPath);
-            string? newItemPath = FileSystemService.GetUniquePath(runtimeSettings.DataRootDirectory, safeItemTitle, isFolder: true);
-            if (newItemPath == null) continue;
+            try
+            {
+                string safeItemTitle = ItemUtils.GetSafeTitle(item.Title) ?? Path.GetFileNameWithoutExtension(item.ItemPath);
+                string newItemPath = FileSystemService.GetUniquePath(runtimeSettings.DataRootDirectory, safeItemTitle, isFolder: true) ?? throw new DirectoryNotFoundException("Counldn't get unique item path");
+                string newItemMaterialPath = Path.Combine(newItemPath, "AE_Materials");
 
-            string newItemMaterialPath = Path.Combine(newItemPath, "AE_Materials");
+                await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.ItemPath)), newItemPath);
+                if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.MaterialPath)), newItemMaterialPath);
 
-            await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.ItemPath)), newItemPath);
-            if (!string.IsNullOrEmpty(item.MaterialPath)) await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(SystemPathV1.ItemsPath(dataFolderPath), MigrateUtils.MigrateItemPath(item.MaterialPath)), newItemMaterialPath);
-
-            item.ItemPath = $"<sys>{Path.GetRelativePath(runtimeSettings.DataRootDirectory, newItemPath)}";
-            
-            Item newItem = FromV1(item);
-            
-            pathMapping[previousItemPath] = newItem.Id;
-            
-            items.Add(newItem);
+                item.ItemPath = $"<sys>{Path.GetRelativePath(runtimeSettings.DataRootDirectory, newItemPath)}";
+                
+                Item newItem = FromV1(item);
+                
+                pathMapping[previousItemPath] = newItem.Id;
+                
+                items.Add(newItem);
+            }
+            catch (Exception ex)
+            {
+                ErrorManager.Instance.PostInternalError(string.Format("Failed to process item: '{0}'.", item.Title), ex);
+            }
 
             int percent = 20 + (int)(80.0 * i / v1Items.Count);
             if (percent != lastPercent)
@@ -139,34 +145,40 @@ internal static class DataImporter
         {
             Item item = konoAssetItems[i].ToItem();
 
-            string safeItemTitle = ItemUtils.GetSafeTitle(item.Title) ?? Path.GetFileNameWithoutExtension(item.ItemPath);
-            string? newItemPath = FileSystemService.GetUniquePath(runtimeSettings.DataRootDirectory, safeItemTitle, isFolder: true);
-            if (newItemPath == null) continue;
-
-            await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(KonoAssetPath.ItemsPath(dataFolderPath), item.ItemPath), newItemPath);
-            item.ItemPath = newItemPath;
-
-            if (item.BoothId != -1)
+            try
             {
-                BoothItem? boothItem = await BoothService.GetItem(item.BoothId.ToString()); // もう一度取得してあげる
+                string safeItemTitle = ItemUtils.GetSafeTitle(item.Title) ?? Path.GetFileNameWithoutExtension(item.ItemPath);
+                string newItemPath = FileSystemService.GetUniquePath(runtimeSettings.DataRootDirectory, safeItemTitle, isFolder: true);
 
-                if (boothItem != null)
+                await FileSystemService.CopyDirectory(ItemUtils.GetItemPath(KonoAssetPath.ItemsPath(dataFolderPath), item.ItemPath), newItemPath);
+                item.ItemPath = newItemPath;
+
+                if (item.BoothId != -1)
                 {
-                    item.AuthorId = boothItem.AuthorId; // IKonoAssetItem.ToItem()ではAuthorIdは移行されないためここで設定する必要がある。
+                    BoothItem? boothItem = await BoothService.GetItem(item.BoothId.ToString()); // もう一度取得してあげる
 
-                    string itemThumbnailFileName = item.BoothId + ".png";
-                    await ImageDownloader.Fetch(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), false);
-                    item.ThumbnmailFileName = itemThumbnailFileName;
+                    if (boothItem != null)
+                    {
+                        item.AuthorId = boothItem.AuthorId; // IKonoAssetItem.ToItem()ではAuthorIdは移行されないためここで設定する必要がある。
 
-                    string authorThumbnailFileName = item.AuthorId + ".png";
-                    await ImageDownloader.Fetch(boothItem.Shop.ThumbnailUrl, Path.Combine(SystemPath.AuthorThumbnailsPath, authorThumbnailFileName), false);
-                    item.AuthorThumbnmailFileName = authorThumbnailFileName;
+                        string itemThumbnailFileName = item.BoothId + ".png";
+                        await ImageDownloader.Fetch(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), false);
+                        item.ThumbnmailFileName = itemThumbnailFileName;
+
+                        string authorThumbnailFileName = item.AuthorId + ".png";
+                        await ImageDownloader.Fetch(boothItem.Shop.ThumbnailUrl, Path.Combine(SystemPath.AuthorThumbnailsPath, authorThumbnailFileName), false);
+                        item.AuthorThumbnmailFileName = authorThumbnailFileName;
+                    }
+
+                    await Task.Delay(2250); // (750 * 3)ms
                 }
 
-                await Task.Delay(2250); // (750 * 3)ms
+                items.Add(item);
             }
-
-            items.Add(item);
+            catch (Exception ex)
+            {
+                ErrorManager.Instance.PostInternalError(string.Format("Failed to process item: '{0}'.", item.Title), ex);
+            }
 
             int percent = (int)(100.0 * i / konoAssetItems.Count);
             if (percent != lastPercent)

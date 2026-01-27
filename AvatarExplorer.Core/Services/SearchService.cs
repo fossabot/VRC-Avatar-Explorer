@@ -8,13 +8,13 @@ internal static class SearchService
 {
     internal static IReadOnlyList<Item> ExecuteSearch(IReadOnlyList<Item> items, IReadOnlyList<CommonAvatar> commonAvatars, Dictionary<string, string> searchIndexDictionary, RuntimeSettings runtimeSettings, SearchFilter searchFilter)
     {
-        Dictionary<string, string> avatarNameMaps = ItemUtils.GetAvatarNameMaps(items);
+        Dictionary<string, string> avatarTitleMaps = ItemUtils.GetItemTitleMaps(items.Where(i => i.Type == ItemType.Avatar));
 
         List<Item> matchedItems = new();
         foreach (Item item in items)
         {
             string searchIndex = searchIndexDictionary.TryGetValue(item.Id, out string? value) ? value : string.Empty;
-            if (Matches(item, searchFilter, searchIndex, avatarNameMaps, commonAvatars, runtimeSettings.DataRootDirectory))
+            if (Matches(item, searchFilter, searchIndex, avatarTitleMaps, commonAvatars, runtimeSettings.DataRootDirectory))
             {
                 matchedItems.Add(item);
             }
@@ -24,7 +24,7 @@ internal static class SearchService
             .OrderByDescending(i => !searchIndexDictionary.TryGetValue(i.Id, out string? value) ? 0 : SearchUtils.GetScore(value, searchFilter.SearchWords))
             .ToList();
     }
-    private static bool Matches(Item item, SearchFilter searchFilter, string searchIndex, Dictionary<string, string> avatarNameMaps, IReadOnlyList<CommonAvatar> commonAvatars, string parentFolder)
+    private static bool Matches(Item item, SearchFilter searchFilter, string searchIndex, Dictionary<string, string> avatarTitleMaps, IReadOnlyList<CommonAvatar> commonAvatars, string parentFolder)
     {
         bool matchTitle = searchFilter.Titles.Count == 0 || SearchUtils.MatchesFilter(
             [item.Title], searchFilter.Titles,
@@ -45,8 +45,8 @@ internal static class SearchService
         );
 
         bool matchAvatar = searchFilter.SupportedAvatars.Count == 0 || SearchUtils.MatchesFilter(
-            SupportedAvatarService.GetAllAvatarIds(item.SupportedAvatarsView, commonAvatars, includeCommonToSupported: true)
-                .Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar)),
+            SupportedAvatarService.GetAllAvatarIds(item.SupportedAvatarsView, commonAvatars, includeCommonAvatarToSupported: true)
+                .Select(i => ItemUtils.GetTitleFromDictionary(avatarTitleMaps, i)),
             searchFilter.SupportedAvatars,
             searchFilter.IsOrSearch,
             (target, filter) => !string.IsNullOrEmpty(target) && target.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
@@ -89,18 +89,18 @@ internal static class SearchService
             );
         }
         
-        IEnumerable<string> implementedAvatarNames = item.ImplementedAvatarsView.Select(avatar => ItemUtils.GetAvatarNameFromDictionary(avatarNameMaps, avatar));
+        IEnumerable<string> implementedAvatarTitles = item.ImplementedAvatarsView.Select(i => ItemUtils.GetTitleFromDictionary(avatarTitleMaps, i));
 
         bool matchImplemented = searchFilter.ImplementedAvatars.Count == 0 || SearchUtils.MatchesFilter(
-            implementedAvatarNames, searchFilter.ImplementedAvatars,
+            implementedAvatarTitles, searchFilter.ImplementedAvatars,
             searchFilter.IsOrSearch,
             (target, filter) => !string.IsNullOrEmpty(target) && target.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
         );
 
         bool matchNotImplemented = searchFilter.NotImplementedAvatars.Count == 0
             || (searchFilter.NotImplementedAvatars.Count > 0 && searchFilter.IsOrSearch
-                ? searchFilter.NotImplementedAvatars.Any(filter => !implementedAvatarNames.Any(name => name.Contains(filter, StringComparison.CurrentCultureIgnoreCase)))
-                : searchFilter.NotImplementedAvatars.All(filter => !implementedAvatarNames.Any(name => name.Contains(filter, StringComparison.CurrentCultureIgnoreCase))));
+                ? searchFilter.NotImplementedAvatars.Any(filter => !implementedAvatarTitles.Any(name => name.Contains(filter, StringComparison.CurrentCultureIgnoreCase)))
+                : searchFilter.NotImplementedAvatars.All(filter => !implementedAvatarTitles.Any(name => name.Contains(filter, StringComparison.CurrentCultureIgnoreCase))));
 
         bool matchTag = searchFilter.Tags.Count == 0 || SearchUtils.MatchesFilter(
             item.TagsView, searchFilter.Tags,
@@ -147,11 +147,11 @@ internal static class SearchService
             && matchWord;
     }
 
-    internal static string BuildItemSearchIndex(Item item, Dictionary<string, string> avatarMap, IReadOnlyList<CommonAvatar> commonAvatars)
+    internal static string BuildItemSearchIndex(Item item, Dictionary<string, string> avatarTitleMaps, IReadOnlyList<CommonAvatar> commonAvatars)
     {
-        IEnumerable<string> avatars = SupportedAvatarService.GetAllAvatarIds(item.SupportedAvatarsView, commonAvatars, includeCommonToSupported: true)
+        IEnumerable<string> avatars = SupportedAvatarService.GetAllAvatarIds(item.SupportedAvatarsView, commonAvatars, includeCommonAvatarToSupported: true)
             .Concat(item.ImplementedAvatarsView)
-            .Select(a => ItemUtils.GetAvatarNameFromDictionary(avatarMap, a))
+            .Select(i => ItemUtils.GetTitleFromDictionary(avatarTitleMaps, i))
             .Where(name => !string.IsNullOrEmpty(name));
 
         return string.Join("\n",

@@ -7,9 +7,6 @@ internal class AvatarStatus
 
     internal string CommonAvatarName { get; set; } = string.Empty;
     
-    internal bool IsSupportedOrCommon
-        => IsSupported || IsCommon;
-
-    internal bool IsOnlyCommon
-        => IsCommon && !IsSupported;
+    internal bool IsSupportedOrCommon => IsSupported || IsCommon;
+    internal bool IsOnlyCommon => IsCommon && !IsSupported;
 }

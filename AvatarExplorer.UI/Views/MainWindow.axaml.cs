@@ -71,7 +71,9 @@ public partial class MainWindow : Window
     {
         if (args == null || args.Length == 0 || string.IsNullOrEmpty(args[0])) return;
 
-        LaunchInfo launchInfo = LaunchInfoService.GetLaunchInfo(args[0]);
+        LaunchInfo? launchInfo = LaunchInfoService.GetLaunchInfo(args[0]);
+        if (launchInfo == null) return;
+
         if (launchInfo.AssetDirs.Length != 0 && !string.IsNullOrEmpty(launchInfo.AssetId)) await AddItemOverlay_ShowAdd(launchInfo);
     }
 

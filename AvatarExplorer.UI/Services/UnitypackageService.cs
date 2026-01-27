@@ -8,7 +8,7 @@ namespace AvatarExplorer.UI.Services;
 
 internal static class UnitypackageService
 {
-    internal static async Task Import(string filePath, string localizedCategoryName, Func<string, int, Task>? onProgress = null, Func<string, Task>? onCompleted = null)
+    internal static async Task Import(string filePath, string localizedCategoryName, Func<string, int, Task>? onProgress = null, Func<string?, Task>? onCompleted = null)
     {
         // Item1: LocalizationKey, Item2: ProgressValue
         async Task progressAction((string, int) tuple)
@@ -19,11 +19,11 @@ internal static class UnitypackageService
             });
         }
 
-        string unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePath(filePath, localizedCategoryName, progressAction);
+        string? unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePath(filePath, localizedCategoryName, progressAction);
         if (onCompleted != null) await onCompleted(unityPackagePath);
     }
 
-    internal static async Task BulkImport(string[] filePaths, string[] localizedCategoryNames, Func<string, int, Task>? onProgress = null, Func<string, Task>? onCompleted = null)
+    internal static async Task BulkImport(string[] filePaths, string[] localizedCategoryNames, Func<string, int, Task>? onProgress = null, Func<string?, Task>? onCompleted = null)
     {
         if (filePaths.Length != localizedCategoryNames.Length) return;
 
@@ -36,7 +36,7 @@ internal static class UnitypackageService
             });
         }
 
-        string unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePaths(filePaths, localizedCategoryNames, progressAction);
+        string? unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePaths(filePaths, localizedCategoryNames, progressAction);
         if (onCompleted != null) await onCompleted(unityPackagePath);
     }
 
