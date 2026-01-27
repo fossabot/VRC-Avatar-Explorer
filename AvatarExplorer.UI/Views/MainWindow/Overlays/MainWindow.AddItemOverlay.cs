@@ -331,7 +331,7 @@ public partial class MainWindow
             {
                 Dialog_Show(
                     Localizer.Instance[LocalizationKey.Error.Default],
-                    Localizer.Instance.GetDisplayName(LocalizationKey.Error.ItemFolderProcessingFailedPaths, "\n" + string.Join('\n', processingFailedPaths.Select(i => $"- {i}")))
+                    Localizer.Instance.GetDisplayName(LocalizationKey.Error.ItemFolderProcessingFailedPaths, "\n" + string.Join('\n', processingFailedPaths.Select(i => $"- {Path.GetFileName(i)}")))
                 );
             }
 

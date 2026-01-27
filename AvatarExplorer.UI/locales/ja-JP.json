@@ -160,6 +160,8 @@
     "Error.Validation.EmptyTitle": "アイテムのタイトル欄が空です",
     "Error.Validation.EmptyAuthor": "アイテムの作者欄が空です",
 
+    "Error.Item.Folder.ProcessingFailedPaths": "処理に失敗したアイテム: {0}",
+
     "UI.SortOrder.Title": "タイトル",
     "UI.SortOrder.Author": "作者",
     "UI.SortOrder.Created": "作成日時",

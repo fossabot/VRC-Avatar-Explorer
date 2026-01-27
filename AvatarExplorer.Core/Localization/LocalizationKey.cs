@@ -247,8 +247,7 @@ public static class LocalizationKey
             public const string EmptyTitle = "Error.Validation.EmptyTitle";
             public const string EmptyAuthor = "Error.Validation.Author";
         }
-
-        public const string ItemAddFailed = "Error.Item.Add.Failed";
+        
         public const string ItemFolderProcessingFailedPaths = "Error.Item.Folder.ProcessingFailedPaths";
     }
 

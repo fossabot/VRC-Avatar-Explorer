@@ -279,6 +279,11 @@ public static class FileSystemService
                     removeOriginal
                 );
             }
+            catch (CryptographicException cryptographicException)
+            {
+                ErrorManager.Instance.PostInternalError(string.Format("File '{0}' is password-protected and is not supported.", itemPath), cryptographicException);
+                processingFailedPaths.Add(itemPath);
+            }
             catch (Exception ex)
             {
                 ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing folder '{0}'.", itemPath), ex);
