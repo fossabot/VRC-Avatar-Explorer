@@ -17,6 +17,8 @@ internal static class DataImporter
     {
         if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Import.Copying, 0));
 
+        if (Directory.Exists(Path.Combine(dataFolderPath, "Datas"))) dataFolderPath = Path.Combine(dataFolderPath, "Datas");
+
         List<ItemV1> v1Items = FileSystemService.DeserializeClass<List<ItemV1>>(SystemPathV1.ItemDatabasePath(dataFolderPath)) ?? [];
         List<CommonAvatarV1> v1CommonAvatars = FileSystemService.DeserializeClass<List<CommonAvatarV1>>(SystemPathV1.CommonAvatarDatabasePath(dataFolderPath)) ?? [];
 
