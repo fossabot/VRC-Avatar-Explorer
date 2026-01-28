@@ -16,8 +16,16 @@ internal class PageManager
         { ItemTagState.RootSelectedItem, 0 },
         { ItemTagState.ItemFileCategoryOpen, 0 }
     };
+
+    private static readonly ItemTagState[] _leftPanelStates =
+    [
+        ItemTagState.RootAvatar,
+        ItemTagState.RootAuthor,
+        ItemTagState.RootCategory
+    ];
     
     internal bool IsPageSupported(ItemTagState itemTagState) => _currentPageStates.ContainsKey(itemTagState);
+    internal bool IsStateResetSupported(ItemTagState itemTagState) => !_leftPanelStates.Contains(itemTagState);
 
     internal int GetPage(ItemTagState itemTagState) => IsPageSupported(itemTagState) ? _currentPageStates[itemTagState] : -1;
     internal void SetPage(ItemTagState itemTagState, int value)
@@ -28,12 +36,12 @@ internal class PageManager
 
     internal void ResetPageValue(ItemTagState itemTagState)
     {
-        if (!IsPageSupported(itemTagState)) return;
+        if (!IsPageSupported(itemTagState) || !IsStateResetSupported(itemTagState)) return;
         SetPage(itemTagState, 0);
     }
     internal void ResetAllPageValues()
     {
-        foreach (ItemTagState key in GetKeys())
+        foreach (ItemTagState key in GetKeys().Where(IsStateResetSupported))
             ResetPageValue(key);
     }
 

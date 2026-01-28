@@ -22,6 +22,7 @@ public partial class MainWindow
     #region Main Top Buttons
     private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e) => SettingsOverlay_Show();
     private void Main_UndoButton_Click(object? sender, RoutedEventArgs e) => Main_ExecuteUndo();
+    private void Main_HomeButton_Click(object? sender, RoutedEventArgs e) => Main_ExecuteHome();
     private void Main_AddItem_Click(object? sender, RoutedEventArgs e) => AddItemOverlay_ShowAdd();
     #endregion
 

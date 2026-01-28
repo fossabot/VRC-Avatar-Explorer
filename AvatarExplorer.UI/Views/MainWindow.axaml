@@ -22,15 +22,16 @@
         <DockPanel Margin="12">
             <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*" ColumnSpacing="12">
                 <Border Grid.Column="1" Classes="panelbackground">
-                    <Grid ColumnDefinitions="Auto,2.3*,Auto,*,Auto" ColumnSpacing="10">
-                        <Button Classes="button" Grid.Column="0" Content="{materialIcons:MaterialIconExt Kind=ArrowLeft}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" CornerRadius="8" Padding="20,0,20,0" Click="Main_UndoButton_Click"/>
+                    <Grid ColumnDefinitions="Auto,Auto,2.3*,Auto,*,Auto" ColumnSpacing="10">
+                        <Button Classes="button" Grid.Column="0" Content="{materialIcons:MaterialIconExt Kind=ArrowLeft}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" CornerRadius="8" Padding="15,0,15,0" Click="Main_UndoButton_Click"/>
+                        <Button Classes="button" Grid.Column="1" Content="{materialIcons:MaterialIconExt Kind=HomeOutline}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" CornerRadius="8" Padding="15,0,15,0" Click="Main_HomeButton_Click"/>
                         
-                        <TextBox x:Name="Main_PathTextBox" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" Watermark="{Binding [Path.Default]}" FontSize="14" CornerRadius="8"/>
+                        <TextBox x:Name="Main_PathTextBox" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" Watermark="{Binding [Path.Default]}" FontSize="14" CornerRadius="8"/>
                         
-                        <materialIcons:MaterialIcon Grid.Column="2" Kind="Magnify" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                        <TextBox x:Name="Main_SearchTextBox" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="{Binding [UI.Search.Watermark]}" FontSize="14" CornerRadius="8" TextChanged="Main_SearchValue_Changed"/>
+                        <materialIcons:MaterialIcon Grid.Column="3" Kind="Magnify" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                        <TextBox x:Name="Main_SearchTextBox" Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="{Binding [UI.Search.Watermark]}" FontSize="14" CornerRadius="8" TextChanged="Main_SearchValue_Changed"/>
                         
-                        <Button Classes="accent" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Margin="5,0,0,0" Click="Main_AddItem_Click">
+                        <Button Classes="accent" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Margin="5,0,0,0" Click="Main_AddItem_Click">
                             <StackPanel Orientation="Horizontal" Spacing="5">
                                 <materialIcons:MaterialIcon Kind="Plus" Width="25" Height="25" VerticalAlignment="Center"/>
                                 <TextBlock Classes="accent" FontSize="15" FontWeight="Bold" Text="{Binding [UI.Button.AddItem]}" VerticalAlignment="Center"/>

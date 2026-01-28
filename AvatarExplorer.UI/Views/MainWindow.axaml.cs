@@ -316,6 +316,12 @@ public partial class MainWindow : Window
         if (isCurrentSearchNode) Main_ExecuteSearchItems();
         else Main_RenderRightPanel();
     }
+    private void Main_ExecuteHome()
+    {
+        _avatarExplorerApp.SelectClear();
+        _main_pageManager.ResetAllPageValues();
+        Main_RenderRightPanel();
+    }
     private void Main_ReloadCurrentWindow()
     {
         Main_RenderLeftPanel();
