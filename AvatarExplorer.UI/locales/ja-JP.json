@@ -168,9 +168,6 @@
     "UI.SortOrder.Updated": "更新日時",
 
     "UI.Settings.Basic": "基本",
-    "UI.Settings.ItemsFolder": "データ保存先フォルダ",
-    "UI.Settings.ItemsFolderDescription": "フォルダの展開先です",
-    "UI.Settings.Browse": "参照",
     "UI.Settings.Language": "言語",
     "UI.Settings.LanguageDescription": "ソフト内の言語です",
     "UI.Settings.SortOrder": "並び替え順",
@@ -215,6 +212,9 @@
     "UI.Settings.OpenManagement": "管理画面を開く",
 
     "UI.Settings.Data": "データ",
+    "UI.Settings.ItemsFolder": "データ保存先フォルダ",
+    "UI.Settings.ItemsFolderDescription": "アセットファイル / フォルダのコピー先です",
+    "UI.Settings.Browse": "参照",
     "UI.Settings.AutoBackupPath": "自動バックアップ保存先",
     "UI.Settings.AutoBackupPathDescription": "自動バックアップの保存先",
     "UI.Settings.AutoBackupInterval": "自動バックアップ頻度",

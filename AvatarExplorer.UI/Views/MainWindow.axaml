@@ -198,18 +198,6 @@
                                     <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.ItemsFolder]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.ItemsFolderDescription]}"/>
-                                            </Grid>
-
-                                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
-                                                <TextBox x:Name="SettingsOverlay_ItemsFolderPathTextBox" IsReadOnly="True" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
-                                                <Button Classes="button" Grid.Column="1" Content="{Binding [UI.Settings.Browse]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="SettingsOverlay_OpenFolder_Click"/>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
                                                 <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.Language]}"/>
                                                 <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.LanguageDescription]}" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
                                             </Grid>
@@ -310,7 +298,7 @@
                                                 <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.AntiAliasingDescription]}"/>
                                             </Grid>
 
-                                            <Grid Grid.Column="1" ColumnDefinitions="*,2.5*">
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,2.5*" ColumnSpacing="5">
                                                 <ComboBox Grid.Column="1" x:Name="SettingsOverlay_AntiAliasingModeComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                                                     <ComboBoxItem Content="{Binding [UI.Settings.AntiAliasing.None]}"/>
                                                     <ComboBoxItem Content="{Binding [UI.Settings.AntiAliasing.Low]}"/>
@@ -420,6 +408,18 @@
                             <Panel>
                                 <ScrollViewer>
                                     <StackPanel Spacing="20" Margin="0,0,10,0">
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.ItemsFolder]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.ItemsFolderDescription]}"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                                <TextBox x:Name="SettingsOverlay_ItemsFolderPathTextBox" IsReadOnly="True" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                                <Button Classes="button" Grid.Column="1" Content="{Binding [UI.Settings.Browse]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="SettingsOverlay_OpenFolder_Click"/>
+                                            </Grid>
+                                        </Grid>
+
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
                                                 <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.AutoBackupPath]}"/>
