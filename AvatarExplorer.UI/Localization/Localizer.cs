@@ -45,7 +45,12 @@ public class Localizer : INotifyPropertyChanged
         }
 
         _map.Clear();
-        _map.AddRange(languageMaps.OrderBy(i => int.Parse(i.TryGetValue("LanguagePriority", out string? value) ? value : "999")).ToList());
+        List<Dictionary<string, string>> sortedMaps = languageMaps.OrderBy(i =>
+        {
+            string priorityString = i.TryGetValue("LanguagePriority", out string? value) ? value : string.Empty;
+            return int.TryParse(priorityString, out int priority) ? priority : int.MaxValue;
+        }).ToList();
+        _map.AddRange(sortedMaps);
     }
     
     public string[] GetLanguageList() => _map.Select(i => i[LocalizationKey.LanguageName]).ToArray();
