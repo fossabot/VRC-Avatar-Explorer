@@ -353,6 +353,7 @@ public partial class MainWindow
         }
 
         AddItemOverlay_Hide();
+        Main_ReloadCurrentWindow();
     }
     
     private void AddItemOverlay_Close_Click(object? sender, RoutedEventArgs e) => AddItemOverlay_Hide();
