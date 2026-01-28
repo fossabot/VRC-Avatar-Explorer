@@ -108,7 +108,7 @@
     "Path.Root.Author": "作者: {0}",
     "Path.Root.Category": "カテゴリ: {0}",
     "Path.Search": "検索: {0}",
-    "Path.Removed": "削除済み",
+    "Path.Removed": "[削除済み]",
 
     "ContextMenu.Item.OpenFolder": "フォルダを開く",
     "ContextMenu.Item.ShowOtherItemsByAuthor": "この作者の他のアイテムを表示",
