@@ -10,12 +10,13 @@ public class Category : ISelectableItem
     
     public bool IsEmpty => Type == ItemType.None && CustomCategory == string.Empty;
     public string CategoryName => Type == ItemType.Custom ? CustomCategory : Type.ToString();
-    public string LocalizationKey => Type == ItemType.Custom ? string.Empty : (Type.GetLocalizationKey() ?? Type.ToString());
+    public string LocalizationKey => Type == ItemType.Custom ? string.Empty : (Type.GetLocalizationKey() ?? string.Empty);
 
     #region Constructor
     public Category()
     {
     }
+
     public Category(Category category)
     {
         Type = category.Type;
