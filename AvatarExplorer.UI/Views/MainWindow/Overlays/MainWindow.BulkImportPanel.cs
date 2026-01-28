@@ -25,6 +25,7 @@ public partial class MainWindow
         int bulkImportPanelTabIndex = SidePanel_TabControl.Items.IndexOf(SidePanel_BulkImportPanelTab);
         if (bulkImportPanelTabIndex != -1 && SidePanel_TabControl.SelectedIndex != bulkImportPanelTabIndex) SidePanel_TabControl.SelectedIndex = bulkImportPanelTabIndex;
 
+        // TODO: Unitypackageの無いアイテムもここで追加できてしまうのを直す
         _bulkImportPanel_bulkImportItems.Add(new BulkImportItem(itemId));
         ReloadBulkImportItemButtons();
         
@@ -60,10 +61,11 @@ public partial class MainWindow
                 Item? item = _avatarExplorerApp.GetItemById(bulkImportItem.ItemId);
                 if (item == null) continue;
 
-                string filePath = UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath))[bulkImportItem.SelectedIndex];
-                if (filePaths.Contains(filePath)) continue;
+                IReadOnlyList<string> unitypackagePaths = UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath));
+                if (unitypackagePaths.Count == 0 || bulkImportItem.SelectedIndex >= unitypackagePaths.Count) continue;
 
-                filePaths.Add(filePath);
+                string unitypackagePath = unitypackagePaths[bulkImportItem.SelectedIndex];
+                filePaths.Add(unitypackagePath);
 
                 if (item.Type == ItemType.Custom) categories.Add(item.CustomCategory);
                 else categories.Add(Localizer.Instance[item.Type.GetLocalizationKey() ?? item.Type.ToString()]);

@@ -11,7 +11,7 @@ internal static class DataExporter
         Dictionary<string, string> avatarTitleMaps = ItemUtils.GetItemTitleMaps(items.Where(i => i.Type == ItemType.Avatar));
 
         using StreamWriter sw = new(filePath, false, Encoding.UTF8);
-        await sw.WriteLineAsync("Id,Title,AuthorName,AuthorImageFilePath,ImagePath,Type,Memo,SupportedAvatars,ImplementedAvatars,BoothId,ItemPath,Tags");
+        await sw.WriteLineAsync("Id,Title,AuthorName,AuthorImageFilePath,ImagePath,Category,Memo,SupportedAvatars,ImplementedAvatars,BoothId,ItemPath,Tags");
 
         foreach (Item item in items)
         {
@@ -38,7 +38,12 @@ internal static class DataExporter
             string authorName = CsvUtils.EscapeCsv(item.Author);
             string authorImageFilePath = CsvUtils.EscapeCsv(item.AuthorThumbnmailFileName);
             string imagePath = CsvUtils.EscapeCsv(item.ThumbnmailFileName);
-            string type = CsvUtils.EscapeCsv(item.Type == ItemType.Custom ? item.CustomCategory : localizedItemTypesMapping[item.Type]);
+
+            string categoryName;
+            if (item.Type == ItemType.Custom) categoryName = item.CustomCategory;
+            else categoryName = localizedItemTypesMapping.TryGetValue(item.Type, out string? value) ? value : item.Type.ToString();
+
+            string category = CsvUtils.EscapeCsv(categoryName);
             string memo = CsvUtils.EscapeCsv(item.ItemMemo);
             string supportedAvatarsList = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, supportedAvatarNames));
             string implementedAvatarsList = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, implementedAvatarNames));
@@ -46,7 +51,7 @@ internal static class DataExporter
             string itemPath = CsvUtils.EscapeCsv(ItemUtils.GetItemPath(runtimeSettings.DataRootDirectory, item.ItemPath));
             string tags = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, item.TagsView));
 
-            await sw.WriteLineAsync($"{itemId},{itemTitle},{authorName},{authorImageFilePath},{imagePath},{type},{memo},{supportedAvatarsList},{implementedAvatarsList},{boothId},{itemPath},{tags}");
+            await sw.WriteLineAsync($"{itemId},{itemTitle},{authorName},{authorImageFilePath},{imagePath},{category},{memo},{supportedAvatarsList},{implementedAvatarsList},{boothId},{itemPath},{tags}");
         }
     }
 }

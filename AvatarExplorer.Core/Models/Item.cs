@@ -36,6 +36,16 @@ public class Item : ISelectableItem
     
     public string GetBoothLink() => string.Format(BoothLink.ItemURLFormat, AuthorId, BoothId);
     
+    [JsonIgnore] private Category CategoryInternal { get; } = new();
+    [JsonIgnore] public Category Category
+    {
+        get
+        {
+            CategoryInternal.SetCategory(Type, CustomCategory);
+            return CategoryInternal;
+        }
+    }
+    
     internal Item SetValuesFromCreationContext(ItemCreationContext itemCreationContext)
     {
         Title = itemCreationContext.Title;

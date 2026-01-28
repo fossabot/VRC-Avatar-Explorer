@@ -10,6 +10,7 @@ public class Category : ISelectableItem
     
     public bool IsEmpty => Type == ItemType.None && CustomCategory == string.Empty;
     public string CategoryName => Type == ItemType.Custom ? CustomCategory : Type.ToString();
+    public string LocalizationKey => Type == ItemType.Custom ? string.Empty : (Type.GetLocalizationKey() ?? Type.ToString());
 
     #region Constructor
     public Category()
@@ -21,10 +22,10 @@ public class Category : ISelectableItem
         CustomCategory = category.CustomCategory;
     }
 
-    public Category(ItemType itemType)
+    public Category(ItemType type, string customCategory = "")
     {
-        Type = itemType;
-        CustomCategory = string.Empty;
+        Type = string.IsNullOrEmpty(customCategory) ? type : ItemType.Custom;
+        CustomCategory = customCategory;
     }
 
     public Category(string customCategory)
@@ -54,5 +55,5 @@ public class Category : ISelectableItem
     }
     #endregion
 
-    public override string ToString() => Type == ItemType.Custom ? CustomCategory : (Type.GetLocalizationKey() ?? Type.ToString());
+    public override string ToString() => Type == ItemType.Custom ? CustomCategory : Type.ToString();
 }
