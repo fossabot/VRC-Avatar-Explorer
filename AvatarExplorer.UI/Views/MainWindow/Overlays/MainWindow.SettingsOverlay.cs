@@ -10,6 +10,7 @@ using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
 using AvatarExplorer.UI.Services;
@@ -69,7 +70,7 @@ public partial class MainWindow
         if (SettingsOverlay_NormalIconSizeSlider != null && SettingsOverlay_HoverIconSizeSlider != null) _userPreferences.SetIconSize((int)SettingsOverlay_NormalIconSizeSlider.Value, (int)SettingsOverlay_HoverIconSizeSlider.Value);
         if (SettingsOverlay_EnableHoverIconSizeCheckBox != null) _userPreferences.UseHoverIconSize(SettingsOverlay_EnableHoverIconSizeCheckBox.IsChecked ?? false);
         if (SettingsOverlay_AntiAliasingModeComboBox != null) _userPreferences.SetAntialiasing((BitmapAntiAliasingMode)SettingsOverlay_AntiAliasingModeComboBox.SelectedIndex);
-        if (SettingsOverlay_ItemsPerPageTextBox != null) _userPreferences.SetItemsPerPage(int.TryParse(SettingsOverlay_ItemsPerPageTextBox.Text, out var count) ? count : 30);
+        if (SettingsOverlay_ItemsPerPageTextBox != null) _userPreferences.SetItemsPerPage(ValueParser.Int(SettingsOverlay_ItemsPerPageTextBox.Text, 30));
         if (SettingsOverlay_RemoveOriginalCheckBox != null) _avatarExplorerApp.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
 
         // 背景
@@ -79,7 +80,7 @@ public partial class MainWindow
 
         // データ
         if (SettingsOverlay_AutoBackupPathTextBox != null) _avatarExplorerApp.SetAutoBackupRootDirectory(SettingsOverlay_AutoBackupPathTextBox.Text ?? string.Empty);
-        if (SettingsOverlay_AutoBackupIntervalTextBox != null) _avatarExplorerApp.SetAutoBackupInterval(int.TryParse(SettingsOverlay_AutoBackupIntervalTextBox.Text, out var interval) ? interval : 5);
+        if (SettingsOverlay_AutoBackupIntervalTextBox != null) _avatarExplorerApp.SetAutoBackupInterval(ValueParser.Int(SettingsOverlay_AutoBackupIntervalTextBox.Text, 5));
 
         SettingsOverlay_ApplyPreferenceSettingsToUi();
     }

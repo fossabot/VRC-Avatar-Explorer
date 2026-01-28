@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Services;
+using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.UI.Localization;
 
@@ -45,11 +46,7 @@ public class Localizer : INotifyPropertyChanged
         }
 
         _map.Clear();
-        List<Dictionary<string, string>> sortedMaps = languageMaps.OrderBy(i =>
-        {
-            string priorityString = i.TryGetValue("LanguagePriority", out string? value) ? value : string.Empty;
-            return int.TryParse(priorityString, out int priority) ? priority : int.MaxValue;
-        }).ToList();
+        List<Dictionary<string, string>> sortedMaps = languageMaps.OrderBy(i => ValueParser.Int(i.TryGetValue("LanguagePriority", out string? value) ? value : string.Empty, int.MaxValue)).ToList();
         _map.AddRange(sortedMaps);
     }
     

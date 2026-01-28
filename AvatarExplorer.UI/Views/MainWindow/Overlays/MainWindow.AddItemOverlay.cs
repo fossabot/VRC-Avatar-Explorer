@@ -208,7 +208,7 @@ public partial class MainWindow
         addItemWindowValues.Title = AddItemOverlay_BoothItemTitleTextBox.Text ?? string.Empty;
         addItemWindowValues.Author = AddItemOverlay_BoothItemAuthorTextBox.Text ?? string.Empty;
         addItemWindowValues.BoothAuthorId = AddItemOverlay_InternalAuthorIdTextBox.Text ?? string.Empty;
-        addItemWindowValues.BoothId = int.TryParse(AddItemOverlay_InternalBoothIdTextBox.Text ?? string.Empty, out int id) ? id : -1;
+        addItemWindowValues.BoothId = ValueParser.Int(AddItemOverlay_InternalBoothIdTextBox.Text, -1);
         addItemWindowValues.BoothThumbnailUrl = AddItemOverlay_InternalImageURLTextBox.Text ?? string.Empty;
         addItemWindowValues.BoothAuthorThumbnailUrl = AddItemOverlay_InternalAuthorImageURLTextBox.Text ??string.Empty;
     }
