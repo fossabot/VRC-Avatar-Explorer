@@ -318,7 +318,7 @@ public static class FileSystemService
         else if (filePath.ToLower().EndsWith(".7z")) extractedFolderPath = await SevenZipExtractorAsync(filePath, extractDirectory, folderName);
         else if (filePath.ToLower().EndsWith(".gz")) extractedFolderPath = await GzipExtractorAsync(filePath, extractDirectory, folderName);
         else if (filePath.ToLower().EndsWith(".tar")) extractedFolderPath = await TarExtractorAsync(filePath, extractDirectory, folderName);
-        else throw new NotImplementedException(string.Format("Unsupported File Extension: {0}", Path.GetFileName(filePath)));
+        else throw new NotImplementedException(string.Format("Unsupported File Extension: '{0}'.", Path.GetFileName(filePath)));
 
         if (removeOriginalFile)
         {
@@ -328,7 +328,7 @@ public static class FileSystemService
             }
             catch (Exception ex)
             {
-                ErrorManager.Instance.PostInternalError(string.Format("Failed to remove original file: '{0}'", filePath), ex);
+                ErrorManager.Instance.PostInternalError(string.Format("Failed to remove original file: '{0}'.", filePath), ex);
             }
         }
 
@@ -415,7 +415,7 @@ public static class FileSystemService
     {
         if (sourceDirectory == destinationDirectory) return; // sourceとdestinationが同じ場合は無視
 
-        Directory.CreateDirectory(destinationDirectory); // ファイル数が0の時、フォルダが生成されないため
+        Directory.CreateDirectory(destinationDirectory);
 
         List<string> allFiles = EnumerateFiles(sourceDirectory).ToList();
         int totalFiles = allFiles.Count;
