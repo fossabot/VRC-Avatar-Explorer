@@ -10,7 +10,7 @@ internal class SelectionState
 
     public void Push(ItemTagState state, string key)
     {
-        if (state == ItemTagState.SearchItem && Search(ItemTagState.SearchItem) != null)
+        if (state == ItemTagState.SearchItem && FirstOrDefault(ItemTagState.SearchItem) != null)
         {
             foreach (ItemTagState itemTagState in _stack.Select(i => i.State).ToArray())
             {
@@ -34,7 +34,7 @@ internal class SelectionState
 
     public void Clear() => _stack.Clear();
 
-    public SelectionNode? Search(ItemTagState state) => _stack.FirstOrDefault(i => state.HasFlag(i.State));
+    public SelectionNode? FirstOrDefault(ItemTagState state) => _stack.FirstOrDefault(i => state.HasFlag(i.State));
     
-    public IEnumerable<SelectionNode> GetCurrentPath() => _stack.Reverse();
+    public IEnumerable<SelectionNode> GetCurrentSelectionNodes() => _stack.Reverse();
 }

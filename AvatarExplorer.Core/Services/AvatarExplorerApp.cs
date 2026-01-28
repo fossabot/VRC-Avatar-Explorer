@@ -212,7 +212,7 @@ public partial class AvatarExplorerApp
     }
     private IReadOnlyList<ItemCountInfo> HandleItemFileCategory(SelectionNode selectionNode)
     {
-        SelectionNode? fileSelectionNode = _selectionState.Search(ItemTagState.RootSelectedItem | ItemTagState.SearchItem);
+        SelectionNode? fileSelectionNode = _selectionState.FirstOrDefault(ItemTagState.RootSelectedItem | ItemTagState.SearchItem);
         if (fileSelectionNode == null) return new List<ItemCountInfo>();
 
         Item? item = GetItemById(fileSelectionNode.Key);
@@ -222,12 +222,13 @@ public partial class AvatarExplorerApp
     }
     #endregion
 
-    public IEnumerable<SelectionNode> GetCurrentPaths() => _selectionState.GetCurrentPath();
-    public SelectionNode? GetCurrentPathState() => _selectionState.Current;
+    public IEnumerable<SelectionNode> GetCurrentSelectionNodes() => _selectionState.GetCurrentSelectionNodes();
+    public SelectionNode? GetCurrentNode() => _selectionState.Current;
+    public SelectionNode? GetRootNode() => _selectionState.Root;
 
     public Item? GetSelectedItem()
     {
-        SelectionNode? itemSelectionNode = _selectionState.Search(ItemTagState.RootSelectedItem | ItemTagState.SearchItem);
+        SelectionNode? itemSelectionNode = _selectionState.FirstOrDefault(ItemTagState.RootSelectedItem | ItemTagState.SearchItem);
         if (itemSelectionNode == null) return null;
 
         return _items.FirstOrDefault(i => i.Id == itemSelectionNode.Key);

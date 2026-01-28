@@ -210,6 +210,8 @@ public static class LocalizationKey
             public const string Author = "Path.Root.Avatar";
             public const string Category = "Path.Root.Category";
         }
+
+        public const string Removed = "Path.Removed";
     }
 
     public static class SearchFilter

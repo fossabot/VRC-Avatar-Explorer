@@ -285,7 +285,7 @@ public partial class MainWindow : Window
     {
         if (Main_PathTextBox == null) return;
 
-        IEnumerable<SelectionNode> currentSelectionNodes = _avatarExplorerApp.GetCurrentPaths();
+        IEnumerable<SelectionNode> currentSelectionNodes = _avatarExplorerApp.GetCurrentSelectionNodes();
         if (!currentSelectionNodes.Any())
         {
             Main_PathTextBox.Text = Localizer.Instance[LocalizationKey.Path.Default];
@@ -308,7 +308,7 @@ public partial class MainWindow : Window
     private void Main_ExecuteUndo()
     {
         // 選択されていたアイテムが検索結果時のものだったら、キャッシュを元にもう一度検索してあげる
-        bool isCurrentSearchNode = _avatarExplorerApp.GetCurrentPathState()?.State == ItemTagState.SearchItem;
+        bool isCurrentSearchNode = _avatarExplorerApp.GetCurrentNode()?.State == ItemTagState.SearchItem;
         
         Main_CheckPageStates(); // SelectUndoより前にやってあげないと、戻った先の画面のページ情報がリセットされる
         if (!_main_isLastWindowSearch) _avatarExplorerApp.SelectUndo(); // 最後の画面が検索画面だったら、検索だけやめて戻るようにする
@@ -336,7 +336,7 @@ public partial class MainWindow : Window
     {
         List<ItemTagState> selectedItemTagStates = new();
 
-        foreach (SelectionNode selectionNode in _avatarExplorerApp.GetCurrentPaths().Where(i => !selectedItemTagStates.Contains(i.State)))
+        foreach (SelectionNode selectionNode in _avatarExplorerApp.GetCurrentSelectionNodes().Where(i => !selectedItemTagStates.Contains(i.State)))
         {
             selectedItemTagStates.Add(selectionNode.State);
         }
