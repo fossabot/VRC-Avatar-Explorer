@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Services;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
@@ -64,9 +65,9 @@ public partial class MainWindow
         {
             await ClipboardService.Set(boothLink);
         }
-        catch
+        catch (Exception ex)
         {
-            // Ignored
+            ErrorManager.Instance.PostError(string.Format("Failed to set text to clipboard '{0}'.", boothLink), ex);
         }
     }
     private async Task ItemButton_ContextMenu_OpenBoothLink(string itemId)

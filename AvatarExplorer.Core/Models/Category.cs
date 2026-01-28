@@ -58,5 +58,5 @@ public class Category : ISelectableItem
     }
 
     public bool IsEmpty() => Type == ItemType.None && CustomCategory == string.Empty;
-    public override string ToString() => Type == ItemType.Custom ? CustomCategory : (Type.GetLocalizationKey() ?? string.Empty);
+    public override string ToString() => Type == ItemType.Custom ? CustomCategory : (Type.GetLocalizationKey() ?? Type.ToString());
 }
