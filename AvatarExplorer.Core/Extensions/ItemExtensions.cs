@@ -32,7 +32,6 @@ public static class ItemExtensions
         };
     }
 
-    
     internal static bool IsCategoryMatch(this Item item, string category)
     {
         if (item.Type == ItemType.Custom) return item.CustomCategory == category;
