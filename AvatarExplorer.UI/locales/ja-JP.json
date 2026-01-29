@@ -131,6 +131,7 @@
     "ContextMenu.Item.Remove": "アイテムを削除する",
 
     "ContextMenu.ItemFile.OpenFile": "ファイルを開く",
+    "ContextMenu.ItemFile.BulkImportList": "一括インポートに追加する",
     "ContextMenu.ItemFile.OpenFileInExplorer": "エクスプローラーで表示する",
 
     "SearchFilter.Default": "検索中... - {0}",

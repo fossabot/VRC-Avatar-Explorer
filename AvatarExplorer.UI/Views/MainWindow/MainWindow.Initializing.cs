@@ -86,6 +86,7 @@ public partial class MainWindow
             { ActionKey.EditItemTag, ItemButton_ContextMenu_EditItemTag },
             { ActionKey.RemoveItem, ItemButton_ContextMenu_RemoveItem },
             { ActionKey.OpenFile, ItemButton_ContextMenu_OpenFile },
+            { ActionKey.AddFileToBulkImportList, ItemButton_ContextMenu_AddFileToBulkImportList },
             { ActionKey.OpenFileInExplorer, ItemButton_ContextMenu_OpenFileInExplorer }
         };
     }

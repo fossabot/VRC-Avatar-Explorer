@@ -20,14 +20,27 @@ public partial class MainWindow
 {
     private readonly List<BulkImportItem> _bulkImportPanel_bulkImportItems = new();
 
-    private void BulkImportItem_Add(string itemId)
+    private void BulkImportItem_Add(string itemId, string? filePath = null)
     {
         SidePanel_Show();
 
         int bulkImportPanelTabIndex = SidePanel_TabControl.Items.IndexOf(SidePanel_BulkImportPanelTab);
         if (bulkImportPanelTabIndex != -1 && SidePanel_TabControl.SelectedIndex != bulkImportPanelTabIndex) SidePanel_TabControl.SelectedIndex = bulkImportPanelTabIndex;
 
-        _bulkImportPanel_bulkImportItems.Add(new BulkImportItem(itemId));
+        BulkImportItem bulkImportItem = new BulkImportItem(itemId);
+
+        if (filePath != null)
+        {
+            Item? item = _avatarExplorerApp.GetItemById(bulkImportItem.ItemId);
+            if (item != null)
+            {
+                List<string> unitypackagePaths = UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, item.ItemPath)).ToList();
+                int index = unitypackagePaths.IndexOf(filePath);
+                if (index != -1) bulkImportItem.SelectedIndex = index;
+            }
+        }
+        
+        _bulkImportPanel_bulkImportItems.Add(bulkImportItem);
         ReloadBulkImportItemButtons();
 
         SidePanel_BulkImportPanelScrollViewer.Offset = AvaloniaVectorUtils.MaxValue;

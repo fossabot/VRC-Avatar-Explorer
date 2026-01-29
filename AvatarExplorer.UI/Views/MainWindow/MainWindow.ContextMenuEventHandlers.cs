@@ -214,10 +214,28 @@ public partial class MainWindow
     {
         await LauncherService.OpenFile(this, filePath);
     }
-    private async Task ItemButton_ContextMenu_OpenFileInExplorer(string filePath)
+    private Task ItemButton_ContextMenu_OpenFileInExplorer(string filePath)
     {
-        if (!ProcessUtils.IsWindows()) return;
-        Process.Start("explorer.exe", "/select," + filePath);
+        if (!ProcessUtils.IsWindows()) return Task.CompletedTask;
+
+        try
+        {
+            Process.Start("explorer.exe", "/select," + filePath);
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostError(string.Format("Failed to open file. '{0}'", filePath), ex);
+        }
+
+        return Task.CompletedTask;
+    }
+    private Task ItemButton_ContextMenu_AddFileToBulkImportList(string filePath)
+    {
+        string? itemId = _avatarExplorerApp.GetSelectedItem()?.Id;
+        if (itemId == null) return Task.CompletedTask;
+
+        BulkImportItem_Add(itemId, filePath);
+        return Task.CompletedTask;
     }
     #endregion
 }

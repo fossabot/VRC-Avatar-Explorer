@@ -21,5 +21,6 @@ internal enum ActionKey
     RemoveItem,
 
     OpenFile,
+    AddFileToBulkImportList,
     OpenFileInExplorer
 }

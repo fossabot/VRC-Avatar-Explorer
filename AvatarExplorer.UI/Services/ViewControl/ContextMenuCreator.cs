@@ -49,7 +49,8 @@ internal static class ContextMenuCreator
     {
         List<ContextMenuAction> contextMenuActions =
         [
-            new ContextMenuAction(LocalizationKey.ContextMenu.ItemFile.OpenFile, ActionKey.OpenFile, ContextMenuIconType.Open, itemFile.FullPath)
+            new ContextMenuAction(LocalizationKey.ContextMenu.ItemFile.OpenFile, ActionKey.OpenFile, ContextMenuIconType.Open, itemFile.FullPath),
+            new ContextMenuAction(LocalizationKey.ContextMenu.ItemFile.BulkImportList, ActionKey.AddFileToBulkImportList, ContextMenuIconType.Add, itemFile.FullPath)
         ];
 
         if (ProcessUtils.IsWindows())
