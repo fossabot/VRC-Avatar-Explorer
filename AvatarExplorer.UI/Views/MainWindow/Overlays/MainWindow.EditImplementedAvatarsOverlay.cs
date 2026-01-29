@@ -2,23 +2,23 @@ using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.UI.Factories;
-using AvatarExplorer.UI.Models;
+using AvatarExplorer.UI.Models.Items;
 
 namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
     private readonly List<string> _editImplementedAvatarsOverlay_selectedAvatars = new();
-    
+
     private void EditImplementedAvatarsOverlay_Show(IReadOnlyList<string>? avatars = null)
     {
         EditImplementedAvatarsOverlay.IsVisible = true;
         EditImplementedAvatarsOverlay_InitializeList(avatars);
     }
     private void EditImplementedAvatarsOverlay_Hide() => EditImplementedAvatarsOverlay.IsVisible = false;
-    
+
     private void EditImplementedAvatarsOverlay_InitializeList(IReadOnlyList<string>? avatars = null)
     {
         _editImplementedAvatarsOverlay_selectedAvatars.Clear();
@@ -53,10 +53,10 @@ public partial class MainWindow
     private void EditImplementedAvatarsOverlay_ItemButton_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button || button.Tag is not ItemTagInfo itemTagInfo) return;
-        
+
         if (_editImplementedAvatarsOverlay_selectedAvatars.Contains(itemTagInfo.Value)) _editImplementedAvatarsOverlay_selectedAvatars.RemoveAll(i => i == itemTagInfo.Value);
         else _editImplementedAvatarsOverlay_selectedAvatars.Add(itemTagInfo.Value);
-        
+
         EditImplementedAvatarsOverlay_RefleshList();
     }
     private void EditImplementedAvatarsOverlay_SearchTextBox_Changed(object? sender, RoutedEventArgs e) => EditImplementedAvatarsOverlay_RefleshList();

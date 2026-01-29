@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Avalonia.Interactivity;
-using AvatarExplorer.UI.Models;
+using AvatarExplorer.UI.Models.Common;
 
 namespace AvatarExplorer.UI;
 

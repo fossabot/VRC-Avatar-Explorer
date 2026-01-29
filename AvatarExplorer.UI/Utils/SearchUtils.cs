@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using AvatarExplorer.Core.Extensions;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.UI.Localization;
 
 namespace AvatarExplorer.UI.Utils;

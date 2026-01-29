@@ -3,9 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using AvatarExplorer.Core.Localization;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Models;
+using AvatarExplorer.UI.Models.Navigation;
 using Material.Icons;
 using Material.Icons.Avalonia;
 
@@ -16,7 +16,7 @@ internal static class PageButtonFactory
     private const string ButtonClass = "button";
     private const string PageButtonClass = "pagebutton";
 
-    internal static void AddPageButton(StackPanel parent, ItemTagState itemTagState, int currentPageValue, int itemsPerPage, int totalItemCount, EventHandler<RoutedEventArgs>? onClick = null)
+    internal static void AddPageButton(StackPanel parent, ItemTagStates itemTagState, int currentPageValue, int itemsPerPage, int totalItemCount, EventHandler<RoutedEventArgs>? onClick = null)
     {
         int totalPages = (int)Math.Ceiling((double)totalItemCount / itemsPerPage);
         if (totalPages <= 0) return;
@@ -24,10 +24,10 @@ internal static class PageButtonFactory
         Panel pageInfoPanel = new();
 
         StackPanel pageInfo = CreatePageInfoPanel(currentPageValue, totalPages, itemsPerPage, totalItemCount);
-        
+
         Grid pageButtonGrid = new() { ColumnDefinitions = new("Auto,Auto,*,Auto,Auto"), ColumnSpacing = 10, Margin = new(15, 0, 15, 0) };
         AddNavigationButtons(pageButtonGrid, itemTagState, currentPageValue, totalPages, onClick);
-        
+
         pageInfoPanel.Children.Add(pageButtonGrid);
         pageInfoPanel.Children.Add(pageInfo);
 
@@ -49,7 +49,7 @@ internal static class PageButtonFactory
         return panel;
     }
 
-    private static void AddNavigationButtons(Grid grid, ItemTagState state, int current, int total, EventHandler<RoutedEventArgs>? onClick)
+    private static void AddNavigationButtons(Grid grid, ItemTagStates state, int current, int total, EventHandler<RoutedEventArgs>? onClick)
     {
         if (current > 0) grid.Children.Add(CreateButton(GetMaterialIcon(MaterialIconKind.FirstPage), 0, new(state, PageButtonState.First, 0), onClick));
         if (current > 0) grid.Children.Add(CreateButton(GetMaterialIcon(MaterialIconKind.ChevronLeft), 1, new(state, PageButtonState.Back, current - 1), onClick));

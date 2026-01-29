@@ -3,8 +3,8 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Models;
-using AvatarExplorer.UI.Services;
+using AvatarExplorer.UI.Models.External;
+using AvatarExplorer.UI.Services.Utilities;
 
 namespace AvatarExplorer.UI;
 
@@ -19,7 +19,7 @@ public partial class MainWindow
         if (folders == null || folders.Length == 0) return;
 
         string selectedFolder = folders[0];
-        
+
         SelectImportTypeOverlay.IsVisible = false;
 
         // Item1: LocalizationKey, Item2: ProgressValue

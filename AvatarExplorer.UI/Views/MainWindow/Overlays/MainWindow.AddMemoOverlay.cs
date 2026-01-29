@@ -1,5 +1,5 @@
 using Avalonia.Interactivity;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Items;
 
 namespace AvatarExplorer.UI;
 

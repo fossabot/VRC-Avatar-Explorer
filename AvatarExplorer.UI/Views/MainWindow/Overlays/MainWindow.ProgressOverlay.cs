@@ -11,7 +11,7 @@ public partial class MainWindow
             ProgressBarTitle.Text = title;
             return;
         }
-        
+
         ProgressBarTitle.Text = title;
         ProgressOverlay.IsVisible = true;
     }

@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Items;
 
 namespace AvatarExplorer.Core.Utils;
 
@@ -22,12 +22,12 @@ public static partial class ItemUtils
     }
 
     public static string RemoveBrackets(string value) => TextBracketsRegex().Replace(value, string.Empty);
-    
+
     public static string? GetSafeTitle(string itemTitle)
     {
         // パスに使用しても大丈夫な文字だけ残す
         return FileNameUtils.GetSafeTitle(itemTitle);
     }
-    
+
     internal static Dictionary<string, string> GetItemTitleMaps(IEnumerable<Item> items) => items.ToDictionary(i => i.Id, i => i.Title);
 }

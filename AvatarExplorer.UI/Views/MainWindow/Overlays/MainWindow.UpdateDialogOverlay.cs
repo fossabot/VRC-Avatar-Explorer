@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using Avalonia.Interactivity;
 using AvatarExplorer.Core.Data.Links;
 using AvatarExplorer.Core.Localization;
-using AvatarExplorer.Core.Models;
-using AvatarExplorer.Core.Services;
+using AvatarExplorer.Core.Models.Updates;
+using AvatarExplorer.Core.Services.System;
+using AvatarExplorer.Core.Services.Updates;
 using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Services;
+using AvatarExplorer.UI.Services.Utilities;
 
 namespace AvatarExplorer.UI;
 

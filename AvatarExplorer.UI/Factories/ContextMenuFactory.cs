@@ -1,8 +1,8 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using AvatarExplorer.Core.Models;
 using AvatarExplorer.UI.Localization;
+using AvatarExplorer.UI.Models.ContextMenu;
 using Material.Icons;
 using Material.Icons.Avalonia;
 

@@ -1,5 +1,5 @@
 using Avalonia.Media.Imaging;
-using AvatarExplorer.UI.Models;
+using AvatarExplorer.UI.Models.Common;
 
 namespace AvatarExplorer.UI.Extensions;
 

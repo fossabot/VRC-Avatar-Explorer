@@ -3,11 +3,12 @@ using System.IO;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.System;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Models;
-using AvatarExplorer.UI.Services;
+using AvatarExplorer.UI.Models.Items;
+using AvatarExplorer.UI.Models.Settings;
+using AvatarExplorer.UI.Services.External;
 using Material.Icons;
 using Material.Icons.Avalonia;
 
@@ -26,7 +27,7 @@ internal static class UnitypackageSelectorButtonFactory
         Button itemButton = ItemButtonFactory.CreateBaseButton(item);
 
         StackPanel contentStackPanel = new() { Spacing = 5 };
-        
+
         Grid contentGrid = new() { ColumnSpacing = 10, ColumnDefinitions = new("Auto,*") };
 
         // アイコン (アイコンにCornerRadiusを適用するため、ChildにImageが指定されたBorderが返ってくる)
@@ -58,7 +59,7 @@ internal static class UnitypackageSelectorButtonFactory
         Grid textGrid = new() { RowDefinitions = new("Auto,Auto,5,*") };
 
         string itemTitle = ItemButtonFactory.GetFormattedTitle(item, runtimeSettings);
-        
+
         TextBlock titleTextBlock = new() { Text = itemTitle, FontSize = 16, FontWeight = FontWeight.Bold, TextTrimming = TextTrimming.CharacterEllipsis };
         Grid.SetRow(titleTextBlock, 0);
         textGrid.Children.Add(titleTextBlock);
@@ -69,7 +70,7 @@ internal static class UnitypackageSelectorButtonFactory
 
         Panel iconPanel = new();
         StackPanel iconStackPanel = new() { Orientation = Orientation.Horizontal, Spacing = 5 };
-        
+
         Button copyButton = new()
         {
             Content = new MaterialIcon()
@@ -84,7 +85,7 @@ internal static class UnitypackageSelectorButtonFactory
             }
         };
         if (onCopyClick != null) copyButton.Click += (_, e) => onCopyClick(itemIndex);
-        
+
         iconStackPanel.Children.Add(copyButton);
 
         Button removeButton = new Button()
@@ -102,7 +103,7 @@ internal static class UnitypackageSelectorButtonFactory
             }
         };
         if (onRemoveClick != null) removeButton.Click += (_, e) => onRemoveClick(itemIndex);
-        
+
         iconStackPanel.Children.Add(removeButton);
 
         iconPanel.Children.Add(iconStackPanel);
@@ -111,11 +112,11 @@ internal static class UnitypackageSelectorButtonFactory
 
         return textGrid;
     }
-    
+
     internal static ComboBox CreateUnitypackageList(UISelectableItem item, RuntimeSettings runtimeSettings, int itemIndex, int selectedIndex, Action<int, int>? onSelectedIndexChanged = null)
     {
         ComboBox unitypackageComboBox = new() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, CornerRadius = new(8), FontSize = 14 };
-        
+
         foreach (string filePath in UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(runtimeSettings.DataRootDirectory, item.ItemPath)))
         {
             ComboBoxItem unitypackageFileItem = new()

@@ -1,9 +1,9 @@
-﻿using Avalonia;
-using AvatarExplorer.Core.Services;
-using AvatarExplorer.Core.Utils;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
+using Avalonia;
+using AvatarExplorer.Core.Services.System;
+using AvatarExplorer.Core.Utils;
 
 namespace AvatarExplorer.UI;
 

@@ -5,12 +5,14 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models;
-using AvatarExplorer.UI.Services;
+using AvatarExplorer.UI.Models.Items;
+using AvatarExplorer.UI.Services.External;
+using AvatarExplorer.UI.Services.Utilities;
 
 namespace AvatarExplorer.UI;
 
@@ -21,14 +23,13 @@ public partial class MainWindow
     private void BulkImportItem_Add(string itemId)
     {
         SidePanel_Show();
-        
+
         int bulkImportPanelTabIndex = SidePanel_TabControl.Items.IndexOf(SidePanel_BulkImportPanelTab);
         if (bulkImportPanelTabIndex != -1 && SidePanel_TabControl.SelectedIndex != bulkImportPanelTabIndex) SidePanel_TabControl.SelectedIndex = bulkImportPanelTabIndex;
 
-        // TODO: Unitypackageの無いアイテムもここで追加できてしまうのを直す
         _bulkImportPanel_bulkImportItems.Add(new BulkImportItem(itemId));
         ReloadBulkImportItemButtons();
-        
+
         SidePanel_BulkImportPanelScrollViewer.Offset = AvaloniaVectorUtils.MaxValue;
     }
 

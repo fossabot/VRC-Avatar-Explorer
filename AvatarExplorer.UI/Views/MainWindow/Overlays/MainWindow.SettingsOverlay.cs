@@ -9,11 +9,14 @@ using Avalonia.Styling;
 using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Models.System;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Models;
-using AvatarExplorer.UI.Services;
+using AvatarExplorer.UI.Models.Common;
+using AvatarExplorer.UI.Models.Settings;
+using AvatarExplorer.UI.Services.System;
+using AvatarExplorer.UI.Services.Utilities;
 
 namespace AvatarExplorer.UI;
 
@@ -52,7 +55,7 @@ public partial class MainWindow
         if (SettingsOverlay_UseBackgroundImageCheckBox != null) SettingsOverlay_UseBackgroundImageCheckBox.IsChecked = userPreferences.UseBackgroundImage;
         if (SettingsOverlay_BackgroundImagePathTextBox != null) SettingsOverlay_BackgroundImagePathTextBox.Text = userPreferences.BackgroundImage ?? string.Empty;
         if (SettingsOverlay_BackgroundImageOpacitySlider != null) SettingsOverlay_BackgroundImageOpacitySlider.Value = userPreferences.BackgroundOpacity;
-        
+
         // データ
         if (SettingsOverlay_AutoBackupPathTextBox != null) SettingsOverlay_AutoBackupPathTextBox.Text = runtimeSettings.AutoBackupRootDirectory ?? string.Empty;
         if (SettingsOverlay_AutoBackupIntervalTextBox != null) SettingsOverlay_AutoBackupIntervalTextBox.Text = runtimeSettings.AutoBackupInterval.ToString();
@@ -62,7 +65,7 @@ public partial class MainWindow
         // 基本
         if (SettingsOverlay_ItemsFolderPathTextBox != null) _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? string.Empty);
         if (SettingsOverlay_LanguageComboBox != null) _userPreferences.SetLanguage(SettingsOverlay_LanguageComboBox.SelectedIndex);
-        if (SettingsOverlay_SortOrderComboBox != null) _avatarExplorerApp.SetItemsSortOrder((SortOrder)SettingsOverlay_SortOrderComboBox.SelectedIndex);
+        if (SettingsOverlay_SortOrderComboBox != null) _avatarExplorerApp.SetItemsSortOrder((ItemSortOrder)SettingsOverlay_SortOrderComboBox.SelectedIndex);
         if (SettingsOverlay_ThemeComboBox != null) _userPreferences.SetTheme((Theme)SettingsOverlay_ThemeComboBox.SelectedIndex);
 
         // 表示
@@ -84,7 +87,7 @@ public partial class MainWindow
 
         SettingsOverlay_ApplyPreferenceSettingsToUi();
     }
-    
+
     private void SettingsOverlay_ApplyPreferenceSettingsToUi()
     {
         SettingsOverlay_SetApplicationTheme(Application.Current, _userPreferences.Theme);
@@ -92,18 +95,18 @@ public partial class MainWindow
         SettingsOverlay_ApplyBackgroundImage(_userPreferences);
         SettingsOverlay_ApplyLanguage(_userPreferences.Language);
     }
-    
+
     private void SettingsOverlay_SetApplicationTheme(Application? application, Theme theme)
     {
         if (application == null) return;
 
-        if (theme == Models.Theme.Dark) application.RequestedThemeVariant = ThemeVariant.Dark;
-        else if (theme == Models.Theme.Light) application.RequestedThemeVariant = ThemeVariant.Light;
+        if (theme == Models.Common.Theme.Dark) application.RequestedThemeVariant = ThemeVariant.Dark;
+        else if (theme == Models.Common.Theme.Light) application.RequestedThemeVariant = ThemeVariant.Light;
     }
     private void SettingsOverlay_SetBackground(Theme theme)
     {
-        if (theme == Models.Theme.Dark) Background = new SolidColorBrush(new Color(255, 32, 32, 32));
-        else if (theme == Models.Theme.Light) Background = new SolidColorBrush(new Color(255, 249, 249, 249));
+        if (theme == Models.Common.Theme.Dark) Background = new SolidColorBrush(new Color(255, 32, 32, 32));
+        else if (theme == Models.Common.Theme.Light) Background = new SolidColorBrush(new Color(255, 249, 249, 249));
     }
     private void SettingsOverlay_ApplyBackgroundImage(UserPreferences userPreferences)
     {
@@ -151,12 +154,12 @@ public partial class MainWindow
 
         if (SettingsOverlay_AutoBackupPathTextBox != null) SettingsOverlay_AutoBackupPathTextBox.Text = folders[0];
     }
-    
+
     private void SettingsOverlay_Close_Click(object? sender, RoutedEventArgs e) => SettingsOverlay_Hide();
     private void SettingsOverlay_Apply_Click(object? sender, RoutedEventArgs e)
     {
         SettingsOverlay_ApplySettingsValues();
-        
+
         // 適用時は自動で保存する
         _avatarExplorerApp.SaveRuntimeSettings();
         UserPreferencesService.Save(_userPreferences);
@@ -165,7 +168,7 @@ public partial class MainWindow
     }
 
     private void SettingsOverlay_ImportData_Click(object? sender, RoutedEventArgs e) => SelectImportTypeOverlay_Show();
-    
+
     private async void SettingsOverlay_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
     {
         string? filePath = await StorageService.SaveFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectSaveFilePath], "csv");
@@ -188,7 +191,7 @@ public partial class MainWindow
         _avatarExplorerApp.ResetItemDatabase();
         Main_ReloadCurrentWindow();
     }
-    
+
     private async void SettingsOverlay_ResetCommonAvatarDatabase_Click(object? sender, RoutedEventArgs e)
     {
         YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.ResetCommonAvatarDatabase]);

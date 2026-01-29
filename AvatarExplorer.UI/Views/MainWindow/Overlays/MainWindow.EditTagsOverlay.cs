@@ -3,7 +3,7 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Models;

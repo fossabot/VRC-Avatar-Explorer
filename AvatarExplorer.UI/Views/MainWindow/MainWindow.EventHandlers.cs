@@ -7,9 +7,9 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using AvatarExplorer.Core.Models;
-using AvatarExplorer.Core.Services;
-using AvatarExplorer.UI.Services;
+using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Services.System;
+using AvatarExplorer.UI.Services.Utilities;
 
 namespace AvatarExplorer.UI;
 
@@ -45,9 +45,9 @@ public partial class MainWindow
             DataTransferItem item = new();
 
             // ファイルの場合はUnityなどに対応するためにファイルをD&Dで追加する
-            if (itemTagInfo.State == ItemTagState.ItemFileCategoryOpen) item.Set(DataFormat.File, await StorageService.GetStorageFileFromPath(this, itemTagInfo.Value));
+            if (itemTagInfo.State == ItemTagStates.ItemFileCategoryOpen) item.Set(DataFormat.File, await StorageService.GetStorageFileFromPath(this, itemTagInfo.Value));
             else item.Set(DataFormat.Text, () => itemTagInfo.Value);
-            
+
             _main_lastDragAndDropItem = itemTagInfo.Value;
 
             DataTransfer dragData = new();
@@ -69,7 +69,7 @@ public partial class MainWindow
     private void Main_DragDrop_Drop(object? sender, DragEventArgs e)
     {
         if (!e.DataTransfer.Contains(DataFormat.File)) return;
-        
+
         IEnumerable<IStorageItem?> storageItems = e.DataTransfer.GetItems(DataFormat.File).Select(i => i.TryGetFile());
         if (storageItems == null) return;
 

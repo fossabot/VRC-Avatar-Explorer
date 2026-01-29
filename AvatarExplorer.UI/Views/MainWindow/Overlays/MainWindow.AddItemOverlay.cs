@@ -1,22 +1,24 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using AvatarExplorer.Core.Data.Links;
-using AvatarExplorer.Core.Localization;
-using AvatarExplorer.Core.Models;
-using AvatarExplorer.Core.Models.Booth;
-using AvatarExplorer.Core.Utils;
-using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Models.OverlayValues;
-using System.IO;
-using Avalonia;
 using Avalonia.Layout;
 using Avalonia.Media;
-using AvatarExplorer.UI.Services;
-using System.Threading.Tasks;
+using AvatarExplorer.Core.Data.Links;
+using AvatarExplorer.Core.Localization;
+using AvatarExplorer.Core.Models.External.Booth;
+using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Services.Items;
+using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Extensions;
+using AvatarExplorer.UI.Localization;
+using AvatarExplorer.UI.Models.Overlay;
+using AvatarExplorer.UI.Models.System;
+using AvatarExplorer.UI.Services.Utilities;
 
 namespace AvatarExplorer.UI;
 
@@ -53,12 +55,12 @@ public partial class MainWindow
         }
 
         AddItemOverlay_InitializeAddItemWindowCategories();
-        
+
         _addItemOverlay_selectedItemId = null;
         AddItemOverlay_BoothLinkTextBox.Text = string.Empty;
 
         _addItemOverlay_addItemWindowValues.Reset();
-        
+
         if (itemPaths != null) _addItemOverlay_addItemWindowValues.ItemPaths.AddRange(itemPaths);
         AddItemOverlay_UpdateItemPathsList();
 
@@ -76,7 +78,7 @@ public partial class MainWindow
         AddItemOverlay_BoothLinkTextBox.Text = string.Format(BoothLink.ItemURLWithoutAuthorFormat, launchInfo.AssetId);
 
         _addItemOverlay_addItemWindowValues.Reset();
-        
+
         _addItemOverlay_addItemWindowValues.ItemPaths.AddRange(launchInfo.AssetDirs);
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
 
@@ -85,7 +87,7 @@ public partial class MainWindow
         AddItemOverlay_UpdateItemPathsList();
 
         AddItemOverlay_UpdateSupportedAvatarsLabel();
-        
+
         await AddItemOverlay_GetBoothItemData();
     }
     private void AddItemOverlay_Hide()
@@ -182,7 +184,7 @@ public partial class MainWindow
     private void AddItemOverlay_InitializeAddItemWindowCategories()
     {
         AddItemOverlay_ItemTypeComboBox.Items.Clear();
-        AddItemOverlay_ItemTypeComboBox.Items.AddRange(_avatarExplorerApp.GetCategories(includeEmptyCategory: true).Select(i => Localizer.Instance[((Category)i.Item).ToString()]));
+        AddItemOverlay_ItemTypeComboBox.Items.AddRange(_avatarExplorerApp.GetCategories(includeEmptyCategory: true).Select(i => Localizer.Instance[((ItemCategory)i.Item).ToString()]));
 
         if (AddItemOverlay_ItemTypeComboBox.Items.Count > 0) AddItemOverlay_ItemTypeComboBox.SelectedIndex = 0;
     }
@@ -210,20 +212,20 @@ public partial class MainWindow
         addItemWindowValues.BoothAuthorId = AddItemOverlay_InternalAuthorIdTextBox.Text ?? string.Empty;
         addItemWindowValues.BoothId = ValueParser.Int(AddItemOverlay_InternalBoothIdTextBox.Text, -1);
         addItemWindowValues.BoothThumbnailUrl = AddItemOverlay_InternalImageURLTextBox.Text ?? string.Empty;
-        addItemWindowValues.BoothAuthorThumbnailUrl = AddItemOverlay_InternalAuthorImageURLTextBox.Text ??string.Empty;
+        addItemWindowValues.BoothAuthorThumbnailUrl = AddItemOverlay_InternalAuthorImageURLTextBox.Text ?? string.Empty;
     }
-    
-    private Category AddItemOverlay_GetCategoryFromItemWindow()
+
+    private ItemCategory AddItemOverlay_GetCategoryFromItemWindow()
     {
         int selectedIndex = AddItemOverlay_ItemTypeComboBox.SelectedIndex;
 
         // カスタムカテゴリかどうかのチェック(式: ItemTypeの数 - 無効なItemType数 - カスタムカテゴリ)
         if (selectedIndex >= (Enum.GetValues<ItemType>().Length - CategoryUtils.InvalidItemTypes.Length - 1))
         {
-            return new Category(AddItemOverlay_ItemTypeComboBox.SelectedItem?.ToString() ?? string.Empty);
+            return new ItemCategory(AddItemOverlay_ItemTypeComboBox.SelectedItem?.ToString() ?? string.Empty);
         }
 
-        return new Category((ItemType)selectedIndex);
+        return new ItemCategory((ItemType)selectedIndex);
     }
     private bool AddItemOverlay_ValidateAddItemWindowValues()
     {
@@ -245,10 +247,10 @@ public partial class MainWindow
             Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.BoothApiCooldown]);
             return;
         }
-        
+
         ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.Booth.Status.Fetching]);
         ProgressOverlay_Update(0);
-        
+
         BoothItem? boothItem = await _avatarExplorerApp.GetBoothItem(boothUrl);
         ProgressOverlay_Hide();
 
@@ -265,7 +267,7 @@ public partial class MainWindow
         _addItemOverlay_addItemWindowValues.BoothThumbnailUrl = boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty;
         _addItemOverlay_addItemWindowValues.BoothAuthorThumbnailUrl = boothItem.Shop.ThumbnailUrl;
         _addItemOverlay_addItemWindowValues.ItemType = CategoryUtils.InvalidItemTypes.Contains(boothItem.EstimatedCategory) ? ItemType.Avatar : boothItem.EstimatedCategory;
-        
+
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
     }
     private async void AddItemOverlay_AddCustomCategory_Click(object? sender, RoutedEventArgs e)
@@ -317,7 +319,7 @@ public partial class MainWindow
         itemCreationContext.AuthorThumbnailUrl = _addItemOverlay_addItemWindowValues.BoothAuthorThumbnailUrl;
         itemCreationContext.BoothId = _addItemOverlay_addItemWindowValues.BoothId;
 
-        Category itemCategory = AddItemOverlay_GetCategoryFromItemWindow();
+        ItemCategory itemCategory = AddItemOverlay_GetCategoryFromItemWindow();
         itemCreationContext.ItemType = itemCategory.Type;
         itemCreationContext.CustomCategory = itemCategory.CustomCategory;
 
@@ -355,7 +357,7 @@ public partial class MainWindow
         AddItemOverlay_Hide();
         Main_ReloadCurrentWindow();
     }
-    
+
     private void AddItemOverlay_Close_Click(object? sender, RoutedEventArgs e) => AddItemOverlay_Hide();
     #endregion
 }

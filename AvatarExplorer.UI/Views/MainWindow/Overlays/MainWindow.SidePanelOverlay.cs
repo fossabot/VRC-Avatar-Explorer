@@ -40,7 +40,7 @@ public partial class MainWindow
     {
         // TabItem
         if (sender is not TabItem tab) return;
-        
+
         int currentSelectedIndex = SidePanel_TabControl.SelectedIndex;
         int index = SidePanel_TabControl.Items.IndexOf(tab);
 

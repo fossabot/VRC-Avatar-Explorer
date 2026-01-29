@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvatarExplorer.Core.Localization;
-using AvatarExplorer.Core.Models;
-using AvatarExplorer.Core.Services;
+using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Models;
-using AvatarExplorer.UI.Services;
+using AvatarExplorer.UI.Models.Common;
+using AvatarExplorer.UI.Models.ContextMenu;
+using AvatarExplorer.UI.Services.Utilities;
 
 namespace AvatarExplorer.UI;
 
@@ -27,18 +28,10 @@ public partial class MainWindow
     }
     private async Task ItemButton_ExecuteContextMenuItemCommand(ContextMenuAction contextMenuAction)
     {
-        if (contextMenuAction.ActionLayer == ActionLayer.UI)
-        {
-            if (_contextMenuHandlers!.TryGetValue(contextMenuAction.ActionKey, out var handler))
-                await handler(contextMenuAction.Tag);
-        }
-        else if (contextMenuAction.ActionLayer == ActionLayer.Core)
-        {
-            await _avatarExplorerApp.ExecuteContextMenuItemCommand(contextMenuAction);
-            if (contextMenuAction.ReloadRequired) Main_ReloadCurrentWindow();
-        }
+        if (_contextMenuHandlers!.TryGetValue(contextMenuAction.ActionKey, out var handler))
+            await handler(contextMenuAction.Tag);
     }
-    
+
     #region Context Menu Commands
     private Item? ItemButton_ContextMenu_GetItemById(string itemId)
     {
@@ -96,6 +89,11 @@ public partial class MainWindow
 
         string selectedFile = files[0];
         await _avatarExplorerApp.UpdateItemThumbnail(item.Id, selectedFile);
+        Main_ReloadCurrentWindow();
+    }
+    private async Task ItemButton_ContextMenu_FetchThumbnail(string itemId)
+    {
+        await _avatarExplorerApp.FetchAndUpdateThumbnailImage(itemId);
         Main_ReloadCurrentWindow();
     }
     private Task ItemButton_ContextMenu_EditItem(string itemId)

@@ -7,13 +7,15 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using AvatarExplorer.Core.Localization;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Models.System;
+using AvatarExplorer.Core.Services.Items;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Models;
-using AvatarExplorer.UI.Services;
-using AvatarExplorer.UI.Utils;
+using AvatarExplorer.UI.Models.Items;
+using AvatarExplorer.UI.Models.Settings;
+using AvatarExplorer.UI.Services.Utilities;
 
 namespace AvatarExplorer.UI.Factories;
 
@@ -24,7 +26,7 @@ internal static class ItemButtonFactory
     internal static Button AddItemButton(StackPanel parent, UISelectableItem item, RuntimeSettings runtimeSettings, UserPreferences userPreferences, ContextMenu? contextMenu = null, EventHandler<RoutedEventArgs>? onClick = null)
     {
         Button itemButton = CreateBaseButton(item);
-        
+
         Grid contentGrid = new() { ColumnSpacing = 10, ColumnDefinitions = new("Auto,*") };
 
         // アイコン (アイコンにCornerRadiusを適用するため、ChildにImageが指定されたBorderが返ってくる)
@@ -64,7 +66,7 @@ internal static class ItemButtonFactory
         BitmapInterpolationMode bitmapInterpolationMode = userPreferences.AntiAliasingMode.GetInterpolationMode();
         if (bitmapInterpolationMode != BitmapInterpolationMode.None && bitmapInterpolationMode != BitmapInterpolationMode.Unspecified) RenderOptions.SetBitmapInterpolationMode(itemIcon, bitmapInterpolationMode);
 
-        if (!IconUtils.IsSystemIcon(item.ImageFileName) && userPreferences.EnableHoverIconSize && enableHoverIconSize)
+        if (!ImageService.IsSystemIcon(item.ImageFileName) && userPreferences.EnableHoverIconSize && enableHoverIconSize)
         {
             itemIcon.PointerEntered += (s, e) =>
             {
@@ -87,7 +89,7 @@ internal static class ItemButtonFactory
         Grid textGrid = new() { RowDefinitions = new("Auto,Auto,5,*") };
 
         string itemTitle = GetFormattedTitle(item, runtimeSettings);
-        
+
         TextBlock titleTextBlock = new() { Text = itemTitle, FontSize = 16, FontWeight = FontWeight.Bold, TextTrimming = TextTrimming.CharacterEllipsis };
         Grid.SetRow(titleTextBlock, 0);
         textGrid.Children.Add(titleTextBlock);
@@ -145,7 +147,7 @@ internal static class ItemButtonFactory
             ToolTip.SetTip(button, GetTooltipTextFromItem(item));
             ToolTip.SetBetweenShowDelay(button, -1);
         }
-        else if (item.Tag.State == ItemTagState.ItemFileCategoryOpen)
+        else if (item.Tag.State == ItemTagStates.ItemFileCategoryOpen)
         {
             ToolTip.SetTip(button, Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.FilePath, Path.GetRelativePath(runtimeSettings.DataRootDirectory, item.Tag.Value)));
             ToolTip.SetBetweenShowDelay(button, -1);
@@ -176,12 +178,12 @@ internal static class ItemButtonFactory
         toolTipTextBuilder.Append(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.CreatedDate, item.CreatedDate));
         toolTipTextBuilder.AppendLine();
         toolTipTextBuilder.Append(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.UpdatedDate, item.UpdatedDate));
-        
+
         if (!string.IsNullOrEmpty(item.ItemMemo))
         {
             toolTipTextBuilder.AppendLine();
             toolTipTextBuilder.AppendLine();
-            
+
             toolTipTextBuilder.Append(item.ItemMemo);
         }
 

@@ -7,14 +7,22 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
-using AvatarExplorer.Core.Models;
-using AvatarExplorer.Core.Services;
+using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Models.System;
+using AvatarExplorer.Core.Services.Items;
+using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Models;
-using AvatarExplorer.UI.Services;
+using AvatarExplorer.UI.Models.Items;
+using AvatarExplorer.UI.Models.Navigation;
+using AvatarExplorer.UI.Models.Settings;
+using AvatarExplorer.UI.Models.System;
+using AvatarExplorer.UI.Services.External;
+using AvatarExplorer.UI.Services.System;
+using AvatarExplorer.UI.Services.Utilities;
+using AvatarExplorer.UI.Services.ViewControl;
 
 namespace AvatarExplorer.UI;
 
@@ -28,7 +36,7 @@ public partial class MainWindow : Window
     private string _main_searchTextCache = string.Empty;
     private bool _main_isLastWindowSearch = false;
 
-    private ItemTagState _main_lastRightPanelItemTagState = ItemTagState.None;
+    private ItemTagStates _main_lastRightPanelItemTagState = ItemTagStates.None;
 
     private readonly UserPreferences _userPreferences = new();
     private int ItemsPerPage => _userPreferences.ItemsPerPage;
@@ -40,7 +48,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = Localizer.Instance;
         InitializeContextMenuHandlers();
-        
+
         InitializeTitle();
         InitializeLanguageBox();
         InitializeAvatarExplorer();
@@ -61,7 +69,7 @@ public partial class MainWindow : Window
 
         // Scheme Check (Only Windows)
         if (ProcessUtils.IsWindows()) await CheckScheme();
-        
+
         await UpdateDialogOverlay_Check();
 
         CheckFirstLaunching();
@@ -85,25 +93,25 @@ public partial class MainWindow : Window
 
         List<ItemCountInfo> items = new();
 
-        ItemTagState customState = ItemTagState.None;
+        ItemTagStates customState = ItemTagStates.None;
         switch (Main_LeftFilter.SelectedIndex)
         {
             case 0:
                 {
                     items.AddRange(_avatarExplorerApp.GetAvatars());
-                    customState = ItemTagState.RootAvatar;
+                    customState = ItemTagStates.RootAvatar;
                     break;
                 }
             case 1:
                 {
                     items.AddRange(_avatarExplorerApp.GetAuthors());
-                    customState = ItemTagState.RootAuthor;
+                    customState = ItemTagStates.RootAuthor;
                     break;
                 }
             case 2:
                 {
                     items.AddRange(_avatarExplorerApp.GetCategories());
-                    customState = ItemTagState.RootCategory;
+                    customState = ItemTagStates.RootCategory;
                     break;
                 }
         }
@@ -117,7 +125,7 @@ public partial class MainWindow : Window
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
             Button itemButton = ItemButtonFactory.AddItemButton(Main_LeftPanel, new UISelectableItem(itemCountInfo).SetState(customState), RuntimeSettings, _userPreferences, itemContextMenu, LeftPanel_ItemButton_Click);
-        
+
             // アイテム(アバター)の場合はD&Dイベントを登録してあげる
             if (StateFlagUtils.IsDraggableState(customState)) itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
@@ -127,7 +135,7 @@ public partial class MainWindow : Window
     private void LeftPanel_ItemButton_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
-        
+
         if (button.Tag is ItemTagInfo itemTagInfo)
         {
             _avatarExplorerApp.SelectClear();
@@ -158,10 +166,10 @@ public partial class MainWindow : Window
         if (items.Count == 0) Main_ShowNoItemsLabel();
         else Main_HideNoItemsLabel();
 
-        ItemTagState itemTagState = ItemTagState.None;
+        ItemTagStates itemTagState = ItemTagStates.None;
         if (items.Count > 0) itemTagState = new UISelectableItem(items[0]).Tag.State;
         _main_lastRightPanelItemTagState = itemTagState;
-        
+
         // スクロール位置をDictionaryから復元してあげる
         Main_RightPanelScrollViewer.Offset = _main_scrollManager.GetScrollValue(itemTagState);
 
@@ -171,7 +179,7 @@ public partial class MainWindow : Window
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(itemCountInfo.Item), ItemButton_ContextMenuItem_Click);
             Button itemButton = ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(itemCountInfo), RuntimeSettings, _userPreferences, itemContextMenu, RightPanel_ItemButton_Click);
-            
+
             // アイテムの場合はD&Dイベントを登録してあげる
             if (StateFlagUtils.IsDraggableState(itemTagState)) itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
@@ -186,7 +194,7 @@ public partial class MainWindow : Window
 
         if (button.Tag is ItemTagInfo itemTagInfo)
         {
-            if (itemTagInfo.State == ItemTagState.ItemFileCategoryOpen) // ファイルを押されると、アイテムを開く処理に移行する
+            if (itemTagInfo.State == ItemTagStates.ItemFileCategoryOpen) // ファイルを押されると、アイテムを開く処理に移行する
             {
                 string itemPath = itemTagInfo.Value; // ItemFileCategoryOpenのValueはファイルのパスになっている
                 await Main_OpenFileInternalAsync(itemPath);
@@ -206,7 +214,7 @@ public partial class MainWindow : Window
             _main_pageManager.SetPage(pageButtonInfo.ItemTagState, pageButtonInfo.NextPageValue);
             _main_scrollManager.SetScroll(pageButtonInfo.ItemTagState, new()); // ページは今のStateをリセットしてあげる
 
-            if (pageButtonInfo.ItemTagState == ItemTagState.SearchItem) Main_ExecuteSearchItems();
+            if (pageButtonInfo.ItemTagState == ItemTagStates.SearchItem) Main_ExecuteSearchItems();
             else Main_RenderRightPanel();
         }
     }
@@ -227,11 +235,20 @@ public partial class MainWindow : Window
         _main_searchTextCache = Main_SearchTextBox.Text ?? string.Empty;
         Main_ExecuteSearchItems();
     }
+    
+    private static readonly string[] CategoryLocalizationKeys = Enum.GetValues<ItemType>().Select(i => i.GetLocalizationKey()).Where(i => i != null).ToArray()!;
     private void Main_ExecuteSearchItems(string searchText = "")
     {
         if (!string.IsNullOrEmpty(searchText)) _main_searchTextCache = searchText;
 
-        SearchFilter searchFilter = SearchFilterBuilder.Build(_main_searchTextCache);
+        SearchFilter searchFilter = SearchFilterBuilder.Build(_main_searchTextCache, (token) =>
+        {
+            string? localizationKey = Localizer.Instance.GetLocalizationKey(token);
+            if (localizationKey == null || !CategoryLocalizationKeys.Contains(localizationKey)) return token;
+            
+            return localizationKey;
+        });
+
         if (AdvancedSearchPanel_Enable.IsChecked ?? false) AdvancedSearchPanel_ApplyValues(searchFilter);
 
         if (string.IsNullOrEmpty(_main_searchTextCache) && searchFilter.IsEmpty)
@@ -241,17 +258,17 @@ public partial class MainWindow : Window
         }
 
         // 検索画面に切り替わる時に、前の画面のスクロール位置を保存してあげる
-        if (!_main_isLastWindowSearch) _main_scrollManager.SetScroll( _main_lastRightPanelItemTagState, Main_RightPanelScrollViewer.Offset);
-        
+        if (!_main_isLastWindowSearch) _main_scrollManager.SetScroll(_main_lastRightPanelItemTagState, Main_RightPanelScrollViewer.Offset);
+
         // 検索文字列が前回と違う場合はページ、スクロール位置をリセットする
         if (_main_searchTextCache != _main_lastSearchTextCache)
         {
-            _main_pageManager.SetPage(ItemTagState.SearchItem, 0);
-            _main_scrollManager.SetScroll(ItemTagState.SearchItem, new());
+            _main_pageManager.SetPage(ItemTagStates.SearchItem, 0);
+            _main_scrollManager.SetScroll(ItemTagStates.SearchItem, new());
         }
         _main_lastSearchTextCache = _main_searchTextCache;
 
-        
+
         Main_RightPanel.Children.Clear();
 
         IReadOnlyList<Item> items = _avatarExplorerApp.SearchItems(searchFilter);
@@ -260,22 +277,22 @@ public partial class MainWindow : Window
         else Main_HideNoItemsLabel();
 
         // スクロール位置をDictionaryから復元してあげる
-        Main_RightPanelScrollViewer.Offset = _main_scrollManager.GetScrollValue(ItemTagState.SearchItem);
+        Main_RightPanelScrollViewer.Offset = _main_scrollManager.GetScrollValue(ItemTagStates.SearchItem);
 
-        int currentPage = _main_pageManager.GetPage(ItemTagState.SearchItem); // SearchItemは必ずページが存在しているため
+        int currentPage = _main_pageManager.GetPage(ItemTagStates.SearchItem); // SearchItemは必ずページが存在しているため
 
         foreach (Item item in items.Skip(currentPage * ItemsPerPage).Take(ItemsPerPage))
         {
             ContextMenu itemContextMenu = ContextMenuFactory.GetContextMenu(ContextMenuCreator.Create(item), ItemButton_ContextMenuItem_Click);
-            Button itemButton = ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(item, 0).SetState(ItemTagState.SearchItem), RuntimeSettings, _userPreferences, itemContextMenu, RightPanel_ItemButton_Click);
+            Button itemButton = ItemButtonFactory.AddItemButton(Main_RightPanel, new UISelectableItem(item, 0).SetState(ItemTagStates.SearchItem), RuntimeSettings, _userPreferences, itemContextMenu, RightPanel_ItemButton_Click);
 
             // D&Dイベントを登録してあげる
             itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
 
-        if (items.Count != 0) PageButtonFactory.AddPageButton(Main_RightPanel, ItemTagState.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
+        if (items.Count != 0) PageButtonFactory.AddPageButton(Main_RightPanel, ItemTagStates.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
         _main_isLastWindowSearch = true;
-        
+
         Main_PathTextBox.Text = searchFilter.ToPathString();
     }
     #endregion
@@ -295,7 +312,7 @@ public partial class MainWindow : Window
         List<SelectionNode> selectionNodes = new();
         foreach (SelectionNode node in currentSelectionNodes)
         {
-            if (node.State == ItemTagState.SearchItem) selectionNodes.Clear();
+            if (node.State == ItemTagStates.SearchItem) selectionNodes.Clear();
             selectionNodes.Add(node);
         }
 
@@ -303,13 +320,13 @@ public partial class MainWindow : Window
         Main_PathTextBox.Text = string.Join(" > ", selectionNodes.Select(i => PathService.BuildPath(items, i, RuntimeSettings.RemoveBrackets)));
     }
     #endregion
-    
+
     #region Main Methods
     private void Main_ExecuteUndo()
     {
         // 選択されていたアイテムが検索結果時のものだったら、キャッシュを元にもう一度検索してあげる
-        bool isCurrentSearchNode = _avatarExplorerApp.GetCurrentNode()?.State == ItemTagState.SearchItem;
-        
+        bool isCurrentSearchNode = _avatarExplorerApp.GetCurrentNode()?.State == ItemTagStates.SearchItem;
+
         Main_CheckPageStates(); // SelectUndoより前にやってあげないと、戻った先の画面のページ情報がリセットされる
         if (!_main_isLastWindowSearch) _avatarExplorerApp.SelectUndo(); // 最後の画面が検索画面だったら、検索だけやめて戻るようにする
 
@@ -340,7 +357,7 @@ public partial class MainWindow : Window
 
     private void Main_CheckPageStates()
     {
-        List<ItemTagState> selectedItemTagStates = new();
+        List<ItemTagStates> selectedItemTagStates = new();
 
         foreach (SelectionNode selectionNode in _avatarExplorerApp.GetCurrentSelectionNodes().Where(i => !selectedItemTagStates.Contains(i.State)))
         {
@@ -361,11 +378,11 @@ public partial class MainWindow : Window
     {
         Main_RightPanelParent.IsVisible = false;
     }
-    
+
     private async Task Main_OpenFileInternalAsync(string filePath)
     {
         bool isUnitypackage = filePath.ToLower().EndsWith(".unitypackage");
-        
+
         if (isUnitypackage) await Main_OpenUnitypackageInternalAsync(filePath); // Unitypackageだと自動展開処理に移る
         else await LauncherService.OpenFile(this, filePath);
     }

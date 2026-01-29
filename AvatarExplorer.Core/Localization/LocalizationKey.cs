@@ -3,7 +3,7 @@ namespace AvatarExplorer.Core.Localization;
 public static class LocalizationKey
 {
     public const string LanguageName = "LanguageName";
-    
+
     public static class ItemCategory
     {
         public const string Avatar = "ItemCategory.Avatar";
@@ -109,7 +109,7 @@ public static class LocalizationKey
                 public const string ItemEdit = "UI.Dialog.Failed.ItemEdit";
                 public const string GetCommonAvatarGroup = "UI.Dialog.Failed.GetCommonAvatarGroup";
             }
-            
+
             public static class Update
             {
                 public const string Available = "UI.Dialog.Update.Available";
@@ -249,7 +249,7 @@ public static class LocalizationKey
             public const string EmptyTitle = "Error.Validation.EmptyTitle";
             public const string EmptyAuthor = "Error.Validation.Author";
         }
-        
+
         public const string ItemFolderProcessingFailedPaths = "Error.Item.Folder.ProcessingFailedPaths";
     }
 
@@ -266,7 +266,7 @@ public static class LocalizationKey
             }
 
             public const string ShowOtherItemsByAuthor = "ContextMenu.Item.ShowOtherItemsByAuthor";
-            
+
             public static class Thumbnail
             {
                 public const string Change = "ContextMenu.Item.Thumbnail.Change";

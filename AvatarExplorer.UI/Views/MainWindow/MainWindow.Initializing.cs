@@ -4,13 +4,16 @@ using Avalonia.Layout;
 using Avalonia.Threading;
 using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Localization;
-using AvatarExplorer.Core.Models;
-using AvatarExplorer.Core.Services;
+using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
+using AvatarExplorer.UI.Data;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Models;
-using AvatarExplorer.UI.Services;
+using AvatarExplorer.UI.Models.Common;
+using AvatarExplorer.UI.Models.ContextMenu;
+using AvatarExplorer.UI.Models.Settings;
+using AvatarExplorer.UI.Services.System;
+using AvatarExplorer.UI.Services.Utilities;
 
 namespace AvatarExplorer.UI;
 
@@ -72,6 +75,7 @@ public partial class MainWindow
             { ActionKey.OpenBoothLink, ItemButton_ContextMenu_OpenBoothLink },
             { ActionKey.ShowOtherItemsByAuthor, ItemButton_ContextMenu_ShowOtherItemsByAuthor },
             { ActionKey.ChangeThumbnail, ItemButton_ContextMenu_ChangeThumbnail },
+            { ActionKey.FetchThumbnail, ItemButton_ContextMenu_FetchThumbnail },
             { ActionKey.EditItem, ItemButton_ContextMenu_EditItem },
             { ActionKey.EditItemTitle, ItemButton_ContextMenu_EditItemTitle },
             { ActionKey.AddItemMemo, ItemButton_ContextMenu_AddMemo },
@@ -116,7 +120,7 @@ public partial class MainWindow
         if (SchemeService.IsSchemeRegistered())
         {
             string? currentInternalSchemePath = SchemeService.GetInternalSchemePath();
-            
+
             if (!string.IsNullOrEmpty(currentInternalSchemePath) && !SchemeService.IsSkipped(currentInternalSchemePath) && currentInternalSchemePath != ProcessUtils.GetCurrentProcessPath())
             {
                 YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.PathChanged]);

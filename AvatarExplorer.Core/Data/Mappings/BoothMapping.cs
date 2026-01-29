@@ -1,4 +1,4 @@
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Items;
 
 namespace AvatarExplorer.Core.Data.Mappings;
 

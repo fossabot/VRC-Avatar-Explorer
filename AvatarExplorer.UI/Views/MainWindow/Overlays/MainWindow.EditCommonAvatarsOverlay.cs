@@ -3,10 +3,11 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvatarExplorer.Core.Localization;
-using AvatarExplorer.Core.Models;
+using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Models;
+using AvatarExplorer.UI.Models.Common;
+using AvatarExplorer.UI.Models.Items;
 
 namespace AvatarExplorer.UI;
 
@@ -64,10 +65,10 @@ public partial class MainWindow
 
         CommonAvatar? commonAvatar = _avatarExplorerApp.GetCommonAvatarById(_editCommonAvatarsOverlay_SelectedGroupId);
         if (commonAvatar == null) return;
-        
+
         if (commonAvatar.AvatarsView.Contains(itemTagInfo.Value)) commonAvatar.UpdateAvatars(commonAvatar.AvatarsView.Where(i => i != itemTagInfo.Value));
         else commonAvatar.UpdateAvatars(commonAvatar.AvatarsView.Append(itemTagInfo.Value));
-        
+
         EditCommonAvatarsOverlay_RefleshAvatarList();
     }
     private async void EditCommonAvatarsOverlay_AddGroup_Click(object? sender, RoutedEventArgs e)
@@ -76,7 +77,7 @@ public partial class MainWindow
         if (string.IsNullOrEmpty(commonAvatarGroupName)) return;
 
         _avatarExplorerApp.AddCommonAvatar(commonAvatarGroupName);
-        
+
         EditCommonAvatarsOverlay_RefleshGroupList();
         EditCommonAvatarsOverlay_RefleshAvatarList();
 
@@ -93,13 +94,13 @@ public partial class MainWindow
             Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Failed.GetCommonAvatarGroup]);
             return;
         }
-        
+
         string? commonAvatarGroupName = await Main_ShowTextDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Title.NewCommonAvatarGroupName], commonAvatar.GroupName);
         if (string.IsNullOrEmpty(commonAvatarGroupName)) return;
 
         commonAvatar.GroupName = commonAvatarGroupName;
         _avatarExplorerApp.SaveCommonAvatarDatabase();
-        
+
         int previousIndex = EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex;
         EditCommonAvatarsOverlay_RefleshGroupList();
         if (previousIndex != -1) EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex = previousIndex;
@@ -141,7 +142,7 @@ public partial class MainWindow
 
         _avatarExplorerApp.RemoveCommonAvatar(commonAvatar.Id);
         _avatarExplorerApp.SaveCommonAvatarDatabase();
-        
+
         EditCommonAvatarsOverlay_RefleshGroupList();
         if (EditCommonAvatarsOverlay_GroupComboBox.Items.Count > 0) EditCommonAvatarsOverlay_GroupComboBox.SelectedIndex = 0;
         EditCommonAvatarsOverlay_RefleshAvatarList();

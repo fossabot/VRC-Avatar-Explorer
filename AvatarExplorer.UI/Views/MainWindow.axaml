@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:localization="clr-namespace:AvatarExplorer.UI.Localization"
-        xmlns:models="clr-namespace:AvatarExplorer.Core.Models;assembly=AvatarExplorer.Core"
+        xmlns:common="clr-namespace:AvatarExplorer.Core.Models.Common;assembly=AvatarExplorer.Core"
         x:Class="AvatarExplorer.UI.MainWindow"
         x:DataType="localization:Localizer"
         WindowStartupLocation="CenterScreen"
@@ -914,7 +914,7 @@
 
                     <Panel Grid.Row="2">
                         <ScrollViewer>
-                            <DataGrid x:Name="ErrorLogOverlay_ErrorLogGrid" GridLinesVisibility="All" x:DataType="models:ErrorContext">
+                            <DataGrid x:Name="ErrorLogOverlay_ErrorLogGrid" GridLinesVisibility="All" x:DataType="common:ErrorContext">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Timestamp" Binding="{Binding Date, StringFormat={}{0:yyyy/MM/dd HH:mm:ss}}"/>
                                     <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"/>

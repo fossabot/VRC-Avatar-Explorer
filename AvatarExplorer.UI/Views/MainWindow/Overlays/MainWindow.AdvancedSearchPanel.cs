@@ -1,6 +1,6 @@
 using System.Linq;
-using AvatarExplorer.Core.Models;
-using AvatarExplorer.Core.Services;
+using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Utils;
 
 namespace AvatarExplorer.UI;
