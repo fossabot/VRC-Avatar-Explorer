@@ -52,7 +52,7 @@ public static class FileSystemService
     #endregion
 
     #region Unitypackage Modifier
-    internal static async Task<string?> ModifyUnityPackageFilePathsAsync(string[] filePaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null)
+    internal static async Task<string?> ModifyUnitypackageFilePathsAsync(string[] filePaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null)
     {
         List<string> unitypackagePaths = new();
 
@@ -66,19 +66,19 @@ public static class FileSystemService
 
         if (unitypackagePaths.Count == 0) return null;
 
-        return await ModifyUnityPackageFilePathsAsyncInternal(unitypackagePaths, itemCategoryNames, reportProgress);
+        return await ModifyUnitypackageFilePathsAsyncInternal(unitypackagePaths, itemCategoryNames, reportProgress);
     }
-    private static async Task<string?> ModifyUnityPackageFilePathsAsyncInternal(List<string> itemPaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null)
+    private static async Task<string?> ModifyUnitypackageFilePathsAsyncInternal(List<string> itemPaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null)
     {
         if (itemPaths.Count == 0) return null;
 
-        string? unityPackagePath = await Task.Run(async () =>
+        string? unitypackagePath = await Task.Run(async () =>
         {
             try
             {
                 if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Unitypackage.Status.Preparing, 0));
 
-                var (saveFolder, saveFilePath, unityPackagePath) = PrepareSavePaths();
+                var (saveFolder, saveFilePath, unitypackagePath) = PrepareSavePaths();
                 PrepareSaveDirectory(saveFolder);
 
                 if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Unitypackage.Status.Extracting, 10));
@@ -98,7 +98,7 @@ public static class FileSystemService
 
                 reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Creating, 90));
 
-                await CreateTarArchive(saveFilePath, unityPackagePath);
+                await CreateTarArchive(saveFilePath, unitypackagePath);
 
                 Directory.Delete(saveFilePath, true);
 
@@ -107,7 +107,7 @@ public static class FileSystemService
 
                 await Task.Delay(750); // すぐ閉じるのではなく、100%の表記を出してから0.75秒経って返すようにする
 
-                return unityPackagePath;
+                return unitypackagePath;
             }
             catch (Exception ex)
             {
@@ -116,9 +116,9 @@ public static class FileSystemService
             }
         });
 
-        return unityPackagePath;
+        return unitypackagePath;
     }
-    private static (string saveFolder, string saveFilePath, string unityPackagePath) PrepareSavePaths()
+    private static (string saveFolder, string saveFilePath, string unitypackagePath) PrepareSavePaths()
     {
         static string getNextFolder(string basePath)
         {
@@ -133,9 +133,9 @@ public static class FileSystemService
 
         string saveFolder = getNextFolder(SystemPath.TempFolderPath);
         string saveFilePath = Path.Combine(saveFolder, "Unitypackages Modified by Avatar Explorer");
-        string unityPackagePath = saveFilePath + ".unitypackage";
+        string unitypackagePath = saveFilePath + ".unitypackage";
 
-        return (saveFolder, saveFilePath, unityPackagePath);
+        return (saveFolder, saveFilePath, unitypackagePath);
     }
     private static void PrepareSaveDirectory(string tempFolder)
     {

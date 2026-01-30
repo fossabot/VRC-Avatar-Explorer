@@ -20,8 +20,8 @@ internal static class UnitypackageService
             });
         }
 
-        string? unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePath(filePath, localizedCategoryName, progressAction);
-        if (onCompleted != null) await onCompleted(unityPackagePath);
+        string? unitypackagePath = await AvatarExplorerApp.ModifyUnitypackageFilePath(filePath, localizedCategoryName, progressAction);
+        if (onCompleted != null) await onCompleted(unitypackagePath);
     }
 
     internal static async Task BulkImport(string[] filePaths, string[] localizedCategoryNames, Func<string, int, Task>? onProgress = null, Func<string?, Task>? onCompleted = null)
@@ -37,8 +37,8 @@ internal static class UnitypackageService
             });
         }
 
-        string? unityPackagePath = await AvatarExplorerApp.ModifyUnityPackageFilePaths(filePaths, localizedCategoryNames, progressAction);
-        if (onCompleted != null) await onCompleted(unityPackagePath);
+        string? unitypackagePath = await AvatarExplorerApp.ModifyUnitypackageFilePaths(filePaths, localizedCategoryNames, progressAction);
+        if (onCompleted != null) await onCompleted(unitypackagePath);
     }
 
     internal static IReadOnlyList<string> GetUnitypackagePaths(string itemPath)

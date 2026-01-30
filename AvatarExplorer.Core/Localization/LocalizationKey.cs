@@ -103,7 +103,7 @@ public static class LocalizationKey
             public static class Failed
             {
                 public const string Default = "UI.Dialog.Failed.Default";
-                public const string Import = "UI.Dialog.Faileds.Import";
+                public const string Import = "UI.Dialog.Failed.Import";
                 public const string Export = "UI.Dialog.Failed.Export";
                 public const string ItemAdd = "UI.Dialog.Failed.ItemAdd";
                 public const string ItemEdit = "UI.Dialog.Failed.ItemEdit";
@@ -207,7 +207,7 @@ public static class LocalizationKey
         public static class Root
         {
             public const string Avatar = "Path.Root.Avatar";
-            public const string Author = "Path.Root.Avatar";
+            public const string Author = "Path.Root.Author";
             public const string Category = "Path.Root.Category";
         }
 
@@ -247,7 +247,7 @@ public static class LocalizationKey
         {
             public const string NoFolders = "Error.Validation.NoFolders";
             public const string EmptyTitle = "Error.Validation.EmptyTitle";
-            public const string EmptyAuthor = "Error.Validation.Author";
+            public const string EmptyAuthor = "Error.Validation.EmptyAuthor";
         }
 
         public const string ItemFolderProcessingFailedPaths = "Error.Item.Folder.ProcessingFailedPaths";
