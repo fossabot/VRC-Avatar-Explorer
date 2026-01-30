@@ -127,8 +127,6 @@ public partial class MainWindow
     private void SettingsOverlay_ApplyLanguage(int language)
     {
         Localizer.Instance.SetLanguage(language);
-
-        InitializeNoItemsLabel();
         Main_ReloadCurrentWindow();
     }
 

@@ -6,7 +6,7 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <AssemblyName>VRC Avatar Explorer</AssemblyName>
+    <ApplicationIcon>Assets\SoftwareIcon.ico</ApplicationIcon>
   </PropertyGroup>
 	
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -35,9 +35,7 @@
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
 
-    <Content Include="Assets\**\*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </Content>
+    <AvaloniaResource Include="Assets\Internal\**"/>
+
   </ItemGroup>
 </Project>

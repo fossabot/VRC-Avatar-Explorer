@@ -52,7 +52,6 @@ public partial class MainWindow : Window
         InitializeTitle();
         InitializeLanguageBox();
         InitializeAvatarExplorer();
-        InitializeNoItemsLabel();
         InitializeUserPreferences();
 
         InitializePipeServer();

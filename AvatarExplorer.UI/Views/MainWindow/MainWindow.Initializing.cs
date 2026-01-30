@@ -42,30 +42,6 @@ public partial class MainWindow
         UserPreferences userPreferences = UserPreferencesService.Load(SystemPath.UserPreferencesFilePath);
         _userPreferences.FromOther(userPreferences);
     }
-    private void InitializeNoItemsLabel()
-    {
-        if (Main_RightPanelParent == null) return;
-
-        Main_RightPanelParent.Children.Clear();
-
-        Main_RightPanelParent.Children.Add(new Image
-        {
-            Source = ImageService.Get(SystemIconKey.EmptyIcon),
-            Width = 150,
-            Height = 150,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        });
-
-        Main_RightPanelParent.Children.Add(new TextBlock
-        {
-            Text = Localizer.Instance[LocalizationKey.Error.Nothing],
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            FontWeight = Avalonia.Media.FontWeight.Bold,
-            FontSize = 25
-        });
-    }
     private void InitializeContextMenuHandlers()
     {
         _contextMenuHandlers = new()

@@ -161,3 +161,16 @@ Assets/EmptyIcon.png: Empty icons created by Ghozi Muhtarom - Flaticon (https://
 Assets/FolderIcon.png: Files and folders icons created by juicy_fish - Flaticon (https://www.flaticon.com/free-icon/folder_11471391)
 Assets/FileIcon.png: Document icons created by Neveraemje - Flaticon (https://www.flaticon.com/free-icon/new-document_3047411)
 Assets/GroupIcon.png: Group chat icons created by bsd - Flaticon (https://www.flaticon.com/free-icon/group-chat_9464022)
+
+- Application Icon Credit
+
+ショコラ -Chocolat-【オリジナル3Dモデル】by あまとうさぎ（https://komado.booth.pm/items/6405390）
+Lavender Braid Hair by 隣の店（https://tonarino8908.booth.pm/items/5483086）
+【VRC想定･MA対応】雲ヘアピン Cloud Hair Accessory【アクセサリー】 by ham.am / はむあむ（https://ham-am.booth.pm/items/5410436）
+《41アバター対応衣装》ベルチェックワンピース by 白猫通りのナギ亭（https://naginagistore.booth.pm/items/6750939）
+🍩🎀 MoguMogu Delivery 🎀🍩 by PetiDoll（https://petidoll.booth.pm/items/7236050）
+【VRchat】 Metal Frame Glasses [メタル素材丸眼鏡] by ranchino（https://ranchino.booth.pm/items/3750938）
+にゃんこ ばんそうこう（Cat Bandage） by こけっこぴよぴよ（https://tosakahiyoshi.booth.pm/items/4137208）
+【19アバター対応】Sparkling eyesテクスチャ ♥15color♥ by さばさばショップ（https://sabavrc.booth.pm/items/6433694）
+[ワールド]Cozy Nest 🐤🌊 by VirtualWhaleStudio（https://virtualwhale.booth.pm/items/6085796）
+アンティークカウンターセット01(30点) by Mint 3D Café（https://mint3dcafe.booth.pm/items/7302822）
