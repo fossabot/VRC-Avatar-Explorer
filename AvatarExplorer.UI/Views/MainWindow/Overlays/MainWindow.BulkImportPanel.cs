@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Localization;
@@ -109,7 +110,7 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.ToString());
+            ErrorManager.Instance.PostError("Failed to execute bulk import.", ex);
             Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.CategoryLengthNotMatched]);
             return;
         }
