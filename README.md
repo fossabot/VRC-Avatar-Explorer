@@ -1,18 +1,44 @@
-<h1 align="center">VRC Avatar Explorer</h1>
+# VRC Avatar Explorer
 
-<div align="center">
-  <strong>:high_brightness: Cross-Platform Asset Explorer For Avatar Modification :crescent_moon:</strong></br>
-  <sub>A new version of VRC Avatar Explorer v1.x.x</sub>
-</div>
+![GitHub deployments](https://img.shields.io/github/deployments/puk06/VRC-Avatar-Explorer/release?style=flat)
+![GitHub Release](https://img.shields.io/github/v/release/puk06/VRC-Avatar-Explorer?label=Stable)
+![GitHub Release](https://img.shields.io/github/v/release/puk06/VRC-Avatar-Explorer?include_prereleases&label=Pre-Release)
 
-## Commit & Branch Policy
+VRChatユーザー向けのシンプルかつ強力な**クロスプラットフォーム対応アセット管理ツール**です。
 
-- `main`
-  - English only
-  - Conventional Commits required
-  - Squash merge only
+アセットファイルをBoothのアイテム情報と紐付けることで、エクスプローラー形式で自動的に整理・管理することができます。
 
-- Other branches (`dev`, `feature/*`, etc.)
-  - Any language
-  - Any commit style
+---
 
+## 出来ること
+
+- **アセットファイルの自動整理**: アイテム情報に基づき、アセットをエクスプローラー形式にわかりやすく整理。
+- **アセット検索**: タイトルや作者、カテゴリなどの膨大なデータから必要なアセットを素早く特定。
+- **対応アバター管理**: 各アセットがどのアバター向けかを管理。
+- **共通素体グループ管理**: 共通素体のアバター同士をグループ化して効率化。
+- **Unitypackage最適化**: パスの自動変更や、複数ファイルの一括インポートに対応。
+- **詳細なステータス管理**: アイテムタグ、メモ、実装・未実装アバターのステータス管理。
+- **背景カスタマイズ**: アプリケーションの背景を好みの画像に設定可能。
+
+## 導入方法
+
+1. [最新のリリースページ](https://github.com/puk06/VRC-Avatar-Explorer/releases/latest)を開きます。
+2. 使用しているOSに対応したzipファイルをダウンロードします。
+3. 解凍したフォルダ内にある `AvatarExplorer.UI` を実行してください。
+
+---
+
+##  コミット & ブランチ運用ポリシー (Commit & Branch Policy)
+
+開発への貢献やメンテナンスに関しては、以下のルールを適用します。
+
+### `main` ブランチ
+- **言語**: 英語のみ (English only)
+- **コミット形式**: [Conventional Commits](https://www.conventionalcommits.org/ja/v1.0.0/) の遵守。
+- **マージ方法**: Squash merge のみ。
+
+### その他のブランチ (`dev`, `feature/*` 等)
+- **言語**: 制限なし（日本語・英語どちらも可）
+- **コミット形式**: 自由。
+
+---
