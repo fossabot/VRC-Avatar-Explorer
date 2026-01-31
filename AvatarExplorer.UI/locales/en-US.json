@@ -65,7 +65,7 @@
     "UI.Dialog.Update.UpdateNow": "Update now",
 
     "UI.Dialog.FirstLaunch.DialogTitle": "Welcome!",
-    "UI.Dialog.FirstLaunch.DialogMessage": "Thank you for using Avatar Explorer!\nFirst, we recommend changing the asset save location from Settings in the top-right corner.",
+    "UI.Dialog.FirstLaunch.DialogMessage": "Thank you for using Avatar Explorer!\nFirst, we recommend changing the asset save location from Settings in the top-left corner.",
 
     "UI.Dialog.SelectSaveFilePath": "Select a save location for files",
     "UI.Dialog.SelectFolderPath": "Select a folder",
@@ -301,6 +301,8 @@
     "UI.EditCommonAvatars.ReplaceToGroup": "Replace supported avatars with group",
 
     "UI.ErrorLog.Title": "Error log",
+
+    "UI.LanguageSelection.description": "※ You can change this later in settings.",
 
     "UI.AddMemo.Title": "Add memo",
     "UI.AddMemo.Memo": "Memo",

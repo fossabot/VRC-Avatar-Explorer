@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvatarExplorer.Core", "Avat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvatarExplorer.UI", "AvatarExplorer.UI\AvatarExplorer.UI.csproj", "{81E3B6B5-A0B7-453B-B659-9176C326D15F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvatarExplorer.Test", "AvatarExplorer.Test\AvatarExplorer.Test.csproj", "{589F816A-D3FC-4332-AB38-10E548C81247}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

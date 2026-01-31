@@ -65,7 +65,7 @@
     "UI.Dialog.Update.UpdateNow": "今すぐ更新",
 
     "UI.Dialog.FirstLaunch.DialogTitle": "はじめまして！",
-    "UI.Dialog.FirstLaunch.DialogMessage": "Avatar Explorerを使って頂きありがとうございます！\nまず初めに、画面右上の設定からアセットの保存先を変更することをおすすめします！",
+    "UI.Dialog.FirstLaunch.DialogMessage": "Avatar Explorerを使って頂きありがとうございます！\nまず初めに、画面左上の設定からアセットの保存先を変更することをおすすめします！",
 
     "UI.Dialog.SelectSaveFilePath": "ファイルの保存先を選択してください",
     "UI.Dialog.SelectFolderPath": "フォルダを選択してください",
@@ -301,6 +301,8 @@
     "UI.EditCommonAvatars.ReplaceToGroup": "対応アバターをグループに置き換え",
 
     "UI.ErrorLog.Title": "エラーログ",
+
+    "UI.LanguageSelection.description": "※ この設定は後でいつでも変更できます。",
 
     "UI.AddMemo.Title": "メモの追加",
     "UI.AddMemo.Memo": "メモ",
