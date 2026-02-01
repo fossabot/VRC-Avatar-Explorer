@@ -117,12 +117,9 @@ public static class LocalizationKey
 
             public static class Update
             {
-                public const string Available = "UI.Dialog.Update.Available";
                 public const string VersionText = "UI.Dialog.Update.VersionText";
-                public const string ChangeLogs = "UI.Dialog.Update.ChangeLogs";
-                public const string CheckOnReleasePage = "UI.Dialog.Update.CheckOnReleasePage";
-                public const string Later = "UI.Dialog.Update.Later";
-                public const string UpdateNow = "UI.Dialog.Update.UpdateNow";
+                public const string NoUpdateAvailableTitle = "UI.Dialog.Update.NoUpdateAvailableTitle";
+                public const string NoUpdateAvailable = "UI.Dialog.Update.NoUpdateAvailable";
             }
 
             public static class FirstLaunch

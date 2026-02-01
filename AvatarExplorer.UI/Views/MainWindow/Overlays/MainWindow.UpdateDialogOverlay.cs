@@ -13,13 +13,18 @@ namespace AvatarExplorer.UI;
 public partial class MainWindow
 {
     private string? _updateDialogOverlay_latestVersion = null;
-    private async Task UpdateDialogOverlay_CheckAsync()
+    private async Task UpdateDialogOverlay_CheckAsync(bool silent = true)
     {
         VersionRelease? latestVersionRelease = await UpdateChecker.GetLatestUpdateReleaseInfo(_userPreferences.UpdateChannel);
-        if (latestVersionRelease == null) return;
-
-        UpdateDialogOverlay_Show(latestVersionRelease);
-        _updateDialogOverlay_latestVersion = latestVersionRelease.Version;
+        if (latestVersionRelease == null && !silent)
+        {
+            Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Update.NoUpdateAvailableTitle], Localizer.Instance.GetDisplayName(LocalizationKey.UI.Dialog.Update.NoUpdateAvailable, AvatarExplorerApp.CurrentVersion));
+        }
+        else if (latestVersionRelease != null)
+        {
+            UpdateDialogOverlay_Show(latestVersionRelease);
+            _updateDialogOverlay_latestVersion = latestVersionRelease.Version;
+        }
     }
     private void UpdateDialogOverlay_Show(VersionRelease versionRelease)
     {

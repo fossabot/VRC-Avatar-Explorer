@@ -65,6 +65,8 @@
     "UI.Dialog.Update.ChangeLogs": "Changelog:",
     "UI.Dialog.Update.Later": "Remind me later",
     "UI.Dialog.Update.UpdateNow": "Update now",
+    "UI.Dialog.Update.NoUpdateAvailableTitle": "No Updates Available",
+    "UI.Dialog.Update.NoUpdateAvailable": "You are currently using the latest version (v{0}). No new updates were found.",
 
     "UI.Dialog.SelectSaveFilePath": "Select a save location for files",
     "UI.Dialog.SelectFolderPath": "Select a folder",

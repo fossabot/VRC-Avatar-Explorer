@@ -65,6 +65,9 @@
     "UI.Dialog.Update.ChangeLogs": "更新内容:",
     "UI.Dialog.Update.Later": "後で通知",
     "UI.Dialog.Update.UpdateNow": "今すぐ更新",
+    "UI.Dialog.Update.NoUpdateAvailableTitle": "アップデートはありません",
+    "UI.Dialog.Update.NoUpdateAvailable": "現在、最新バージョン (v{0}) をご利用中です。新しい更新プログラムは提供されていません。",
+
 
     "UI.Dialog.SelectSaveFilePath": "ファイルの保存先を選択してください",
     "UI.Dialog.SelectFolderPath": "フォルダを選択してください",
