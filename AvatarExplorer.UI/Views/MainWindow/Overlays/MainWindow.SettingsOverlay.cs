@@ -13,6 +13,7 @@ using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Models.System;
+using AvatarExplorer.Core.Models.Updates;
 using AvatarExplorer.Core.Services.IO;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
@@ -77,6 +78,10 @@ public partial class MainWindow
         // データ
         if (SettingsOverlay_AutoBackupPathTextBox != null) SettingsOverlay_AutoBackupPathTextBox.Text = runtimeSettings.AutoBackupRootDirectory ?? string.Empty;
         if (SettingsOverlay_AutoBackupIntervalTextBox != null) SettingsOverlay_AutoBackupIntervalTextBox.Text = runtimeSettings.AutoBackupInterval.ToString();
+    
+        // システム
+        if (SettingsOverlay_CheckForUpdateCheckBox != null) SettingsOverlay_CheckForUpdateCheckBox.IsChecked = _userPreferences.CheckForUpdate;
+        if (SettingsOverlay_UpdateChannelComboBox != null) SettingsOverlay_UpdateChannelComboBox.SelectedIndex = (int)_userPreferences.UpdateChannel;
     }
     private void SettingsOverlay_ApplySettingsValues()
     {
@@ -104,6 +109,10 @@ public partial class MainWindow
         // データ
         if (SettingsOverlay_AutoBackupPathTextBox != null) _avatarExplorerApp.SetAutoBackupRootDirectory(SettingsOverlay_AutoBackupPathTextBox.Text ?? string.Empty);
         if (SettingsOverlay_AutoBackupIntervalTextBox != null) _avatarExplorerApp.SetAutoBackupInterval(ValueParser.Int(SettingsOverlay_AutoBackupIntervalTextBox.Text, 5));
+
+        // システム
+        if (SettingsOverlay_CheckForUpdateCheckBox != null) _userPreferences.SetCheckForUpdate(SettingsOverlay_CheckForUpdateCheckBox.IsChecked ?? false);
+        if (SettingsOverlay_UpdateChannelComboBox != null) _userPreferences.SetUpdateChannel((UpdateChannel)SettingsOverlay_UpdateChannelComboBox.SelectedIndex);
 
         SettingsOverlay_ApplyPreferenceSettingsToUi();
         SettingsOverlay_SetUiValueFromCurrentSettings();
@@ -208,6 +217,7 @@ public partial class MainWindow
 
         Main_ReloadCurrentWindow();
     }
+    private async void SettingsOverlay_UpdateCheckNow_Click(object? sender, RoutedEventArgs e) => await UpdateDialogOverlay_CheckAsync();
 
     private void SettingsOverlay_ImportData_Click(object? sender, RoutedEventArgs e) => SelectImportTypeOverlay_Show();
 

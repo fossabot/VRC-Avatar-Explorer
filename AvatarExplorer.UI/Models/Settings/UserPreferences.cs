@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using AvatarExplorer.Core.Models.Updates;
 using AvatarExplorer.UI.Models.Common;
 
 namespace AvatarExplorer.UI.Models.Settings;
@@ -35,6 +36,12 @@ public class UserPreferences
     [JsonInclude]
     public BitmapAntiAliasingMode AntiAliasingMode { get; private set; } = BitmapAntiAliasingMode.None;
 
+    [JsonInclude]
+    public bool CheckForUpdate { get; private set; } = true;
+
+    [JsonInclude]
+    public UpdateChannel UpdateChannel { get; private set; } = UpdateChannel.Stable;
+
     internal void FromOther(UserPreferences userPreferences)
     {
         Language = userPreferences.Language;
@@ -47,6 +54,8 @@ public class UserPreferences
         Theme = userPreferences.Theme;
         ItemsPerPage = userPreferences.ItemsPerPage;
         AntiAliasingMode = userPreferences.AntiAliasingMode;
+        CheckForUpdate = userPreferences.CheckForUpdate;
+        UpdateChannel = userPreferences.UpdateChannel;
     }
 
     internal void SetLanguage(int index) => Language = index;
@@ -62,4 +71,6 @@ public class UserPreferences
     internal void SetTheme(Theme theme) => Theme = theme;
     internal void SetItemsPerPage(int value) => ItemsPerPage = value;
     internal void SetAntialiasing(BitmapAntiAliasingMode value) => AntiAliasingMode = value;
+    internal void SetCheckForUpdate(bool value) => CheckForUpdate = value;
+    internal void SetUpdateChannel(UpdateChannel value) => UpdateChannel = value;
 }

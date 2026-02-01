@@ -11,6 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="SemanticVersioning" Version="3.0.0" />
 		<PackageReference Include="SharpCompress" Version="0.44.5" />
 
 		<Content Include="../THIRD_PARTY_LICENSES.txt">

@@ -532,6 +532,42 @@
                                                 <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.Register]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_RegisterScheme_Click"/>
                                             </Grid>
                                         </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.CheckForUpdate]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.CheckForUpdateDescription]}"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                                <ToggleSwitch x:Name="SettingsOverlay_CheckForUpdateCheckBox" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                            </Grid>
+                                        </Grid>
+                                        
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding #SettingsOverlay_CheckForUpdateCheckBox.IsChecked}">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.UpdateChannel]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.UpdateChannelDescription]}"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,2.5*" ColumnSpacing="5">
+                                                <ComboBox Grid.Column="1" x:Name="SettingsOverlay_UpdateChannelComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                                    <ComboBoxItem Content="{Binding [UI.Settings.Stable]}"/>
+                                                    <ComboBoxItem Content="{Binding [UI.Settings.Beta]}"/>
+                                                </ComboBox>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.CheckForUpdateNow]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.CheckForUpdateNowDescription]}"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.Check]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_UpdateCheckNow_Click"/>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
                                 </ScrollViewer>
                             </Panel>

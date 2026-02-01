@@ -61,7 +61,7 @@
     "UI.Dialog.Failed.GetCommonAvatarGroup": "共通素体グループの取得に失敗しました。",
 
     "UI.Dialog.Update.Available": "アップデートが利用可能です",
-    "UI.Dialog.Update.VersionText": "新しいバージョン: {0} (現在のバージョン: {1})",
+    "UI.Dialog.Update.VersionText": "新しいバージョン: {0} (現在のバージョン: {1})\nリリース日: {2}",
     "UI.Dialog.Update.ChangeLogs": "更新内容:",
     "UI.Dialog.Update.Later": "後で通知",
     "UI.Dialog.Update.UpdateNow": "今すぐ更新",
@@ -241,6 +241,15 @@
     "UI.Settings.RegisterScheme": "カスタムURLスキームの登録",
     "UI.Settings.RegisterSchemeDescription": "拡張機能やブラウザから直接このソフトを起動できるようになります",
     "UI.Settings.Register": "登録",
+    "UI.Settings.CheckForUpdate": "自動アップデートチェック",
+    "UI.Settings.CheckForUpdateDescription": "起動時に自動でアップデートがあるかどうかを確認します",
+    "UI.Settings.UpdateChannel": "アップデートチャンネル",
+    "UI.Settings.UpdateChannelDescription": "安定版とベータ版のどちらでチェックするかどうかを決めることが出来ます",
+    "UI.Settings.Stable": "安定版",
+    "UI.Settings.Beta": "ベータ版",
+    "UI.Settings.CheckForUpdateNow": "今すぐアップデートを確認",
+    "UI.Settings.CheckForUpdateNowDescription": "利用可能な最新のアップデートがあるか確認します",
+    "UI.Settings.Check": "確認",
 
     "UI.Search.Watermark": "入力して検索...",
 

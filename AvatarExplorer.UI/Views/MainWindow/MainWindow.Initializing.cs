@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using AvatarExplorer.Core.Data.Paths;
@@ -17,7 +18,7 @@ public partial class MainWindow
 {
     private void InitializeTitle()
     {
-        Title = string.Format("VRC Avatar Explorer {0}", AvatarExplorerApp.CurrentVersion);
+        Title = string.Format("VRC Avatar Explorer v{0}", AvatarExplorerApp.CurrentVersion);
     }
     private void InitializeAvatarExplorer()
     {
@@ -28,9 +29,9 @@ public partial class MainWindow
             _avatarExplorerApp.LoadRuntimeSettings();
             _avatarExplorerApp.StartAutoBackup();
         }
-        catch
+        catch (Exception ex)
         {
-            // Ignored
+            ErrorManager.Instance.PostError("Failed to initialize Avatar Explorer.", ex);
         }
     }
     private void InitializeUserPreferences()

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Interactivity;
 using AvatarExplorer.Core.Data.Links;
@@ -13,15 +12,19 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
+    private string? _updateDialogOverlay_latestVersion = null;
     private async Task UpdateDialogOverlay_CheckAsync()
     {
-        VersionData? latestVersionData = await UpdateChecker.CheckUpdate();
-        if (latestVersionData != null && latestVersionData.LatestVersion != AvatarExplorerApp.CurrentVersion) UpdateDialogOverlay_Show(latestVersionData.LatestVersion, latestVersionData.ChangeLogs);
+        VersionRelease? latestVersionRelease = await UpdateChecker.GetLatestUpdateReleaseInfo(_userPreferences.UpdateChannel);
+        if (latestVersionRelease == null) return;
+
+        UpdateDialogOverlay_Show(latestVersionRelease);
+        _updateDialogOverlay_latestVersion = latestVersionRelease.Version;
     }
-    private void UpdateDialogOverlay_Show(string latestVersion, string[] changeLogs)
+    private void UpdateDialogOverlay_Show(VersionRelease versionRelease)
     {
-        UpdateDialogOverlay_VersionText.Text = Localizer.Instance.GetDisplayName(LocalizationKey.UI.Dialog.Update.VersionText, [latestVersion, AvatarExplorerApp.CurrentVersion]);
-        UpdateDialogOverlay_UpdateContentText.Text = string.Join("\n", changeLogs.Select(i => $"・{i}"));
+        UpdateDialogOverlay_VersionText.Text = Localizer.Instance.GetDisplayName(LocalizationKey.UI.Dialog.Update.VersionText, [$"v{versionRelease.Version}", $"v{AvatarExplorerApp.CurrentVersion}", versionRelease.ReleaseDate]);
+        UpdateDialogOverlay_UpdateContentText.Text = versionRelease.ChangeLogs.ToString();
         UpdateDialogOverlay.IsVisible = true;
     }
     private void UpdateDialogOverlay_Hide() => UpdateDialogOverlay.IsVisible = false;
@@ -30,7 +33,7 @@ public partial class MainWindow
     private void UpdateDialogOverlay_Later_Click(object? sender, RoutedEventArgs e) => UpdateDialogOverlay_Hide();
     private async void UpdateDialogOverlay_UpdateNow_Click(object? sender, RoutedEventArgs e)
     {
-        await LauncherService.OpenUri(this, SoftwareLink.LatestReleasePageURL);
+        await LauncherService.OpenUri(this, string.IsNullOrEmpty(_updateDialogOverlay_latestVersion) ? SoftwareLink.LatestReleasePageURL : string.Format(SoftwareLink.ReleasePageURL, _updateDialogOverlay_latestVersion));
         UpdateDialogOverlay_Hide();
     }
     #endregion

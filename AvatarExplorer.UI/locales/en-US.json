@@ -61,7 +61,7 @@
     "UI.Dialog.Failed.GetCommonAvatarGroup": "Failed to retrieve common avatar groups.",
 
     "UI.Dialog.Update.Available": "Update available",
-    "UI.Dialog.Update.VersionText": "New version: {0} (Current version: {1})",
+    "UI.Dialog.Update.VersionText": "New version: {0} (Current version: {1})\nRelease Date: {2}",
     "UI.Dialog.Update.ChangeLogs": "Changelog:",
     "UI.Dialog.Update.Later": "Remind me later",
     "UI.Dialog.Update.UpdateNow": "Update now",
@@ -241,6 +241,15 @@
     "UI.Settings.RegisterScheme": "Register Custom URL Scheme",
     "UI.Settings.RegisterSchemeDescription": "Enables launching the application directly from browser extensions or web browsers.",
     "UI.Settings.Register": "Register",
+    "UI.Settings.CheckForUpdate": "Check for Updates",
+    "UI.Settings.CheckForUpdateDescription": "Automatically check for updates when the application starts.",
+    "UI.Settings.UpdateChannel": "Update Channel",
+    "UI.Settings.UpdateChannelDescription": "Select between Stable and Beta channels for update notifications.",
+    "UI.Settings.Stable": "Stable",
+    "UI.Settings.Beta": "Beta",
+    "UI.Settings.CheckForUpdateNow": "Check for Updates Now",
+    "UI.Settings.CheckForUpdateNowDescription": "Manually check for the latest available updates.",
+    "UI.Settings.Check": "Check",
 
     "UI.Search.Watermark": "Type to search...",
 
