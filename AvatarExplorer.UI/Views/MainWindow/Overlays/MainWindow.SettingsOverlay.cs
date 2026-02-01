@@ -64,7 +64,13 @@ public partial class MainWindow
         if (SettingsOverlay_NormalIconSizeSlider != null) SettingsOverlay_NormalIconSizeSlider.Value = userPreferences.NormalIconSize;
         if (SettingsOverlay_EnableHoverIconSizeCheckBox != null) SettingsOverlay_EnableHoverIconSizeCheckBox.IsChecked = userPreferences.EnableHoverIconSize;
         if (SettingsOverlay_HoverIconSizeSlider != null) SettingsOverlay_HoverIconSizeSlider.Value = userPreferences.HoverIconSize;
-        if (SettingsOverlay_AntiAliasingModeComboBox != null) SettingsOverlay_AntiAliasingModeComboBox.SelectedIndex = (int)userPreferences.AntiAliasingMode;
+
+        if (SettingsOverlay_AntiAliasingModeComboBox != null)
+        {
+            SettingsOverlay_AntiAliasingModeComboBox.SelectedIndex = -1;
+            SettingsOverlay_AntiAliasingModeComboBox.SelectedIndex = (int)userPreferences.AntiAliasingMode;
+        }
+
         if (SettingsOverlay_ItemsPerPageTextBox != null) SettingsOverlay_ItemsPerPageTextBox.Text = userPreferences.ItemsPerPage.ToString();
 
         // アイテム
@@ -81,7 +87,11 @@ public partial class MainWindow
     
         // システム
         if (SettingsOverlay_CheckForUpdateCheckBox != null) SettingsOverlay_CheckForUpdateCheckBox.IsChecked = _userPreferences.CheckForUpdate;
-        if (SettingsOverlay_UpdateChannelComboBox != null) SettingsOverlay_UpdateChannelComboBox.SelectedIndex = (int)_userPreferences.UpdateChannel;
+        if (SettingsOverlay_UpdateChannelComboBox != null)
+        {
+            SettingsOverlay_UpdateChannelComboBox.SelectedIndex = -1;
+            SettingsOverlay_UpdateChannelComboBox.SelectedIndex = (int)_userPreferences.UpdateChannel;
+        }
     }
     private void SettingsOverlay_ApplySettingsValues()
     {
@@ -217,7 +227,7 @@ public partial class MainWindow
 
         Main_ReloadCurrentWindow();
     }
-    private async void SettingsOverlay_UpdateCheckNow_Click(object? sender, RoutedEventArgs e) => await UpdateDialogOverlay_CheckAsync(false);
+    private async void SettingsOverlay_UpdateCheckNow_Click(object? sender, RoutedEventArgs e) => await UpdateDialogOverlay_CheckAsync((UpdateChannel)SettingsOverlay_UpdateChannelComboBox.SelectedIndex, false);
 
     private void SettingsOverlay_ImportData_Click(object? sender, RoutedEventArgs e) => SelectImportTypeOverlay_Show();
 

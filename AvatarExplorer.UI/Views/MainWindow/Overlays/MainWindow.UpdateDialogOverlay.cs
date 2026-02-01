@@ -13,9 +13,9 @@ namespace AvatarExplorer.UI;
 public partial class MainWindow
 {
     private string? _updateDialogOverlay_latestVersion = null;
-    private async Task UpdateDialogOverlay_CheckAsync(bool silent = true)
+    private async Task UpdateDialogOverlay_CheckAsync(UpdateChannel updateChannel = UpdateChannel.Stable, bool silent = true)
     {
-        VersionRelease? latestVersionRelease = await UpdateChecker.GetLatestUpdateReleaseInfo(_userPreferences.UpdateChannel);
+        VersionRelease? latestVersionRelease = await UpdateChecker.GetLatestUpdateReleaseInfo(updateChannel);
         if (latestVersionRelease == null && !silent)
         {
             Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Update.NoUpdateAvailableTitle], Localizer.Instance.GetDisplayName(LocalizationKey.UI.Dialog.Update.NoUpdateAvailable, AvatarExplorerApp.CurrentVersion));

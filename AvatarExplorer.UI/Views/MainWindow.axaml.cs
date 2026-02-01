@@ -72,7 +72,7 @@ public partial class MainWindow : Window
         // Scheme Check (Only Windows)
         if (ProcessUtils.IsWindows()) await CheckSchemeAsync();
 
-        if (_userPreferences.CheckForUpdate) await UpdateDialogOverlay_CheckAsync();
+        if (_userPreferences.CheckForUpdate) await UpdateDialogOverlay_CheckAsync(_userPreferences.UpdateChannel);
     }
 
     public async Task SetApplicationArgs(string[]? args)
