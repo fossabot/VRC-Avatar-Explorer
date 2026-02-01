@@ -39,11 +39,13 @@ public partial class MainWindow
 
         // 基本
         if (SettingsOverlay_ItemsFolderPathTextBox != null) SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory ?? string.Empty;
+        
         if (SettingsOverlay_LanguageComboBox != null)
         {
             SettingsOverlay_LanguageComboBox.SelectedIndex = -1;
             SettingsOverlay_LanguageComboBox.SelectedIndex = userPreferences.Language;
         }
+
         if (SettingsOverlay_SortOrderComboBox != null)
         {
             SettingsOverlay_SortOrderComboBox.SelectedIndex = -1;
