@@ -39,9 +39,22 @@ public partial class MainWindow
 
         // 基本
         if (SettingsOverlay_ItemsFolderPathTextBox != null) SettingsOverlay_ItemsFolderPathTextBox.Text = runtimeSettings.DataRootDirectory ?? string.Empty;
-        if (SettingsOverlay_LanguageComboBox != null) SettingsOverlay_LanguageComboBox.SelectedIndex = userPreferences.Language;
-        if (SettingsOverlay_SortOrderComboBox != null) SettingsOverlay_SortOrderComboBox.SelectedIndex = (int)runtimeSettings.ItemSortOrder;
-        if (SettingsOverlay_ThemeComboBox != null) SettingsOverlay_ThemeComboBox.SelectedIndex = (int)userPreferences.Theme;
+        if (SettingsOverlay_LanguageComboBox != null)
+        {
+            SettingsOverlay_LanguageComboBox.SelectedIndex = -1;
+            SettingsOverlay_LanguageComboBox.SelectedIndex = userPreferences.Language;
+        }
+        if (SettingsOverlay_SortOrderComboBox != null)
+        {
+            SettingsOverlay_SortOrderComboBox.SelectedIndex = -1;
+            SettingsOverlay_SortOrderComboBox.SelectedIndex = (int)runtimeSettings.ItemSortOrder;
+        }
+
+        if (SettingsOverlay_ThemeComboBox != null)
+        {
+            SettingsOverlay_ThemeComboBox.SelectedIndex = -1;
+            SettingsOverlay_ThemeComboBox.SelectedIndex = (int)userPreferences.Theme;
+        }
 
         // 表示
         if (SettingsOverlay_RemoveBracketsCheckBox != null) SettingsOverlay_RemoveBracketsCheckBox.IsChecked = runtimeSettings.RemoveBrackets;
@@ -91,6 +104,7 @@ public partial class MainWindow
         if (SettingsOverlay_AutoBackupIntervalTextBox != null) _avatarExplorerApp.SetAutoBackupInterval(ValueParser.Int(SettingsOverlay_AutoBackupIntervalTextBox.Text, 5));
 
         SettingsOverlay_ApplyPreferenceSettingsToUi();
+        SettingsOverlay_SetUiValueFromCurrentSettings();
 
         if (RuntimeSettings.DataRootDirectory != previousDataRootDirectoryPath) _ = SettingsOverlay_CheckDataCopy(previousDataRootDirectoryPath, RuntimeSettings.DataRootDirectory);
     }
