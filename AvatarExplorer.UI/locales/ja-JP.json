@@ -38,6 +38,8 @@
     "UI.Dialog.Confirmation.EditCommonAvatars.ReplaceAvatarsToGroup": "共通素体グループ内のアバターが含まれているアイテムの対応アバターを共通素体グループに置き換えますか？",
     "UI.Dialog.Confirmation.EditCommonAvatars.ReplaceGroupToAvatars": "共通素体グループが対応アバターとして設定されているアイテムの対応アバターを、個別のアバターに置き換えますか？",
 
+    "UI.Dialog.Confirmation.StoragePathChange.CopyData": "データの保存先が変更されています。前のフォルダからデータをコピーしますか？",
+
     "UI.Dialog.Title.NewItemTitle": "新しいタイトル",
 
     "UI.Dialog.Title.AddCustomCategory": "新しいカスタムカテゴリ",
@@ -64,9 +66,6 @@
     "UI.Dialog.Update.Later": "後で通知",
     "UI.Dialog.Update.UpdateNow": "今すぐ更新",
 
-    "UI.Dialog.FirstLaunch.DialogTitle": "はじめまして！",
-    "UI.Dialog.FirstLaunch.DialogMessage": "Avatar Explorerを使って頂きありがとうございます！\nまず初めに、画面左上の設定からアセットの保存先を変更することをおすすめします！",
-
     "UI.Dialog.SelectSaveFilePath": "ファイルの保存先を選択してください",
     "UI.Dialog.SelectFolderPath": "フォルダを選択してください",
     "UI.Dialog.SelectFilePath": "ファイルを選択してください",
@@ -74,12 +73,12 @@
     "UI.Overlay.AddItem.SelectedAvatarsCount": "選択中: {0}アバター",
     "UI.Overlay.AddItem.RemoveFolder": "削除",
 
-    "UI.Scheme.PathChanged": "カスタムURLスキームの登録先が変更されているため、再登録しますか？",
-    "UI.Scheme.RegisterAgain": "カスタムURLスキームは既に登録されていますが、内部的に未登録です。\n再登録しますか？",
-    "UI.Scheme.Register": "カスタムURLスキームを登録しますか？\n\n登録すると、拡張機能やブラウザから直接このソフトを起動できます！\n登録しない場合はURLスキーム経由での起動はできませんが、通常の起動は可能です！",
-    "UI.Scheme.RestartAsAdmin": "カスタムURLスキームの登録には管理者権限が必要です。\n再起動して管理者権限で起動しますか？",
-    "UI.Scheme.RegisterSuccess": "カスタムURLスキームの登録に成功しました",
-    "UI.Scheme.RegisterSkipped": "カスタムURLスキームの登録をスキップしました",
+    "UI.Scheme.PathChanged": "保存先が変更されました。カスタムURLスキームを再登録しますか？",
+    "UI.Scheme.RegisterAgain": "カスタムURLスキームの設定が不完全です。正常に動作させるため再登録しますか？",
+    "UI.Scheme.Register": "カスタムURLスキームを登録しますか？\n\n登録するとブラウザ等から直接起動できるようになります。登録しなくても、手動での起動は可能です。",
+    "UI.Scheme.RestartAsAdmin": "登録には管理者権限が必要です。管理者として再起動しますか？",
+    "UI.Scheme.RegisterSuccess": "登録が完了しました。設定画面からいつでも変更可能です。",
+    "UI.Scheme.RegisterSkipped": "登録をスキップしました。設定画面からいつでも登録可能です。",
 
     "FileCategory.Modification": "改変用ファイル",
     "FileCategory.Texture": "テクスチャ",
@@ -235,10 +234,13 @@
     "UI.Settings.ResetCommonAvatarDatabase": "共通素体データベースのリセット",
     "UI.Settings.ResetCommonAvatarDatabaseDescription": "共通素体のデータベースをリセットします。アセットデータ自体は削除されません。自動バックアップから復元可能です。",
     
-    "UI.Settings.Log": "ログ",
+    "UI.Settings.System": "システム",
     "UI.Settings.ErrorLog": "エラーログ",
     "UI.Settings.ErrorLogDescription": "ソフト内で起きたエラーのログを見ることが出来ます。",
     "UI.Settings.OpenErrorLog": "ログを開く",
+    "UI.Settings.RegisterScheme": "カスタムURLスキームの登録",
+    "UI.Settings.RegisterSchemeDescription": "拡張機能やブラウザから直接このソフトを起動できるようになります",
+    "UI.Settings.Register": "登録",
 
     "UI.Search.Watermark": "入力して検索...",
 
@@ -301,8 +303,8 @@
     "UI.EditCommonAvatars.ReplaceToGroup": "対応アバターをグループに置き換え",
 
     "UI.ErrorLog.Title": "エラーログ",
-
-    "UI.LanguageSelection.description": "※ この設定は後でいつでも変更できます。",
+    
+    "UI.InitialSetup.ChangeLaterNotice": "※ この設定は後からいつでも変更できます",
 
     "UI.AddMemo.Title": "メモの追加",
     "UI.AddMemo.Memo": "メモ",

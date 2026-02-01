@@ -45,8 +45,9 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
-        InitializeComponent();
         DataContext = Localizer.Instance;
+
+        InitializeComponent();
         InitializeContextMenuHandlers();
 
         InitializeTitle();
@@ -63,15 +64,15 @@ public partial class MainWindow : Window
 
     private async void Main_Loaded(object? sender, RoutedEventArgs e)
     {
-        Main_RenderLeftPanel();
-        Main_RenderRightPanel();
+        // 初回起動かチェック
+        if (_avatarExplorerApp.GetAllItems().Count == 0) await InitialSetupOverlay_ShowAsync();
+
+        Main_ReloadCurrentWindow();
 
         // Scheme Check (Only Windows)
-        if (ProcessUtils.IsWindows()) await CheckScheme();
+        if (ProcessUtils.IsWindows()) await CheckSchemeAsync();
 
-        await UpdateDialogOverlay_Check();
-
-        CheckFirstLaunching();
+        await UpdateDialogOverlay_CheckAsync();
     }
 
     public async Task SetApplicationArgs(string[]? args)
@@ -234,7 +235,7 @@ public partial class MainWindow : Window
         _main_searchTextCache = Main_SearchTextBox.Text ?? string.Empty;
         Main_ExecuteSearchItems();
     }
-    
+
     private static readonly string[] CategoryLocalizationKeys = Enum.GetValues<ItemType>().Select(i => i.GetLocalizationKey()).Where(i => i != null).ToArray()!;
     private void Main_ExecuteSearchItems(string searchText = "")
     {
@@ -244,7 +245,7 @@ public partial class MainWindow : Window
         {
             string? localizationKey = Localizer.Instance.GetLocalizationKey(token);
             if (localizationKey == null || !CategoryLocalizationKeys.Contains(localizationKey)) return token;
-            
+
             return localizationKey;
         });
 

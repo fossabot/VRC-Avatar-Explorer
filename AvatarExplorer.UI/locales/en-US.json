@@ -38,6 +38,8 @@
     "UI.Dialog.Confirmation.EditCommonAvatars.ReplaceAvatarsToGroup": "Replace supported avatars in items that include avatars from the common avatar group with the group itself?",
     "UI.Dialog.Confirmation.EditCommonAvatars.ReplaceGroupToAvatars": "Replace common avatar groups set as supported avatars in items with their individual avatars?",
 
+    "UI.Dialog.Confirmation.StoragePathChange.CopyData": "The data storage location has changed. Would you like to copy the data from the previous folder?",
+
     "UI.Dialog.Title.NewItemTitle": "New title",
 
     "UI.Dialog.Title.AddCustomCategory": "New custom category",
@@ -64,9 +66,6 @@
     "UI.Dialog.Update.Later": "Remind me later",
     "UI.Dialog.Update.UpdateNow": "Update now",
 
-    "UI.Dialog.FirstLaunch.DialogTitle": "Welcome!",
-    "UI.Dialog.FirstLaunch.DialogMessage": "Thank you for using Avatar Explorer!\nFirst, we recommend changing the asset save location from Settings in the top-left corner.",
-
     "UI.Dialog.SelectSaveFilePath": "Select a save location for files",
     "UI.Dialog.SelectFolderPath": "Select a folder",
     "UI.Dialog.SelectFilePath": "Select a file",
@@ -74,12 +73,12 @@
     "UI.Overlay.AddItem.SelectedAvatarsCount": "Selected: {0} avatars",
     "UI.Overlay.AddItem.RemoveFolder": "Remove",
 
-    "UI.Scheme.PathChanged": "The registered custom URL scheme location has changed. Re-register it?",
-    "UI.Scheme.RegisterAgain": "The custom URL scheme is already registered but not registered internally.\nRe-register it?",
-    "UI.Scheme.Register": "Register a custom URL scheme?\n\nIf registered, you can launch this app directly from extensions or a browser!\nIf you don't register, launching via URL scheme won't be possible, but normal launch will still work!",
-    "UI.Scheme.RestartAsAdmin": "Registering a custom URL scheme requires admin rights.\nRestart and run as administrator?",
-    "UI.Scheme.RegisterSuccess": "Custom URL scheme registered successfully",
-    "UI.Scheme.RegisterSkipped": "Custom URL scheme registration skipped",
+    "UI.Scheme.PathChanged": "The location has changed. Would you like to re-register the custom URL scheme?",
+    "UI.Scheme.RegisterAgain": "The custom URL scheme setup is incomplete. Would you like to re-register it to ensure it works correctly?",
+    "UI.Scheme.Register": "Register the custom URL scheme?\n\nThis allows you to launch the app directly from your browser. You can still open the app manually if you skip this.",
+    "UI.Scheme.RestartAsAdmin": "Administrator privileges are required for registration. Restart as administrator?",
+    "UI.Scheme.RegisterSuccess": "Registration successful. You can change this anytime in the settings.",
+    "UI.Scheme.RegisterSkipped": "Registration skipped. You can register this anytime in the settings.",
 
     "FileCategory.Modification": "Files for modification",
     "FileCategory.Texture": "Texture",
@@ -235,10 +234,13 @@
     "UI.Settings.ResetCommonAvatarDatabase": "Reset common avatar database",
     "UI.Settings.ResetCommonAvatarDatabaseDescription": "Reset the common avatar database. Asset data itself won't be deleted. Can be restored from auto backups.",
     
-    "UI.Settings.Log": "Log",
+    "UI.Settings.System": "System",
     "UI.Settings.ErrorLog": "Error log",
     "UI.Settings.ErrorLogDescription": "View logs of errors that occurred in the app",
     "UI.Settings.OpenErrorLog": "Open log",
+    "UI.Settings.RegisterScheme": "Register Custom URL Scheme",
+    "UI.Settings.RegisterSchemeDescription": "Enables launching the application directly from browser extensions or web browsers.",
+    "UI.Settings.Register": "Register",
 
     "UI.Search.Watermark": "Type to search...",
 
@@ -302,7 +304,7 @@
 
     "UI.ErrorLog.Title": "Error log",
 
-    "UI.LanguageSelection.description": "※ You can change this later in settings.",
+    "UI.InitialSetup.ChangeLaterNotice": "※ You can change this later in settings.",
 
     "UI.AddMemo.Title": "Add memo",
     "UI.AddMemo.Memo": "Memo",

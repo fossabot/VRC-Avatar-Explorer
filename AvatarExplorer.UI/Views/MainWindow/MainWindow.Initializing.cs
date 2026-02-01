@@ -1,19 +1,15 @@
 using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Layout;
 using Avalonia.Threading;
 using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
-using AvatarExplorer.UI.Data;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models.Common;
 using AvatarExplorer.UI.Models.ContextMenu;
 using AvatarExplorer.UI.Models.Settings;
 using AvatarExplorer.UI.Services.System;
-using AvatarExplorer.UI.Services.Utilities;
 
 namespace AvatarExplorer.UI;
 
@@ -70,14 +66,15 @@ public partial class MainWindow
     {
         Localizer.Instance.LoadFromFolder("locales");
 
+        string[] languages = Localizer.Instance.GetLanguageList();
+
         SettingsOverlay_LanguageComboBox.Items.Clear();
-        SettingsOverlay_LanguageComboBox.Items.AddRange(Localizer.Instance.GetLanguageList());
+        SettingsOverlay_LanguageComboBox.Items.AddRange(languages);
+
+        InitialSetupOverlay_LanguageComboBox.Items.Clear();
+        InitialSetupOverlay_LanguageComboBox.Items.AddRange(languages);
     }
-    private void CheckFirstLaunching()
-    {
-        if (_avatarExplorerApp.GetAllItems().Count != 0) return;
-        Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.FirstLaunch.DialogTitle], Localizer.Instance[LocalizationKey.UI.Dialog.FirstLaunch.DialogMessage]);
-    }
+
     private void InitializePipeServer()
     {
         SingleInstanceService.OnPipeMessageReceived += OnPipeMessageReceived;
@@ -92,7 +89,7 @@ public partial class MainWindow
         });
     }
 
-    private async Task CheckScheme()
+    private async Task CheckSchemeAsync()
     {
         if (SchemeService.IsSchemeRegistered())
         {
@@ -101,25 +98,25 @@ public partial class MainWindow
             if (!string.IsNullOrEmpty(currentInternalSchemePath) && !SchemeService.IsSkipped(currentInternalSchemePath) && currentInternalSchemePath != ProcessUtils.GetCurrentProcessPath())
             {
                 YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.PathChanged]);
-                if (result == YesNoResult.Yes) await Main_RegisterScheme();
+                if (result == YesNoResult.Yes) await Main_RegisterSchemeAsync();
                 else Main_SkipScheme();
             }
             else if (string.IsNullOrEmpty(currentInternalSchemePath))
             {
                 YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.RegisterAgain]);
-                if (result == YesNoResult.Yes) await Main_RegisterScheme();
+                if (result == YesNoResult.Yes) await Main_RegisterSchemeAsync();
                 else Main_SkipScheme();
             }
         }
         else
         {
             YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Scheme.Register]);
-            if (result == YesNoResult.Yes) await Main_RegisterScheme();
+            if (result == YesNoResult.Yes) await Main_RegisterSchemeAsync();
             else Main_SkipScheme();
         }
     }
 
-    private async Task Main_RegisterScheme()
+    private async Task Main_RegisterSchemeAsync()
     {
         if (!SchemeService.IsRunAsAdmin())
         {

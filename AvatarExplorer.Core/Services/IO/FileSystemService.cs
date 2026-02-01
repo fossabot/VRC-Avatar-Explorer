@@ -412,7 +412,7 @@ public static class FileSystemService
     #endregion
 
     #region Copy
-    public static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, Action<(string, int)>? reportProgress = null, int maxDegreeOfParallelism = 4)
+    public static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, Func<(string, int), Task>? reportProgress = null, int maxDegreeOfParallelism = 4)
     {
         if (sourceDirectory == destinationDirectory) return; // sourceとdestinationが同じ場合は無視
 
@@ -427,7 +427,7 @@ public static class FileSystemService
         await Task.Run(async () =>
         {
             Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },
-            file =>
+            async file =>
             {
                 try
                 {
@@ -444,7 +444,7 @@ public static class FileSystemService
                     if (percent != lastPercent)
                     {
                         lastPercent = percent;
-                        reportProgress?.Invoke((LocalizationKey.Processing.DirectoryCopy.Copying, percent));
+                        if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.DirectoryCopy.Copying, percent));
                     }
                 }
                 catch (Exception ex)

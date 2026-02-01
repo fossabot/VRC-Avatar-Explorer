@@ -69,6 +69,11 @@ public static class LocalizationKey
                 public const string ResetCommonAvatarDatabase = "UI.Dialog.Confirmation.ResetCommonAvatarDatabase";
                 public const string RemoveAvatarFromSupportedAndImplemented = "UI.Dialog.Confirmation.RemoveAvatarFromSupportedAndImplemented";
                 public const string RemoveCommonAvatarGroup = "UI.Dialog.Confirmation.RemoveCommonAvatarGroup";
+                
+                public static class StoragePathChange
+                {
+                    public const string CopyData = "UI.Dialog.Confirmation.StoragePathChange.CopyData";
+                }
 
                 public static class ExportToCsv
                 {

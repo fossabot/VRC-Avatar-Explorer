@@ -507,7 +507,7 @@
                             </Panel>
                         </TabItem>
 
-                        <TabItem Header="{Binding [UI.Settings.Log]}" FontWeight="Bold">
+                        <TabItem Header="{Binding [UI.Settings.System]}" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
                                     <StackPanel Spacing="20" Margin="0,0,10,0">
@@ -519,6 +519,17 @@
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
                                                 <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.OpenErrorLog]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ShowErrorLog_Click"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.RegisterScheme]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.RegisterSchemeDescription]}"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.Register]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_RegisterScheme_Click"/>
                                             </Grid>
                                         </Grid>
                                     </StackPanel>
@@ -902,6 +913,48 @@
                         <Button Grid.Column="2" Classes="button" Content="{Binding [UI.Dialog.Update.Later]}" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="UpdateDialogOverlay_Later_Click"/>
                         <Button Grid.Column="4" Classes="accent" Content="{Binding [UI.Dialog.Update.UpdateNow]}" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="UpdateDialogOverlay_UpdateNow_Click"/>
                     </Grid>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <!-- 初期設定オーバーレイ -->
+        <Border x:Name="InitialSetupOverlay" Classes="overlaybackground" IsVisible="False">
+            <Border Classes="overlay" Width="450" Padding="25">
+                <StackPanel Spacing="20">
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="初期設定 / Initial Setup" FontSize="22" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding [UI.InitialSetup.ChangeLaterNotice]}" FontSize="12" Foreground="Gray"/>
+                    </StackPanel>
+
+                    <Separator Background="#22000000"/>
+
+                    <StackPanel Spacing="20">
+                        <StackPanel Spacing="5">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock Text="{Binding [UI.Settings.Language]}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                <materialIcons:MaterialIcon Kind="Translate" HorizontalAlignment="Center" Width="30" Height="30" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <ComboBox x:Name="InitialSetupOverlay_LanguageComboBox" HorizontalAlignment="Stretch" SelectionChanged="InitialSetupOverlay_LanguageComboBox_SelectionChanged"/>
+                        </StackPanel>
+
+                        <StackPanel Spacing="5">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock Text="{Binding [UI.Settings.ItemsFolder]}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                <materialIcons:MaterialIcon Kind="Folder" HorizontalAlignment="Center" Width="30" Height="30" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                <TextBox Grid.Column="0" x:Name="InitialSetupOverlay_ItemsFolderPathTextBox" IsReadOnly="True" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                <Button Classes="button" Grid.Column="1" Content="{Binding [UI.Settings.Browse]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="InitialSetupOverlay_OpenFolder_Click"/>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*,120">
+                        <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Dialog.OK]}" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="InitialSetupOverlay_OK_Click"/>
+                    </Grid>
+
                 </StackPanel>
             </Border>
         </Border>

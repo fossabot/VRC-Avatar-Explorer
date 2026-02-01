@@ -13,7 +13,7 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    private async Task UpdateDialogOverlay_Check()
+    private async Task UpdateDialogOverlay_CheckAsync()
     {
         VersionData? latestVersionData = await UpdateChecker.CheckUpdate();
         if (latestVersionData != null && latestVersionData.LatestVersion != AvatarExplorerApp.CurrentVersion) UpdateDialogOverlay_Show(latestVersionData.LatestVersion, latestVersionData.ChangeLogs);

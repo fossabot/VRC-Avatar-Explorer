@@ -1,16 +1,19 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Models.System;
+using AvatarExplorer.Core.Services.IO;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models.Common;
@@ -62,6 +65,8 @@ public partial class MainWindow
     }
     private void SettingsOverlay_ApplySettingsValues()
     {
+        string previousDataRootDirectoryPath = RuntimeSettings.DataRootDirectory;
+
         // 基本
         if (SettingsOverlay_ItemsFolderPathTextBox != null) _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? string.Empty);
         if (SettingsOverlay_LanguageComboBox != null) _userPreferences.SetLanguage(SettingsOverlay_LanguageComboBox.SelectedIndex);
@@ -86,6 +91,28 @@ public partial class MainWindow
         if (SettingsOverlay_AutoBackupIntervalTextBox != null) _avatarExplorerApp.SetAutoBackupInterval(ValueParser.Int(SettingsOverlay_AutoBackupIntervalTextBox.Text, 5));
 
         SettingsOverlay_ApplyPreferenceSettingsToUi();
+
+        if (RuntimeSettings.DataRootDirectory != previousDataRootDirectoryPath) _ = SettingsOverlay_CheckDataCopy(previousDataRootDirectoryPath, RuntimeSettings.DataRootDirectory);
+    }
+
+    private async Task SettingsOverlay_CheckDataCopy(string previousPath, string currentPath)
+    {
+        //データをコピーするか
+        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.StoragePathChange.CopyData]);
+        if (result != YesNoResult.Yes) return;
+
+        // Item1: LocalizationKey, Item2: ProgressValue
+        async Task progressAction((string, int) tuple)
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                ProgressOverlay_Show(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
+                ProgressOverlay_Update(tuple.Item2);
+            });
+        }
+
+        await FileSystemService.CopyDirectory(previousPath, currentPath, progressAction);
+        ProgressOverlay_Hide();
     }
 
     private void SettingsOverlay_ApplyPreferenceSettingsToUi()
@@ -152,6 +179,7 @@ public partial class MainWindow
 
         if (SettingsOverlay_AutoBackupPathTextBox != null) SettingsOverlay_AutoBackupPathTextBox.Text = folders[0];
     }
+    private async void SettingsOverlay_RegisterScheme_Click(object? sender, RoutedEventArgs e) => await Main_RegisterSchemeAsync();
 
     private void SettingsOverlay_Close_Click(object? sender, RoutedEventArgs e) => SettingsOverlay_Hide();
     private void SettingsOverlay_Apply_Click(object? sender, RoutedEventArgs e)
