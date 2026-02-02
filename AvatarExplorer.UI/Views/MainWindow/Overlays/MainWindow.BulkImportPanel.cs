@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
@@ -138,11 +139,25 @@ public partial class MainWindow
 
     private void BulkImportPanel_DragDrop_Drop(object? sender, DragEventArgs e)
     {
-        if (!e.DataTransfer.Contains(DataFormat.Text)) return;
+        if (!(e.DataTransfer.Contains(DataFormat.Text) || e.DataTransfer.Contains(DataFormat.File))) return;
 
-        string? itemId = e.DataTransfer.TryGetText();
-        if (string.IsNullOrEmpty(itemId)) return;
+        string? text = e.DataTransfer.TryGetText();
+        if (!string.IsNullOrEmpty(text) && _avatarExplorerApp.GetItemById(text) != null)
+        {
+            BulkImportItem_Add(text);
+            return;
+        }
 
-        if (_avatarExplorerApp.GetItemById(itemId) != null) BulkImportItem_Add(itemId);
+        string? file = e.DataTransfer.TryGetFile()?.TryGetLocalPath();
+        if (!string.IsNullOrEmpty(file))
+        {
+            Item? currentSelectedItem = _avatarExplorerApp.GetSelectedItem();
+            if (currentSelectedItem == null) return;
+
+            if (UnitypackageService.GetUnitypackagePaths(ItemUtils.GetItemPath(RuntimeSettings.DataRootDirectory, currentSelectedItem.ItemPath)).Contains(file))
+            {
+                BulkImportItem_Add(currentSelectedItem.Id, file);
+            }
+        }
     }
 }
