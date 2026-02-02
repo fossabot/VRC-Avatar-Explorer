@@ -414,45 +414,52 @@ public static class FileSystemService
     #region Copy
     public static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, Func<(string, int), Task>? reportProgress = null, int maxDegreeOfParallelism = 4)
     {
-        if (sourceDirectory == destinationDirectory) return; // sourceとdestinationが同じ場合は無視
-
-        Directory.CreateDirectory(destinationDirectory);
-
-        List<string> allFiles = EnumerateFiles(sourceDirectory).ToList();
-        int totalFiles = allFiles.Count;
-
-        int copiedFiles = 0;
-        int lastPercent = -1;
-
-        await Task.Run(async () =>
+        try
         {
-            Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },
-            async file =>
+            if (sourceDirectory == destinationDirectory) return; // sourceとdestinationが同じ場合は無視
+
+            Directory.CreateDirectory(destinationDirectory);
+
+            List<string> allFiles = EnumerateFiles(sourceDirectory).ToList();
+            int totalFiles = allFiles.Count;
+
+            int copiedFiles = 0;
+            int lastPercent = -1;
+
+            await Task.Run(async () =>
             {
-                try
+                Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },
+                async file =>
                 {
-                    string relativePath = Path.GetRelativePath(sourceDirectory, file);
-                    string destPath = Path.Combine(destinationDirectory, relativePath);
-                    PrepareDirectory(destPath);
-
-                    using Stream sourceStream = File.OpenRead(file);
-                    using Stream destStream = File.Create(destPath);
-                    sourceStream.CopyTo(destStream, BufferSize);
-
-                    copiedFiles++;
-                    int percent = (int)(copiedFiles / (double)totalFiles * 100);
-                    if (percent != lastPercent)
+                    try
                     {
-                        lastPercent = percent;
-                        if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.DirectoryCopy.Copying, percent));
+                        string relativePath = Path.GetRelativePath(sourceDirectory, file);
+                        string destPath = Path.Combine(destinationDirectory, relativePath);
+                        PrepareDirectory(destPath);
+
+                        using Stream sourceStream = File.OpenRead(file);
+                        using Stream destStream = File.Create(destPath);
+                        sourceStream.CopyTo(destStream, BufferSize);
+
+                        copiedFiles++;
+                        int percent = (int)(copiedFiles / (double)totalFiles * 100);
+                        if (percent != lastPercent)
+                        {
+                            lastPercent = percent;
+                            if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.DirectoryCopy.Copying, percent));
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.Instance.PostInternalError(string.Format("Failed to copy file: '{0}'.", file), ex);
-                }
+                    catch (Exception ex)
+                    {
+                        ErrorManager.Instance.PostInternalError(string.Format("Failed to copy file: '{0}'.", file), ex);
+                    }
+                });
             });
-        });
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostInternalError(string.Format("Failed to copy directory: '{0}'.", sourceDirectory), ex);
+        }
     }
     public static async Task<string?> CopyFile(string sourceFile, string destinationFile, bool unique = false)
     {
