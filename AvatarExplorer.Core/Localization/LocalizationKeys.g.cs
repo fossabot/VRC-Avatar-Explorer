@@ -281,6 +281,8 @@ public static class LocalizationKey
         public const string AuthorThumbnailEdit = "Success.AuthorThumbnailEdit";
         public const string Remove = "Success.Remove";
         public const string FetchItemThumbnail = "Success.FetchItemThumbnail";
+        public const string ItemFileAdd = "Success.ItemFileAdd";
+        public const string ItemFolderAdd = "Success.ItemFolderAdd";
     }
     public static class Warning
     {

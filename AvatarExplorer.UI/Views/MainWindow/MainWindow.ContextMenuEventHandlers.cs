@@ -155,6 +155,8 @@ public partial class MainWindow
         if (files == null || files.Length == 0) return;
 
         await ItemButton_ContextMenu_AddItemPathsInternal(item, files);
+
+        Dialog_Show(Localizer.Instance[LocalizationKey.Success.Default], Localizer.Instance[LocalizationKey.Success.ItemFileAdd]);
     }
     private async Task ItemButton_ContextMenu_AddItemFolder(string itemId)
     {
@@ -165,6 +167,8 @@ public partial class MainWindow
         if (folders == null || folders.Length == 0) return;
 
         await ItemButton_ContextMenu_AddItemPathsInternal(item, folders);
+
+        Dialog_Show(Localizer.Instance[LocalizationKey.Success.Default], Localizer.Instance[LocalizationKey.Success.ItemFolderAdd]);
     }
     private async Task ItemButton_ContextMenu_AddItemPathsInternal(Item item, string[] itemPaths)
     {

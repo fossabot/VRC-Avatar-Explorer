@@ -146,6 +146,8 @@
     "Success.AuthorThumbnailEdit": "作者サムネイルの編集に成功しました",
     "Success.Remove": "アイテムの削除に成功しました",
     "Success.FetchItemThumbnail": "アイテムサムネイルの更新が完了しました",
+    "Success.ItemFileAdd": "アイテムファイルの追加が完了しました",
+    "Success.ItemFolderAdd": "アイテムフォルダーの追加が完了しました",
 
     "Warning.Default": "注意",
     "Warning.RunningInAdministratorMode": "現在、このソフトは管理者モードで起動しています。\nスキームの登録時以外は、通常モードでの起動をおすすめします。\n管理者モードでは、ドラッグ＆ドロップなど一部の操作が利用できなくなります。",
