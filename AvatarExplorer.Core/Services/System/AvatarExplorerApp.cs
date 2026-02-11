@@ -391,10 +391,10 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Edit API
-    public async Task<Item?> EditItem(string itemId, ItemCreationContext itemCreationContext)
+    public async Task<bool> EditItem(string itemId, ItemCreationContext itemCreationContext)
     {
         Item? item = GetItemById(itemId);
-        if (item == null) return null;
+        if (item == null) return false;
 
         item.SetValuesFromCreationContext(itemCreationContext);
 
@@ -406,7 +406,7 @@ public partial class AvatarExplorerApp
 
         SaveItemDatabase();
 
-        return item;
+        return true;
     }
     #endregion
 

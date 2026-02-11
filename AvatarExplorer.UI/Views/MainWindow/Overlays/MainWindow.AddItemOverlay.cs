@@ -345,10 +345,10 @@ public partial class MainWindow
         else
         {
             ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying], 0);
-            Item? edittedItem = await _avatarExplorerApp.EditItem(_addItemOverlay_selectedItemId, itemCreationContext);
+            bool result = await _avatarExplorerApp.EditItem(_addItemOverlay_selectedItemId, itemCreationContext);
             ProgressOverlay_Hide();
 
-            if (edittedItem != null) Dialog_Show(Localizer.Instance[LocalizationKey.Success.Default], Localizer.Instance[LocalizationKey.Success.ItemEdit]);
+            if (result) Dialog_Show(Localizer.Instance[LocalizationKey.Success.Default], Localizer.Instance[LocalizationKey.Success.ItemEdit]);
             else Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemEditFailed]);
         }
 
