@@ -1,5 +1,6 @@
 ﻿using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Extensions;
+using AvatarExplorer.Core.Models.External;
 using AvatarExplorer.Core.Models.External.Booth;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Models.Items.Internal;
@@ -10,6 +11,7 @@ using AvatarExplorer.Core.Services.IO;
 using AvatarExplorer.Core.Services.Items;
 using AvatarExplorer.Core.Services.Network;
 using AvatarExplorer.Core.Utils;
+using ErrorOr;
 
 namespace AvatarExplorer.Core.Services.System;
 
@@ -78,14 +80,10 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Runtime Settings
-    public void LoadRuntimeSettings()
+    public void LoadRuntimeSettings(string? path = null)
     {
-        RuntimeSettings runtimeSettings = RuntimeSettingsService.Load(SystemPath.RuntimeSettingsFilePath);
-        SetRuntimeSettingsInternal(runtimeSettings);
-    }
-    public void LoadRuntimeSettings(string path)
-    {
-        RuntimeSettings runtimeSettings = RuntimeSettingsService.Load(path);
+        string loadPath = path ?? SystemPath.RuntimeSettingsFilePath;
+        RuntimeSettings runtimeSettings = RuntimeSettingsService.Load(loadPath);
         SetRuntimeSettingsInternal(runtimeSettings);
     }
     private void SetRuntimeSettingsInternal(RuntimeSettings runtimeSettings)
@@ -151,7 +149,7 @@ public partial class AvatarExplorerApp
         return Array.Empty<ItemCountInfo>();
     }
 
-    public IReadOnlyList<CommonAvatar> GetCommonAvatars() => _commonAvatarDatabaseManager.Items;
+    public IReadOnlyList<CommonAvatar> GetAllCommonAvatars() => _commonAvatarDatabaseManager.Items;
     public CommonAvatar? GetCommonAvatarById(string? groupId)
     {
         if (groupId == null) return null;
@@ -308,8 +306,8 @@ public partial class AvatarExplorerApp
                     .Where(c => c != ItemFileCategoryType.Unknown && c.GetExtensionFilters() != null)
                     .Any(c =>
                     {
-                        var exts = c.GetExtensionFilters();
-                        var names = c.GetFileNameFilters();
+                        string[]? exts = c.GetExtensionFilters();
+                        string[]? names = c.GetFileNameFilters();
                         return exts!.Contains(Path.GetExtension(file)) && (names == null || names.Any(f => Path.GetFileNameWithoutExtension(file).Contains(f, StringComparison.CurrentCultureIgnoreCase)));
                     });
             }
@@ -364,29 +362,31 @@ public partial class AvatarExplorerApp
 
         SaveCommonAvatarDatabase();
     }
-    public async Task<(Item? newItem, List<string> processingFailedPaths)> AddItem(ItemCreationContext itemCreationContext)
+    public async Task<ErrorOr<ItemCreationResult>> AddItem(ItemCreationContext itemCreationContext)
     {
-        (Item? newItem, List<string> processingFailedPaths) addItemResult = await ItemCreator.FromItemCreationContext(itemCreationContext, _runtimeSettings);
-        if (addItemResult.newItem == null) return addItemResult;
+        ErrorOr<ItemCreationResult> itemCreationResult = await ItemCreator.FromItemCreationContext(itemCreationContext, _runtimeSettings);
+        if (itemCreationResult.IsError) return Error.Failure(description: itemCreationResult.Errors.ToErrorString());
+
+        if (itemCreationResult.Value.Item == null) return itemCreationResult;
 
         string currentUnixTime = DatetimeUtils.GetCurrentUnixTime();
-        addItemResult.newItem.CreatedDate = currentUnixTime;
-        addItemResult.newItem.UpdatedDate = currentUnixTime;
+        itemCreationResult.Value.Item.CreatedDate = currentUnixTime;
+        itemCreationResult.Value.Item.UpdatedDate = currentUnixTime;
 
-        _itemDatabaseManager.Add(addItemResult.newItem);
-        UpdateSearchIndex(addItemResult.newItem.Id);
+        _itemDatabaseManager.Add(itemCreationResult.Value.Item);
+        UpdateSearchIndex(itemCreationResult.Value.Item.Id);
 
         SaveItemDatabase();
 
-        return addItemResult;
+        return itemCreationResult;
     }
-    public async Task<IReadOnlyList<string>> AddItemPaths(string itemId, string[] paths)
+    public async Task<List<string>> AddItemPaths(string itemId, string[] paths)
     {
         Item? item = GetItemById(itemId);
         if (item == null) return paths.ToList();
 
-        List<string> processingFailedPaths = await FileSystemService.ExtractItemPaths(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), paths);
-        return processingFailedPaths;
+        ExtractResult extractResult = await FileSystemService.ExtractItemPaths(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), paths);
+        return extractResult.ProcessingFailedPaths;
     }
     #endregion
 
@@ -411,31 +411,29 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Update Thumbnail API
-    public async Task<Item?> UpdateItemThumbnail(string itemId, string imageFilePath)
+    public async Task<ErrorOr<Success>> UpdateItemThumbnail(string itemId, string imageFilePath)
     {
         Item? item = GetItemById(itemId);
-        if (item == null) return null;
+        if (item == null) return Error.NotFound(description: "item not found.");
 
-        string? newFileFullPath = await FileSystemService.CopyFile(imageFilePath, Path.Combine(SystemPath.ItemThumbnailsPath, Path.GetFileName(imageFilePath)), true);
-        if (newFileFullPath == null) return null;
+        ErrorOr<Success> result = await FileSystemService.CopyFileAsync(imageFilePath, Path.Combine(SystemPath.ItemThumbnailsPath, Path.GetFileName(imageFilePath)));
+        if (result.IsError) return Error.Failure(description: result.Errors.ToErrorString());
 
-        item.ThumbnmailFileName = Path.GetFileName(newFileFullPath);
+        item.ThumbnmailFileName = Path.GetFileName(imageFilePath);
         SaveItemDatabase();
-
-        return item;
+        return Result.Success;
     }
-    public async Task<Item?> UpdateAuthorThumbnail(string itemId, string imageFilePath)
+    public async Task<ErrorOr<Success>> UpdateAuthorThumbnail(string itemId, string imageFilePath)
     {
         Item? item = GetItemById(itemId);
-        if (item == null) return null;
+        if (item == null) return Error.NotFound(description: "item not found.");
 
-        string? newFileFullPath = await FileSystemService.CopyFile(imageFilePath, Path.Combine(SystemPath.AuthorThumbnailsPath, Path.GetFileName(imageFilePath)), true);
-        if (newFileFullPath == null) return null;
+        ErrorOr<Success> result = await FileSystemService.CopyFileAsync(imageFilePath, Path.Combine(SystemPath.AuthorThumbnailsPath, Path.GetFileName(imageFilePath)));
+        if (result.IsError) return Error.Failure(description: result.Errors.ToErrorString());
 
-        item.AuthorThumbnmailFileName = Path.GetFileName(newFileFullPath);
+        item.AuthorThumbnmailFileName = Path.GetFileName(imageFilePath);
         SaveItemDatabase();
-
-        return item;
+        return Result.Success;
     }
     #endregion
 
@@ -469,21 +467,21 @@ public partial class AvatarExplorerApp
     #region Booth API
     private DateTime _lastBoothApiGetTime;
     public bool IsApiCooldownNow => _lastBoothApiGetTime.AddSeconds(5) > DateTime.Now;
-    public async Task<BoothItem?> GetBoothItem(string boothUrl)
+    public async Task<ErrorOr<BoothItem>> GetBoothItem(string boothUrl)
     {
-        if (string.IsNullOrEmpty(boothUrl)) return null;
-        if (IsApiCooldownNow) return null;
+        if (string.IsNullOrEmpty(boothUrl)) return Error.Failure("Booth.InvalidUrl", "Invalid Url.");
+        if (IsApiCooldownNow) return Error.Failure("Booth.ApiCooldown", "Booth API Cooldown Error.");
 
         string boothId = boothUrl.Split('/')[^1];
 
         _lastBoothApiGetTime = DateTime.Now; // 時間を更新する
+
         return await BoothService.GetItem(boothId);
     }
     #endregion
 
     #region File API
-    public static async Task<string?> ModifyUnitypackageFilePath(string filePath, string itemCategoryName = "", Func<(string, int), Task>? reportProgress = null) => await FileSystemService.ModifyUnitypackageFilePathsAsync([filePath], [itemCategoryName], reportProgress);
-    public static async Task<string?> ModifyUnitypackageFilePaths(string[] filePaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null) => await FileSystemService.ModifyUnitypackageFilePathsAsync(filePaths, itemCategoryNames, reportProgress);
+    public static async Task<ModifiedUnitypackagesResult> ModifyUnitypackageFilePaths(Dictionary<string, string> itemPathCategoryDictionary, Func<(string, int), Task>? reportProgress = null) => await FileSystemService.ModifyUnitypackageFilePathsAsync(itemPathCategoryDictionary, reportProgress);
     #endregion
 
     #region Remove API
@@ -514,49 +512,61 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Data Importer API
-    public async Task ImportFromV1(string dataFolderPath, Func<(string, int), Task>? reportProgress = null)
+    public async Task<ErrorOr<Success>> ImportFromV1(string dataFolderPath, Func<(string, int), Task>? reportProgress = null)
     {
-        (List<Item>, List<CommonAvatar>) result = await DataImporter.FromV1(dataFolderPath, _runtimeSettings, reportProgress);
+        ErrorOr<DataImportResult> result = await DataImporter.FromV1(dataFolderPath, _runtimeSettings, reportProgress);
+        if (result.IsError) return Error.Failure(description: result.Errors.ToErrorString());
 
-        _itemDatabaseManager.AddRange(result.Item1);
-        _commonAvatarDatabaseManager.AddRange(result.Item2);
+        _itemDatabaseManager.AddRange(result.Value.Items);
+        _commonAvatarDatabaseManager.AddRange(result.Value.CommonAvatars);
 
         SaveItemDatabase();
         SaveCommonAvatarDatabase();
+
+        return Result.Success;
     }
-    public async Task ImportFromKonoAsset(string dataFolderPath, Func<(string, int), Task>? reportProgress = null)
+    public async Task<ErrorOr<Success>> ImportFromKonoAsset(string dataFolderPath, Func<(string, int), Task>? reportProgress = null)
     {
-        List<Item> items = await DataImporter.FromKonoAsset(dataFolderPath, _runtimeSettings, reportProgress);
-        _itemDatabaseManager.AddRange(items);
+        ErrorOr<DataImportResult> result = await DataImporter.FromKonoAsset(dataFolderPath, _runtimeSettings, reportProgress);
+        if (result.IsError) return Error.Failure(result.Errors.ToErrorString());
+
+        _itemDatabaseManager.AddRange(result.Value.Items);
+        _commonAvatarDatabaseManager.AddRange(result.Value.CommonAvatars);
 
         SaveItemDatabase();
         SaveCommonAvatarDatabase();
+
+        return Result.Success;
     }
     #endregion
 
     #region Data Exporter API
-    public async Task ExportToCsv(string filePath, Dictionary<ItemType, string> localizedItemTypesMapping, bool includeCommonToSupported) => await DataExporter.ToCsv(_itemDatabaseManager.Items, _commonAvatarDatabaseManager.Items, localizedItemTypesMapping, _runtimeSettings, filePath, includeCommonToSupported);
+    public async Task<ErrorOr<Success>> ExportToCsv(string filePath, Dictionary<ItemType, string> localizedItemTypesMapping, bool includeCommonToSupported) => await DataExporter.ToCsv(_itemDatabaseManager.Items, _commonAvatarDatabaseManager.Items, localizedItemTypesMapping, _runtimeSettings, filePath, includeCommonToSupported);
     #endregion
 
     #region Clear API
     public static void ClearTemp() => FileSystemService.DeleteDirectory(SystemPath.TempFolderPath);
     #endregion
 
-    #region Ececute Context Menu Command
-    public async Task FetchAndUpdateThumbnailImage(string itemId)
+    #region Execute Context Menu Command
+    public async Task<ErrorOr<Success>> FetchAndUpdateThumbnailImage(string itemId)
     {
         Item? item = GetItemById(itemId);
-        if (item == null || item.BoothId == -1) return;
+        if (item == null) return Error.NotFound("Item not found.");
 
-        if (IsApiCooldownNow) return;
+        if (item.BoothId == -1) return Error.Validation("Booth id not found");
+
+        if (IsApiCooldownNow) return Error.Failure(code: "Api.Cooldown", description: "API is on cooldown");
 
         _lastBoothApiGetTime = DateTime.Now; // 時間を更新する
-        BoothItem? boothItem = await BoothService.GetItem(item.BoothId.ToString());
-        if (boothItem == null) return;
+        ErrorOr<BoothItem> fetchResult = await BoothService.GetItem(item.BoothId.ToString());
+        if (fetchResult.IsError) return Error.Failure(fetchResult.Errors.ToErrorString());
 
         string itemThumbnailFileName = item.BoothId + ".png";
-        bool result = await ImageDownloader.Fetch(boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);
+        bool result = await ImageDownloader.Fetch(fetchResult.Value.ThumbnailUrl, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);
         if (result) item.ThumbnmailFileName = itemThumbnailFileName;
+
+        return Result.Success;
     }
     #endregion
 
@@ -564,6 +574,6 @@ public partial class AvatarExplorerApp
     private readonly BackupManager _backupManager = new();
     public void StartAutoBackup() => _backupManager.StartAutoBackup(_runtimeSettings.AutoBackupInterval, _runtimeSettings.AutoBackupRootDirectory); // minutes
     public async Task StopAutoBackup() => await _backupManager.StopAutoBackup();
-    public async Task ExecuteBackup(string path) => await _backupManager.ExecuteBackup(path);
+    public async Task<ErrorOr<Success>> ExecuteBackup(string path) => await _backupManager.ExecuteBackup(path);
     #endregion
 }

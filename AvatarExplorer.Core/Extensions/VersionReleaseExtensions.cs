@@ -5,7 +5,7 @@ namespace AvatarExplorer.Core.Extensions;
 
 public static class VersionReleaseExtensions
 {
-    public static VersionRelease[] GetPendingUpdates(this IEnumerable<VersionRelease> versionReleases, UpdateChannel updateChannel)
+    public static IEnumerable<VersionRelease> GetPendingUpdates(this IEnumerable<VersionRelease> versionReleases, UpdateChannel updateChannel)
     {
         try
         {
@@ -13,7 +13,7 @@ public static class VersionReleaseExtensions
             filteredReleases.RemoveAll(i => updateChannel == UpdateChannel.Stable && i.Version.Contains("beta"));
 
             SemanticVersioning.Range versionRange = new SemanticVersioning.Range($">{AvatarExplorerApp.CurrentVersion}");
-            return filteredReleases.Where(i => versionRange.IsSatisfied(i.Version)).ToArray();
+            return filteredReleases.Where(i => versionRange.IsSatisfied(i.Version));
         }
         catch (Exception ex)
         {

@@ -9,6 +9,7 @@ using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Models.System;
+using AvatarExplorer.Core.Services.IO;
 using AvatarExplorer.Core.Services.Items;
 using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
@@ -60,6 +61,9 @@ public partial class MainWindow : Window
         // 設定画面の設定
         SettingsOverlay_SetUiValueFromCurrentSettings();
         SettingsOverlay_ApplySettingsValues();
+
+        ErrorManager.Instance.OnErrorOccured += OnErrorReceived;
+        ErrorManager.Instance.OnInternalErrorOccured += OnInternalErrorReceived;
     }
 
     private async void Main_Loaded(object? sender, RoutedEventArgs e)
@@ -69,8 +73,12 @@ public partial class MainWindow : Window
 
         Main_ReloadCurrentWindow();
 
-        // Scheme Check (Only Windows)
-        if (ProcessUtils.IsWindows()) await CheckSchemeAsync();
+        // Scheme & Administrator Mode Check (Windows)
+        if (ProcessUtils.IsWindows())
+        {
+            await CheckSchemeAsync();
+            CheckAdministratorMode();
+        }
 
         if (_userPreferences.CheckForUpdate) await UpdateDialogOverlay_CheckAsync(_userPreferences.UpdateChannel);
     }
@@ -243,7 +251,7 @@ public partial class MainWindow : Window
 
         SearchFilter searchFilter = SearchFilterBuilder.Build(_main_searchTextCache, (token) =>
         {
-            string? localizationKey = Localizer.Instance.GetLocalizationKey(token);
+            string? localizationKey = Localizer.Instance.GetKey(token);
             if (localizationKey == null || !CategoryLocalizationKeys.Contains(localizationKey)) return token;
 
             return localizationKey;
@@ -305,7 +313,7 @@ public partial class MainWindow : Window
         IEnumerable<SelectionNode> currentSelectionNodes = _avatarExplorerApp.GetCurrentSelectionNodes();
         if (!currentSelectionNodes.Any())
         {
-            Main_PathTextBox.Text = Localizer.Instance[LocalizationKey.Path.Default];
+            Main_PathTextBox.Text = string.Empty;
             return;
         }
 
@@ -391,20 +399,28 @@ public partial class MainWindow : Window
         Item? selectedItem = _avatarExplorerApp.GetSelectedItem();
         if (selectedItem == null) return;
 
-        await UnitypackageService.Import(itemPath, selectedItem.Type == ItemType.Custom ? selectedItem.CustomCategory : Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? selectedItem.Type.ToString()],
+        ModifiedUnitypackagesResult importResult = await UnitypackageService.Import(
+            new Dictionary<string, string>
+            {
+                { itemPath, selectedItem.Type == ItemType.Custom ? selectedItem.CustomCategory : Localizer.Instance[selectedItem.Type.GetLocalizationKey() ?? selectedItem.Type.ToString()]}
+            },
             onProgress: async (name, percent) =>
             {
-                ProgressOverlay_Show(Localizer.Instance.GetDisplayName(name, percent.ToString()));
+                ProgressOverlay_Show(Localizer.Instance.Get(name, percent.ToString()));
                 ProgressOverlay_Update(percent);
-            },
-            onCompleted: async (resultPath) =>
-            {
-                ProgressOverlay_Hide();
-
-                if (!string.IsNullOrEmpty(resultPath))
-                    await LauncherService.OpenFile(this, resultPath);
             }
         );
+
+        ProgressOverlay_Hide();
+
+        if (!importResult.IsError && !string.IsNullOrEmpty(importResult.ModifiedUnitypackagePath))
+        {
+            await LauncherService.OpenFile(this, importResult.ModifiedUnitypackagePath);
+        }
+        else
+        {
+            ErrorManager.Instance.PostError("Failed to import unitypackage.", null, Localizer.Instance[LocalizationKey.Error.ImportUnitypackageFailed]);
+        }
     }
     #endregion
 }

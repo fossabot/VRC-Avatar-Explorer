@@ -64,7 +64,7 @@ internal static class UnitypackageSelectorButtonFactory
         Grid.SetRow(titleTextBlock, 0);
         textGrid.Children.Add(titleTextBlock);
 
-        TextBlock descriptionTextBlock = new() { Text = Localizer.Instance.GetDisplayName(item.Description.LocalizationKey, item.Description.Args), FontSize = 13, TextTrimming = TextTrimming.CharacterEllipsis };
+        TextBlock descriptionTextBlock = new() { Text = Localizer.Instance.Get(item.Description.LocalizationKey, item.Description.Args), FontSize = 13, TextTrimming = TextTrimming.CharacterEllipsis };
         Grid.SetRow(descriptionTextBlock, 1);
         textGrid.Children.Add(descriptionTextBlock);
 

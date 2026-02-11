@@ -13,10 +13,10 @@ public class ErrorLogWriter : IDisposable
 
     private ErrorLogWriter()
     {
-        FileSystemService.PrepareDirectory(_logFilePath);
+        FileSystemService.PrepareFileDirectory(_logFilePath);
     }
 
-    public void Write(string title, Exception? exception)
+    public void Write(string title, Exception? exception, string? tag)
     {
         try
         {
@@ -24,6 +24,7 @@ public class ErrorLogWriter : IDisposable
             if (_writer == null) return;
 
             _writer.WriteLine(string.Format("Error: {0}", title));
+            if (!string.IsNullOrEmpty(tag)) _writer.WriteLine(string.Format("Tag Message: {0}", tag));
             if (exception != null) _writer.WriteLine(exception.ToString());
             _writer.WriteLine();
         }
@@ -33,14 +34,15 @@ public class ErrorLogWriter : IDisposable
         }
     }
 
-    public void InternalWrite(string title, Exception? exception)
+    public void InternalWrite(string title, Exception? exception, string? tag)
     {
         try
         {
             if (_writer == null) InitializeWriter();
             if (_writer == null) return;
-
+    
             _writer.WriteLine(string.Format("Internal Error: {0}", title));
+            if (!string.IsNullOrEmpty(tag)) _writer.WriteLine(string.Format("Tag Message: {0}", tag));
             if (exception != null) _writer.WriteLine(exception.ToString());
             _writer.WriteLine();
         }

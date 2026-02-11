@@ -12,7 +12,7 @@ internal static class SearchUtils
 
     internal static string ParseCategory(string text)
     {
-        string? localizationKey = Localizer.Instance.GetLocalizationKey(text);
+        string? localizationKey = Localizer.Instance.GetKey(text);
         if (localizationKey == null || !CategoryLocalizationKeys.Contains(localizationKey)) return text;
 
         return localizationKey;

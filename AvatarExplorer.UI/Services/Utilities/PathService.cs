@@ -19,7 +19,7 @@ internal static class PathService
         if (StateFlagUtils.IsItemState(state))
         {
             Item? item = items.FirstOrDefault(item => item.Id == value);
-            if (item == null) value = Localizer.Instance[LocalizationKey.Path.Removed]; // 見つからない時は削除済みと表記する
+            if (item == null) value = Localizer.Instance[LocalizationKey.Main.Path.Removed]; // 見つからない時は削除済みと表記する
             else value = removeBrackets ? ItemUtils.RemoveBrackets(item.Title) : item.Title; // アイテムはパスからタイトルに変換する
         }
 
@@ -33,6 +33,6 @@ internal static class PathService
         // 翻訳できないタグ(Root以外)はここがnullになるため、valueがパスになる。ある場合はPrefixが翻訳される。
         string? localizationKey = state.GetLocalizationKey();
 
-        return localizationKey == null ? value : Localizer.Instance.GetDisplayName(localizationKey, value);
+        return localizationKey == null ? value : Localizer.Instance.Get(localizationKey, value);
     }
 }

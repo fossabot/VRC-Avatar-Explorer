@@ -1,6 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Avalonia.Interactivity;
+using AvatarExplorer.Core.Localization;
+using AvatarExplorer.Core.Services.System;
+using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models.Common;
 
 namespace AvatarExplorer.UI;
@@ -20,6 +23,19 @@ public partial class MainWindow
         YesNoDialogOverlay.IsVisible = true;
 
         return _yesNoTcs.Task;
+    }
+
+    private async Task<YesNoResult?> ShowYesNoDialogSafeAsync(string title, string message)
+    {
+        try
+        {
+            return await Main_ShowYesNoDialogAsync(title, message);
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostError(ex.Message, ex, Localizer.Instance[LocalizationKey.Error.OpenDialogFailed]);
+            return null;
+        }
     }
 
     private void CloseDialog(YesNoResult result)

@@ -18,7 +18,7 @@ public partial class MainWindow
         VersionRelease? latestVersionRelease = await UpdateChecker.GetLatestUpdateReleaseInfo(updateChannel);
         if (latestVersionRelease == null && !silent)
         {
-            Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Update.NoUpdateAvailableTitle], Localizer.Instance.GetDisplayName(LocalizationKey.UI.Dialog.Update.NoUpdateAvailable, AvatarExplorerApp.CurrentVersion));
+            Dialog_Show(Localizer.Instance[LocalizationKey.Dialog.Update.NoUpdateAvailableTitle], Localizer.Instance.Get(LocalizationKey.Dialog.Update.NoUpdateAvailable, AvatarExplorerApp.CurrentVersion));
         }
         else if (latestVersionRelease != null)
         {
@@ -28,7 +28,7 @@ public partial class MainWindow
     }
     private void UpdateDialogOverlay_Show(VersionRelease versionRelease)
     {
-        UpdateDialogOverlay_VersionText.Text = Localizer.Instance.GetDisplayName(LocalizationKey.UI.Dialog.Update.VersionText, [$"v{versionRelease.Version}", $"v{AvatarExplorerApp.CurrentVersion}", versionRelease.ReleaseDate]);
+        UpdateDialogOverlay_VersionText.Text = Localizer.Instance.Get(LocalizationKey.Dialog.Update.VersionText, [$"v{versionRelease.Version}", $"v{AvatarExplorerApp.CurrentVersion}", versionRelease.ReleaseDate]);
         UpdateDialogOverlay_UpdateContentText.Text = versionRelease.ChangeLogs.ToString();
         UpdateDialogOverlay.IsVisible = true;
     }

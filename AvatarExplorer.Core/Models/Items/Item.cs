@@ -5,9 +5,6 @@ using AvatarExplorer.Core.Interfaces.Database;
 
 namespace AvatarExplorer.Core.Models.Items;
 
-/// <summary>
-/// アイテム情報を表します。
-/// </summary>
 public class Item : ISelectableItem, IDatabaseItem
 {
     [JsonInclude] public string Id { get; private set; } = Guid.NewGuid().ToString();

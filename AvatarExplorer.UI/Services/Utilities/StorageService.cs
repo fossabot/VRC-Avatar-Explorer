@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -5,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using AvatarExplorer.Core.Services.System;
 
 namespace AvatarExplorer.UI.Services.Utilities;
 
@@ -14,65 +16,97 @@ internal static class StorageService
 
     internal static async Task<string[]?> OpenFileDialog(Visual visual, string title, bool allowMultiple = false)
     {
-        IStorageProvider? storageProvider = GetStorageProvider(visual);
-        if (storageProvider == null) return [];
-
-        IReadOnlyList<IStorageFile> files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        try
         {
-            Title = title,
-            AllowMultiple = allowMultiple
-        });
+            IStorageProvider? storageProvider = GetStorageProvider(visual);
+            if (storageProvider == null) return [];
 
-        string[] filePaths = files
-            .Select(i => i.TryGetLocalPath())
-            .Where(i => !string.IsNullOrEmpty(i) && File.Exists(i))
-            .ToArray()!;
+            IReadOnlyList<IStorageFile> files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = title,
+                AllowMultiple = allowMultiple
+            });
 
-        return filePaths.Length == 0 ? null : filePaths;
+            string[] filePaths = files
+                .Select(i => i.TryGetLocalPath())
+                .Where(i => !string.IsNullOrEmpty(i) && File.Exists(i))
+                .ToArray()!;
+
+            return filePaths.Length == 0 ? null : filePaths;
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostError("Failed to open file picker.", ex);
+            return null;
+        }
     }
 
     internal static async Task<string[]?> OpenFolderDialog(Visual visual, string title, bool allowMultiple = false, string? initialPath = null)
     {
-        IStorageProvider? storageProvider = GetStorageProvider(visual);
-        if (storageProvider == null) return [];
-
-        FolderPickerOpenOptions folderPickerOpenOptions = new()
+        try
         {
-            Title = title,
-            AllowMultiple = allowMultiple
-        };
+            IStorageProvider? storageProvider = GetStorageProvider(visual);
+            if (storageProvider == null) return [];
 
-        if (!string.IsNullOrEmpty(initialPath)) folderPickerOpenOptions.SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(initialPath);
+            FolderPickerOpenOptions folderPickerOpenOptions = new()
+            {
+                Title = title,
+                AllowMultiple = allowMultiple
+            };
 
-        IReadOnlyList<IStorageFolder> folders = await storageProvider.OpenFolderPickerAsync(folderPickerOpenOptions);
+            if (!string.IsNullOrEmpty(initialPath)) folderPickerOpenOptions.SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(initialPath);
 
-        string[] FolderPaths = folders
-            .Select(i => i.TryGetLocalPath())
-            .Where(i => !string.IsNullOrEmpty(i) && Directory.Exists(i))
-            .ToArray()!;
+            IReadOnlyList<IStorageFolder> folders = await storageProvider.OpenFolderPickerAsync(folderPickerOpenOptions);
 
-        return FolderPaths.Length == 0 ? null : FolderPaths;
+            string[] FolderPaths = folders
+                .Select(i => i.TryGetLocalPath())
+                .Where(i => !string.IsNullOrEmpty(i) && Directory.Exists(i))
+                .ToArray()!;
+
+            return FolderPaths.Length == 0 ? null : FolderPaths;
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostError("Failed to open folder picker.", ex);
+            return null;
+        }
     }
 
     internal static async Task<string?> SaveFileDialog(Visual visual, string title, string defaultExtension)
     {
-        IStorageProvider? storageProvider = GetStorageProvider(visual);
-        if (storageProvider == null) return null;
+        try
+            {
+            IStorageProvider? storageProvider = GetStorageProvider(visual);
+            if (storageProvider == null) return null;
 
-        IStorageFile? file = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            IStorageFile? file = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = title,
+                DefaultExtension = defaultExtension
+            });
+
+            return file?.TryGetLocalPath();
+        }
+        catch (Exception ex)
         {
-            Title = title,
-            DefaultExtension = defaultExtension
-        });
-
-        return file?.TryGetLocalPath();
+            ErrorManager.Instance.PostError("Failed to safe file picker.", ex);
+            return null;
+        }
     }
 
     internal static async Task<IStorageFile?> GetStorageFileFromPath(Visual visual, string filePath)
     {
-        IStorageProvider? storageProvider = GetStorageProvider(visual);
-        if (storageProvider == null) return null;
+        try
+        {
+            IStorageProvider? storageProvider = GetStorageProvider(visual);
+            if (storageProvider == null) return null;
 
-        return await storageProvider.TryGetFileFromPathAsync(filePath);
+            return await storageProvider.TryGetFileFromPathAsync(filePath);
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostInternalError(string.Format("Failed to get storage file from path: '{0}'.", filePath), ex);
+            return null;
+        }
     }
 }

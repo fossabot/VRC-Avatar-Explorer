@@ -7,5 +7,5 @@ internal enum PageButtonState
     Back,
     Next,
     Last,
-    Jump
+    Jump // TODO: つくる
 }

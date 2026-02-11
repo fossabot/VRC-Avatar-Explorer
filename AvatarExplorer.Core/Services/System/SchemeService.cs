@@ -43,7 +43,7 @@ public static class SchemeService
 
             RegisterCustomScheme(REG_PROTCOL, processPath);
 
-            FileSystemService.PrepareDirectory(SystemPath.SchemeFilePath);
+            FileSystemService.PrepareFileDirectory(SystemPath.SchemeFilePath);
             File.WriteAllText(SystemPath.SchemeFilePath, processPath);
         }
         catch (Exception ex)
@@ -55,7 +55,7 @@ public static class SchemeService
     {
         try
         {
-            FileSystemService.PrepareDirectory(SystemPath.SchemeFilePath);
+            FileSystemService.PrepareFileDirectory(SystemPath.SchemeFilePath);
             File.WriteAllText(SystemPath.SchemeFilePath, SKIPPED_TEXT);
         }
         catch (Exception ex)

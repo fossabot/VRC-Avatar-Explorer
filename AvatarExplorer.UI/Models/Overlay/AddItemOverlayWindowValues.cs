@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using AvatarExplorer.Core.Localization;
+using AvatarExplorer.Core.Models.External.Booth;
 using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Services.Items;
 
 namespace AvatarExplorer.UI.Models.Overlay;
 
@@ -44,6 +46,17 @@ internal class AddItemOverlayWindowValues
         ItemType = item.Type;
 
         UpdateSupportedAvatars(item.SupportedAvatarsView);
+    }
+
+    internal void FromBoothItem(BoothItem boothItem)
+    {
+        Title = boothItem.Title;
+        Author = boothItem.Shop.Name;
+        BoothAuthorId = boothItem.AuthorId;
+        BoothId = boothItem.BoothId;
+        BoothThumbnailUrl = boothItem.ThumbnailUrl;
+        BoothAuthorThumbnailUrl = boothItem.Shop.ThumbnailUrl;
+        ItemType = CategoryUtils.InvalidItemTypes.Contains(boothItem.EstimatedCategory) ? ItemType.Avatar : boothItem.EstimatedCategory;
     }
 
     internal string Validate()

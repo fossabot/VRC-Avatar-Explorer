@@ -1,6 +1,6 @@
 using Avalonia;
 
-namespace AvatarExplorer.UI.Models;
+namespace AvatarExplorer.UI.Utils;
 
 internal static class AvaloniaVectorUtils
 {

@@ -4,7 +4,7 @@ namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
-    private void ProgressOverlay_Show(string title)
+    private void ProgressOverlay_Show(string title, int value = -1)
     {
         if (ProgressOverlay.IsVisible)
         {
@@ -14,6 +14,8 @@ public partial class MainWindow
 
         ProgressBarTitle.Text = title;
         ProgressOverlay.IsVisible = true;
+
+        if (value != -1) ProgressOverlay_Update(value);
     }
     private void ProgressOverlay_Hide()
     {

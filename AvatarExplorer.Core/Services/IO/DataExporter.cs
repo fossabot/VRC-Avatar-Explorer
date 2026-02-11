@@ -3,57 +3,81 @@ using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Models.System;
 using AvatarExplorer.Core.Services.Avatars;
 using AvatarExplorer.Core.Utils;
+using ErrorOr;
 
 namespace AvatarExplorer.Core.Services.IO;
 
 internal static class DataExporter
 {
-    internal static async Task ToCsv(IReadOnlyList<Item> items, IReadOnlyList<CommonAvatar> commonAvatars, Dictionary<ItemType, string> localizedItemTypesMapping, RuntimeSettings runtimeSettings, string filePath, bool includeCommonToSupported)
+    internal static async Task<ErrorOr<Success>> ToCsv(IReadOnlyList<Item> items, IReadOnlyList<CommonAvatar> commonAvatars, Dictionary<ItemType, string> localizedItemTypesMapping, RuntimeSettings runtimeSettings, string filePath, bool includeCommonToSupported)
     {
-        Dictionary<string, string> avatarTitleMaps = ItemUtils.GetItemTitleMaps(items.Where(i => i.Type == ItemType.Avatar));
-
-        using StreamWriter sw = new(filePath, false, Encoding.UTF8);
-        await sw.WriteLineAsync("Id,Title,AuthorName,AuthorImageFilePath,ImagePath,Category,Memo,SupportedAvatars,ImplementedAvatars,BoothId,ItemPath,Tags");
-
-        foreach (Item item in items)
+        try
         {
-            List<string> supportedAvatarNames = new();
-            foreach (string supportedAvatarId in AvatarService.GetAllSupportedAvatarIds(item.SupportedAvatarsView, commonAvatars, includeCommonToSupported))
-            {
-                string avatarTitle = ItemUtils.GetTitleFromDictionary(avatarTitleMaps, supportedAvatarId);
-                if (string.IsNullOrEmpty(avatarTitle)) continue;
+            Dictionary<string, string> avatarTitleMaps = ItemUtils.GetItemTitleMaps(items.Where(i => i.Type == ItemType.Avatar));
 
-                supportedAvatarNames.Add(avatarTitle);
+            FileSystemService.PrepareFileDirectory(filePath);
+            using StreamWriter sw = new(filePath, false, Encoding.UTF8);
+            await sw.WriteLineAsync("Id,Title,AuthorName,AuthorImageFilePath,ImagePath,Category,Memo,SupportedAvatars,ImplementedAvatars,BoothId,ItemPath,Tags");
+
+            foreach (Item item in items)
+            {
+                List<string> supportedAvatarNames = new();
+                foreach (string supportedAvatarId in AvatarService.GetAllSupportedAvatarIds(item.SupportedAvatarsView, commonAvatars, includeCommonToSupported))
+                {
+                    string avatarTitle = ItemUtils.GetTitleFromDictionary(avatarTitleMaps, supportedAvatarId);
+                    if (string.IsNullOrEmpty(avatarTitle)) continue;
+
+                    supportedAvatarNames.Add(avatarTitle);
+                }
+
+                List<string> implementedAvatarNames = new();
+                foreach (string implementedAvatarId in item.ImplementedAvatarsView.Distinct())
+                {
+                    string avatarTitle = ItemUtils.GetTitleFromDictionary(avatarTitleMaps, implementedAvatarId);
+                    if (string.IsNullOrEmpty(avatarTitle)) continue;
+
+                    implementedAvatarNames.Add(avatarTitle);
+                }
+
+                string itemId = CsvUtils.EscapeCsv(item.Id);
+                string itemTitle = CsvUtils.EscapeCsv(item.Title);
+                string authorName = CsvUtils.EscapeCsv(item.Author);
+                string authorImageFilePath = CsvUtils.EscapeCsv(item.AuthorThumbnmailFileName);
+                string imagePath = CsvUtils.EscapeCsv(item.ThumbnmailFileName);
+
+                string categoryName;
+                if (item.Type == ItemType.Custom) categoryName = item.CustomCategory;
+                else categoryName = localizedItemTypesMapping.TryGetValue(item.Type, out string? value) ? value : item.Type.ToString();
+
+                string category = CsvUtils.EscapeCsv(categoryName);
+                string memo = CsvUtils.EscapeCsv(item.ItemMemo);
+                string supportedAvatarsList = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, supportedAvatarNames));
+                string implementedAvatarsList = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, implementedAvatarNames));
+                string boothId = CsvUtils.EscapeCsv(item.BoothId.ToString());
+                string itemPath = CsvUtils.EscapeCsv(ItemUtils.GetItemPath(runtimeSettings.DataRootDirectory, item.ItemPath));
+                string tags = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, item.TagsView));
+
+                await sw.WriteLineAsync($"{itemId},{itemTitle},{authorName},{authorImageFilePath},{imagePath},{category},{memo},{supportedAvatarsList},{implementedAvatarsList},{boothId},{itemPath},{tags}");
             }
 
-            List<string> implementedAvatarNames = new();
-            foreach (string implementedAvatarId in item.ImplementedAvatarsView.Distinct())
-            {
-                string avatarTitle = ItemUtils.GetTitleFromDictionary(avatarTitleMaps, implementedAvatarId);
-                if (string.IsNullOrEmpty(avatarTitle)) continue;
-
-                implementedAvatarNames.Add(avatarTitle);
-            }
-
-            string itemId = CsvUtils.EscapeCsv(item.Id);
-            string itemTitle = CsvUtils.EscapeCsv(item.Title);
-            string authorName = CsvUtils.EscapeCsv(item.Author);
-            string authorImageFilePath = CsvUtils.EscapeCsv(item.AuthorThumbnmailFileName);
-            string imagePath = CsvUtils.EscapeCsv(item.ThumbnmailFileName);
-
-            string categoryName;
-            if (item.Type == ItemType.Custom) categoryName = item.CustomCategory;
-            else categoryName = localizedItemTypesMapping.TryGetValue(item.Type, out string? value) ? value : item.Type.ToString();
-
-            string category = CsvUtils.EscapeCsv(categoryName);
-            string memo = CsvUtils.EscapeCsv(item.ItemMemo);
-            string supportedAvatarsList = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, supportedAvatarNames));
-            string implementedAvatarsList = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, implementedAvatarNames));
-            string boothId = CsvUtils.EscapeCsv(item.BoothId.ToString());
-            string itemPath = CsvUtils.EscapeCsv(ItemUtils.GetItemPath(runtimeSettings.DataRootDirectory, item.ItemPath));
-            string tags = CsvUtils.EscapeCsv(string.Join(Environment.NewLine, item.TagsView));
-
-            await sw.WriteLineAsync($"{itemId},{itemTitle},{authorName},{authorImageFilePath},{imagePath},{category},{memo},{supportedAvatarsList},{implementedAvatarsList},{boothId},{itemPath},{tags}");
+            return Result.Success;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // TODO: 例外エラーメッセージは英語とかで統一するべき
+            return Error.Forbidden("File.Access", $"ファイルへのアクセス権限がありません: {filePath}");
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return Error.NotFound("Directory.Path", $"ディレクトリが見つかりません: {Path.GetDirectoryName(filePath)}");
+        }
+        catch (IOException ex)
+        {
+            return Error.Failure("File.IO", $"ファイル書き込みエラー: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return Error.Unexpected("Csv.Export", $"予期しないエラー: {ex.Message}");
         }
     }
 }

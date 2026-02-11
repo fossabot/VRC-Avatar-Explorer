@@ -1,48 +1,59 @@
 using AvatarExplorer.Core.Data.Paths;
+using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Models.External.KonoAsset;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Models.System;
 using AvatarExplorer.Core.Services.IO;
 using AvatarExplorer.Core.Services.Network;
+using ErrorOr;
 
 namespace AvatarExplorer.Core.Services.Items;
 
+public sealed class ItemCreationResult
+{
+    public Item? Item { get; set; }
+    public required ExtractResult ExtractResult { get; set; }
+}
+
 internal static class ItemCreator
 {
-    internal static async Task<(Item? newItem, List<string> processingFailedPaths)> FromItemCreationContext(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
+    internal static async Task<ErrorOr<ItemCreationResult>> FromItemCreationContext(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
     {
-        (string itemPath, List<string> processingFailedPaths) = await ExtractInternal(itemCreationContext, runtimeSettings);
-        if (string.IsNullOrEmpty(itemPath)) return (null, processingFailedPaths);
+        ErrorOr<ExtractResult> extractResult = await FileSystemService.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, runtimeSettings.RemoveOriginal);
+        if (extractResult.IsError) return Error.Failure(extractResult.Errors.ToErrorString());
 
-        Item newItem = new()
+        Item item = new()
         {
             Title = itemCreationContext.Title,
             Author = itemCreationContext.Author,
             AuthorId = itemCreationContext.AuthorId,
             BoothId = itemCreationContext.BoothId,
-            ItemPath = itemPath,
+            ItemPath = extractResult.Value.ItemParentFolder,
             Type = itemCreationContext.ItemType,
             CustomCategory = itemCreationContext.CustomCategory
         };
 
-        if (itemCreationContext.BoothId != -1) // Boothの情報を取得している状態が確定している
+        if (!string.IsNullOrEmpty(itemCreationContext.ThumbnailUrl))
         {
-            string itemThumbnailFileName = newItem.Id + ".png";
+            string itemThumbnailFileName = item.Id + ".png";
             bool thumbnailResult = await ImageDownloader.Fetch(itemCreationContext.ThumbnailUrl, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);
-            if (thumbnailResult) newItem.ThumbnmailFileName = itemThumbnailFileName;
-
-            string authorThumbnailFileName = itemCreationContext.AuthorId + ".png";
-            bool authorThumbnailResult = await ImageDownloader.Fetch(itemCreationContext.AuthorThumbnailUrl, Path.Combine(SystemPath.AuthorThumbnailsPath, authorThumbnailFileName), false);
-            if (authorThumbnailResult) newItem.AuthorThumbnmailFileName = authorThumbnailFileName;
+            if (thumbnailResult) item.ThumbnmailFileName = itemThumbnailFileName;
         }
 
-        newItem.UpdateSupportedAvatars(itemCreationContext.SupportedAvatars);
+        if (!string.IsNullOrEmpty(itemCreationContext.AuthorId) && !string.IsNullOrEmpty(itemCreationContext.AuthorThumbnailUrl))
+        {
+            string authorThumbnailFileName = itemCreationContext.AuthorId + ".png";
+            bool authorThumbnailResult = await ImageDownloader.Fetch(itemCreationContext.AuthorThumbnailUrl, Path.Combine(SystemPath.AuthorThumbnailsPath, authorThumbnailFileName), false);
+            if (authorThumbnailResult) item.AuthorThumbnmailFileName = authorThumbnailFileName;
+        }
 
-        return (newItem, processingFailedPaths);
-    }
-    private static async Task<(string itemPath, List<string> processingFailedPaths)> ExtractInternal(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
-    {
-        return await FileSystemService.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, runtimeSettings.RemoveOriginal);
+        item.UpdateSupportedAvatars(itemCreationContext.SupportedAvatars);
+
+        return new ItemCreationResult()
+        {
+            Item = item,
+            ExtractResult = extractResult.Value
+        };
     }
 
     internal static Item FromKonoAssetDescription(KonoAssetDescription konoAssetDescription)

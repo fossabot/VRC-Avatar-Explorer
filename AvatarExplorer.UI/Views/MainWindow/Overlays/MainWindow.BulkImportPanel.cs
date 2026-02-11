@@ -6,20 +6,28 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
+using AvatarExplorer.Core.Models.External;
 using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Services.IO;
 using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Localization;
-using AvatarExplorer.UI.Models;
 using AvatarExplorer.UI.Models.Items;
 using AvatarExplorer.UI.Services.External;
 using AvatarExplorer.UI.Services.Utilities;
+using AvatarExplorer.UI.Utils;
 
 namespace AvatarExplorer.UI;
 
 public partial class MainWindow
 {
+    internal class BulkImportItem(string itemId)
+    {
+        internal string ItemId { get; init; } = itemId;
+        internal int SelectedIndex { get; set; } = 0;
+    }
+
     private readonly List<BulkImportItem> _bulkImportPanel_bulkImportItems = new();
 
     private void BulkImportItem_Add(string itemId, string? filePath = null)
@@ -69,8 +77,7 @@ public partial class MainWindow
     {
         try
         {
-            List<string> filePaths = new();
-            List<string> categories = new();
+            Dictionary<string, string> itemPathCategoryDictionary = new();
 
             foreach (BulkImportItem bulkImportItem in _bulkImportPanel_bulkImportItems)
             {
@@ -81,38 +88,36 @@ public partial class MainWindow
                 if (unitypackagePaths.Count == 0 || bulkImportItem.SelectedIndex >= unitypackagePaths.Count) continue;
 
                 string unitypackagePath = unitypackagePaths[bulkImportItem.SelectedIndex];
-                filePaths.Add(unitypackagePath);
-
-                if (item.Type == ItemType.Custom) categories.Add(item.CustomCategory);
-                else categories.Add(Localizer.Instance[item.Type.GetLocalizationKey() ?? item.Type.ToString()]);
+                if (!itemPathCategoryDictionary.ContainsKey(unitypackagePath))
+                {
+                    string categoryName = item.Type == ItemType.Custom ? item.CustomCategory : Localizer.Instance[item.Type.GetLocalizationKey() ?? item.Type.ToString()];
+                    itemPathCategoryDictionary[unitypackagePath] = categoryName;
+                }
             }
 
-            string[] itemFilePaths = filePaths.ToArray();
-            string[] localizedCategoryNames = categories.ToArray();
-
-            if (itemFilePaths.Length != localizedCategoryNames.Length) throw new InvalidOperationException("Length not matched");
-
-            await UnitypackageService.BulkImport(
-                itemFilePaths,
-                localizedCategoryNames,
+            ModifiedUnitypackagesResult importResult = await UnitypackageService.Import(
+                itemPathCategoryDictionary,
                 onProgress: async (name, percent) =>
                 {
-                    ProgressOverlay_Show(Localizer.Instance.GetDisplayName(name, percent.ToString()));
+                    ProgressOverlay_Show(Localizer.Instance.Get(name, percent.ToString()));
                     ProgressOverlay_Update(percent);
-                },
-                onCompleted: async (resultPath) =>
-                {
-                    ProgressOverlay_Hide();
-
-                    if (!string.IsNullOrEmpty(resultPath))
-                        await LauncherService.OpenFile(this, resultPath);
                 }
             );
+
+            ProgressOverlay_Hide();
+
+            if (!importResult.IsError && !string.IsNullOrEmpty(importResult.ModifiedUnitypackagePath))
+            {
+                await LauncherService.OpenFile(this, importResult.ModifiedUnitypackagePath);
+            }
+            else
+            {
+                ErrorManager.Instance.PostError("Failed to import unitypackage.", null, Localizer.Instance[LocalizationKey.Error.ImportUnitypackageFailed]);
+            }
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError("Failed to execute bulk import.", ex);
-            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.CategoryLengthNotMatched]);
+            ErrorManager.Instance.PostError("Failed to execute bulk import.", ex, Localizer.Instance[LocalizationKey.Error.BulkImportFailed]);
             return;
         }
     }

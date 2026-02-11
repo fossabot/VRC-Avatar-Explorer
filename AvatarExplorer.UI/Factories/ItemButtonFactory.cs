@@ -94,7 +94,7 @@ internal static class ItemButtonFactory
         Grid.SetRow(titleTextBlock, 0);
         textGrid.Children.Add(titleTextBlock);
 
-        TextBlock descriptionTextBlock = new() { Text = Localizer.Instance.GetDisplayName(item.Description.LocalizationKey, item.Description.Args), FontSize = 13, TextTrimming = TextTrimming.CharacterEllipsis };
+        TextBlock descriptionTextBlock = new() { Text = Localizer.Instance.Get(item.Description.LocalizationKey, item.Description.Args), FontSize = 13, TextTrimming = TextTrimming.CharacterEllipsis };
         Grid.SetRow(descriptionTextBlock, 1);
         textGrid.Children.Add(descriptionTextBlock);
 
@@ -124,7 +124,7 @@ internal static class ItemButtonFactory
 
         if (!string.IsNullOrEmpty(item.CommonAvatarName))
         {
-            Button commonAvatarButton = GetTagButton(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, item.CommonAvatarName));
+            Button commonAvatarButton = GetTagButton(Localizer.Instance.Get(LocalizationKey.Button.Tag.CommonAvatar, item.CommonAvatarName));
             commonAvatarButton.FontWeight = FontWeight.Bold;
             commonAvatarButton.Foreground = new SolidColorBrush(Colors.White);
             commonAvatarButton.Background = new SolidColorBrush(Colors.Green);
@@ -149,7 +149,7 @@ internal static class ItemButtonFactory
         }
         else if (item.Tag.State == ItemTagStates.ItemFileCategoryOpen)
         {
-            ToolTip.SetTip(button, Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.FilePath, Path.GetRelativePath(runtimeSettings.DataRootDirectory, item.Tag.Value)));
+            ToolTip.SetTip(button, Localizer.Instance.Get(LocalizationKey.Button.ToolTip.FilePath, Path.GetRelativePath(runtimeSettings.DataRootDirectory, item.Tag.Value)));
             ToolTip.SetBetweenShowDelay(button, -1);
         }
 
@@ -175,9 +175,9 @@ internal static class ItemButtonFactory
         toolTipTextBuilder.AppendLine();
         toolTipTextBuilder.AppendLine();
 
-        toolTipTextBuilder.Append(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.CreatedDate, item.CreatedDate));
+        toolTipTextBuilder.Append(Localizer.Instance.Get(LocalizationKey.Button.ToolTip.CreatedDate, item.CreatedDate));
         toolTipTextBuilder.AppendLine();
-        toolTipTextBuilder.Append(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.ToolTip.UpdatedDate, item.UpdatedDate));
+        toolTipTextBuilder.Append(Localizer.Instance.Get(LocalizationKey.Button.ToolTip.UpdatedDate, item.UpdatedDate));
 
         if (!string.IsNullOrEmpty(item.ItemMemo))
         {

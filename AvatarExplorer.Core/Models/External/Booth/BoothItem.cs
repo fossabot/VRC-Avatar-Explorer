@@ -24,4 +24,7 @@ public record BoothItem
 
     [JsonIgnore]
     public string AuthorId { get; init; } = string.Empty;
+
+    [JsonIgnore]
+    public string ThumbnailUrl => Thumbnails.Count > 0 ? Thumbnails[0].Original : string.Empty;
 }

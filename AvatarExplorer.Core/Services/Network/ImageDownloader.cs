@@ -14,7 +14,7 @@ internal static class ImageDownloader
         try
         {
             byte[] imageBytes = await GetBytes(url);
-            FileSystemService.PrepareDirectory(filePath);
+            FileSystemService.PrepareFileDirectory(filePath);
             await File.WriteAllBytesAsync(filePath, imageBytes);
 
             return true;

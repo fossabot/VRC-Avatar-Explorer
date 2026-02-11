@@ -15,12 +15,14 @@ using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Models.System;
 using AvatarExplorer.Core.Models.Updates;
 using AvatarExplorer.Core.Services.IO;
+using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models.Common;
 using AvatarExplorer.UI.Models.Settings;
 using AvatarExplorer.UI.Services.System;
 using AvatarExplorer.UI.Services.Utilities;
+using ErrorOr;
 
 namespace AvatarExplorer.UI;
 
@@ -132,22 +134,29 @@ public partial class MainWindow
 
     private async Task SettingsOverlay_CheckDataCopy(string previousPath, string currentPath)
     {
-        //データをコピーするか
-        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.StoragePathChange.CopyData]);
-        if (result != YesNoResult.Yes) return;
+        // データをコピーするか
+        YesNoResult? result = await ShowYesNoDialogSafeAsync(Localizer.Instance[LocalizationKey.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.Dialog.Confirmation.StoragePathChange.CopyData]);
+        if (result == null || result != YesNoResult.Yes) return;
 
         // Item1: LocalizationKey, Item2: ProgressValue
         async Task progressAction((string, int) tuple)
         {
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                ProgressOverlay_Show(Localizer.Instance.GetDisplayName(tuple.Item1, tuple.Item2.ToString()));
+                ProgressOverlay_Show(Localizer.Instance.Get(tuple.Item1, tuple.Item2.ToString()));
                 ProgressOverlay_Update(tuple.Item2);
             });
         }
 
-        await FileSystemService.CopyDirectory(previousPath, currentPath, progressAction);
+        ErrorOr<CopyResult> result1 = await FileSystemService.CopyDirectoryAsync(previousPath, currentPath, reportProgress: progressAction);
         ProgressOverlay_Hide();
+
+        // CopyResultのFailureを処理するべき
+
+        if (result1.IsError)
+        {
+            ErrorManager.Instance.PostError(string.Format("Failed to copy directory: '{0}'.", previousPath), null, Localizer.Instance[LocalizationKey.Error.CopyDirectoryFailed]);
+        }
     }
 
     private void SettingsOverlay_ApplyPreferenceSettingsToUi()
@@ -195,21 +204,21 @@ public partial class MainWindow
     #region Event Handler
     private async void SettingsOverlay_OpenFolder_Click(object? sender, RoutedEventArgs e)
     {
-        string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], false);
+        string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.Dialog.SelectFolderPath], false);
         if (folders == null || folders.Length == 0) return;
 
         if (SettingsOverlay_ItemsFolderPathTextBox != null) SettingsOverlay_ItemsFolderPathTextBox.Text = folders[0];
     }
     private async void SettingsOverlay_OpenBackgroundFile_Click(object? sender, RoutedEventArgs e)
     {
-        string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFilePath], false);
+        string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.Dialog.SelectFilePath], false);
         if (files == null || files.Length == 0) return;
 
         if (SettingsOverlay_BackgroundImagePathTextBox != null) SettingsOverlay_BackgroundImagePathTextBox.Text = files[0];
     }
     private async void SettingsOverlay_OpenAutoBackupRootFolder_Click(object? sender, RoutedEventArgs e)
     {
-        string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], false, RuntimeSettings.AutoBackupRootDirectory);
+        string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.Dialog.SelectFolderPath], false, RuntimeSettings.AutoBackupRootDirectory);
         if (folders == null || folders.Length == 0) return;
 
         if (SettingsOverlay_AutoBackupPathTextBox != null) SettingsOverlay_AutoBackupPathTextBox.Text = folders[0];
@@ -233,22 +242,27 @@ public partial class MainWindow
 
     private async void SettingsOverlay_ExportDataToCsv_Click(object? sender, RoutedEventArgs e)
     {
-        string? filePath = await StorageService.SaveFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectSaveFilePath], "csv");
+        string? filePath = await StorageService.SaveFileDialog(this, Localizer.Instance[LocalizationKey.Dialog.SelectSaveFilePath], "csv");
         if (filePath == null) return;
 
         var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
 
-        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.ExportToCsv.IncludeImplementedToSupported]);
-        if (result == YesNoResult.Yes) await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, true);
-        else await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, false);
+        YesNoResult? result = await ShowYesNoDialogSafeAsync(Localizer.Instance[LocalizationKey.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.Dialog.Confirmation.ExportToCsv.IncludeImplementedToSupported]);
+        if (result == null) return;
 
-        Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.Export]);
+        ErrorOr<Success> exportResult;
+        
+        if (result == YesNoResult.Yes) exportResult = await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, true);
+        else exportResult = await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, false);
+        
+        if (!exportResult.IsError) Dialog_Show(Localizer.Instance[LocalizationKey.Success.Default], Localizer.Instance[LocalizationKey.Success.Export]);
+        else Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ExportFailed]);
     }
     private async void SettingsOverlay_EditCommonAvatars_Click(object? sender, RoutedEventArgs e) => EditCommonAvatarsOverlay_Show();
     private async void SettingsOverlay_ResetItemDatabase_Click(object? sender, RoutedEventArgs e)
     {
-        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.ResetItemDatabase]);
-        if (result != YesNoResult.Yes) return;
+        YesNoResult? result = await ShowYesNoDialogSafeAsync(Localizer.Instance[LocalizationKey.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.Dialog.Confirmation.ResetItemDatabase]);
+        if (result == null || result != YesNoResult.Yes) return;
 
         _avatarExplorerApp.ResetItemDatabase();
         Main_ReloadCurrentWindow();
@@ -256,8 +270,8 @@ public partial class MainWindow
 
     private async void SettingsOverlay_ResetCommonAvatarDatabase_Click(object? sender, RoutedEventArgs e)
     {
-        YesNoResult result = await Main_ShowYesNoDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Confirmation.ResetCommonAvatarDatabase]);
-        if (result != YesNoResult.Yes) return;
+        YesNoResult? result = await ShowYesNoDialogSafeAsync(Localizer.Instance[LocalizationKey.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.Dialog.Confirmation.ResetCommonAvatarDatabase]);
+        if (result == null || result != YesNoResult.Yes) return;
 
         _avatarExplorerApp.ResetCommonAvatarDatabase();
         Main_ReloadCurrentWindow();
@@ -265,11 +279,17 @@ public partial class MainWindow
 
     private async void SettingsOverlay_RestoreDataFromBackup_Click(object? sender, RoutedEventArgs e)
     {
-        string[]? folderPaths = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], false, RuntimeSettings.AutoBackupRootDirectory);
+        string[]? folderPaths = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.Dialog.SelectFolderPath], false, RuntimeSettings.AutoBackupRootDirectory);
         if (folderPaths == null || folderPaths.Length == 0) return;
 
         // バックアップを復元する前に、今の状態をバックアップしておく
-        await _avatarExplorerApp.ExecuteBackup(RuntimeSettings.AutoBackupRootDirectory);
+        ErrorOr<Success> backupResult = await _avatarExplorerApp.ExecuteBackup(RuntimeSettings.AutoBackupRootDirectory);
+
+        if (backupResult.IsError)
+        {
+            YesNoResult? result = await ShowYesNoDialogSafeAsync(Localizer.Instance[LocalizationKey.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.Dialog.Confirmation.ContinueRestoreFromBackup]);
+            if (result == null || result == YesNoResult.No) return;
+        }
 
         string backupRootPath = folderPaths[0];
 

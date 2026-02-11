@@ -2,6 +2,7 @@ using System.Globalization;
 using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Services.IO;
 using AvatarExplorer.Core.Utils;
+using ErrorOr;
 
 namespace AvatarExplorer.Core.Services.System;
 
@@ -49,13 +50,13 @@ internal class BackupManager
 
     internal DateTime LastBackupTime => _lastBackupDate;
 
-    public void SetAutoBackupInterval(int interval)
+    internal void SetAutoBackupInterval(int interval)
     {
         if (interval < 0) return;
         _backupInterval = TimeUtils.MinToMs(interval);
     }
 
-    public void SetAutoBackupPath(string path)
+    internal void SetAutoBackupPath(string path)
     {
         _backupRootFolderPath = path;
     }
@@ -89,7 +90,7 @@ internal class BackupManager
         SystemPath.UserPreferencesFilePath
     ];
 
-    internal async Task ExecuteBackup(string backupRootFolderPath, CancellationToken token = default)
+    internal async Task<ErrorOr<Success>> ExecuteBackup(string backupRootFolderPath, CancellationToken token = default)
     {
         try
         {
@@ -99,19 +100,22 @@ internal class BackupManager
 
             foreach (string filePath in _backupFiles.Where(File.Exists))
             {
-                if (token.IsCancellationRequested) return;
+                if (token.IsCancellationRequested) return Result.Success;
 
                 string fileName = Path.GetFileName(filePath);
                 string backupPath = Path.Combine(backupFolderPath, fileName);
 
-                await FileSystemService.CopyFile(filePath, backupPath);
+                await FileSystemService.CopyFileAsync(filePath, backupPath);
             }
 
             _lastBackupDate = DateTime.Now;
+
+            return Result.Success;
         }
         catch (Exception ex)
         {
             ErrorManager.Instance.PostInternalError("Failed to execute backup.", ex);
+            return Error.Failure("Failed to execute backup.");
         }
     }
 }

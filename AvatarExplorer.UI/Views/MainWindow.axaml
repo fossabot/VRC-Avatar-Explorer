@@ -27,15 +27,15 @@
                         <Button Classes="button" Grid.Column="0" Content="{materialIcons:MaterialIconExt Kind=ArrowLeft}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" CornerRadius="8" Padding="15,0,15,0" Click="Main_UndoButton_Click"/>
                         <Button Classes="button" Grid.Column="1" Content="{materialIcons:MaterialIconExt Kind=HomeOutline}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" CornerRadius="8" Padding="15,0,15,0" Click="Main_HomeButton_Click"/>
                         
-                        <TextBox x:Name="Main_PathTextBox" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True" Watermark="{Binding [Path.Default]}" FontSize="14" CornerRadius="8"/>
+                        <TextBox x:Name="Main_PathTextBox" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="{Binding [Main.Path.Watermark]}" IsReadOnly="True" FontSize="14" CornerRadius="8"/>
                         
                         <materialIcons:MaterialIcon Grid.Column="3" Kind="Magnify" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                        <TextBox x:Name="Main_SearchTextBox" Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="{Binding [UI.Search.Watermark]}" FontSize="14" CornerRadius="8" TextChanged="Main_SearchValue_Changed"/>
+                        <TextBox x:Name="Main_SearchTextBox" Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Watermark="{Binding [Main.Search.Watermark]}" FontSize="14" CornerRadius="8" TextChanged="Main_SearchValue_Changed"/>
                         
                         <Button Classes="accent" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Margin="5,0,0,0" Click="Main_AddItem_Click">
                             <StackPanel Orientation="Horizontal" Spacing="5">
                                 <materialIcons:MaterialIcon Kind="Plus" Width="25" Height="25" VerticalAlignment="Center"/>
-                                <TextBlock Classes="accent" FontSize="15" FontWeight="Bold" Text="{Binding [UI.Button.AddItem]}" VerticalAlignment="Center"/>
+                                <TextBlock Classes="accent" FontSize="15" FontWeight="Bold" Text="{Binding [Main.AddItem]}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                     </Grid>
@@ -59,9 +59,9 @@
                     <Border x:Name="Main_LeftPanelBorder" Grid.Column="0" Classes="panelbackground">
                         <Grid RowDefinitions="Auto,*">
                             <TabControl x:Name="Main_LeftFilter" Grid.Row="0" HorizontalAlignment="Stretch" SelectedIndex="0" Margin="-5,-10,5,5" FontSize="18" SelectionChanged="Main_LeftFilter_SelectionChanged">
-                                <TabItem Header="{Binding [UI.Filter.Avatar]}" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
-                                <TabItem Header="{Binding [UI.Filter.Author]}" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
-                                <TabItem Header="{Binding [UI.Filter.Category]}" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+                                <TabItem Header="{Binding [Main.Filter.Avatar]}" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+                                <TabItem Header="{Binding [Main.Filter.Author]}" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+                                <TabItem Header="{Binding [Main.Filter.Category]}" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
                             </TabControl>
 
                             <ScrollViewer x:Name="Main_LeftPanelScrollViewer" Grid.Row="1">
@@ -89,8 +89,8 @@
                     <Panel x:Name="Main_SidePanel" Grid.Column="4" HorizontalAlignment="Stretch">
                         <Border Classes="panelbackground" IsVisible="{Binding !#Main_SidePanelBorder.IsVisible}" CornerRadius="12,0,0,12" Width="50">
                             <StackPanel Spacing="10">
-                                <Button Classes="button sidepanelbutton" Content="{materialIcons:MaterialIconExt Kind=TextSearch}" ToolTip.Tip="{Binding [UI.SidePanel.AdvancedSearch]}" Tag="0" Click="SidePanel_Show_Click"/>
-                                <Button Classes="button sidepanelbutton" Content="{materialIcons:MaterialIconExt Kind=DownloadMultiple}" ToolTip.Tip="{Binding [UI.SidePanel.BulkImport]}" Tag="1" Click="SidePanel_Show_Click"/>
+                                <Button Classes="button sidepanelbutton" Content="{materialIcons:MaterialIconExt Kind=TextSearch}" ToolTip.Tip="{Binding [SidePanel.AdvancedSearch]}" Tag="0" Click="SidePanel_Show_Click"/>
+                                <Button Classes="button sidepanelbutton" Content="{materialIcons:MaterialIconExt Kind=DownloadMultiple}" ToolTip.Tip="{Binding [SidePanel.BulkImport]}" Tag="1" Click="SidePanel_Show_Click"/>
                             </StackPanel>
                         </Border>
 
@@ -98,78 +98,78 @@
                             <Grid RowSpacing="10">
                                 <Grid Grid.Row="2" ColumnSpacing="10">
                                     <TabControl x:Name="SidePanel_TabControl" HorizontalAlignment="Stretch" SelectedIndex="0" FontSize="18" Margin="0,0,-10,0" TabStripPlacement="Right">
-                                        <TabItem Header="{materialIcons:MaterialIconExt Kind=TextSearch}" ToolTip.Tip="{Binding [UI.SidePanel.AdvancedSearch]}" PointerPressed="SidePanel_Tab_Click">
+                                        <TabItem Header="{materialIcons:MaterialIconExt Kind=TextSearch}" ToolTip.Tip="{Binding [SidePanel.AdvancedSearch]}" PointerPressed="SidePanel_Tab_Click">
                                             <Grid RowDefinitions="Auto,Auto,*" RowSpacing="10" VerticalAlignment="Stretch">
-                                                <TextBlock Text="{Binding [UI.SidePanel.AdvancedSearch]}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding [SidePanel.AdvancedSearch]}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                                                 <Separator Grid.Row="1" Background="#22000000"/>
 
                                                 <ScrollViewer Grid.Row="2" VerticalAlignment="Stretch">
                                                     <StackPanel Spacing="20" Margin="0,10,10,0">
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.Enable]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.Enable]}" FontSize="15" VerticalAlignment="Center"/>
                                                             <ToggleSwitch x:Name="AdvancedSearchPanel_Enable" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" IsCheckedChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.OrSearch]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.OrSearch]}" FontSize="15" VerticalAlignment="Center"/>
                                                             <ToggleSwitch x:Name="AdvancedSearchPanel_OrSearch" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" IsCheckedChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.Title]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_Title" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.Title]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.Title]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Title" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.Title]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.Author]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_Author" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.Author]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.Author]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Author" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.Author]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.BoothId]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_Booth" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.BoothId]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.BoothId]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Booth" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.BoothId]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.SupportedAvatar]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_Avatar" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.SupportedAvatar]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.SupportedAvatar]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Avatar" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.SupportedAvatar]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.Category]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_Category" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.Category]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.Category]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Category" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.Category]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.Memo]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_Memo" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.Memo]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.Memo]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Memo" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.Memo]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.Folder]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_Folder" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.Folder]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.Folder]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Folder" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.Folder]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.File]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_File" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.File]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.File]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_File" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.File]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.ImplementedAvatar]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_Implemented" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.ImplementedAvatar]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.ImplementedAvatar]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Implemented" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.ImplementedAvatar]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.NotImplementedAvatar]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_NotImplemented" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.NotImplementedAvatar]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.NotImplementedAvatar]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_NotImplemented" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.NotImplementedAvatar]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.Tag]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_Tag" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.Tag]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.Tag]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_Tag" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.Tag]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                         <Grid ColumnDefinitions="90,*" ColumnSpacing="10">
-                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [UI.AdvancedSearch.CommonAvatar]}" FontSize="15" VerticalAlignment="Center"/>
-                                                            <TextBox x:Name="AdvancedSearchPanel_CommonAvatar" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [UI.AdvancedSearch.CommonAvatar]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
+                                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [AdvancedSearch.CommonAvatar]}" FontSize="15" VerticalAlignment="Center"/>
+                                                            <TextBox x:Name="AdvancedSearchPanel_CommonAvatar" Grid.Row="2" Grid.Column="1" FontSize="14" Watermark="{Binding [AdvancedSearch.CommonAvatar]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextChanged="Main_SearchValue_Changed"/>
                                                         </Grid>
                                                     </StackPanel>
                                                 </ScrollViewer>
                                             </Grid>
                                         </TabItem>
 
-                                        <TabItem x:Name="SidePanel_BulkImportPanelTab" Header="{materialIcons:MaterialIconExt Kind=DownloadMultiple}" ToolTip.Tip="{Binding [UI.SidePanel.BulkImport]}" PointerPressed="SidePanel_Tab_Click">
+                                        <TabItem x:Name="SidePanel_BulkImportPanelTab" Header="{materialIcons:MaterialIconExt Kind=DownloadMultiple}" ToolTip.Tip="{Binding [SidePanel.BulkImport]}" PointerPressed="SidePanel_Tab_Click">
                                             <Grid RowDefinitions="Auto,Auto,*" RowSpacing="10" VerticalAlignment="Stretch">
-                                                <TextBlock Text="{Binding [UI.SidePanel.BulkImport]}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding [SidePanel.BulkImport]}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                                                 <Separator Grid.Row="1" Background="#22000000"/>
 
@@ -177,8 +177,8 @@
                                                     <ScrollViewer x:Name="SidePanel_BulkImportPanelScrollViewer" Grid.Row="0" DragDrop.AllowDrop="True" DragDrop.Drop="BulkImportPanel_DragDrop_Drop">
                                                         <StackPanel x:Name="SidePanel_BulkImportPanel" Spacing="5" Margin="0,0,10,0"/>
                                                     </ScrollViewer>
-                                                    <Button Grid.Row="1" Classes="accent" FontWeight="Bold" Content="{Binding [UI.SidePanel.BulkImport.Import]}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="42" CornerRadius="8" Click="BulkImportPanel_Import_Click"/>
-                                                    <Button Grid.Row="2" Classes="button" FontWeight="Bold" Content="{Binding [UI.SidePanel.BulkImport.Reset]}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="42" CornerRadius="8" Click="BulkImportPanel_Reset_Click"/>
+                                                    <Button Grid.Row="1" Classes="accent" FontWeight="Bold" Content="{Binding [BulkImport.Import]}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="42" CornerRadius="8" Click="BulkImportPanel_Import_Click"/>
+                                                    <Button Grid.Row="2" Classes="button" FontWeight="Bold" Content="{Binding [BulkImport.Reset]}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="42" CornerRadius="8" Click="BulkImportPanel_Reset_Click"/>
                                                 </Grid>
                                             </Grid>
                                         </TabItem>
@@ -197,14 +197,14 @@
                 <Grid RowDefinitions="*,5,Auto">
                     <TabControl Grid.Row="0" TabStripPlacement="Left">
 
-                        <TabItem Header="{Binding [UI.Settings.Basic]}" FontWeight="Bold">
+                        <TabItem Header="{Binding [Settings.Basic]}" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
                                     <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.Language]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.LanguageDescription]}" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.Language.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.Language.Description]}" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,2.5*">
@@ -215,30 +215,30 @@
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.SortOrder]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.SortOrderDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.SortOrder.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.SortOrder.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,2.5*">
                                                 <ComboBox Grid.Column="1" x:Name="SettingsOverlay_SortOrderComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                                    <ComboBoxItem Content="{Binding [UI.SortOrder.Title]}"/>
-                                                    <ComboBoxItem Content="{Binding [UI.SortOrder.Author]}"/>
-                                                    <ComboBoxItem Content="{Binding [UI.SortOrder.Created]}"/>
-                                                    <ComboBoxItem Content="{Binding [UI.SortOrder.Updated]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.SortOrder.Options.Title]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.SortOrder.Options.Author]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.SortOrder.Options.Created]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.SortOrder.Options.Updated]}"/>
                                                 </ComboBox>
                                             </Grid>
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.Theme]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.ThemeDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.Theme.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.Theme.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,2.5*">
                                                 <ComboBox Grid.Column="1" x:Name="SettingsOverlay_ThemeComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                                    <ComboBoxItem Content="{Binding [UI.Settings.Theme.Dark]}"/>
-                                                    <ComboBoxItem Content="{Binding [UI.Settings.Theme.Light]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.Theme.Options.Dark]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.Theme.Options.Light]}"/>
                                                 </ComboBox>
                                             </Grid>
                                         </Grid>
@@ -247,14 +247,14 @@
                             </Panel>
                         </TabItem>
 
-                        <TabItem Header="{Binding [UI.Settings.Display]}" FontWeight="Bold">
+                        <TabItem Header="{Binding [Settings.Display]}" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
                                     <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.RemoveBrackets]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.RemoveBracketsDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.RemoveBrackets.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.RemoveBrackets.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
@@ -264,8 +264,8 @@
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.IconSize]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.IconSizeDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.IconSize.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.IconSize.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,30" ColumnSpacing="5">
@@ -276,8 +276,8 @@
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.EnableHoverIcon]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.EnableHoverIconDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.EnableHoverIcon.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.EnableHoverIcon.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
@@ -287,8 +287,8 @@
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding #SettingsOverlay_EnableHoverIconSizeCheckBox.IsChecked}">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.HoverIconSize]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.HoverIconSizeDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.HoverIconSize.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.HoverIconSize.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,30" ColumnSpacing="5">
@@ -299,24 +299,24 @@
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.AntiAliasing]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.AntiAliasingDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.AntiAliasing.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.AntiAliasing.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,2.5*" ColumnSpacing="5">
                                                 <ComboBox Grid.Column="1" x:Name="SettingsOverlay_AntiAliasingModeComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                                    <ComboBoxItem Content="{Binding [UI.Settings.AntiAliasing.None]}"/>
-                                                    <ComboBoxItem Content="{Binding [UI.Settings.AntiAliasing.Low]}"/>
-                                                    <ComboBoxItem Content="{Binding [UI.Settings.AntiAliasing.Medium]}"/>
-                                                    <ComboBoxItem Content="{Binding [UI.Settings.AntiAliasing.High]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.AntiAliasing.Options.None]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.AntiAliasing.Options.Low]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.AntiAliasing.Options.Medium]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.AntiAliasing.Options.High]}"/>
                                                 </ComboBox>
                                             </Grid>
                                         </Grid>
                                         
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.ItemsPerPage]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.ItemsPerPageDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.ItemsPerPage.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.ItemsPerPage.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,2.5*" ColumnSpacing="5">
@@ -328,14 +328,14 @@
                             </Panel>
                         </TabItem>
 
-                        <TabItem Header="{Binding [UI.Settings.Item]}" FontWeight="Bold">
+                        <TabItem Header="{Binding [Settings.Item]}" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
                                     <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.RemoveOriginal]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.RemoveOriginalDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.RemoveOriginal.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.RemoveOriginal.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
@@ -347,14 +347,14 @@
                             </Panel>
                         </TabItem>
 
-                        <TabItem Header="{Binding [UI.Settings.Background]}" FontWeight="Bold">
+                        <TabItem Header="{Binding [Settings.Background]}" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
                                     <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.UseCustomBackground]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.UseCustomBackgroundDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.UseCustomBackground.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.UseCustomBackground.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
@@ -364,20 +364,20 @@
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding #SettingsOverlay_UseBackgroundImageCheckBox.IsChecked}">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.BackgroundImage]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.BackgroundImageDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.BackgroundImage.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.BackgroundImage.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
                                                 <TextBox x:Name="SettingsOverlay_BackgroundImagePathTextBox" IsReadOnly="True" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
-                                                <Button Classes="button" Grid.Column="1" Content="{Binding [UI.Settings.Browse]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="SettingsOverlay_OpenBackgroundFile_Click"/>
+                                                <Button Classes="button" Grid.Column="1" Content="{Binding [Settings.BackgroundImage.Browse]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="SettingsOverlay_OpenBackgroundFile_Click"/>
                                             </Grid>
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding #SettingsOverlay_UseBackgroundImageCheckBox.IsChecked}">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.Opacity]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.OpacityDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.Opacity.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.Opacity.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,30" ColumnSpacing="5">
@@ -390,18 +390,18 @@
                             </Panel>
                         </TabItem>
 
-                        <TabItem Header="{Binding [UI.Settings.CommonAvatar]}" FontWeight="Bold">
+                        <TabItem Header="{Binding [Settings.CommonAvatar]}" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
                                     <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.CommonAvatarManagement]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.CommonAvatarManagementDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.CommonAvatarManagement.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.CommonAvatarManagement.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.OpenManagement]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_EditCommonAvatars_Click"/>
+                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [Settings.CommonAvatarManagement.OpenManagement]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_EditCommonAvatars_Click"/>
                                             </Grid>
                                         </Grid>
                                     </StackPanel>
@@ -409,38 +409,38 @@
                             </Panel>
                         </TabItem>
 
-                        <TabItem Header="{Binding [UI.Settings.Data]}" FontWeight="Bold">
+                        <TabItem Header="{Binding [Settings.Data]}" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
                                     <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.ItemsFolder]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.ItemsFolderDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.ItemsFolder.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.ItemsFolder.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
                                                 <TextBox x:Name="SettingsOverlay_ItemsFolderPathTextBox" IsReadOnly="True" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
-                                                <Button Classes="button" Grid.Column="1" Content="{Binding [UI.Settings.Browse]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="SettingsOverlay_OpenFolder_Click"/>
+                                                <Button Classes="button" Grid.Column="1" Content="{Binding [Settings.ItemsFolder.Browse]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="SettingsOverlay_OpenFolder_Click"/>
                                             </Grid>
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.AutoBackupPath]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.AutoBackupPathDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.AutoBackupPath.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.AutoBackupPath.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
                                                 <TextBox x:Name="SettingsOverlay_AutoBackupPathTextBox" IsReadOnly="True" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
-                                                <Button Classes="button" Grid.Column="1" Content="{Binding [UI.Settings.Browse]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="SettingsOverlay_OpenAutoBackupRootFolder_Click"/>
+                                                <Button Classes="button" Grid.Column="1" Content="{Binding [Settings.AutoBackupPath.Browse]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="SettingsOverlay_OpenAutoBackupRootFolder_Click"/>
                                             </Grid>
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.AutoBackupInterval]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.AutoBackupIntervalDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.AutoBackupInterval.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.AutoBackupInterval.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
@@ -450,56 +450,56 @@
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.ImportFromOther]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.ImportFromOtherDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.ImportFromOther.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.ImportFromOther.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.Import]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ImportData_Click"/>
+                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [Settings.ImportFromOther.Import]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ImportData_Click"/>
                                             </Grid>
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.ExportCsv]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.ExportCsvDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.ExportCsv.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.ExportCsv.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.Export]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ExportDataToCsv_Click"/>
+                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [Settings.ExportCsv.Export]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ExportDataToCsv_Click"/>
                                             </Grid>
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.RestoreFromBackup]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.RestoreFromBackupDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.RestoreFromBackup.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.RestoreFromBackup.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.SelectBackup]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_RestoreDataFromBackup_Click"/>
+                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [Settings.RestoreFromBackup.SelectBackup]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_RestoreDataFromBackup_Click"/>
                                             </Grid>
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.ResetItemDatabase]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.ResetItemDatabaseDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.ResetItemDatabase.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.ResetItemDatabase.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Background="Red" Foreground="White" FontWeight="Bold" Content="{Binding [UI.Button.Reset]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ResetItemDatabase_Click"/>
+                                                <Button Grid.Column="1" Background="Red" Foreground="White" FontWeight="Bold" Content="{Binding [Settings.ResetCommonAvatarDatabase.Reset]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ResetItemDatabase_Click"/>
                                             </Grid>
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.ResetCommonAvatarDatabase]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.ResetCommonAvatarDatabaseDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.ResetCommonAvatarDatabase.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.ResetCommonAvatarDatabase.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Background="Red" Foreground="White" FontWeight="Bold" Content="{Binding [UI.Button.Reset]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ResetCommonAvatarDatabase_Click"/>
+                                                <Button Grid.Column="1" Background="Red" Foreground="White" FontWeight="Bold" Content="{Binding [Settings.ResetCommonAvatarDatabase.Reset]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ResetCommonAvatarDatabase_Click"/>
                                             </Grid>
                                         </Grid>
                                     </StackPanel>
@@ -507,36 +507,36 @@
                             </Panel>
                         </TabItem>
 
-                        <TabItem Header="{Binding [UI.Settings.System]}" FontWeight="Bold">
+                        <TabItem Header="{Binding [Settings.System]}" FontWeight="Bold">
                             <Panel>
                                 <ScrollViewer>
                                     <StackPanel Spacing="20" Margin="0,0,10,0">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.ErrorLog]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.ErrorLogDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.ErrorLog.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.ErrorLog.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.OpenErrorLog]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ShowErrorLog_Click"/>
+                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [Settings.ErrorLog.OpenErrorLog]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_ShowErrorLog_Click"/>
                                             </Grid>
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.RegisterScheme]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.RegisterSchemeDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.RegisterScheme.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.RegisterScheme.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.Register]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_RegisterScheme_Click"/>
+                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [Settings.RegisterScheme.Register]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_RegisterScheme_Click"/>
                                             </Grid>
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.CheckForUpdate]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.CheckForUpdateDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.CheckForUpdate.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.CheckForUpdate.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="5">
@@ -546,26 +546,26 @@
                                         
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding #SettingsOverlay_CheckForUpdateCheckBox.IsChecked}">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.UpdateChannel]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.UpdateChannelDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.UpdateChannel.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.UpdateChannel.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,2.5*" ColumnSpacing="5">
                                                 <ComboBox Grid.Column="1" x:Name="SettingsOverlay_UpdateChannelComboBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                                    <ComboBoxItem Content="{Binding [UI.Settings.Stable]}"/>
-                                                    <ComboBoxItem Content="{Binding [UI.Settings.Beta]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.UpdateChannel.Options.Stable]}"/>
+                                                    <ComboBoxItem Content="{Binding [Settings.UpdateChannel.Options.Beta]}"/>
                                                 </ComboBox>
                                             </Grid>
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
-                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [UI.Settings.CheckForUpdateNow]}"/>
-                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [UI.Settings.CheckForUpdateNowDescription]}"/>
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.CheckForUpdateNow.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.CheckForUpdateNow.Description]}"/>
                                             </Grid>
 
                                             <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
-                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Settings.Check]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_UpdateCheckNow_Click"/>
+                                                <Button Grid.Column="1" Classes="accent" Content="{Binding [Settings.CheckForUpdateNow.Check]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="SettingsOverlay_UpdateCheckNow_Click"/>
                                             </Grid>
                                         </Grid>
                                     </StackPanel>
@@ -576,8 +576,8 @@
 
                     <!-- 下のボタン -->
                     <Grid Grid.Row="2" ColumnDefinitions="200,*,200" Margin="10,50,10,0">
-                        <Button Classes="button" FontWeight="Bold" CornerRadius="20" Grid.Column="0" Content="{Binding [UI.Button.Close]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="15" Padding="10" Click="SettingsOverlay_Close_Click" />
-                        <Button Classes="accent" FontWeight="Bold" CornerRadius="20" Grid.Column="2" Content="{Binding [UI.Button.Apply]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="15" Padding="10" Click="SettingsOverlay_Apply_Click" />
+                        <Button Classes="button" FontWeight="Bold" CornerRadius="20" Grid.Column="0" Content="{Binding [Button.Close]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="15" Padding="10" Click="SettingsOverlay_Close_Click" />
+                        <Button Classes="accent" FontWeight="Bold" CornerRadius="20" Grid.Column="2" Content="{Binding [Settings.Apply]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="15" Padding="10" Click="SettingsOverlay_Apply_Click" />
                     </Grid>
                 </Grid>
             </Border>
@@ -592,13 +592,13 @@
                             <Button Classes="accent" FontSize="12" Click="AddItemOverlay_AddFolder_Click">
                                 <StackPanel Orientation="Horizontal" Spacing="5">
                                     <materialIcons:MaterialIcon Kind="FolderPlus" Width="20" Height="20"/>
-                                    <TextBlock Text="{Binding [UI.AddItem.AddFolder]}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding [AddItem.AddFolder]}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button Classes="accent" FontSize="12" Click="AddItemOverlay_AddFile_Click">
                                 <StackPanel Orientation="Horizontal" Spacing="5">
                                     <materialIcons:MaterialIcon Kind="FilePlus" Width="20" Height="20"/>
-                                    <TextBlock Text="{Binding [UI.AddItem.AddFile]}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding [AddItem.AddFile]}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                         </StackPanel>
@@ -612,29 +612,29 @@
 
                     <!-- Boothアイテム情報 -->
                     <StackPanel Grid.Column="2" Spacing="25">
-                        <TextBlock Text="{Binding [UI.AddItem.BoothItemInfo]}" FontWeight="Bold" FontSize="22"/>
+                        <TextBlock Text="{Binding [AddItem.BoothItemInfo]}" FontWeight="Bold" FontSize="22"/>
 
                         <StackPanel Spacing="15">
                             <Grid ColumnDefinitions="100,*,120" ColumnSpacing="12">
-                                <TextBlock Grid.Column="0" Text="{Binding [UI.AddItem.BoothUrl]}" VerticalAlignment="Center" Opacity="0.7"/>
-                                <TextBox x:Name="AddItemOverlay_BoothLinkTextBox" Grid.Column="1" Watermark="{Binding [UI.AddItem.BoothUrlWatermark]}"/>
-                                <Button Grid.Column="2" Content="{Binding [UI.AddItem.FetchInfo]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="AddItemOverlay_GetBoothItemData_Click"/>
+                                <TextBlock Grid.Column="0" Text="{Binding [AddItem.BoothUrl]}" VerticalAlignment="Center" Opacity="0.7"/>
+                                <TextBox x:Name="AddItemOverlay_BoothLinkTextBox" Grid.Column="1" Watermark="{Binding [AddItem.BoothUrlWatermark]}"/>
+                                <Button Grid.Column="2" Content="{Binding [AddItem.FetchInfo]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="AddItemOverlay_GetBoothItemData_Click"/>
                             </Grid>
 
                             <Grid ColumnDefinitions="100,*" ColumnSpacing="12">
-                                <TextBlock Grid.Column="0" Text="{Binding [UI.AddItem.Title]}" VerticalAlignment="Center" Opacity="0.7"/>
-                                <TextBox x:Name="AddItemOverlay_BoothItemTitleTextBox" Grid.Column="1" Watermark="{Binding [UI.AddItem.Title]}"/>
+                                <TextBlock Grid.Column="0" Text="{Binding [AddItem.Title]}" VerticalAlignment="Center" Opacity="0.7"/>
+                                <TextBox x:Name="AddItemOverlay_BoothItemTitleTextBox" Grid.Column="1" Watermark="{Binding [AddItem.Title]}"/>
                             </Grid>
 
                             <Grid ColumnDefinitions="100,*" ColumnSpacing="12">
-                                <TextBlock Grid.Column="0" Text="{Binding [UI.AddItem.Author]}" VerticalAlignment="Center" Opacity="0.7"/>
-                                <TextBox x:Name="AddItemOverlay_BoothItemAuthorTextBox" Grid.Column="1" Watermark="{Binding [UI.AddItem.Author]}"/>
+                                <TextBlock Grid.Column="0" Text="{Binding [AddItem.Author]}" VerticalAlignment="Center" Opacity="0.7"/>
+                                <TextBox x:Name="AddItemOverlay_BoothItemAuthorTextBox" Grid.Column="1" Watermark="{Binding [AddItem.Author]}"/>
                             </Grid>
                         </StackPanel>
 
                         <UniformGrid Columns="2">
                             <StackPanel Spacing="8" Margin="0,0,10,0">
-                                <TextBlock Text="{Binding [UI.AddItem.Type]}" FontSize="13" Opacity="0.7"/>
+                                <TextBlock Text="{Binding [AddItem.Type]}" FontSize="13" Opacity="0.7"/>
                                 <Grid ColumnDefinitions="*, Auto" ColumnSpacing="5">
                                     <ComboBox x:Name="AddItemOverlay_ItemTypeComboBox" HorizontalAlignment="Stretch" SelectedIndex="0"/>
                                     <Button Grid.Column="1" Content="{materialIcons:MaterialIconExt Kind=TabPlus}" Width="35" Click="AddItemOverlay_AddCustomCategory_Click"/>
@@ -642,35 +642,35 @@
                             </StackPanel>
 
                             <StackPanel Spacing="8" Margin="10,0,0,0">
-                                <TextBlock Text="{Binding [UI.AddItem.SupportedAvatars]}" FontSize="13" Opacity="0.7"/>
-                                <Button x:Name="AddItemOverlay_EditSupportedAvatarsButton" Content="{Binding [UI.Overlay.AddItem.SelectedAvatarsCount]}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" Click="AddItemOverlay_EditSupportedAvatars_Click"/>
+                                <TextBlock Text="{Binding [AddItem.SupportedAvatars]}" FontSize="13" Opacity="0.7"/>
+                                <Button x:Name="AddItemOverlay_EditSupportedAvatarsButton" Content="{Binding [Overlay.AddItem.SelectedAvatarsCount]}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" Click="AddItemOverlay_EditSupportedAvatars_Click"/>
                             </StackPanel>
                         </UniformGrid>
 
                         <Separator Background="#444" Height="1"/>
 
                         <StackPanel Spacing="10">
-                            <CheckBox x:Name="AddItemOverlay_ShowInternalInfo" Content="{Binding [UI.AddItem.ShowInternalInfo]}" FontSize="13"/>
+                            <CheckBox x:Name="AddItemOverlay_ShowInternalInfo" Content="{Binding [AddItem.ShowInternalInfo]}" FontSize="13"/>
                             
                             <StackPanel IsVisible="{Binding #AddItemOverlay_ShowInternalInfo.IsChecked}" Spacing="12" Margin="10,5,0,0">
                                 <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
                                     <StackPanel Grid.Column="0" Spacing="5">
-                                        <TextBlock Text="{Binding [UI.AddItem.AuthorId]}" FontSize="12" Opacity="0.6"/>
+                                        <TextBlock Text="{Binding [AddItem.AuthorId]}" FontSize="12" Opacity="0.6"/>
                                         <TextBox x:Name="AddItemOverlay_InternalAuthorIdTextBox" FontSize="13"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Spacing="5">
-                                        <TextBlock Text="{Binding [UI.AddItem.BoothId]}" FontSize="12" Opacity="0.6"/>
+                                        <TextBlock Text="{Binding [AddItem.BoothId]}" FontSize="12" Opacity="0.6"/>
                                         <TextBox x:Name="AddItemOverlay_InternalBoothIdTextBox" FontSize="13"/>
                                     </StackPanel>
                                 </Grid>
                                 
                                 <StackPanel Spacing="5">
-                                    <TextBlock Text="{Binding [UI.AddItem.ImageUrl]}" FontSize="12" Opacity="0.6"/>
+                                    <TextBlock Text="{Binding [AddItem.ImageUrl]}" FontSize="12" Opacity="0.6"/>
                                     <TextBox x:Name="AddItemOverlay_InternalImageURLTextBox" FontSize="13"/>
                                 </StackPanel>
 
                                 <StackPanel Spacing="5">
-                                    <TextBlock Text="{Binding [UI.AddItem.AuthorImageUrl]}" FontSize="12" Opacity="0.6"/>
+                                    <TextBlock Text="{Binding [AddItem.AuthorImageUrl]}" FontSize="12" Opacity="0.6"/>
                                     <TextBox x:Name="AddItemOverlay_InternalAuthorImageURLTextBox" FontSize="13"/>
                                 </StackPanel>
                                 
@@ -678,8 +678,8 @@
                         </StackPanel>
 
                         <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="15" Margin="0,10,0,0">
-                            <Button Grid.Column="1" Content="{Binding [UI.AddItem.Cancel]}" Width="160" Height="40" Classes="button" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="AddItemOverlay_Close_Click" />
-                            <Button Grid.Column="2" Content="{Binding [UI.AddItem.Confirm]}" Width="160" Height="40" Classes="accent" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="AddItemOverlay_Confirm_Click"/>
+                            <Button Grid.Column="1" Content="{Binding [AddItem.Cancel]}" Width="160" Height="40" Classes="button" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="AddItemOverlay_Close_Click" />
+                            <Button Grid.Column="2" Content="{Binding [AddItem.Confirm]}" Width="160" Height="40" Classes="accent" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="AddItemOverlay_Confirm_Click"/>
                         </Grid>
                     </StackPanel>
                 </Grid>
@@ -693,10 +693,10 @@
                     <Grid RowDefinitions="Auto,20,Auto,10,Auto,20,Auto">
 
                         <!-- タイトル -->
-                        <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding [UI.EditSupportedAvatars.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding [EditSupportedAvatars.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
                         
                         <!-- 検索バー -->
-                        <TextBox x:Name="EditSupportedAvatarsOverlay_SearchTextBox" Grid.Row="2" Watermark="{Binding [UI.EditSupportedAvatars.Search]}" TextChanged="EditSupportedAvatarsOverlay_SearchTextBox_Changed"/>
+                        <TextBox x:Name="EditSupportedAvatarsOverlay_SearchTextBox" Grid.Row="2" Watermark="{Binding [EditSupportedAvatars.Search]}" TextChanged="EditSupportedAvatarsOverlay_SearchTextBox_Changed"/>
 
                         <!-- アバターリスト -->
                         <ScrollViewer Grid.Row="4" Height="500">
@@ -705,8 +705,8 @@
 
                         <!-- 下のボタン -->
                         <Grid ColumnDefinitions="*,150,150" Grid.Row="6" Margin="10,0,10,0" ColumnSpacing="20">
-                            <Button Classes="button" FontWeight="Bold" Grid.Column="1" Content="{Binding [UI.AddItem.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditSupportedAvatarsOverlay_Cancel_Click"/>
-                            <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.EditSupportedAvatars.Confirm]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditSupportedAvatarsOverlay_Confirm_Click"/>
+                            <Button Classes="button" FontWeight="Bold" Grid.Column="1" Content="{Binding [EditSupportedAvatars.AddItem.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditSupportedAvatarsOverlay_Cancel_Click"/>
+                            <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [EditSupportedAvatars.Confirm]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditSupportedAvatarsOverlay_Confirm_Click"/>
                         </Grid>
                     </Grid>
                 </StackPanel>
@@ -720,10 +720,10 @@
                     <Grid RowDefinitions="Auto,20,Auto,10,Auto,20,Auto">
 
                         <!-- タイトル -->
-                        <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding [UI.EditImplementedAvatars.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding [EditImplementedAvatars.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
                         
                         <!-- 検索バー -->
-                        <TextBox x:Name="EditImplementedAvatarsOverlay_SearchTextBox" Grid.Row="2" Watermark="{Binding [UI.EditSupportedAvatars.Search]}" TextChanged="EditImplementedAvatarsOverlay_SearchTextBox_Changed"/>
+                        <TextBox x:Name="EditImplementedAvatarsOverlay_SearchTextBox" Grid.Row="2" Watermark="{Binding [EditSupportedAvatars.Search]}" TextChanged="EditImplementedAvatarsOverlay_SearchTextBox_Changed"/>
 
                         <!-- アバターリスト -->
                         <ScrollViewer Grid.Row="4" Height="500">
@@ -732,8 +732,8 @@
 
                         <!-- 下のボタン -->
                         <Grid ColumnDefinitions="*,180,180" Grid.Row="6" Margin="10,0,10,0" ColumnSpacing="20">
-                            <Button Classes="button" FontWeight="Bold" Grid.Column="1" Content="{Binding [UI.AddItem.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditImplementedAvatarsOverlay_Cancel_Click"/>
-                            <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.EditImplementedAvatars.Confirm]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditImplementedAvatarsOverlay_Confirm_Click"/>
+                            <Button Classes="button" FontWeight="Bold" Grid.Column="1" Content="{Binding [AddItem.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditImplementedAvatarsOverlay_Cancel_Click"/>
+                            <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [EditImplementedAvatars.Confirm]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditImplementedAvatarsOverlay_Confirm_Click"/>
                         </Grid>
                     </Grid>
                 </StackPanel>
@@ -747,19 +747,19 @@
                     <Grid RowDefinitions="Auto,20,Auto,30,Auto,10,Auto,20,Auto">
 
                         <!-- タイトル -->
-                        <TextBlock Grid.Row="0" Text="{Binding [UI.EditCommonAvatars.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="0" Text="{Binding [EditCommonAvatars.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
 
                         <!-- グループ選択欄 -->
                         <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="10,0,10,0" Grid.Row="2" ColumnSpacing="10">
-                            <TextBlock Text="{Binding [UI.EditCommonAvatars.Group]}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding [EditCommonAvatars.Group]}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="Bold"/>
                             <ComboBox x:Name="EditCommonAvatarsOverlay_GroupComboBox" Grid.Column="1" SelectedIndex="0" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Margin="10,0,10,0" SelectionChanged="EditCommonAvatarsOverlay_GroupComboBox_Changed"/>
-                            <Button Classes="button" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.EditCommonAvatars.AddGroup]}" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_AddGroup_Click"/>
-                            <Button Classes="button" FontWeight="Bold" Grid.Column="3" Content="{Binding [UI.EditCommonAvatars.RenameGroup]}" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_RenameGroup_Click"/>
-                            <Button Classes="button" FontWeight="Bold" Grid.Column="4" Content="{Binding [UI.EditCommonAvatars.RemoveGroup]}" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_RemoveGroup_Click"/>
+                            <Button Classes="button" FontWeight="Bold" Grid.Column="2" Content="{Binding [EditCommonAvatars.AddGroup]}" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_AddGroup_Click"/>
+                            <Button Classes="button" FontWeight="Bold" Grid.Column="3" Content="{Binding [EditCommonAvatars.RenameGroup]}" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_RenameGroup_Click"/>
+                            <Button Classes="button" FontWeight="Bold" Grid.Column="4" Content="{Binding [EditCommonAvatars.RemoveGroup]}" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Click="EditCommonAvatarsOverlay_RemoveGroup_Click"/>
                         </Grid>
                         
                         <!-- 検索バー -->
-                        <TextBox x:Name="EditCommonAvatarsOverlay_SearchTextBox" Grid.Row="4" Watermark="{Binding [UI.EditSupportedAvatars.Search]}" TextChanged="EditCommonAvatarsOverlay_SearchTextBox_Changed"/>
+                        <TextBox x:Name="EditCommonAvatarsOverlay_SearchTextBox" Grid.Row="4" Watermark="{Binding [EditSupportedAvatars.Search]}" TextChanged="EditCommonAvatarsOverlay_SearchTextBox_Changed"/>
 
                         <!-- アバターリスト -->
                         <ScrollViewer Grid.Row="6" Height="400">
@@ -768,8 +768,8 @@
 
                         <!-- 下のボタン -->
                         <Grid ColumnDefinitions="Auto,*,180" Grid.Row="8">
-                            <Button Classes="button" FontWeight="Bold" Content="{Binding [UI.EditCommonAvatars.ReplaceToGroup]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="10,7" FontSize="15" Click="EditCommonAvatarsOverlay_ReplaceAvatarsToGroup_Click"/>
-                            <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.Button.Close]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditCommonAvatarsOverlay_Close_Click"/>
+                            <Button Classes="button" FontWeight="Bold" Content="{Binding [EditCommonAvatars.ReplaceToGroup]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="10,7" FontSize="15" Click="EditCommonAvatarsOverlay_ReplaceAvatarsToGroup_Click"/>
+                            <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [Button.Close]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditCommonAvatarsOverlay_Close_Click"/>
                         </Grid>
                     </Grid>
                 </StackPanel>
@@ -777,22 +777,22 @@
         </Border>
 
         <!-- アイテムメモ追加画面 -->
-        <Border x:Name="AddMemoOverlay" Classes="overlaybackground" IsVisible="False">
+        <Border x:Name="EditMemoOverlay" Classes="overlaybackground" IsVisible="False">
             <Border Classes="overlay" Width="500">
                 <StackPanel Spacing="15">
                     
                     <!-- タイトル -->
-                    <TextBlock Text="{Binding [UI.AddMemo.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding [EditMemo.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
 
                     <!-- メモテキスト -->
                     <ScrollViewer Height="150">
-                        <TextBox x:Name="AddMemoOverlay_MemoTextBox" Watermark="{Binding [UI.AddMemo.Memo]}" AcceptsReturn="True"/>
+                        <TextBox x:Name="EditMemoOverlay_MemoTextBox" Watermark="{Binding [EditMemo.Memo]}" AcceptsReturn="True"/>
                     </ScrollViewer>
 
                     <!-- 下のボタン -->
                     <Grid ColumnDefinitions="150,*,150">
-                        <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [UI.AddItem.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="AddMemoOverlay_Cancel_Click"/>
-                        <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.AddMemo.Title]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="AddMemoOverlay_Confirm_Click"/>
+                        <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [AddItem.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditMemoOverlay_Cancel_Click"/>
+                        <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [DialogResult.OK]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditMemoOverlay_Confirm_Click"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -804,7 +804,7 @@
                 <StackPanel Spacing="15">
 
                     <!-- タイトル -->
-                    <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding [UI.EditTags.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding [EditTags.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
 
                     <!-- アイテムタグリスト -->
                     <ScrollViewer x:Name="EditTagsOverlay_TagListScrollViewer" Height="160" Margin="0,10,0,10">
@@ -816,17 +816,17 @@
                     </ScrollViewer>
 
                     <!-- タグの追加 -->
-                    <TextBlock Text="{Binding [UI.EditTags.AddTag]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding [EditTags.AddTag]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold"/>
                     <Grid ColumnDefinitions="*,80" ColumnSpacing="5">
-                        <TextBox x:Name="EditTagsOverlay_TagTextBox" Grid.Column="0" Watermark="{Binding [UI.EditTags.NewTag]}" KeyDown="EditTagsOverlay_TagTextBox_KeyDown"/>
-                        <Button Grid.Column="1" Content="{Binding [UI.EditTags.AddTag]}" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="EditTagsOverlay_AddTagButton_Click"/>
+                        <TextBox x:Name="EditTagsOverlay_TagTextBox" Grid.Column="0" Watermark="{Binding [EditTags.NewTag]}" KeyDown="EditTagsOverlay_TagTextBox_KeyDown"/>
+                        <Button Grid.Column="1" Content="{Binding [EditTags.AddTag]}" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="EditTagsOverlay_AddTagButton_Click"/>
                     </Grid>
-                    <ComboBox x:Name="EditTagsOverlay_TagComboBox" PlaceholderText="{Binding [UI.EditTags.SelectTag]}" Grid.Row="8" HorizontalAlignment="Stretch" SelectionChanged="EditTagsOverlay_TagComboBox_SelectionChanged"/>
+                    <ComboBox x:Name="EditTagsOverlay_TagComboBox" PlaceholderText="{Binding [EditTags.SelectTag]}" Grid.Row="8" HorizontalAlignment="Stretch" SelectionChanged="EditTagsOverlay_TagComboBox_SelectionChanged"/>
 
                     <!-- 下のボタン -->
                     <Grid ColumnDefinitions="150,*,150" Margin="0,10,0,0">
-                        <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [UI.AddItem.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditTagsOverlay_Cancel_Click"/>
-                        <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.EditTags.Title]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditTagsOverlay_Confirm_Click"/>
+                        <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [AddItem.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditTagsOverlay_Cancel_Click"/>
+                        <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [DialogResult.OK]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditTagsOverlay_Confirm_Click"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -838,12 +838,12 @@
                 <StackPanel Spacing="10">
 
                     <!-- タイトル -->
-                    <TextBlock Text="{Binding [UI.SelectImportType.Title]}" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="26" FontWeight="Bold" Margin="0,10,0,10"/>
+                    <TextBlock Text="{Binding [SelectImportType.Title]}" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="26" FontWeight="Bold" Margin="0,10,0,10"/>
                     
                     <!-- インポートタイプ選択ボタン -->
-                    <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [UI.SelectImportType.V1]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16" Padding="10" Click="SelectImportTypeOverlay_FromV1_Click"/>
-                    <Button Classes="button" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.SelectImportType.KonoAsset]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16" Padding="10" Click="SelectImportTypeOverlay_FromKonoAsset_Click"/>
-                    <Button Classes="button" FontWeight="Bold" Grid.Column="4" Content="{Binding [UI.SelectImportType.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16" Padding="10" Click="SelectImportTypeOverlay_Cancel_Click"/>
+                    <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [SelectImportType.Options.V1]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16" Padding="10" Click="SelectImportTypeOverlay_FromV1_Click"/>
+                    <Button Classes="button" FontWeight="Bold" Grid.Column="2" Content="{Binding [SelectImportType.Options.KonoAsset]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16" Padding="10" Click="SelectImportTypeOverlay_FromKonoAsset_Click"/>
+                    <Button Classes="button" FontWeight="Bold" Grid.Column="4" Content="{Binding [Button.Close]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16" Padding="10" Click="SelectImportTypeOverlay_Cancel_Click"/>
                 </StackPanel>
             </Border>
         </Border>
@@ -854,7 +854,7 @@
                 <StackPanel Spacing="20">
 
                     <!-- タイトル -->
-                    <TextBlock x:Name="ProgressBarTitle" Text="{Binding [UI.Progress.Loading]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="17" FontWeight="Bold" Margin="0,5,0,5"/>
+                    <TextBlock x:Name="ProgressBarTitle" Text="{Binding [Progress.Loading]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="17" FontWeight="Bold" Margin="0,5,0,5"/>
 
                     <!-- 進捗バー -->
                     <ProgressBar x:Name="ProgressBar" Value="0" IsIndeterminate="True"/>
@@ -876,7 +876,7 @@
                     </Grid>
 
                     <!-- OKボタン -->
-                    <Button Classes="accent" FontWeight="Bold" Content="{Binding [UI.Dialog.OK]}" Width="150" VerticalAlignment="Center" HorizontalAlignment="Right" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="Dialog_OK_Click"/>
+                    <Button Classes="accent" FontWeight="Bold" Content="{Binding [DialogResult.OK]}" Width="150" VerticalAlignment="Center" HorizontalAlignment="Right" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="Dialog_OK_Click"/>
                 </StackPanel>
             </Border>
         </Border>
@@ -887,15 +887,15 @@
                 <StackPanel Spacing="15">
                     
                     <!-- タイトル -->
-                    <TextBlock x:Name="TextDialogOverlay_Title"  Text="{Binding [UI.Dialog.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
+                    <TextBlock x:Name="TextDialogOverlay_Title"  Text="{Binding [Dialog.Title]}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="26" FontWeight="Bold"/>
 
                     <!-- テキスト -->
                     <TextBox x:Name="TextDialogOverlay_Content" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
 
                     <!-- 下のボタン -->
                     <Grid ColumnDefinitions="150,*,150">
-                        <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [UI.AddItem.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="TextDialogOverlay_Cancel_Click"/>
-                        <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.AddItem.Confirm]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="TextDialogOverlay_Add_Click"/>
+                        <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [AddItem.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="TextDialogOverlay_Cancel_Click"/>
+                        <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [AddItem.Confirm]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="TextDialogOverlay_Add_Click"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -907,17 +907,17 @@
                 <StackPanel Spacing="15">
 
                     <!-- タイトル -->
-                    <TextBlock x:Name="YesNoDialogTitle" Text="{Binding [UI.Dialog.Title]}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="YesNoDialogTitle" Text="{Binding [Dialog.Title]}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Left"/>
 
                     <!-- 内容 -->
                     <Grid RowDefinitions="Auto" ColumnDefinitions="*" Margin="0,10,0,10">
-                        <TextBlock x:Name="YesNoDialogContent" Text="{Binding [UI.Dialog.Content]}" FontSize="17" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="YesNoDialogContent" Text="{Binding [Dialog.Content]}" FontSize="17" TextWrapping="Wrap" HorizontalAlignment="Left"/>
                     </Grid>
                     
                     <!-- Yes/Noボタン -->
                     <Grid ColumnDefinitions="100,*,100">
-                        <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [UI.Dialog.No]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="YesNoDialog_No_Click"/>
-                        <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.Dialog.Yes]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="YesNoDialog_Yes_Click"/>
+                        <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [DialogResult.No]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="YesNoDialog_No_Click"/>
+                        <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [DialogResult.Yes]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="YesNoDialog_Yes_Click"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -930,14 +930,14 @@
 
                     <!-- タイトル + バージョンテキスト -->
                     <StackPanel Spacing="5">
-                        <TextBlock Text="{Binding [UI.Dialog.Update.Available]}" FontSize="22" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding [Dialog.Update.Available]}" FontSize="22" FontWeight="Bold"/>
                         <TextBlock x:Name="UpdateDialogOverlay_VersionText" FontSize="12" Foreground="Gray"/>
                     </StackPanel>
 
                     <Separator Background="#22000000"/>
 
                     <!-- 更新履歴 -->
-                    <TextBlock Text="{Binding [UI.Dialog.Update.ChangeLogs]}" FontSize="15" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding [Dialog.Update.ChangeLogs]}" FontSize="15" FontWeight="SemiBold"/>
                     <Border Classes="panelbackground" Height="200" Background="{DynamicResource Background.Sub}">
                         <ScrollViewer>
                             <TextBlock x:Name="UpdateDialogOverlay_UpdateContentText" FontSize="14" TextWrapping="Wrap"/>
@@ -946,8 +946,8 @@
 
                     <!-- 下のボタン -->
                     <Grid ColumnDefinitions="*,10,120,10,120">
-                        <Button Grid.Column="2" Classes="button" Content="{Binding [UI.Dialog.Update.Later]}" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="UpdateDialogOverlay_Later_Click"/>
-                        <Button Grid.Column="4" Classes="accent" Content="{Binding [UI.Dialog.Update.UpdateNow]}" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="UpdateDialogOverlay_UpdateNow_Click"/>
+                        <Button Grid.Column="2" Classes="button" Content="{Binding [Dialog.Update.Later]}" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="UpdateDialogOverlay_Later_Click"/>
+                        <Button Grid.Column="4" Classes="accent" Content="{Binding [Dialog.Update.UpdateNow]}" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="UpdateDialogOverlay_UpdateNow_Click"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -960,7 +960,7 @@
 
                     <StackPanel Spacing="5">
                         <TextBlock Text="初期設定 / Initial Setup" FontSize="22" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding [UI.InitialSetup.ChangeLaterNotice]}" FontSize="12" Foreground="Gray"/>
+                        <TextBlock Text="{Binding [InitialSetup.ChangeLaterNotice]}" FontSize="12" Foreground="Gray"/>
                     </StackPanel>
 
                     <Separator Background="#22000000"/>
@@ -968,7 +968,7 @@
                     <StackPanel Spacing="20">
                         <StackPanel Spacing="5">
                             <StackPanel Orientation="Horizontal" Spacing="10">
-                                <TextBlock Text="{Binding [UI.Settings.Language]}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding [Settings.Language]}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                 <materialIcons:MaterialIcon Kind="Translate" HorizontalAlignment="Center" Width="30" Height="30" VerticalAlignment="Center"/>
                             </StackPanel>
                             <ComboBox x:Name="InitialSetupOverlay_LanguageComboBox" HorizontalAlignment="Stretch" SelectionChanged="InitialSetupOverlay_LanguageComboBox_SelectionChanged"/>
@@ -976,19 +976,20 @@
 
                         <StackPanel Spacing="5">
                             <StackPanel Orientation="Horizontal" Spacing="10">
-                                <TextBlock Text="{Binding [UI.Settings.ItemsFolder]}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <!-- TODO: Descriptionも追加する -->
+                                <TextBlock Text="{Binding [Settings.ItemsFolder]}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                 <materialIcons:MaterialIcon Kind="Folder" HorizontalAlignment="Center" Width="30" Height="30" VerticalAlignment="Center"/>
                             </StackPanel>
 
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="5">
                                 <TextBox Grid.Column="0" x:Name="InitialSetupOverlay_ItemsFolderPathTextBox" IsReadOnly="True" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
-                                <Button Classes="button" Grid.Column="1" Content="{Binding [UI.Settings.Browse]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="InitialSetupOverlay_OpenFolder_Click"/>
+                                <Button Classes="button" Grid.Column="1" Content="{Binding [Settings.ItemsFolder.Browse]}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Click="InitialSetupOverlay_OpenFolder_Click"/>
                             </Grid>
                         </StackPanel>
                     </StackPanel>
 
                     <Grid ColumnDefinitions="*,120">
-                        <Button Grid.Column="1" Classes="accent" Content="{Binding [UI.Dialog.OK]}" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="InitialSetupOverlay_OK_Click"/>
+                        <Button Grid.Column="1" Classes="accent" Content="{Binding [DialogResult.OK]}" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="InitialSetupOverlay_OK_Click"/>
                     </Grid>
 
                 </StackPanel>
@@ -1001,7 +1002,7 @@
                 <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="15">
 
                     <!-- タイトル -->
-                    <TextBlock Text="{Binding [UI.ErrorLog.Title]}" FontSize="22" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding [ErrorLog.Title]}" FontSize="22" FontWeight="Bold"/>
 
                     <Separator Grid.Row="1" Background="#22000000"/>
 
@@ -1024,8 +1025,8 @@
 
                     <!-- 下のボタン -->
                     <Grid Grid.Row="3" ColumnDefinitions="120,*,120">
-                        <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [UI.Button.Close]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="ErrorLogOverlay_Close_Click"/>
-                        <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [UI.Button.Reflesh]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="ErrorLogOverlay_Reflesh_Click"/>
+                        <Button Classes="button" FontWeight="Bold" Grid.Column="0" Content="{Binding [Button.Close]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="ErrorLogOverlay_Close_Click"/>
+                        <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [ErrorLog.Reflesh]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="ErrorLogOverlay_Reflesh_Click"/>
                     </Grid>
                 </Grid>
             </Border>

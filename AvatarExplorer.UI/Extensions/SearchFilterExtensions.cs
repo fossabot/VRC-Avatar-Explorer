@@ -12,7 +12,7 @@ internal static class SearchFilterExtensions
     {
         List<string> searchFilterStrings = new();
 
-        string localize(string key, IEnumerable<string> values) => Localizer.Instance.GetDisplayName(key, toSeparatedString(values));
+        string localize(string key, IEnumerable<string> values) => Localizer.Instance.Get(key, toSeparatedString(values));
         void addKey(string key, IEnumerable<string> values) => searchFilterStrings.Add(localize(key, values));
         string toSeparatedString(IEnumerable<string> values, string separateString = ", ") => string.Join(separateString, values);
 
@@ -21,7 +21,7 @@ internal static class SearchFilterExtensions
         if (searchFilter.Authors.Count != 0) addKey(LocalizationKey.SearchFilter.Author, searchFilter.Authors);
         if (searchFilter.BoothIds.Count != 0) addKey(LocalizationKey.SearchFilter.Booth, searchFilter.BoothIds);
         if (searchFilter.SupportedAvatars.Count != 0) addKey(LocalizationKey.SearchFilter.SupportedAvatar, searchFilter.SupportedAvatars);
-        if (searchFilter.Categories.Count != 0) addKey(LocalizationKey.SearchFilter.Category, searchFilter.Categories.Select(Localizer.Instance.GetDisplayName));
+        if (searchFilter.Categories.Count != 0) addKey(LocalizationKey.SearchFilter.Category, searchFilter.Categories.Select(Localizer.Instance.Get));
         if (searchFilter.ItemMemos.Count != 0) addKey(LocalizationKey.SearchFilter.ItemMemo, searchFilter.ItemMemos);
         if (searchFilter.FolderNames.Count != 0) addKey(LocalizationKey.SearchFilter.FolderName, searchFilter.FolderNames);
         if (searchFilter.FileNames.Count != 0) addKey(LocalizationKey.SearchFilter.FileName, searchFilter.FileNames);
@@ -32,7 +32,7 @@ internal static class SearchFilterExtensions
         if (searchFilter.SearchWords.Count != 0) addKey(LocalizationKey.SearchFilter.SearchWord, searchFilter.SearchWords);
 
         string result = toSeparatedString(searchFilterStrings, " / ");
-        return Localizer.Instance.GetDisplayName(LocalizationKey.SearchFilter.Default, result);
+        return Localizer.Instance.Get(LocalizationKey.SearchFilter.Default, result);
     }
 }
 

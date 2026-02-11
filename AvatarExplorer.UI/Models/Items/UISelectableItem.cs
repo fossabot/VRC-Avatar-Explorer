@@ -57,7 +57,7 @@ internal class UISelectableItem
     private void FromItem(Item item)
     {
         Title = item.Title;
-        Description = (LocalizationKey.UI.Button.Description.Item.Author, [item.Author]);
+        Description = (LocalizationKey.Button.Description.Item.Author, [item.Author]);
         ImageFileName = item.ThumbnmailFileName;
         Tag = new(ItemTagStates.RootSelectedItem, item.Id);
         IconType = IconType.Item;
@@ -74,7 +74,7 @@ internal class UISelectableItem
     private void FromAuthor(Author author)
     {
         Title = author.Name;
-        Description = (LocalizationKey.UI.Button.Description.Item.Count, [ItemCount.ToString()]);
+        Description = (LocalizationKey.Button.Description.Item.Count, [ItemCount.ToString()]);
         ImageFileName = author.AuthorThumbnailFileName;
 
         Tag = new(ItemTagStates.RootAuthor, author.Name);
@@ -84,7 +84,7 @@ internal class UISelectableItem
     private void FromCategory(ItemCategory category)
     {
         Title = category.ToString();
-        Description = (LocalizationKey.UI.Button.Description.Item.Count, [ItemCount.ToString()]);
+        Description = (LocalizationKey.Button.Description.Item.Count, [ItemCount.ToString()]);
         ImageFileName = SystemIconKey.FolderIcon;
         Tag = new(ItemTagStates.RootSelectedCategory, category.Type.GetLocalizationKey() ?? category.CustomCategory);
         IconType = IconType.None;
@@ -93,7 +93,7 @@ internal class UISelectableItem
     private void FromFileCategoryItem(FileCategoryItem fileCategoryItem)
     {
         Title = fileCategoryItem.FileCategory.GetLocalizationKey() ?? string.Empty;
-        Description = (LocalizationKey.UI.Button.Description.Item.Count, [ItemCount.ToString()]);
+        Description = (LocalizationKey.Button.Description.Item.Count, [ItemCount.ToString()]);
         ImageFileName = SystemIconKey.FolderIcon;
         Tag = new(ItemTagStates.ItemFileCategory, fileCategoryItem.FileCategory.GetLocalizationKey() ?? string.Empty);
         IconType = IconType.None;
@@ -102,7 +102,7 @@ internal class UISelectableItem
     private void FromFileItemFile(ItemFile itemFile)
     {
         Title = itemFile.FileName;
-        Description = (LocalizationKey.UI.Button.Description.File.Extension, [itemFile.Extension]);
+        Description = (LocalizationKey.Button.Description.File.Extension, [itemFile.Extension]);
         ImageFileName = SystemIconKey.FileIcon;
         Tag = new(ItemTagStates.ItemFileCategoryOpen, itemFile.FullPath);
         IconType = IconType.None;
@@ -110,8 +110,8 @@ internal class UISelectableItem
 
     private void FromCommonAvatar(CommonAvatar commonAvatar)
     {
-        Title = Localizer.Instance.GetDisplayName(LocalizationKey.UI.Button.Tag.CommonAvatar, commonAvatar.GroupName);
-        Description = (LocalizationKey.UI.Button.Description.CommonAvatar.Count, [commonAvatar.AvatarsView.Count.ToString()]);
+        Title = Localizer.Instance.Get(LocalizationKey.Button.Tag.CommonAvatar, commonAvatar.GroupName);
+        Description = (LocalizationKey.Button.Description.CommonAvatar.Count, [commonAvatar.AvatarsView.Count.ToString()]);
         ImageFileName = SystemIconKey.GroupIcon;
         Tag = new(ItemTagStates.None, commonAvatar.GetInternalId());
         IconType = IconType.None;

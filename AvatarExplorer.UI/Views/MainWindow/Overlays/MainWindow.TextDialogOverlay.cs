@@ -1,6 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Avalonia.Interactivity;
+using AvatarExplorer.Core.Localization;
+using AvatarExplorer.Core.Services.System;
+using AvatarExplorer.UI.Localization;
 
 namespace AvatarExplorer.UI;
 
@@ -10,8 +13,7 @@ public partial class MainWindow
 
     private Task<string?> Main_ShowTextDialogAsync(string title, string initialText = "")
     {
-        if (_textTcs != null)
-            throw new InvalidOperationException("TextDialog is already shown.");
+        if (_textTcs != null) throw new InvalidOperationException("TextDialog is already shown.");
 
         _textTcs = new TaskCompletionSource<string?>();
 
@@ -20,6 +22,19 @@ public partial class MainWindow
         TextDialogOverlay.IsVisible = true;
 
         return _textTcs.Task;
+    }
+
+    private async Task<string?> ShowTextDialogSafeAsync(string title, string initialText = "")
+    {
+        try
+        {
+            return await Main_ShowTextDialogAsync(title, initialText);
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostError(ex.Message, ex, Localizer.Instance[LocalizationKey.Error.OpenDialogFailed]);
+            return null;
+        }
     }
 
     private void TextDialogOverlay_Close(string? result)

@@ -13,12 +13,14 @@ using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.External.Booth;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Services.Items;
+using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models.Overlay;
 using AvatarExplorer.UI.Models.System;
 using AvatarExplorer.UI.Services.Utilities;
+using ErrorOr;
 
 namespace AvatarExplorer.UI;
 
@@ -150,7 +152,7 @@ public partial class MainWindow
 
         Button itemRemoveButton = new()
         {
-            Content = Localizer.Instance[LocalizationKey.UI.Overlay.AddItem.RemoveFolder],
+            Content = Localizer.Instance[LocalizationKey.AddItem.RemoveFolder],
             FontSize = 14,
             Padding = new Thickness(10, 4),
             Background = new SolidColorBrush(Color.FromRgb(210, 0, 0)),
@@ -191,7 +193,7 @@ public partial class MainWindow
 
     private void AddItemOverlay_UpdateSupportedAvatarsLabel()
     {
-        AddItemOverlay_EditSupportedAvatarsButton.Content = string.Format(Localizer.Instance.GetDisplayName(LocalizationKey.UI.Overlay.AddItem.SelectedAvatarsCount, _addItemOverlay_addItemWindowValues.SupportedAvatarsView.Count.ToString()));
+        AddItemOverlay_EditSupportedAvatarsButton.Content = string.Format(Localizer.Instance.Get(LocalizationKey.AddItem.SelectedAvatarsCount, _addItemOverlay_addItemWindowValues.SupportedAvatarsView.Count.ToString()));
     }
 
     private void AddItemOverlay_SetValuesToUi(AddItemOverlayWindowValues addItemWindowValues)
@@ -248,31 +250,23 @@ public partial class MainWindow
             return;
         }
 
-        ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.Booth.Status.Fetching]);
-        ProgressOverlay_Update(0);
-
-        BoothItem? boothItem = await _avatarExplorerApp.GetBoothItem(boothUrl);
+        ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.Booth.Status.Fetching], 0);
+        ErrorOr<BoothItem> fetchResult = await _avatarExplorerApp.GetBoothItem(boothUrl);
         ProgressOverlay_Hide();
 
-        if (boothItem == null)
+        if (fetchResult.IsError)
         {
-            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.BoothItemNotFound]);
-            return;
+            ErrorManager.Instance.PostError(string.Format("Failed to retrieve booth item information: '{0}'.", boothUrl), null, Localizer.Instance[LocalizationKey.Error.RetrieveBoothItemFailed]);
         }
-
-        _addItemOverlay_addItemWindowValues.Title = boothItem.Title;
-        _addItemOverlay_addItemWindowValues.Author = boothItem.Shop.Name;
-        _addItemOverlay_addItemWindowValues.BoothAuthorId = boothItem.AuthorId;
-        _addItemOverlay_addItemWindowValues.BoothId = boothItem.BoothId;
-        _addItemOverlay_addItemWindowValues.BoothThumbnailUrl = boothItem.Thumbnails.Count > 0 ? boothItem.Thumbnails[0].Original : string.Empty;
-        _addItemOverlay_addItemWindowValues.BoothAuthorThumbnailUrl = boothItem.Shop.ThumbnailUrl;
-        _addItemOverlay_addItemWindowValues.ItemType = CategoryUtils.InvalidItemTypes.Contains(boothItem.EstimatedCategory) ? ItemType.Avatar : boothItem.EstimatedCategory;
-
-        AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
+        else
+        {
+            _addItemOverlay_addItemWindowValues.FromBoothItem(fetchResult.Value);
+            AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
+        }
     }
     private async void AddItemOverlay_AddCustomCategory_Click(object? sender, RoutedEventArgs e)
     {
-        string? customCategory = await Main_ShowTextDialogAsync(Localizer.Instance[LocalizationKey.UI.Dialog.Title.AddCustomCategory]);
+        string? customCategory = await ShowTextDialogSafeAsync(Localizer.Instance[LocalizationKey.Dialog.Title.AddCustomCategory]);
         if (string.IsNullOrEmpty(customCategory)) return;
 
         int index = AddItemOverlay_ItemTypeComboBox.Items.Add(customCategory);
@@ -284,14 +278,14 @@ public partial class MainWindow
     }
     private async void AddItemOverlay_AddFolder_Click(object? sender, RoutedEventArgs e)
     {
-        string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
+        string[]? folders = await StorageService.OpenFolderDialog(this, Localizer.Instance[LocalizationKey.Dialog.SelectFolderPath], true);
         if (folders == null || folders.Length == 0) return;
 
         AddItemOverlay_AddItemPathsInternal(folders);
     }
     private async void AddItemOverlay_AddFile_Click(object? sender, RoutedEventArgs e)
     {
-        string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.UI.Dialog.SelectFolderPath], true);
+        string[]? files = await StorageService.OpenFileDialog(this, Localizer.Instance[LocalizationKey.Dialog.SelectFolderPath], true);
         if (files == null || files.Length == 0) return;
 
         AddItemOverlay_AddItemPathsInternal(files);
@@ -327,31 +321,35 @@ public partial class MainWindow
 
         if (_addItemOverlay_selectedItemId == null)
         {
-            ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
-            ProgressOverlay_Update(0);
-            (Item? newItem, List<string> processingFailedPaths) = await _avatarExplorerApp.AddItem(itemCreationContext);
+            ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying], 0);
+            ErrorOr<ItemCreationResult> itemCreationResult = await _avatarExplorerApp.AddItem(itemCreationContext);
             ProgressOverlay_Hide();
 
-            if (processingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
+            if (itemCreationResult.IsError)
+            {
+                Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemAddFailed]);
+                return;
+            }
+
+            if (itemCreationResult.Value.ExtractResult.ProcessingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
             {
                 Dialog_Show(
                     Localizer.Instance[LocalizationKey.Error.Default],
-                    Localizer.Instance.GetDisplayName(LocalizationKey.Error.ItemFolderProcessingFailedPaths, "\n" + string.Join('\n', processingFailedPaths.Select(i => $"- {Path.GetFileName(i)}")))
+                    Localizer.Instance.Get(LocalizationKey.Error.ProcessingFailedPaths, "\n" + string.Join('\n', itemCreationResult.Value.ExtractResult.ProcessingFailedPaths.Select(i => $"- {Path.GetFileName(i)}")))
                 );
             }
 
-            if (newItem != null) Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemAdd]);
-            else Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Failed.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Failed.ItemAdd]);
+            if (itemCreationResult.Value.Item != null) Dialog_Show(Localizer.Instance[LocalizationKey.Success.Default], Localizer.Instance[LocalizationKey.Success.ItemAdd]);
+            else Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemAddFailed]);
         }
         else
         {
-            ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying]);
-            ProgressOverlay_Update(0);
+            ProgressOverlay_Show(Localizer.Instance[LocalizationKey.Processing.ItemAdd.Copying], 0);
             Item? edittedItem = await _avatarExplorerApp.EditItem(_addItemOverlay_selectedItemId, itemCreationContext);
             ProgressOverlay_Hide();
 
-            if (edittedItem != null) Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Success.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Success.ItemEdit]);
-            else Dialog_Show(Localizer.Instance[LocalizationKey.UI.Dialog.Failed.Default], Localizer.Instance[LocalizationKey.UI.Dialog.Failed.ItemEdit]);
+            if (edittedItem != null) Dialog_Show(Localizer.Instance[LocalizationKey.Success.Default], Localizer.Instance[LocalizationKey.Success.ItemEdit]);
+            else Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemEditFailed]);
         }
 
         AddItemOverlay_Hide();

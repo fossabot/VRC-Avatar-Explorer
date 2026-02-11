@@ -6,7 +6,7 @@ using Avalonia.Interactivity;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Factories;
-using AvatarExplorer.UI.Models;
+using AvatarExplorer.UI.Utils;
 
 namespace AvatarExplorer.UI;
 

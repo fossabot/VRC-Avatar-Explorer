@@ -1,12 +1,15 @@
+using System.Collections.Concurrent;
 using System.Formats.Tar;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using AvatarExplorer.Core.Data.Paths;
+using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
+using ErrorOr;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Common;
@@ -14,139 +17,196 @@ using SharpCompress.Writers;
 
 namespace AvatarExplorer.Core.Services.IO;
 
+public record CopyResult
+{
+    public int SuccessCount { get; init; }
+    public int TotalCount { get; init; }
+    public List<CopyFailure> Failures { get; init; } = new();
+}
+public record CopyFailure
+{
+    public string SourcePath { get; init; } = string.Empty;
+    public string DestinationPath { get; init; } = string.Empty;
+    public string ErrorMessage { get; init; } = string.Empty;
+}
+
+public record ExtractResult
+{
+    public string ItemParentFolder { get; set; } = string.Empty;
+    public List<string> ProcessingFailedPaths { get; init; } = new();
+}
+
+public class ModifiedUnitypackagesResult
+{
+    public bool IsError { get; set; } = true;
+    public string? ModifiedUnitypackagePath { get; set; } = null;
+    public List<string> Success { get; } = new();
+    public List<string> Failed { get; } = new();
+}
+
 public static class FileSystemService
 {
+    private const int BufferSize = 1024 * 1024;
+
     #region Serialize / Deserialize
     private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true };
-    public static void SerializeClass<T>(T values, string filePath)
+    public static ErrorOr<Success> SerializeClass<T>(T value, string filePath)
     {
         try
         {
-            PrepareDirectory(filePath);
-            string json = JsonSerializer.Serialize(values, JsonSerializerOptions);
+            PrepareFileDirectory(filePath);
+            string json = JsonSerializer.Serialize(value, JsonSerializerOptions);
             File.WriteAllText(filePath, json);
+            return Result.Success;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            ErrorManager.Instance.PostInternalError($"Failed to serialize '{typeof(T).Name}' to '{filePath}' - Access denied.", ex);
+            return Error.Forbidden("File.Access", $"ファイルへのアクセス権限がありません: {filePath}");
+        }
+        catch (DirectoryNotFoundException ex)
+        {
+            ErrorManager.Instance.PostInternalError($"Failed to serialize '{typeof(T).Name}' to '{filePath}' - Directory not found.", ex);
+            return Error.NotFound("Directory.Path", $"ディレクトリが見つかりません: {Path.GetDirectoryName(filePath)}");
+        }
+        catch (IOException ex)
+        {
+            ErrorManager.Instance.PostInternalError($"Failed to serialize '{typeof(T).Name}' to '{filePath}' - IO error.", ex);
+            return Error.Failure("File.Write", $"ファイルの書き込みに失敗しました: {ex.Message}");
+        }
+        catch (JsonException ex)
+        {
+            ErrorManager.Instance.PostInternalError($"Failed to serialize '{typeof(T).Name}' - JSON serialization error.", ex);
+            return Error.Failure("Json.Serialize", $"JSONシリアライズに失敗しました: {typeof(T).Name}");
         }
         catch (Exception ex)
         {
             Type elementType = typeof(T).GetGenericArguments().FirstOrDefault() ?? typeof(T);
-            string typeName = elementType.Name;
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to serialize class: '{0}'.", typeName), ex);
+            ErrorManager.Instance.PostInternalError($"Failed to serialize class: '{elementType.Name}' to '{filePath}'.", ex);
+            return Error.Unexpected("Serialization.Error", "予期しないエラーが発生しました");
         }
     }
-    public static T? DeserializeClass<T>(string filePath)
+    public static ErrorOr<T> DeserializeClass<T>(string filePath)
     {
         try
         {
+            if (!File.Exists(filePath)) return Error.NotFound("File.Path", $"ファイルが見つかりません: {filePath}");
+            
             string json = File.ReadAllText(filePath);
-            return JsonSerializer.Deserialize<T>(json);
+            var result = JsonSerializer.Deserialize<T>(json);
+            
+            if (Equals(result, default(T))) return Error.Failure("Json.Deserialize", "デシリアライズ結果がnullです");
+            
+            return result!;
+        }
+        catch (JsonException ex)
+        {
+            ErrorManager.Instance.PostInternalError($"Failed to deserialize '{typeof(T).Name}' from '{filePath}'.", ex);
+            return Error.Failure("Json.Parse", $"Failed to deserialize '{typeof(T).Name}' from '{filePath}'.");
+        }
+        catch (IOException ex)
+        {
+            ErrorManager.Instance.PostInternalError($"Failed to read file '{filePath}'.", ex);
+            return Error.Failure("File.Read", $"Failed to read file: {filePath}");
         }
         catch (Exception ex)
         {
-            Type elementType = typeof(T).GetGenericArguments().FirstOrDefault() ?? typeof(T);
-            string typeName = elementType.Name;
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to deserialize class '{0}'. Returning default value.", typeName), ex);
-
-            return default;
+            ErrorManager.Instance.PostInternalError($"Unexpected error deserializing '{typeof(T).Name}' from '{filePath}'.", ex);
+            return Error.Unexpected("Deserialization.Error", "Unexpected error deserializing");
         }
     }
     #endregion
 
     #region Unitypackage Modifier
-    internal static async Task<string?> ModifyUnitypackageFilePathsAsync(string[] filePaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null)
+    internal static async Task<ModifiedUnitypackagesResult> ModifyUnitypackageFilePathsAsync(Dictionary<string, string> itemPathCategoryDictionary, Func<(string, int), Task>? reportProgress = null)
     {
-        List<string> unitypackagePaths = new();
+        ModifiedUnitypackagesResult result = new();
 
-        foreach (string filePath in filePaths)
+        try
         {
-            bool isUnitypackage = filePath.ToLower().EndsWith(".unitypackage");
-            if (!isUnitypackage) continue;
+            if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Unitypackage.Status.Preparing, 0));
 
-            unitypackagePaths.Add(filePath);
-        }
+            string saveFolderPath = PrepareSaveFolderPath();
+            string unitypackagePath = saveFolderPath + ".unitypackage";
 
-        if (unitypackagePaths.Count == 0) return null;
+            if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Unitypackage.Status.Extracting, 10));
 
-        return await ModifyUnitypackageFilePathsAsyncInternal(unitypackagePaths, itemCategoryNames, reportProgress);
-    }
-    private static async Task<string?> ModifyUnitypackageFilePathsAsyncInternal(List<string> itemPaths, string[] itemCategoryNames, Func<(string, int), Task>? reportProgress = null)
-    {
-        if (itemPaths.Count == 0) return null;
-
-        string? unitypackagePath = await Task.Run(async () =>
-        {
-            try
+            int totalEntries = 0;
+            foreach (string itemPath in itemPathCategoryDictionary.Keys)
             {
-                if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Unitypackage.Status.Preparing, 0));
-
-                var (saveFolder, saveFilePath, unitypackagePath) = PrepareSavePaths();
-                PrepareSaveDirectory(saveFolder);
-
-                if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.Unitypackage.Status.Extracting, 10));
-
-                int totalEntries = 0;
-                foreach (string itemPath in itemPaths)
+                try
                 {
                     totalEntries += await CountTarEntriesAsync(itemPath);
                 }
-
-                int currentProcessedEntries = 0;
-                for (int i = 0; i < itemPaths.Count; i++)
+                catch
                 {
-                    string itemPath = itemPaths[i];
-                    currentProcessedEntries = await ExtractTarToFolderAsync(itemPath, saveFilePath, itemCategoryNames[i], totalEntries, currentProcessedEntries, reportProgress);
+                    itemPathCategoryDictionary.Remove(itemPath); // 事前に処理に失敗する可能性があるものは削除しておく
                 }
-
-                reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Creating, 90));
-
-                await CreateTarArchive(saveFilePath, unitypackagePath);
-
-                Directory.Delete(saveFilePath, true);
-
-                // ここの3つ目の引数で出力先のアイテムパスをUI側に返してあげる
-                reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Completed, 100));
-
-                await Task.Delay(750); // すぐ閉じるのではなく、100%の表記を出してから0.75秒経って返すようにする
-
-                return unitypackagePath;
             }
-            catch (Exception ex)
+
+            int currentProcessedEntries = 0;
+            foreach (var itemPathCategoryKpv in itemPathCategoryDictionary)
             {
-                ErrorManager.Instance.PostInternalError("Error occured while processing unitypackage.", ex);
-                return null;
+                try
+                {
+                    currentProcessedEntries = await ExtractTarToFolderAsync(itemPathCategoryKpv.Key, saveFolderPath, itemPathCategoryKpv.Value, totalEntries, currentProcessedEntries, reportProgress);
+                    result.Success.Add(itemPathCategoryKpv.Key);
+                }
+                catch
+                {
+                    result.Failed.Add(itemPathCategoryKpv.Key);
+                }
             }
-        });
 
-        return unitypackagePath;
+            reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Creating, 90));
+
+            await CreateTarArchive(saveFolderPath, unitypackagePath);
+
+            DeleteDirectory(saveFolderPath, true);
+
+            reportProgress?.Invoke((LocalizationKey.Processing.Unitypackage.Status.Completed, 100));
+
+            await Task.Delay(500); // すぐ閉じるのではなく、100%の表記を出してから0.5秒経って返すようにする
+
+            if (File.Exists(unitypackagePath))
+            {
+                result.IsError = false;
+                result.ModifiedUnitypackagePath = unitypackagePath;
+
+                return result;
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostInternalError("Error occured while processing unitypackage.", ex);
+            result.IsError = true;
+
+            return result;
+        }
     }
-    private static (string saveFolder, string saveFilePath, string unitypackagePath) PrepareSavePaths()
+    private static string PrepareSaveFolderPath()
     {
         static string getNextFolder(string basePath)
         {
             int i = 1;
-            while (Directory.Exists(Path.Combine(basePath, i.ToString())))
-            {
-                i++;
-            }
-
+            while (Directory.Exists(Path.Combine(basePath, i.ToString()))) i++;
             return Path.Combine(basePath, i.ToString());
         }
 
-        string saveFolder = getNextFolder(SystemPath.TempFolderPath);
-        string saveFilePath = Path.Combine(saveFolder, "Unitypackages Modified by Avatar Explorer");
-        string unitypackagePath = saveFilePath + ".unitypackage";
+        string saveFolderPath = Path.Combine(getNextFolder(SystemPath.TempFolderPath), "Unitypackages Modified by Avatar Explorer");
+        Directory.CreateDirectory(saveFolderPath);
 
-        return (saveFolder, saveFilePath, unitypackagePath);
+        return saveFolderPath;
     }
-    private static void PrepareSaveDirectory(string tempFolder)
+    private static async Task<int> CountTarEntriesAsync(string tarGzFilePath)
     {
-        if (!Directory.Exists(tempFolder)) Directory.CreateDirectory(tempFolder);
-    }
-    private static async Task<int> CountTarEntriesAsync(string filePath)
-    {
+        // これ下と同じだから、Actionとかで統一化しても良いかも
         int count = 0;
-        await using Stream fileStream = File.OpenRead(filePath);
-        await using GZipStream gzipStream = new GZipStream(fileStream, CompressionMode.Decompress);
-        await using TarReader tarReader = new TarReader(gzipStream);
+        await using Stream fileStream = File.OpenRead(tarGzFilePath);
+        await using GZipStream gzipStream = new(fileStream, CompressionMode.Decompress);
+        await using TarReader tarReader = new(gzipStream);
         while (await tarReader.GetNextEntryAsync() is { })
             count++;
         return count;
@@ -170,9 +230,8 @@ public static class FileSystemService
                     using StreamReader reader = new(entry.DataStream);
                     string assetPath = await reader.ReadToEndAsync();
 
-                    // 親フォルダがAssetsのものだけ変更するようにする (Packagesフォルダは変更しない)
-                    if (assetPath.StartsWith("Assets"))
-                        assetPath = assetPath.Insert(7, $"{category}/");
+                    // 親フォルダがAssetsのものだけ変更するようにする (例えば、親フォルダがPackagesのものは変更しない)
+                    if (assetPath.StartsWith("Assets")) assetPath = assetPath.Insert(7, $"{category}/");
 
                     entry.DataStream = new MemoryStream(Encoding.UTF8.GetBytes(assetPath));
                 }
@@ -225,101 +284,125 @@ public static class FileSystemService
     #endregion
 
     #region Extract Item Folders
-    internal static async Task<(string, List<string>)> ExtractItemFolders(ItemCreationContext itemCreationContext, string dataRootDirectory, bool removeOriginal = false)
+    internal static async Task<ErrorOr<ExtractResult>> ExtractItemFolders(ItemCreationContext itemCreationContext, string dataRootDirectory, bool removeOriginal = false)
     {
-        List<string> processingFailedPaths = new();
+        ExtractResult result = new();
 
-        string parentFolder = string.Empty;
-        string othersFolder = string.Empty;
-
-        for (int i = 0; i < itemCreationContext.ItemPaths.Count; i++)
+        try
         {
-            try
+            string parentFolder = GetUniquePath(dataRootDirectory, ItemUtils.GetSafeTitle(itemCreationContext.Title) ?? Path.GetFileNameWithoutExtension(itemCreationContext.ItemPaths[0]), true);
+            Directory.CreateDirectory(parentFolder);
+
+            foreach (string itemPath in itemCreationContext.ItemPaths)
             {
-                string extractedFolderPath = await ExtractItemInternalAsync(
-                    itemCreationContext.ItemPaths[i],
-                    string.IsNullOrEmpty(parentFolder) ? dataRootDirectory : othersFolder,
-                    string.IsNullOrEmpty(parentFolder) ? (ItemUtils.GetSafeTitle(itemCreationContext.Title) ?? Path.GetFileNameWithoutExtension(itemCreationContext.ItemPaths[i])) : Path.GetFileNameWithoutExtension(itemCreationContext.ItemPaths[i]), // 親フォルダだけフォルダ名をタイトルに変換する
+                ErrorOr<Success> extractResult = await ExtractItemInternalAsync(
+                    itemPath,
+                    parentFolder,
                     removeOriginal
                 );
 
-                if (string.IsNullOrEmpty(parentFolder))
+                if (extractResult.IsError)
                 {
-                    parentFolder = extractedFolderPath;
-                    othersFolder = Path.Combine(parentFolder, "AE_Others");
+                    ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing folder '{0}'.", itemPath), tag: extractResult.Errors.ToErrorString());
+                    result.ProcessingFailedPaths.Add(itemPath);
                 }
             }
-            catch (Exception ex)
-            {
-                ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing folder '{0}'.", itemCreationContext.ItemPaths[i]), ex);
-                processingFailedPaths.Add(itemCreationContext.ItemPaths[i]);
-            }
-        }
 
-        if (string.IsNullOrEmpty(parentFolder)) // 展開全てに失敗した時
+            result.ItemParentFolder = $"<sys>{Path.GetRelativePath(dataRootDirectory, parentFolder)}";
+
+            return result;
+        }
+        catch (Exception ex)
         {
-            return (string.Empty, processingFailedPaths);
+            ErrorManager.Instance.PostInternalError("Failed to extract item.", ex);
+            return Error.Failure(description: "Failed to extract item.");
         }
-
-        return ($"<sys>{Path.GetRelativePath(dataRootDirectory, parentFolder)}", processingFailedPaths);
     }
-    internal static async Task<List<string>> ExtractItemPaths(string parentFolderPath, string[] itemPaths, bool removeOriginal = false)
+    internal static async Task<ExtractResult> ExtractItemPaths(string parentFolderPath, string[] itemPaths, bool removeOriginal = false)
     {
-        List<string> processingFailedPaths = new();
-
-        string destinationDirectory = Path.Combine(parentFolderPath, "AE_Others");
+        ExtractResult result = new();
 
         foreach (string itemPath in itemPaths)
         {
-            try
+            ErrorOr<Success> extractResult = await ExtractItemInternalAsync(
+                itemPath,
+                parentFolderPath,
+                removeOriginal
+            );
+
+            if (extractResult.IsError)
             {
-                await ExtractItemInternalAsync(
-                    itemPath,
-                    destinationDirectory,
-                    Path.GetFileNameWithoutExtension(itemPath),
-                    removeOriginal
-                );
-            }
-            catch (CryptographicException cryptographicException)
-            {
-                ErrorManager.Instance.PostInternalError(string.Format("File '{0}' is password-protected and is not supported.", itemPath), cryptographicException);
-                processingFailedPaths.Add(itemPath);
-            }
-            catch (Exception ex)
-            {
-                ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing folder '{0}'.", itemPath), ex);
-                processingFailedPaths.Add(itemPath);
+                ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing folder '{0}'.", itemPath), tag: extractResult.Errors.ToErrorString());
+                result.ProcessingFailedPaths.Add(itemPath);
             }
         }
 
-        return processingFailedPaths;
+        return result;
     }
-    private static async Task<string> ExtractItemInternalAsync(string filePath, string destinationFolderPath, string folderName, bool removeOriginal)
+    private static async Task<ErrorOr<Success>> ExtractItemInternalAsync(string filePath, string destinationFolderPath, bool removeOriginal)
     {
-        var (extractedDestinationFolderPath, isDirectory) = await FileExtractorInternalAsync(filePath, destinationFolderPath, folderName, removeOriginal);
-        if (isDirectory)
+        ErrorOr<FileExtractResultInternal> extractResult = await FileExtractorInternalAsync(filePath, destinationFolderPath, removeOriginal);
+
+        if (extractResult.IsError)
         {
-            string copiedFolderPath = GetUniquePath(destinationFolderPath, folderName, true);
-            await CopyDirectory(filePath, copiedFolderPath);
-            extractedDestinationFolderPath = copiedFolderPath;
+            return Error.Failure(description: "Failed to process file.");
         }
 
-        return extractedDestinationFolderPath;
+        if (extractResult.Value.IsDirectory)
+        {
+            string copiedFolderPath = GetUniquePath(destinationFolderPath, Path.GetFileNameWithoutExtension(filePath), true);
+            ErrorOr<CopyResult> copyResult = await CopyDirectoryAsync(filePath, copiedFolderPath);
+
+            if (copyResult.IsError)
+            {
+                return Error.Failure(description: "Failed to copy directory.");
+            }
+
+            if (copyResult.Value.Failures.Count > 0)
+            {
+                copyResult.Value.Failures.ForEach(i => ErrorManager.Instance.PostInternalError(string.Format("Failed to copy: {0}", i.SourcePath), tag: i.ErrorMessage));
+            }
+        }
+
+        return Result.Success;
     }
     #endregion
 
     #region Extractor
-    private static async Task<(string extractedFolderPath, bool isDirectory)> FileExtractorInternalAsync(string filePath, string extractDirectory, string folderName, bool removeOriginalFile)
+    private sealed class FileExtractResultInternal
     {
-        if (Directory.Exists(filePath)) return (filePath, true); // フォルダが渡された場合はそのフォルダをそのまま返して上げる
+        public bool IsDirectory { get; set; } = false;
+        public string ExtractedFolderPath { get; set; } = string.Empty;
+    }
+    private static async Task<ErrorOr<FileExtractResultInternal>> FileExtractorInternalAsync(string filePath, string extractDirectory, bool removeOriginalFile)
+    {
+        FileExtractResultInternal extractResult = new();
 
-        string extractedFolderPath;
-        if (filePath.ToLower().EndsWith(".zip")) extractedFolderPath = await ZipExtractorAsync(filePath, extractDirectory, folderName);
-        else if (filePath.ToLower().EndsWith(".rar")) extractedFolderPath = await RarExtractorAsync(filePath, extractDirectory, folderName);
-        else if (filePath.ToLower().EndsWith(".7z")) extractedFolderPath = await SevenZipExtractorAsync(filePath, extractDirectory, folderName);
-        else if (filePath.ToLower().EndsWith(".gz")) extractedFolderPath = await GzipExtractorAsync(filePath, extractDirectory, folderName);
-        else if (filePath.ToLower().EndsWith(".tar")) extractedFolderPath = await TarExtractorAsync(filePath, extractDirectory, folderName);
-        else throw new NotImplementedException(string.Format("Unsupported File Extension: '{0}'.", Path.GetFileName(filePath)));
+        if (Directory.Exists(filePath))
+        {
+            extractResult.IsDirectory = true;
+            return extractResult;
+        }
+
+        string extractDirectoryFolderPath = GetUniquePath(extractDirectory, Path.GetFileNameWithoutExtension(filePath), true);
+
+        try
+        {
+            switch(Path.GetExtension(filePath).ToLower())
+            {
+                case ".zip": await ZipExtractorAsync(filePath, extractDirectoryFolderPath); break;
+                case ".rar": await RarExtractorAsync(filePath, extractDirectoryFolderPath); break;
+                case ".7z": await SevenZipExtractorAsync(filePath, extractDirectoryFolderPath); break;
+                case ".gz": await GzipExtractorAsync(filePath, extractDirectoryFolderPath); break;
+                case ".tar": await TarExtractorAsync(filePath, extractDirectoryFolderPath); break;
+                default: return Error.Unexpected(description: $"Unsupported File Extension: '{Path.GetFileName(filePath)}'.");
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostInternalError(string.Format("Failed to extract file: '{0}'.", filePath), ex);
+            return Error.Failure(description: $"Failed to extract file: '{filePath}'.");
+        }
 
         if (removeOriginalFile)
         {
@@ -333,54 +416,35 @@ public static class FileSystemService
             }
         }
 
-        return (extractedFolderPath, false);
+        extractResult.ExtractedFolderPath = extractDirectoryFolderPath;
+
+        return extractResult;
     }
 
-    private const int BufferSize = 1024 * 1024;
-    private static async Task<string> ZipExtractorAsync(string filePath, string extractDirectory, string folderName)
+    private static async Task ZipExtractorAsync(string filePath, string extractDirectoryFolder)
     {
-        string extractDirectoryFolder = GetUniquePath(extractDirectory, folderName, true);
-
-        using (var archive = SharpCompress.Archives.Zip.ZipArchive.Open(filePath))
-            await ExtractEntriesAsync(extractDirectoryFolder, archive.Entries);
-
-        return extractDirectoryFolder;
+        using var archive = SharpCompress.Archives.Zip.ZipArchive.Open(filePath);
+        await ExtractEntriesAsync(extractDirectoryFolder, archive.Entries);
     }
-    private static async Task<string> RarExtractorAsync(string filePath, string extractDirectory, string folderName)
+    private static async Task RarExtractorAsync(string filePath, string extractDirectoryFolder)
     {
-        string extractDirectoryFolder = GetUniquePath(extractDirectory, folderName, true);
-
-        using (var archive = SharpCompress.Archives.Rar.RarArchive.Open(filePath))
-            await ExtractEntriesAsync(extractDirectoryFolder, archive.Entries);
-
-        return extractDirectoryFolder;
+        using var archive = SharpCompress.Archives.Rar.RarArchive.Open(filePath);
+        await ExtractEntriesAsync(extractDirectoryFolder, archive.Entries);
     }
-    private static async Task<string> SevenZipExtractorAsync(string filePath, string extractDirectory, string folderName)
+    private static async Task SevenZipExtractorAsync(string filePath, string extractDirectoryFolder)
     {
-        string extractDirectoryFolder = GetUniquePath(extractDirectory, folderName, true);
-
-        using (var archive = SharpCompress.Archives.SevenZip.SevenZipArchive.Open(filePath))
-            await ExtractEntriesAsync(extractDirectoryFolder, archive.Entries);
-
-        return extractDirectoryFolder;
+        using var archive = SharpCompress.Archives.SevenZip.SevenZipArchive.Open(filePath);
+        await ExtractEntriesAsync(extractDirectoryFolder, archive.Entries);
     }
-    private static async Task<string> GzipExtractorAsync(string filePath, string extractDirectory, string folderName)
+    private static async Task GzipExtractorAsync(string filePath, string extractDirectoryFolder)
     {
-        string extractDirectoryFolder = GetUniquePath(extractDirectory, folderName, true);
-
-        using (var archive = SharpCompress.Archives.GZip.GZipArchive.Open(filePath))
-            await ExtractEntriesAsync(extractDirectoryFolder, archive.Entries);
-
-        return extractDirectoryFolder;
+        using var archive = SharpCompress.Archives.GZip.GZipArchive.Open(filePath);
+        await ExtractEntriesAsync(extractDirectoryFolder, archive.Entries);
     }
-    private static async Task<string> TarExtractorAsync(string filePath, string extractDirectory, string folderName)
+    private static async Task TarExtractorAsync(string filePath, string extractDirectoryFolder)
     {
-        string extractDirectoryFolder = GetUniquePath(extractDirectory, folderName, true);
-
-        using (var archive = SharpCompress.Archives.Tar.TarArchive.Open(filePath))
-            await ExtractEntriesAsync(extractDirectoryFolder, archive.Entries);
-
-        return extractDirectoryFolder;
+        using var archive = SharpCompress.Archives.Tar.TarArchive.Open(filePath);
+        await ExtractEntriesAsync(extractDirectoryFolder, archive.Entries);
     }
     private static async Task ExtractEntriesAsync<T>(string extractDirectoryFolder, ICollection<T> entries)
         where T : Entry, IArchiveEntry
@@ -392,7 +456,7 @@ public static class FileSystemService
             if (!entry.IsDirectory)
             {
                 string fullPath = Path.Combine(extractDirectoryFolder, entry.Key!);
-                PrepareDirectory(fullPath);
+                PrepareFileDirectory(fullPath);
 
                 using Stream inStream = await entry.OpenEntryStreamAsync();
                 using Stream outStream = File.Create(fullPath);
@@ -412,76 +476,128 @@ public static class FileSystemService
     #endregion
 
     #region Copy
-    public static async Task CopyDirectory(string sourceDirectory, string destinationDirectory, Func<(string, int), Task>? reportProgress = null, int maxDegreeOfParallelism = 4)
+    public async static Task<ErrorOr<CopyResult>> CopyDirectoryAsync(string sourceDirectory, string destinationDirectory, int maxDegreeOfParallelism = 4, Func<(string LocalizationKey, int), Task>? reportProgress = null)
     {
+        if (sourceDirectory == destinationDirectory)
+            return Error.Conflict("Directory.Copy", "Source and destination are the same.");
+
+        if (!Directory.Exists(sourceDirectory))
+            return Error.NotFound("Directory.Copy", $"Source directory not found: {sourceDirectory}");
+
+        IEnumerable<string> allFiles;
+
         try
         {
-            if (sourceDirectory == destinationDirectory) return; // sourceとdestinationが同じ場合は無視
+            allFiles = EnumerateFiles(sourceDirectory);
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostInternalError("Failed to enumerate files.", ex);
+            return Error.Failure("Directory.Enumerate", $"Failed to enumerate files.");
+        }
 
+        var fileList = allFiles.ToList();
+        int totalFiles = fileList.Count;
+
+        if (totalFiles == 0) return new CopyResult { SuccessCount = 0, TotalCount = 0 };
+        
+        try
+        {
             Directory.CreateDirectory(destinationDirectory);
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostInternalError("Failed to create destination directory.", ex);
+            return Error.Failure("Directory.Create", "Failed to create destination directory.");
+        }
 
-            List<string> allFiles = EnumerateFiles(sourceDirectory).ToList();
-            int totalFiles = allFiles.Count;
+        int copiedFiles = 0;
+        int lastReportedPercent = -1;
+        var failures = new ConcurrentBag<CopyFailure>();
 
-            int copiedFiles = 0;
-            int lastPercent = -1;
+        var semaphore = new SemaphoreSlim(maxDegreeOfParallelism);
 
-            await Task.Run(async () =>
+        var tasks = fileList.Select(async file =>
+        {
+            await semaphore.WaitAsync();
+            try
             {
-                Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },
-                async file =>
+                string relativePath = Path.GetRelativePath(sourceDirectory, file);
+                string destPath = Path.Combine(destinationDirectory, relativePath);
+
+                // CopyFileAsyncの結果を確認
+                var copyResult = await CopyFileAsync(file, destPath);
+                
+                if (copyResult.IsError)
                 {
-                    try
+                    failures.Add(new CopyFailure
                     {
-                        string relativePath = Path.GetRelativePath(sourceDirectory, file);
-                        string destPath = Path.Combine(destinationDirectory, relativePath);
-                        PrepareDirectory(destPath);
-
-                        using Stream sourceStream = File.OpenRead(file);
-                        using Stream destStream = File.Create(destPath);
-                        sourceStream.CopyTo(destStream, BufferSize);
-
-                        copiedFiles++;
-                        int percent = (int)(copiedFiles / (double)totalFiles * 100);
-                        if (percent != lastPercent)
+                        SourcePath = file,
+                        DestinationPath = destPath,
+                        ErrorMessage = copyResult.Errors.ToErrorString()
+                    });
+                }
+            }
+            finally
+            {
+                int current = Interlocked.Increment(ref copiedFiles);
+                int percent = (int)(current / (double)totalFiles * 100);
+                
+                if (percent != Volatile.Read(ref lastReportedPercent) && reportProgress != null)
+                {
+                    int previous = Interlocked.CompareExchange(ref lastReportedPercent, percent, lastReportedPercent);
+                    if (previous != percent)
+                    {
+                        try
                         {
-                            lastPercent = percent;
-                            if (reportProgress != null) await reportProgress.Invoke((LocalizationKey.Processing.DirectoryCopy.Copying, percent));
+                            await reportProgress.Invoke((LocalizationKey.Processing.DirectoryCopy.Copying, percent));
+                        }
+                        catch
+                        {
+                            // Ignored
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        ErrorManager.Instance.PostInternalError(string.Format("Failed to copy file: '{0}'.", file), ex);
-                    }
-                });
-            });
-        }
-        catch (Exception ex)
+                }
+
+                semaphore.Release();
+            }
+        });
+
+        await Task.WhenAll(tasks);
+
+        return new CopyResult
         {
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to copy directory: '{0}'.", sourceDirectory), ex);
-        }
+            SuccessCount = totalFiles - failures.Count,
+            TotalCount = totalFiles,
+            Failures = failures.ToList()
+        };
     }
-    public static async Task<string?> CopyFile(string sourceFile, string destinationFile, bool unique = false)
+
+    public static async Task<ErrorOr<Success>> CopyFileAsync(string sourceFile, string destinationFile)
     {
         try
         {
-            string uniqueFilePath = unique ? GetUniquePath(Path.GetDirectoryName(destinationFile) ?? destinationFile, Path.GetFileName(destinationFile)) : destinationFile;
+            if (sourceFile == destinationFile)
+                return Error.Conflict("File.Copy", "Source and destination are the same."); // sourceとdestinationが同じ場合は無視
 
+            if (!File.Exists(sourceFile))
+                return Error.NotFound("File.Copy", $"Source file not found: {sourceFile}");
+
+            PrepareFileDirectory(destinationFile);
             using Stream sourceStream = File.OpenRead(sourceFile);
-            using Stream destStream = File.Create(uniqueFilePath);
+            using Stream destStream = File.Create(destinationFile);
             await sourceStream.CopyToAsync(destStream, BufferSize);
 
-            return uniqueFilePath;
+            return Result.Success;
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to copy file: '{0}'.", sourceFile), ex);
-            return null;
+            return Error.Failure(description: $"Failed to copy file: {ex.Message}");
         }
     }
     #endregion
 
-    public static void PrepareDirectory(string filePath)
+    public static void PrepareFileDirectory(string filePath)
     {
         string directory = Path.GetDirectoryName(filePath) ?? filePath;
         Directory.CreateDirectory(directory);
@@ -489,8 +605,7 @@ public static class FileSystemService
 
     public static IEnumerable<string> EnumerateFiles(string rootDirectory)
     {
-        if (!Directory.Exists(rootDirectory))
-            yield break;
+        if (!Directory.Exists(rootDirectory)) throw new DirectoryNotFoundException(string.Format("directory not found {0}.", rootDirectory));
 
         Stack<string> directories = new();
         directories.Push(rootDirectory);
@@ -535,13 +650,13 @@ public static class FileSystemService
         }
     }
 
-    public static string GetUniquePath(string directory, string fileName, bool isFolder = false)
+    public static string GetUniquePath(string directory, string fileName, bool isDirectory = false)
     {
         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
         string extension = Path.GetExtension(fileName);
 
         string path = Path.Combine(directory, fileName);
-        if ((!isFolder && !File.Exists(path)) || (isFolder && !Directory.Exists(path))) return path;
+        if ((!isDirectory && !File.Exists(path)) || (isDirectory && !Directory.Exists(path))) return path;
 
         int index = 1;
 
@@ -550,7 +665,7 @@ public static class FileSystemService
             string newName = $"{fileNameWithoutExtension} - {index}{extension}";
             string newPath = Path.Combine(directory, newName);
 
-            if ((!isFolder && !File.Exists(newPath)) || (isFolder && !Directory.Exists(newPath)))
+            if ((!isDirectory && !File.Exists(newPath)) || (isDirectory && !Directory.Exists(newPath)))
                 return newPath;
 
             index++;

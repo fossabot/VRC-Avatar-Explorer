@@ -12,7 +12,7 @@ internal enum ActionKey
     FetchThumbnail,
     EditItem,
     EditItemTitle,
-    AddItemMemo,
+    EditItemMemo,
     AddToBulkImportList,
     AddItemFile,
     AddItemFolder,

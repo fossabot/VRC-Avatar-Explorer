@@ -5,6 +5,7 @@ using AvatarExplorer.Core.Models.External.Booth;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
+using ErrorOr;
 
 namespace AvatarExplorer.Core.Services.Network;
 
@@ -12,7 +13,7 @@ internal static class BoothService
 {
     private static readonly JsonSerializerOptions JsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
-    internal static async Task<BoothItem?> GetItem(string boothId)
+    internal static async Task<ErrorOr<BoothItem>> GetItem(string boothId)
     {
         try
         {
@@ -20,7 +21,11 @@ internal static class BoothService
             string response = await HttpService.Client.GetStringAsync(url);
 
             BoothItem? boothItem = JsonSerializer.Deserialize<BoothItem>(response, JsonSerializerOptions);
-            if (boothItem == null) return null;
+
+            if (boothItem == null)
+            {
+                return Error.Failure("BoothItem.Deserialize", "デシリアライズに失敗しました");
+            }
 
             return boothItem with
             {
@@ -31,7 +36,7 @@ internal static class BoothService
         catch (Exception ex)
         {
             ErrorManager.Instance.PostInternalError(string.Format("Failed to retrieve booth item information: '{0}'.", boothId), ex);
-            return null;
+            return Error.Failure("BoothItem.Network", "ネットワークエラー");
         }
     }
     private static ItemType SuggestItemType(string title, string type)

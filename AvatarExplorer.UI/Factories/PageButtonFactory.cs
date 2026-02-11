@@ -38,12 +38,12 @@ internal static class PageButtonFactory
     {
         StackPanel panel = new() { Orientation = Orientation.Vertical, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
 
-        string pageText = Localizer.Instance.GetDisplayName(LocalizationKey.UI.ItemWindow.Page, [(currentPage + 1).ToString(), totalPages.ToString()]);
+        string pageText = Localizer.Instance.Get(LocalizationKey.ItemWindow.CurrentPage, [(currentPage + 1).ToString(), totalPages.ToString()]);
         panel.Children.Add(new TextBlock { Text = pageText, FontSize = 15, HorizontalAlignment = HorizontalAlignment.Center });
 
         int start = (currentPage * itemsPerPage) + 1;
         int end = Math.Min(start + itemsPerPage - 1, totalCount);
-        string rangeText = Localizer.Instance.GetDisplayName(LocalizationKey.UI.ItemWindow.PageItemCount, [start.ToString(), end.ToString(), totalCount.ToString()]);
+        string rangeText = Localizer.Instance.Get(LocalizationKey.ItemWindow.PageItemCount, [start.ToString(), end.ToString(), totalCount.ToString()]);
         panel.Children.Add(new TextBlock { Text = rangeText, FontSize = 15, HorizontalAlignment = HorizontalAlignment.Center });
 
         return panel;

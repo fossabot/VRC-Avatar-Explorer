@@ -32,8 +32,8 @@ public static class UpdateChecker
             UpdateManifest? updateManifest = await GetUpdateManifest();
             if (updateManifest == null) return null;
 
-            VersionRelease[] pendingReleases = updateManifest.Releases.GetPendingUpdates(updateChannel);
-            if (pendingReleases.Length == 0) return null;
+            IEnumerable<VersionRelease> pendingReleases = updateManifest.Releases.GetPendingUpdates(updateChannel);
+            if (!pendingReleases.Any()) return null;
 
             VersionRelease? latestVersion = pendingReleases.GetLatestUpdate(updateChannel);
             if (latestVersion == null) return null;

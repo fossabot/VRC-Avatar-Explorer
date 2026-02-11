@@ -2,9 +2,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Services.IO;
+using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
+using ErrorOr;
 
 namespace AvatarExplorer.UI.Localization;
 
@@ -22,7 +25,7 @@ public class Localizer : INotifyPropertyChanged
         private set
         {
             _selectedLanguageIndex = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(""));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
         }
     }
 
@@ -41,12 +44,23 @@ public class Localizer : INotifyPropertyChanged
 
         foreach (string filePath in FileSystemService.EnumerateFiles(path))
         {
-            Dictionary<string, string>? dictionary = FileSystemService.DeserializeClass<Dictionary<string, string>>(filePath);
-            if (dictionary != null) languageMaps.Add(dictionary);
+            ErrorOr<Dictionary<string, string>> deserializeResult = FileSystemService.DeserializeClass<Dictionary<string, string>>(filePath);
+            if (deserializeResult.IsError)
+            {
+                ErrorManager.Instance.PostInternalError(string.Format("Failed to load language: '{0}'.", Path.GetFileName(filePath)), tag: deserializeResult.Errors.ToErrorString());
+                continue;
+            }
+            else if (!deserializeResult.Value.ContainsKey(LocalizationKey.LanguageName))
+            {
+                ErrorManager.Instance.PostInternalError(string.Format("Failed to load language: '{0}'. No language name was defined.", Path.GetFileName(filePath)));
+                continue;
+            }
+            
+            languageMaps.Add(deserializeResult.Value);
         }
 
         _map.Clear();
-        List<Dictionary<string, string>> sortedMaps = languageMaps.OrderBy(i => ValueParser.Int(i.TryGetValue("LanguagePriority", out string? value) ? value : string.Empty, int.MaxValue)).ToList();
+        List<Dictionary<string, string>> sortedMaps = languageMaps.OrderBy(i => ValueParser.Int(i.TryGetValue(LocalizationKey.LanguagePriority, out string? value) ? value : string.Empty, int.MaxValue)).ToList();
         _map.AddRange(sortedMaps);
     }
 
@@ -54,14 +68,14 @@ public class Localizer : INotifyPropertyChanged
 
     public void SetLanguage(int index) => CurrentLanguageIndex = index;
 
-    public string GetDisplayName(string localizationKey) => this[localizationKey];
-    public string GetDisplayName(string localizationKey, string arg)
+    public string Get(string localizationKey) => this[localizationKey];
+    public string Get(string localizationKey, string arg)
     {
         if (!IsValidIndex) return localizationKey;
         string localizedText = _map[_selectedLanguageIndex].TryGetValue(localizationKey, out var value) ? value : localizationKey;
         return string.Format(localizedText, arg);
     }
-    public string GetDisplayName(string localizationKey, string[] args)
+    public string Get(string localizationKey, string[] args)
     {
         if (!IsValidIndex) return localizationKey;
         string localizedText = _map[_selectedLanguageIndex].TryGetValue(localizationKey, out var value) ? value : localizationKey;
@@ -77,13 +91,9 @@ public class Localizer : INotifyPropertyChanged
         }
     }
 
-    public string? GetLocalizationKey(string displayName)
+    public string? GetKey(string displayName)
     {
-        foreach (var localizationMap in _map[_selectedLanguageIndex])
-        {
-            if (localizationMap.Value == displayName) return localizationMap.Key;
-        }
-
-        return null;
+        if (!IsValidIndex) return null;
+        return _map[_selectedLanguageIndex].FirstOrDefault(i => i.Value == displayName).Key;
     }
 }
