@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Services.System;
-using AvatarExplorer.UI.Localization;
+using ErrorOr;
 
 namespace AvatarExplorer.UI.Services.Utilities;
 
@@ -14,51 +13,60 @@ internal static class LauncherService
 {
     private static ILauncher? GetLauncher(Visual visual) => TopLevel.GetTopLevel(visual)?.Launcher;
 
-    internal static async Task OpenFile(Visual visual, string filePath)
+    internal static async Task<ErrorOr<Success>> OpenFile(Visual visual, string filePath)
     {
-        ILauncher? launcher = GetLauncher(visual);
-        if (launcher == null) return;
-
         try
         {
+            ILauncher? launcher = GetLauncher(visual);
+            if (launcher == null) return Error.Failure(description: "Failed to get launcher.");
+
             FileInfo fileInfo = new(filePath);
             await launcher.LaunchFileInfoAsync(fileInfo);
+
+            return Result.Success;
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError(string.Format("Failed to open file: '{0}'.", filePath), ex, Localizer.Instance[LocalizationKey.Error.OpenFileFailed]);
+            ErrorManager.Instance.PostInternalError(string.Format("Failed to open file: '{0}'.", filePath), ex);
+            return Error.Failure(description: "Failed to open file.");
         }
     }
 
-    internal static async Task OpenFolder(Visual visual, string folderPath)
+    internal static async Task<ErrorOr<Success>> OpenFolder(Visual visual, string folderPath)
     {
-        ILauncher? launcher = GetLauncher(visual);
-        if (launcher == null) return;
-
         try
         {
+            ILauncher? launcher = GetLauncher(visual);
+            if (launcher == null) return Error.Failure(description: "Failed to get launcher.");
+
             DirectoryInfo folderInfo = new(folderPath);
             await launcher.LaunchDirectoryInfoAsync(folderInfo);
+            
+            return Result.Success;
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError(string.Format("Failed to open directory: '{0}'.", folderPath), ex, Localizer.Instance[LocalizationKey.Error.OpenFolderFailed]);
+            ErrorManager.Instance.PostError(string.Format("Failed to open directory: '{0}'.", folderPath), ex);
+            return Error.Failure(description: "Failed to open directory.");
         }
     }
 
-    internal static async Task OpenUri(Visual visual, string uri)
+    internal static async Task<ErrorOr<Success>> OpenUri(Visual visual, string uri)
     {
-        ILauncher? launcher = GetLauncher(visual);
-        if (launcher == null) return;
-
         try
         {
+            ILauncher? launcher = GetLauncher(visual);
+            if (launcher == null) return Error.Failure(description: "Failed to get launcher.");
+
             Uri uriInfo = new(uri);
             await launcher.LaunchUriAsync(uriInfo);
+
+            return Result.Success;
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError(string.Format("Failed to open Uri: '{0}'.", uri), ex, Localizer.Instance[LocalizationKey.Error.OpenUriFailed]);
+            ErrorManager.Instance.PostError(string.Format("Failed to open Uri: '{0}'.", uri), ex);
+            return Error.Failure(description: "Failed to open uri.");
         }
     }
 }

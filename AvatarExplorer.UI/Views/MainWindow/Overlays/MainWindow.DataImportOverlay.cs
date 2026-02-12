@@ -25,14 +25,13 @@ public partial class MainWindow
         string selectedFolder = folders[0];
 
         SelectImportTypeOverlay.IsVisible = false;
-
-        // Item1: LocalizationKey, Item2: ProgressValue
-        async Task progressAction((string, int) tuple)
+        
+        async Task progressAction((string localizationKey, int progress) tuple)
         {
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                ProgressOverlay_Show(Localizer.Instance.Get(tuple.Item1, tuple.Item2.ToString()));
-                ProgressOverlay_Update(tuple.Item2);
+                ProgressOverlay_Show(Localizer.Instance.Get(tuple.localizationKey, tuple.progress.ToString()));
+                ProgressOverlay_Update(tuple.progress);
             });
         }
 
@@ -43,8 +42,8 @@ public partial class MainWindow
 
         if (result.IsError)
         {
-            ErrorManager.Instance.PostInternalError("Failed to import data.", null, result.Errors.ToErrorString());
-            ErrorManager.Instance.PostError("Failed to import data.", null, Localizer.Instance[LocalizationKey.Error.ImportFailed]);
+            ErrorManager.Instance.PostInternalError("Failed to import data.", tag: result.Errors.ToErrorString());
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ImportFailed]);
         } else
         {
             Main_ReloadCurrentWindow();

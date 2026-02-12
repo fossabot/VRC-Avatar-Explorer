@@ -12,12 +12,11 @@ internal static class UnitypackageService
 {
     internal static async Task<ModifiedUnitypackagesResult> Import(Dictionary<string, string> itemPathCategoryDictionary, Func<string, int, Task>? onProgress = null)
     {
-        // Item1: LocalizationKey, Item2: ProgressValue
-        async Task progressAction((string, int) tuple)
+        async Task progressAction((string localizationKey, int progress) tuple)
         {
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                if (onProgress != null) await onProgress(tuple.Item1, tuple.Item2);
+                if (onProgress != null) await onProgress(tuple.localizationKey, tuple.progress);
             });
         }
 

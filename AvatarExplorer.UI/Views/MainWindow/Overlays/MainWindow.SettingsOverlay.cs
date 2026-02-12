@@ -88,6 +88,7 @@ public partial class MainWindow
         if (SettingsOverlay_AutoBackupIntervalTextBox != null) SettingsOverlay_AutoBackupIntervalTextBox.Text = runtimeSettings.AutoBackupInterval.ToString();
     
         // システム
+        if (SettingsOverlay_MaxDegreeOfParallelismTextBox != null) SettingsOverlay_MaxDegreeOfParallelismTextBox.Text = runtimeSettings.MaxDegreeOfParallelism.ToString();
         if (SettingsOverlay_CheckForUpdateCheckBox != null) SettingsOverlay_CheckForUpdateCheckBox.IsChecked = _userPreferences.CheckForUpdate;
         if (SettingsOverlay_UpdateChannelComboBox != null)
         {
@@ -123,6 +124,7 @@ public partial class MainWindow
         if (SettingsOverlay_AutoBackupIntervalTextBox != null) _avatarExplorerApp.SetAutoBackupInterval(ValueParser.Int(SettingsOverlay_AutoBackupIntervalTextBox.Text, 5));
 
         // システム
+        if (SettingsOverlay_MaxDegreeOfParallelismTextBox != null) _avatarExplorerApp.SetMaxDegreeOfParallelism(ValueParser.Int(SettingsOverlay_MaxDegreeOfParallelismTextBox.Text, 5));
         if (SettingsOverlay_CheckForUpdateCheckBox != null) _userPreferences.SetCheckForUpdate(SettingsOverlay_CheckForUpdateCheckBox.IsChecked ?? false);
         if (SettingsOverlay_UpdateChannelComboBox != null) _userPreferences.SetUpdateChannel((UpdateChannel)SettingsOverlay_UpdateChannelComboBox.SelectedIndex);
 
@@ -137,25 +139,24 @@ public partial class MainWindow
         // データをコピーするか
         YesNoResult? result = await ShowYesNoDialogSafeAsync(Localizer.Instance[LocalizationKey.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.Dialog.Confirmation.StoragePathChange.CopyData]);
         if (result == null || result != YesNoResult.Yes) return;
-
-        // Item1: LocalizationKey, Item2: ProgressValue
-        async Task progressAction((string, int) tuple)
+        
+        async Task progressAction((string localizationKey, int progress) tuple)
         {
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                ProgressOverlay_Show(Localizer.Instance.Get(tuple.Item1, tuple.Item2.ToString()));
-                ProgressOverlay_Update(tuple.Item2);
+                ProgressOverlay_Show(Localizer.Instance.Get(tuple.localizationKey, tuple.progress.ToString()));
+                ProgressOverlay_Update(tuple.progress);
             });
         }
 
-        ErrorOr<CopyResult> result1 = await FileSystemService.CopyDirectoryAsync(previousPath, currentPath, reportProgress: progressAction);
+        ErrorOr<CopyResult> result1 = await FileSystemService.CopyDirectoryAsync(previousPath, currentPath, RuntimeSettings.MaxDegreeOfParallelism, progressAction);
         ProgressOverlay_Hide();
 
-        // CopyResultのFailureを処理するべき
-
+        // TODO: CopyResultのFailureの処理を追加するべき
         if (result1.IsError)
         {
-            ErrorManager.Instance.PostError(string.Format("Failed to copy directory: '{0}'.", previousPath), null, Localizer.Instance[LocalizationKey.Error.CopyDirectoryFailed]);
+            ErrorManager.Instance.PostInternalError("Failed to copy directory.", tag: result1.Errors.ToErrorString());
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.CopyDirectoryFailed]);
         }
     }
 

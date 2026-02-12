@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Services.IO;
@@ -83,8 +84,8 @@ public partial class MainWindow
         ErrorOr<Success> result = await _avatarExplorerApp.UpdateItemThumbnail(item.Id, selectedFile);
         if (result.IsError)
         {
-            // TODO: ここの例外処理とかどうにかする
-            ErrorManager.Instance.PostError(string.Format("Failed to update item thumbnail '{0}.'", selectedFile), null, Localizer.Instance[LocalizationKey.Error.ItemThumbnailEditFailed]);
+            ErrorManager.Instance.PostInternalError("Failed to edit item thumbnail.", tag: result.Errors.ToErrorString());
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemThumbnailEditFailed]);
         }
         else
         {
@@ -97,7 +98,8 @@ public partial class MainWindow
         ErrorOr<Success> result = await _avatarExplorerApp.FetchAndUpdateThumbnailImage(itemId);
         if (result.IsError)
         {
-            ErrorManager.Instance.PostError(string.Format("Failed to fetch item thumbnail '{0}.'", itemId), null, Localizer.Instance[LocalizationKey.Error.FetchItemThumbnailFailed]);
+            ErrorManager.Instance.PostInternalError("Failed to fetch item thumbnail.", tag: result.Errors.ToErrorString());
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.FetchItemThumbnailFailed]);
         }
         else
         {
@@ -225,7 +227,8 @@ public partial class MainWindow
 
     private async Task ItemButton_ContextMenu_OpenFile(string filePath)
     {
-        await LauncherService.OpenFile(this, filePath);
+        ErrorOr<Success> result = await LauncherService.OpenFile(this, filePath);
+        if (result.IsError) Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.OpenFileFailed]);
     }
     private Task ItemButton_ContextMenu_OpenFileInExplorer(string filePath)
     {

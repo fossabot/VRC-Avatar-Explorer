@@ -24,6 +24,7 @@ using AvatarExplorer.UI.Services.External;
 using AvatarExplorer.UI.Services.System;
 using AvatarExplorer.UI.Services.Utilities;
 using AvatarExplorer.UI.Services.ViewControl;
+using ErrorOr;
 
 namespace AvatarExplorer.UI;
 
@@ -392,7 +393,11 @@ public partial class MainWindow : Window
         bool isUnitypackage = filePath.ToLower().EndsWith(".unitypackage");
 
         if (isUnitypackage) await Main_OpenUnitypackageInternalAsync(filePath); // Unitypackageだと自動展開処理に移る
-        else await LauncherService.OpenFile(this, filePath);
+        else
+        {
+            ErrorOr<Success> result = await LauncherService.OpenFile(this, filePath);
+            if (result.IsError) Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.OpenFileFailed]);
+        }
     }
     private async Task Main_OpenUnitypackageInternalAsync(string itemPath)
     {
@@ -415,11 +420,12 @@ public partial class MainWindow : Window
 
         if (!importResult.IsError && !string.IsNullOrEmpty(importResult.ModifiedUnitypackagePath))
         {
-            await LauncherService.OpenFile(this, importResult.ModifiedUnitypackagePath);
+            ErrorOr<Success> result = await LauncherService.OpenFile(this, importResult.ModifiedUnitypackagePath);
+            if (result.IsError) Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.OpenFileFailed]);
         }
         else
         {
-            ErrorManager.Instance.PostError("Failed to import unitypackage.", null, Localizer.Instance[LocalizationKey.Error.ImportUnitypackageFailed]);
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ImportUnitypackageFailed]);
         }
     }
     #endregion

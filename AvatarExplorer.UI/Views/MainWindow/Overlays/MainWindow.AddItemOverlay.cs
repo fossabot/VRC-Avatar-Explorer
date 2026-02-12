@@ -13,7 +13,6 @@ using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.External.Booth;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Services.Items;
-using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Localization;
@@ -256,13 +255,12 @@ public partial class MainWindow
 
         if (fetchResult.IsError)
         {
-            ErrorManager.Instance.PostError(string.Format("Failed to retrieve booth item information: '{0}'.", boothUrl), null, Localizer.Instance[LocalizationKey.Error.RetrieveBoothItemFailed]);
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.RetrieveBoothItemFailed]);
+            return;
         }
-        else
-        {
-            _addItemOverlay_addItemWindowValues.FromBoothItem(fetchResult.Value);
-            AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
-        }
+        
+        _addItemOverlay_addItemWindowValues.FromBoothItem(fetchResult.Value);
+        AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
     }
     private async void AddItemOverlay_AddCustomCategory_Click(object? sender, RoutedEventArgs e)
     {
@@ -328,7 +326,6 @@ public partial class MainWindow
             if (itemCreationResult.IsError)
             {
                 Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemAddFailed]);
-                return;
             }
             else if (itemCreationResult.Value.ExtractResult.ProcessingFailedPaths.Count > 0)
             {

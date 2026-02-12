@@ -24,7 +24,7 @@ public static class SchemeService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError("Failed to read scheme file at '{SystemPath.SchemeFilePath}'.", ex);
+            ErrorManager.Instance.PostInternalError($"Failed to read scheme file at '{SystemPath.SchemeFilePath}'.", ex);
             return null;
         }
     }
@@ -48,7 +48,7 @@ public static class SchemeService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError("Failed to register URL scheme '{REG_PROTCOL}' or write scheme file at '{SystemPath.SchemeFilePath}'.", ex);
+            ErrorManager.Instance.PostInternalError($"Failed to register URL scheme '{REG_PROTCOL}' or write scheme file at '{SystemPath.SchemeFilePath}'.", ex);
         }
     }
     public static void MarkSchemeSkipped()
@@ -60,7 +60,7 @@ public static class SchemeService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError("Failed to write scheme file at '{SystemPath.SchemeFilePath}' when marking scheme as skipped.", ex);
+            ErrorManager.Instance.PostInternalError($"Failed to write scheme file at '{SystemPath.SchemeFilePath}' when marking scheme as skipped.", ex);
         }
     }
 
@@ -92,7 +92,7 @@ public static class SchemeService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError("Failed to restart application as administrator.", ex);
+            ErrorManager.Instance.PostInternalError("Failed to restart application as administrator.", ex);
         }
     }
 
@@ -116,7 +116,7 @@ public static class SchemeService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError("Failed to register URL scheme '{protocol}' with command '{processPath}'.", ex);
+            ErrorManager.Instance.PostInternalError($"Failed to register URL scheme '{protocol}' with command '{processPath}'.", ex);
         }
     }
     private static bool IsSchemeRegistered(string protocol)
@@ -130,7 +130,7 @@ public static class SchemeService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError("Failed to determine whether URL scheme '{protocol}' is registered.", ex);
+            ErrorManager.Instance.PostInternalError($"Failed to determine whether URL scheme '{protocol}' is registered.", ex);
             return false;
         }
     }

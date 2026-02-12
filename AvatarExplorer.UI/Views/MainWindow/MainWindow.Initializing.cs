@@ -32,7 +32,7 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError("Failed to determine whether the process is running with administrator privileges.", ex);
+            ErrorManager.Instance.PostInternalError("Failed to determine whether the process is running with administrator privileges.", ex);
         }
     }
     private void InitializeAvatarExplorer()
@@ -46,7 +46,7 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError("Failed to initialize Avatar Explorer.", ex, "Failed to initialize Avatar Explorer.");
+            ErrorManager.Instance.PostInternalError("Failed to initialize Avatar Explorer.", ex);
         }
     }
     private void InitializeUserPreferences()
@@ -106,8 +106,7 @@ public partial class MainWindow
     }
     private void OnErrorReceived(string message, Exception? exception, string? tag)
     {
-        if (string.IsNullOrEmpty(tag)) return;
-        Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], tag);
+        // Ignored
     }
     private void OnInternalErrorReceived(string message, Exception? exception, string? tag)
     {
@@ -156,7 +155,8 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError("The scheme data could not be fully validated due to an internal error.", ex, Localizer.Instance[LocalizationKey.Error.CheckSchemeFailed]);
+            ErrorManager.Instance.PostInternalError("The scheme data could not be fully validated due to an internal error.", ex);
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.CheckSchemeFailed]);
         }
     }
 
@@ -177,7 +177,8 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError("Failed to register scheme.", ex, Localizer.Instance[LocalizationKey.Error.RegisterSchemeFailed]);
+            ErrorManager.Instance.PostInternalError("Failed to register scheme.", ex);
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.RegisterSchemeFailed]);
         }
     }
 }

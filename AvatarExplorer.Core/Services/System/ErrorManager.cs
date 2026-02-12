@@ -15,11 +15,14 @@ public class ErrorManager
     {
     }
 
+    // 内部処理のエラー
     public void PostInternalError(string message, Exception? exception = null, string? tag = null)
     {
         _errorContexts.Add(new(true, message, exception, tag));
         OnInternalErrorOccured?.Invoke(message, exception, tag);
     }
+
+    // AvaloniaなどのUIやLauncherのエラー
     public void PostError(string message, Exception? exception = null, string? tag = null)
     {
         _errorContexts.Add(new(false, message, exception, tag));

@@ -94,6 +94,7 @@ public partial class AvatarExplorerApp
         _runtimeSettings.SetRemoveOriginal(runtimeSettings.RemoveOriginal);
         _runtimeSettings.SetRemoveBrackets(runtimeSettings.RemoveBrackets);
         _runtimeSettings.SetAutoBackupInterval(runtimeSettings.AutoBackupInterval);
+        _runtimeSettings.SetMaxDegreeOfParallelism(runtimeSettings.MaxDegreeOfParallelism);
     }
     #endregion
 
@@ -342,6 +343,7 @@ public partial class AvatarExplorerApp
         _runtimeSettings.SetAutoBackupInterval(value);
         _backupManager.SetAutoBackupInterval(value);
     }
+    public void SetMaxDegreeOfParallelism(int value) => _runtimeSettings.SetMaxDegreeOfParallelism(value);
     #endregion
 
     #region Add API
@@ -385,7 +387,7 @@ public partial class AvatarExplorerApp
         Item? item = GetItemById(itemId);
         if (item == null) return Error.NotFound(description: "Item not found.");
 
-        ExtractResult extractResult = await FileSystemService.ExtractItemPaths(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), paths);
+        ExtractResult extractResult = await FileSystemService.ExtractItemPaths(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), paths, _runtimeSettings);
         return extractResult;
     }
     #endregion
@@ -469,14 +471,21 @@ public partial class AvatarExplorerApp
     public bool IsApiCooldownNow => _lastBoothApiGetTime.AddSeconds(5) > DateTime.Now;
     public async Task<ErrorOr<BoothItem>> GetBoothItem(string boothUrl)
     {
-        if (string.IsNullOrEmpty(boothUrl)) return Error.Failure("Booth.InvalidUrl", "Invalid Url.");
-        if (IsApiCooldownNow) return Error.Failure("Booth.ApiCooldown", "Booth API Cooldown Error.");
+        if (string.IsNullOrEmpty(boothUrl)) return Error.Failure(description: "Invalid Url.");
+        if (IsApiCooldownNow) return Error.Failure(description: "Booth API Cooldown Error.");
 
         string boothId = boothUrl.Split('/')[^1];
 
         _lastBoothApiGetTime = DateTime.Now; // 時間を更新する
 
-        return await BoothService.GetItem(boothId);
+        ErrorOr<BoothItem> result = await BoothService.GetItem(boothId);
+        if (result.IsError)
+        {
+            ErrorManager.Instance.PostInternalError("Failed to fetch booth item.", tag: result.Errors.ToErrorString());
+            return Error.Failure(description: "Failed to fetch booth item.");
+        }
+
+        return result.Value;
     }
     #endregion
 

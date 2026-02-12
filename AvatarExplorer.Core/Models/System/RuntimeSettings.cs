@@ -24,10 +24,14 @@ public class RuntimeSettings
     [JsonInclude]
     public int AutoBackupInterval { get; private set; } = 5;
 
+    [JsonInclude]
+    public int MaxDegreeOfParallelism { get; private set; } = 4;
+
     internal void SetDataRootDirectory(string path) => DataRootDirectory = path;
     internal void SetAutoBackupRootDirectory(string path) => AutoBackupRootDirectory = path;
     internal void SetSortOrder(ItemSortOrder sortOrder) => ItemSortOrder = sortOrder;
     internal void SetRemoveOriginal(bool value) => RemoveOriginal = value;
     internal void SetRemoveBrackets(bool value) => RemoveBrackets = value;
     internal void SetAutoBackupInterval(int value) => AutoBackupInterval = value;
+    internal void SetMaxDegreeOfParallelism(int value) => MaxDegreeOfParallelism = value;
 }

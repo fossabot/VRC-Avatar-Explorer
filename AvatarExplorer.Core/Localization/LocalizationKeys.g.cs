@@ -297,6 +297,7 @@ public static class LocalizationKey
         public const string BoothItemNotFound = "Error.BoothItemNotFound";
         public const string BoothApiCooldown = "Error.BoothApiCooldown";
         public const string ItemNotFound = "Error.ItemNotFound";
+        public const string CommonAvatarNotFound = "Error.CommonAvatarNotFound";
         public static class Validation
         {
             public const string NoFolders = "Error.Validation.NoFolders";
@@ -309,7 +310,6 @@ public static class LocalizationKey
         public const string ItemEditFailed = "Error.ItemEditFailed";
         public const string ItemThumbnailEditFailed = "Error.ItemThumbnailEditFailed";
         public const string AuthorThumbnailEditFailed = "Error.AuthorThumbnailEditFailed";
-        public const string GetCommonAvatarGroupFailed = "Error.GetCommonAvatarGroupFailed";
         public const string CopyDirectoryFailed = "Error.CopyDirectoryFailed";
         public const string OpenDialogFailed = "Error.OpenDialogFailed";
         public const string CheckSchemeFailed = "Error.CheckSchemeFailed";
@@ -485,6 +485,11 @@ public static class LocalizationKey
             public const string Title = "Settings.RegisterScheme.Title";
             public const string Description = "Settings.RegisterScheme.Description";
             public const string Register = "Settings.RegisterScheme.Register";
+        }
+        public static class MaxDegreeOfParallelism
+        {
+            public const string Title = "Settings.MaxDegreeOfParallelism.Title";
+            public const string Description = "Settings.MaxDegreeOfParallelism.Description";
         }
         public static class CheckForUpdate
         {

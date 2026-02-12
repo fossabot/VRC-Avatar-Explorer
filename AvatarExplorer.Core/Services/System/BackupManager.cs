@@ -1,5 +1,6 @@
 using System.Globalization;
 using AvatarExplorer.Core.Data.Paths;
+using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Services.IO;
 using AvatarExplorer.Core.Utils;
 using ErrorOr;
@@ -30,21 +31,11 @@ internal class BackupManager
         if (_backupCts != null)
         {
             await _backupCts.CancelAsync();
+            if (_backupTask != null) await _backupTask;
 
-            try
-            {
-                if (_backupTask != null) await _backupTask;
-            }
-            catch (OperationCanceledException)
-            {
-                // Ignored
-            }
-            finally
-            {
-                _backupCts.Dispose();
-                _backupCts = null;
-                _backupTask = null;
-            }
+            _backupCts.Dispose();
+            _backupCts = null;
+            _backupTask = null;
         }
     }
 
@@ -67,19 +58,8 @@ internal class BackupManager
 
         while (!token.IsCancellationRequested)
         {
-            try
-            {
-                await ExecuteBackup(_backupRootFolderPath, token);
-                await Task.Delay(_backupInterval, token);
-            }
-            catch (OperationCanceledException)
-            {
-                break;
-            }
-            catch
-            {
-                // Ignored
-            }
+            await ExecuteBackup(_backupRootFolderPath, token);
+            await Task.Delay(_backupInterval, token);
         }
     }
     private static readonly string[] _backupFiles =
@@ -105,7 +85,8 @@ internal class BackupManager
                 string fileName = Path.GetFileName(filePath);
                 string backupPath = Path.Combine(backupFolderPath, fileName);
 
-                await FileSystemService.CopyFileAsync(filePath, backupPath);
+                ErrorOr<Success> result = await FileSystemService.CopyFileAsync(filePath, backupPath);
+                if (result.IsError) ErrorManager.Instance.PostInternalError(string.Format("Failed to copy file: {0}.", filePath), tag: result.Errors.ToErrorString());
             }
 
             _lastBackupDate = DateTime.Now;
@@ -115,7 +96,7 @@ internal class BackupManager
         catch (Exception ex)
         {
             ErrorManager.Instance.PostInternalError("Failed to execute backup.", ex);
-            return Error.Failure("Failed to execute backup.");
+            return Error.Failure(description: "Failed to execute backup.");
         }
     }
 }

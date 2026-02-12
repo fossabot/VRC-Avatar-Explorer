@@ -535,6 +535,17 @@
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                             <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
+                                                <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.MaxDegreeOfParallelism.Title]}"/>
+                                                <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.MaxDegreeOfParallelism.Description]}"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <TextBox Grid.Column="1" x:Name="SettingsOverlay_MaxDegreeOfParallelismTextBox" Text="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="5">
                                                 <TextBlock Classes="settingslabel title" Grid.Row="0" Text="{Binding [Settings.CheckForUpdate.Title]}"/>
                                                 <TextBlock Classes="settingslabel description" Grid.Row="1" Text="{Binding [Settings.CheckForUpdate.Description]}"/>
                                             </Grid>

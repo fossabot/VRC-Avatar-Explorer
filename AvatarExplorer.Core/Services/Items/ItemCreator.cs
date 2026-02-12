@@ -19,7 +19,7 @@ internal static class ItemCreator
 {
     internal static async Task<ErrorOr<ItemCreationResult>> FromItemCreationContext(ItemCreationContext itemCreationContext, RuntimeSettings runtimeSettings)
     {
-        ErrorOr<ExtractResult> extractResult = await FileSystemService.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, runtimeSettings.RemoveOriginal);
+        ErrorOr<ExtractResult> extractResult = await FileSystemService.ExtractItemFolders(itemCreationContext, runtimeSettings.DataRootDirectory, runtimeSettings);
         if (extractResult.IsError) return Error.Failure(extractResult.Errors.ToErrorString());
 
         Item item = new()

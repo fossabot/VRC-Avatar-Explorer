@@ -3,9 +3,11 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Factories;
+using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Utils;
 
 namespace AvatarExplorer.UI;
@@ -97,12 +99,15 @@ public partial class MainWindow
     private void EditTagsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
         Item? item = _avatarExplorerApp.GetItemById(_addItemOverlay_selectedItemId);
-        if (item != null)
+        if (item == null)
         {
-            item.UpdateTags(_editTagsOverlay_selectedTags);
-            _avatarExplorerApp.UpdateSearchIndex(item.Id);
-            _avatarExplorerApp.SaveItemDatabase();
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemNotFound]);
+            return;
         }
+        
+        item.UpdateTags(_editTagsOverlay_selectedTags);
+        _avatarExplorerApp.UpdateSearchIndex(item.Id);
+        _avatarExplorerApp.SaveItemDatabase();
 
         EditTagsOverlay_Hide();
         Main_ReloadCurrentWindow();

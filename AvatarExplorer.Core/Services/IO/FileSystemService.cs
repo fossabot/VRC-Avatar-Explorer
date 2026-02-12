@@ -7,6 +7,7 @@ using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Models.System;
 using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
 using ErrorOr;
@@ -284,7 +285,7 @@ public static class FileSystemService
     #endregion
 
     #region Extract Item Folders
-    internal static async Task<ErrorOr<ExtractResult>> ExtractItemFolders(ItemCreationContext itemCreationContext, string dataRootDirectory, bool removeOriginal = false)
+    internal static async Task<ErrorOr<ExtractResult>> ExtractItemFolders(ItemCreationContext itemCreationContext, string dataRootDirectory, RuntimeSettings runtimeSettings)
     {
         ExtractResult result = new();
 
@@ -298,7 +299,7 @@ public static class FileSystemService
                 ErrorOr<Success> extractResult = await ExtractItemInternalAsync(
                     itemPath,
                     parentFolder,
-                    removeOriginal
+                    runtimeSettings
                 );
 
                 if (extractResult.IsError)
@@ -318,7 +319,7 @@ public static class FileSystemService
             return Error.Failure(description: "Failed to extract item.");
         }
     }
-    internal static async Task<ExtractResult> ExtractItemPaths(string parentFolderPath, string[] itemPaths, bool removeOriginal = false)
+    internal static async Task<ExtractResult> ExtractItemPaths(string parentFolderPath, string[] itemPaths, RuntimeSettings runtimeSettings)
     {
         ExtractResult result = new();
 
@@ -327,7 +328,7 @@ public static class FileSystemService
             ErrorOr<Success> extractResult = await ExtractItemInternalAsync(
                 itemPath,
                 parentFolderPath,
-                removeOriginal
+                runtimeSettings
             );
 
             if (extractResult.IsError)
@@ -339,9 +340,9 @@ public static class FileSystemService
 
         return result;
     }
-    private static async Task<ErrorOr<Success>> ExtractItemInternalAsync(string filePath, string destinationFolderPath, bool removeOriginal)
+    private static async Task<ErrorOr<Success>> ExtractItemInternalAsync(string filePath, string destinationFolderPath, RuntimeSettings runtimeSettings)
     {
-        ErrorOr<FileExtractResultInternal> extractResult = await FileExtractorInternalAsync(filePath, destinationFolderPath, removeOriginal);
+        ErrorOr<FileExtractResultInternal> extractResult = await FileExtractorInternalAsync(filePath, destinationFolderPath, runtimeSettings.RemoveOriginal);
 
         if (extractResult.IsError)
         {
@@ -351,7 +352,7 @@ public static class FileSystemService
         if (extractResult.Value.IsDirectory)
         {
             string copiedFolderPath = GetUniquePath(destinationFolderPath, Path.GetFileNameWithoutExtension(filePath), true);
-            ErrorOr<CopyResult> copyResult = await CopyDirectoryAsync(filePath, copiedFolderPath);
+            ErrorOr<CopyResult> copyResult = await CopyDirectoryAsync(filePath, copiedFolderPath, runtimeSettings.MaxDegreeOfParallelism);
 
             if (copyResult.IsError)
             {
@@ -476,7 +477,7 @@ public static class FileSystemService
     #endregion
 
     #region Copy
-    public async static Task<ErrorOr<CopyResult>> CopyDirectoryAsync(string sourceDirectory, string destinationDirectory, int maxDegreeOfParallelism = 4, Func<(string LocalizationKey, int), Task>? reportProgress = null)
+    public async static Task<ErrorOr<CopyResult>> CopyDirectoryAsync(string sourceDirectory, string destinationDirectory, int maxDegreeOfParallelism, Func<(string LocalizationKey, int), Task>? reportProgress = null)
     {
         if (sourceDirectory == destinationDirectory)
             return Error.Conflict("Directory.Copy", "Source and destination are the same.");

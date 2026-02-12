@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.UI.Factories;
+using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models.Items;
 
 namespace AvatarExplorer.UI;
@@ -42,11 +44,14 @@ public partial class MainWindow
     private void EditImplementedAvatarsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
         Item? item = _avatarExplorerApp.GetItemById(_contextMenu_selectedItemId);
-        if (item != null)
+        if (item == null)
         {
-            item.UpdateImplementedAvatars(_editImplementedAvatarsOverlay_selectedAvatars);
-            _avatarExplorerApp.SaveItemDatabase();
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemNotFound]);
+            return;
         }
+
+        item.UpdateImplementedAvatars(_editImplementedAvatarsOverlay_selectedAvatars);
+        _avatarExplorerApp.SaveItemDatabase();
 
         EditImplementedAvatarsOverlay_Hide();
     }
