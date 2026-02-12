@@ -5,7 +5,7 @@
         xmlns:common="clr-namespace:AvatarExplorer.Core.Models.Common;assembly=AvatarExplorer.Core"
         x:Class="AvatarExplorer.UI.MainWindow"
         x:DataType="localization:Localizer"
-        Icon="avares://AvatarExplorer.UI/Assets/Internal/SoftwareIcon.png"
+        Icon="avares://AvatarExplorer/Assets/Internal/SoftwareIcon.png"
         WindowStartupLocation="CenterScreen"
         DragDrop.AllowDrop="True"
         DragDrop.DragOver="Main_DragDrop_Over"
@@ -76,7 +76,7 @@
                         <ScrollViewer x:Name="Main_RightPanelScrollViewer">
                             <Panel>
                                 <StackPanel x:Name="Main_RightPanelParent" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" IsVisible="False">
-                                    <Image Source="avares://AvatarExplorer.UI/Assets/Internal/EmptyIcon.png" Width="150" Height="150" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Image Source="avares://AvatarExplorer/Assets/Internal/EmptyIcon.png" Width="150" Height="150" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding [Error.Nothing]}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="25"/>
                                 </StackPanel>
                                 <StackPanel x:Name="Main_RightPanel" Spacing="8" Margin="0,0,10,0"/>
