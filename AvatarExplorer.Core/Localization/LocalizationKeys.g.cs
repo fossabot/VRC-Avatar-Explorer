@@ -303,7 +303,6 @@ public static class LocalizationKey
             public const string EmptyTitle = "Error.Validation.EmptyTitle";
             public const string EmptyAuthor = "Error.Validation.EmptyAuthor";
         }
-        public const string ProcessingFailedPaths = "Error.ProcessingFailedPaths";
         public const string ImportFailed = "Error.ImportFailed";
         public const string ExportFailed = "Error.ExportFailed";
         public const string ItemAddFailed = "Error.ItemAddFailed";
@@ -323,6 +322,10 @@ public static class LocalizationKey
         public const string RetrieveBoothItemFailed = "Error.RetrieveBoothItemFailed";
         public const string FetchItemThumbnailFailed = "Error.FetchItemThumbnailFailed";
         public const string ClipboardFailed = "Error.ClipboardFailed";
+        public const string FoundProcessingFailedPath = "Error.FoundProcessingFailedPath";
+        public const string AddItemFileFailed = "Error.AddItemFileFailed";
+        public const string AddItemFolderFailed = "Error.AddItemFolderFailed";
+        public const string RemoveFailed = "Error.RemoveFailed";
     }
     public static class Settings
     {

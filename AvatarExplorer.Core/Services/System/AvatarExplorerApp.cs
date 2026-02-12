@@ -380,13 +380,13 @@ public partial class AvatarExplorerApp
 
         return itemCreationResult;
     }
-    public async Task<List<string>> AddItemPaths(string itemId, string[] paths)
+    public async Task<ErrorOr<ExtractResult>> AddItemPaths(string itemId, string[] paths)
     {
         Item? item = GetItemById(itemId);
-        if (item == null) return paths.ToList();
+        if (item == null) return Error.NotFound(description: "Item not found.");
 
         ExtractResult extractResult = await FileSystemService.ExtractItemPaths(ItemUtils.GetItemPath(_runtimeSettings.DataRootDirectory, item.ItemPath), paths);
-        return extractResult.ProcessingFailedPaths;
+        return extractResult;
     }
     #endregion
 
@@ -552,9 +552,9 @@ public partial class AvatarExplorerApp
     public async Task<ErrorOr<Success>> FetchAndUpdateThumbnailImage(string itemId)
     {
         Item? item = GetItemById(itemId);
-        if (item == null) return Error.NotFound("Item not found.");
+        if (item == null) return Error.NotFound(description: "Item not found.");
 
-        if (item.BoothId == -1) return Error.Validation("Booth id not found");
+        if (item.BoothId == -1) return Error.Validation(description: "Booth id not found");
 
         if (IsApiCooldownNow) return Error.Failure(code: "Api.Cooldown", description: "API is on cooldown");
 

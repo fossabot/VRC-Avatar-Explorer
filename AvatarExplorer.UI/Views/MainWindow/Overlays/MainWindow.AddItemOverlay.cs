@@ -330,17 +330,18 @@ public partial class MainWindow
                 Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemAddFailed]);
                 return;
             }
-
-            if (itemCreationResult.Value.ExtractResult.ProcessingFailedPaths.Count > 0) // フォルダ展開に失敗した時に発生する
+            else if (itemCreationResult.Value.ExtractResult.ProcessingFailedPaths.Count > 0)
             {
-                Dialog_Show(
-                    Localizer.Instance[LocalizationKey.Error.Default],
-                    Localizer.Instance.Get(LocalizationKey.Error.ProcessingFailedPaths, "\n" + string.Join('\n', itemCreationResult.Value.ExtractResult.ProcessingFailedPaths.Select(i => $"- {Path.GetFileName(i)}")))
-                );
+                Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance.Get(LocalizationKey.Error.FoundProcessingFailedPath, itemCreationResult.Value.ExtractResult.ProcessingFailedPaths.Count.ToString()));
             }
-
-            if (itemCreationResult.Value.Item != null) Dialog_Show(Localizer.Instance[LocalizationKey.Success.Default], Localizer.Instance[LocalizationKey.Success.ItemAdd]);
-            else Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemAddFailed]);
+            else if (itemCreationResult.Value.Item != null)
+            {
+                Dialog_Show(Localizer.Instance[LocalizationKey.Success.Default], Localizer.Instance[LocalizationKey.Success.ItemAdd]);
+            }
+            else
+            {
+                Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemAddFailed]);
+            }
         }
         else
         {

@@ -161,7 +161,6 @@
     "Error.Validation.NoFolders": "フォルダが選択されていません",
     "Error.Validation.EmptyTitle": "アイテムのタイトル欄が空です",
     "Error.Validation.EmptyAuthor": "アイテムの作者欄が空です",
-    "Error.ProcessingFailedPaths": "処理に失敗したアイテム: {0}",
     "Error.ImportFailed": "データのインポートに失敗しました",
     "Error.ExportFailed": "データのエクスポートに失敗しました",
     "Error.ItemAddFailed": "アイテムの追加に失敗しました",
@@ -181,6 +180,10 @@
     "Error.RetrieveBoothItemFailed": "アイテム情報取得中にエラーが発生しました",
     "Error.FetchItemThumbnailFailed": "アイテムサムネイル取得中にエラーが発生しました",
     "Error.ClipboardFailed": "クリップボードへのコピーに失敗しました",
+    "Error.FoundProcessingFailedPath": "処理に失敗したアイテムが{0}件見つかりました。詳細はエラーログを参照してください。",
+    "Error.AddItemFileFailed": "アイテムファイルの追加に失敗しました",
+    "Error.AddItemFolderFailed": "アイテムフォルダーの追加に失敗しました",
+    "Error.RemoveFailed": "アイテムの削除に失敗しました",
 
     "Settings.Basic": "基本",
     "Settings.Language.Title": "言語",
