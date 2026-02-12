@@ -978,18 +978,25 @@
 
                     <StackPanel Spacing="20">
                         <StackPanel Spacing="5">
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <TextBlock Text="{Binding [Settings.Language]}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                <materialIcons:MaterialIcon Kind="Translate" HorizontalAlignment="Center" Width="30" Height="30" VerticalAlignment="Center"/>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Text="{Binding [Settings.Language.Title]}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <materialIcons:MaterialIcon Kind="Translate" HorizontalAlignment="Center" Width="30" Height="30" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <TextBlock Text="{Binding [Settings.Language.Description]}" FontSize="14" Foreground="{DynamicResource Text.Secondary}" VerticalAlignment="Center"/>
                             </StackPanel>
                             <ComboBox x:Name="InitialSetupOverlay_LanguageComboBox" HorizontalAlignment="Stretch" SelectionChanged="InitialSetupOverlay_LanguageComboBox_SelectionChanged"/>
                         </StackPanel>
 
                         <StackPanel Spacing="5">
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                            <!-- TODO: Descriptionも追加する -->
-                                <TextBlock Text="{Binding [Settings.ItemsFolder]}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                <materialIcons:MaterialIcon Kind="Folder" HorizontalAlignment="Center" Width="30" Height="30" VerticalAlignment="Center"/>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Text="{Binding [Settings.ItemsFolder.Title]}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <materialIcons:MaterialIcon Kind="Folder" HorizontalAlignment="Center" Width="30" Height="30" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <TextBlock Text="{Binding [Settings.ItemsFolder.Description]}" FontSize="14" Foreground="{DynamicResource Text.Secondary}" VerticalAlignment="Center"/>
                             </StackPanel>
 
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="5">
