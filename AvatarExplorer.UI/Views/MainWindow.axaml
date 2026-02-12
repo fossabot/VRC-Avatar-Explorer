@@ -64,24 +64,33 @@
                                 <TabItem Header="{Binding [Main.Filter.Category]}" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
                             </TabControl>
 
-                            <ScrollViewer x:Name="Main_LeftPanelScrollViewer" Grid.Row="1">
-                                <StackPanel x:Name="Main_LeftPanel" Spacing="5" Margin="0,0,10,0"/>
-                            </ScrollViewer>
+                            <Grid RowDefinitions="*,Auto" Grid.Row="1" RowSpacing="5">
+                                <ScrollViewer x:Name="Main_LeftPanelScrollViewer" Grid.Row="0">
+                                    <StackPanel x:Name="Main_LeftPanel" Spacing="5" Margin="0,0,10,0"/>
+                                </ScrollViewer>
+
+                                <Panel x:Name="Main_LeftPanelPageInfo" Grid.Row="1"/>
+                            </Grid>
                         </Grid>
                     </Border>
 
                     <GridSplitter Grid.Column="1" Opacity="0"/>
 
                     <Border x:Name="Main_RightPanelBorder" Grid.Column="2" Classes="panelbackground">
-                        <ScrollViewer x:Name="Main_RightPanelScrollViewer">
-                            <Panel>
-                                <StackPanel x:Name="Main_RightPanelParent" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" IsVisible="False">
-                                    <Image Source="avares://AvatarExplorer/Assets/Internal/EmptyIcon.png" Width="150" Height="150" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding [Error.Nothing]}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="25"/>
-                                </StackPanel>
-                                <StackPanel x:Name="Main_RightPanel" Spacing="8" Margin="0,0,10,0"/>
-                            </Panel>
-                        </ScrollViewer>
+                        <Panel>
+                            <StackPanel x:Name="Main_RightPanelParent" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" IsVisible="False">
+                                <Image Source="avares://AvatarExplorer/Assets/Internal/EmptyIcon.png" Width="150" Height="150" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding [Error.Nothing]}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="25"/>
+                            </StackPanel>
+
+                            <Grid RowDefinitions="*,Auto" RowSpacing="5">
+                                <ScrollViewer x:Name="Main_RightPanelScrollViewer">
+                                    <StackPanel x:Name="Main_RightPanel" Spacing="8" Margin="0,0,10,0"/>
+                                </ScrollViewer>
+
+                                <Panel x:Name="Main_RightPanelPageInfo" Grid.Row="1"/>
+                            </Grid>
+                        </Panel>
                     </Border>
 
                     <GridSplitter Grid.Column="3" Opacity="0" IsVisible="{Binding #Main_SidePanelBorder.IsVisible}"/>

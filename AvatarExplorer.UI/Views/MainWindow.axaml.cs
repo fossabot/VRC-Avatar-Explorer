@@ -139,7 +139,13 @@ public partial class MainWindow : Window
             if (StateFlagUtils.IsDraggableState(customState)) itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
 
-        if (currentPage != -1 && items.Count != 0) PageButtonFactory.AddPageButton(Main_LeftPanel, customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Click);
+        if (currentPage != -1 && items.Count != 0)
+        {
+            Main_LeftPanelPageInfo.Children.Clear();
+            Panel? pageInfoPanel = PageInfoPanelFactory.CreatePageInfoPanel(customState, currentPage, ItemsPerPage, items.Count, LeftPanel_ItemButton_Click);
+            if (pageInfoPanel != null) Main_LeftPanelPageInfo.Children.Add(pageInfoPanel);
+        }
+        else Main_LeftPanelPageInfo.Children.Clear();
     }
     private void LeftPanel_ItemButton_Click(object? sender, RoutedEventArgs e)
     {
@@ -193,7 +199,14 @@ public partial class MainWindow : Window
             if (StateFlagUtils.IsDraggableState(itemTagState)) itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
 
-        if (currentPage != -1 && items.Count != 0) PageButtonFactory.AddPageButton(Main_RightPanel, itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
+        if (currentPage != -1 && items.Count != 0)
+        {
+            Main_RightPanelPageInfo.Children.Clear();
+            Panel? pageInfoPanel = PageInfoPanelFactory.CreatePageInfoPanel(itemTagState, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
+            if (pageInfoPanel != null) Main_RightPanelPageInfo.Children.Add(pageInfoPanel);
+        }
+        else Main_RightPanelPageInfo.Children.Clear();
+
         _main_isLastWindowSearch = false;
         Main_LoadCurrentPath();
     }
@@ -299,7 +312,14 @@ public partial class MainWindow : Window
             itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
 
-        if (items.Count != 0) PageButtonFactory.AddPageButton(Main_RightPanel, ItemTagStates.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
+        if (currentPage != -1 && items.Count != 0)
+        {
+            Main_RightPanelPageInfo.Children.Clear();
+            Panel? pageInfoPanel = PageInfoPanelFactory.CreatePageInfoPanel(ItemTagStates.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
+            if (pageInfoPanel != null) Main_RightPanelPageInfo.Children.Add(pageInfoPanel);
+        }
+        else Main_RightPanelPageInfo.Children.Clear();
+
         _main_isLastWindowSearch = true;
 
         Main_PathTextBox.Text = searchFilter.ToPathString();

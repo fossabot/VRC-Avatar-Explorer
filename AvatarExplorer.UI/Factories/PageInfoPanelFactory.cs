@@ -11,15 +11,15 @@ using Material.Icons.Avalonia;
 
 namespace AvatarExplorer.UI.Factories;
 
-internal static class PageButtonFactory
+internal static class PageInfoPanelFactory
 {
     private const string ButtonClass = "button";
     private const string PageButtonClass = "pagebutton";
 
-    internal static void AddPageButton(StackPanel parent, ItemTagStates itemTagState, int currentPageValue, int itemsPerPage, int totalItemCount, EventHandler<RoutedEventArgs>? onClick = null)
+    internal static Panel? CreatePageInfoPanel(ItemTagStates itemTagState, int currentPageValue, int itemsPerPage, int totalItemCount, EventHandler<RoutedEventArgs>? onClick = null)
     {
         int totalPages = (int)Math.Ceiling((double)totalItemCount / itemsPerPage);
-        if (totalPages <= 0) return;
+        if (totalPages <= 0) return null;
 
         Panel pageInfoPanel = new();
 
@@ -31,7 +31,7 @@ internal static class PageButtonFactory
         pageInfoPanel.Children.Add(pageButtonGrid);
         pageInfoPanel.Children.Add(pageInfo);
 
-        parent.Children.Add(pageInfoPanel);
+        return pageInfoPanel;
     }
 
     private static StackPanel CreatePageInfoPanel(int currentPage, int totalPages, int itemsPerPage, int totalCount)
