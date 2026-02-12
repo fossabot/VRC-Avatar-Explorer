@@ -65,9 +65,13 @@
                             </TabControl>
 
                             <Grid RowDefinitions="*,Auto" Grid.Row="1" RowSpacing="5">
-                                <ScrollViewer x:Name="Main_LeftPanelScrollViewer" Grid.Row="0">
-                                    <StackPanel x:Name="Main_LeftPanel" Spacing="5" Margin="0,0,10,0"/>
-                                </ScrollViewer>
+                                <Panel Grid.Row="0">
+                                    <Border CornerRadius="8" ClipToBounds="True">
+                                        <ScrollViewer x:Name="Main_LeftPanelScrollViewer">
+                                            <StackPanel x:Name="Main_LeftPanel" Spacing="5" Margin="0,0,10,0"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Panel>
 
                                 <Panel x:Name="Main_LeftPanelPageInfo" Grid.Row="1"/>
                             </Grid>
@@ -84,9 +88,13 @@
                             </StackPanel>
 
                             <Grid RowDefinitions="*,Auto" RowSpacing="5">
-                                <ScrollViewer x:Name="Main_RightPanelScrollViewer">
-                                    <StackPanel x:Name="Main_RightPanel" Spacing="8" Margin="0,0,10,0"/>
-                                </ScrollViewer>
+                                <Panel Grid.Row="0">
+                                    <Border CornerRadius="8" ClipToBounds="True">
+                                        <ScrollViewer x:Name="Main_RightPanelScrollViewer">
+                                            <StackPanel x:Name="Main_RightPanel" Spacing="8" Margin="0,0,10,0"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Panel>
 
                                 <Panel x:Name="Main_RightPanelPageInfo" Grid.Row="1"/>
                             </Grid>
