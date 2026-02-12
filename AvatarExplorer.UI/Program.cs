@@ -17,13 +17,18 @@ static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        // Single Instance Check
-        Mutex _ = new(true, MutexName, out bool isNew);
-
-        if (!isNew)
+        // 管理者で実行された場合はそのまま起動する
+        // 多くの場合はカスタムスキーム登録時に実行される
+        if (!ProcessUtils.IsWindows() || !SchemeService.IsRunAsAdmin())
         {
-            SingleInstanceService.SendToServer(args);
-            return;
+            // Single Instance Check
+            Mutex _ = new(true, MutexName, out bool isNew);
+
+            if (!isNew)
+            {
+                SingleInstanceService.SendToServer(args);
+                return;
+            }
         }
 
         // Set Current Directory
