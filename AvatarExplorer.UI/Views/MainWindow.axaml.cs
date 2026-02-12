@@ -312,7 +312,7 @@ public partial class MainWindow : Window
             itemButton.AddHandler(PointerPressedEvent, ItemButton_PointerPressed, RoutingStrategies.Tunnel);
         }
 
-        if (currentPage != -1 && items.Count != 0)
+        if (items.Count != 0)
         {
             Main_RightPanelPageInfo.Children.Clear();
             Panel? pageInfoPanel = PageInfoPanelFactory.CreatePageInfoPanel(ItemTagStates.SearchItem, currentPage, ItemsPerPage, items.Count, RightPanel_ItemButton_Click);
