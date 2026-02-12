@@ -2,6 +2,7 @@ using System.Text;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Models.System;
 using AvatarExplorer.Core.Services.Avatars;
+using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
 using ErrorOr;
 
@@ -62,22 +63,10 @@ internal static class DataExporter
 
             return Result.Success;
         }
-        catch (UnauthorizedAccessException)
-        {
-            // TODO: 例外エラーメッセージは英語とかで統一するべき
-            return Error.Forbidden("File.Access", $"ファイルへのアクセス権限がありません: {filePath}");
-        }
-        catch (DirectoryNotFoundException)
-        {
-            return Error.NotFound("Directory.Path", $"ディレクトリが見つかりません: {Path.GetDirectoryName(filePath)}");
-        }
-        catch (IOException ex)
-        {
-            return Error.Failure("File.IO", $"ファイル書き込みエラー: {ex.Message}");
-        }
         catch (Exception ex)
         {
-            return Error.Unexpected("Csv.Export", $"予期しないエラー: {ex.Message}");
+            ErrorManager.Instance.PostInternalError("Failed to export to csv.", ex);
+            return Error.Failure(description: "Failed to export to csv.");
         }
     }
 }

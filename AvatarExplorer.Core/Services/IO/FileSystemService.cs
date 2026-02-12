@@ -60,31 +60,11 @@ public static class FileSystemService
             File.WriteAllText(filePath, json);
             return Result.Success;
         }
-        catch (UnauthorizedAccessException ex)
-        {
-            ErrorManager.Instance.PostInternalError($"Failed to serialize '{typeof(T).Name}' to '{filePath}' - Access denied.", ex);
-            return Error.Forbidden("File.Access", $"ファイルへのアクセス権限がありません: {filePath}");
-        }
-        catch (DirectoryNotFoundException ex)
-        {
-            ErrorManager.Instance.PostInternalError($"Failed to serialize '{typeof(T).Name}' to '{filePath}' - Directory not found.", ex);
-            return Error.NotFound("Directory.Path", $"ディレクトリが見つかりません: {Path.GetDirectoryName(filePath)}");
-        }
-        catch (IOException ex)
-        {
-            ErrorManager.Instance.PostInternalError($"Failed to serialize '{typeof(T).Name}' to '{filePath}' - IO error.", ex);
-            return Error.Failure("File.Write", $"ファイルの書き込みに失敗しました: {ex.Message}");
-        }
-        catch (JsonException ex)
-        {
-            ErrorManager.Instance.PostInternalError($"Failed to serialize '{typeof(T).Name}' - JSON serialization error.", ex);
-            return Error.Failure("Json.Serialize", $"JSONシリアライズに失敗しました: {typeof(T).Name}");
-        }
         catch (Exception ex)
         {
             Type elementType = typeof(T).GetGenericArguments().FirstOrDefault() ?? typeof(T);
             ErrorManager.Instance.PostInternalError($"Failed to serialize class: '{elementType.Name}' to '{filePath}'.", ex);
-            return Error.Unexpected("Serialization.Error", "予期しないエラーが発生しました");
+            return Error.Failure("Failed to seriaze class.");
         }
     }
     public static ErrorOr<T> DeserializeClass<T>(string filePath)
@@ -94,26 +74,16 @@ public static class FileSystemService
             if (!File.Exists(filePath)) return Error.NotFound("File.Path", $"ファイルが見つかりません: {filePath}");
             
             string json = File.ReadAllText(filePath);
-            var result = JsonSerializer.Deserialize<T>(json);
+            T? result = JsonSerializer.Deserialize<T>(json);
             
-            if (Equals(result, default(T))) return Error.Failure("Json.Deserialize", "デシリアライズ結果がnullです");
+            if (Equals(result, default(T))) return Error.Failure("deserialization result is null.");
             
             return result!;
         }
-        catch (JsonException ex)
-        {
-            ErrorManager.Instance.PostInternalError($"Failed to deserialize '{typeof(T).Name}' from '{filePath}'.", ex);
-            return Error.Failure("Json.Parse", $"Failed to deserialize '{typeof(T).Name}' from '{filePath}'.");
-        }
-        catch (IOException ex)
-        {
-            ErrorManager.Instance.PostInternalError($"Failed to read file '{filePath}'.", ex);
-            return Error.Failure("File.Read", $"Failed to read file: {filePath}");
-        }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostInternalError($"Unexpected error deserializing '{typeof(T).Name}' from '{filePath}'.", ex);
-            return Error.Unexpected("Deserialization.Error", "Unexpected error deserializing");
+            ErrorManager.Instance.PostInternalError($"Failed to desearize class: '{typeof(T).Name}' from '{filePath}'.", ex);
+            return Error.Failure("Failed to desearize class.");
         }
     }
     #endregion
