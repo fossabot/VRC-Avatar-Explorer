@@ -22,9 +22,14 @@ VRChatユーザー向けのシンプルかつ強力な**クロスプラットフ
 
 ## 導入方法
 
+> [!WARNING]
+> 正式リリースがまだのベータ版の場合、リリースページが存在しない可能性があります。
+> 
+> 存在しない場合は各自で`git clone`して`AvatarExplorer.UI`プロジェクトを`dotnet run`で実行してください。
+
 1. [最新のリリースページ](https://github.com/puk06/VRC-Avatar-Explorer/releases/latest)を開きます。
 2. 使用しているOSに対応したzipファイルをダウンロードします。
-3. 解凍したフォルダ内にある `AvatarExplorer.UI` を実行してください。
+3. 解凍したフォルダ内にある `AvatarExplorer` を実行してください。
 
 ---
 
