@@ -152,11 +152,19 @@ public partial class MainWindow
         ErrorOr<CopyResult> result1 = await FileSystemService.CopyDirectoryAsync(previousPath, currentPath, RuntimeSettings.MaxDegreeOfParallelism, progressAction);
         ProgressOverlay_Hide();
 
-        // TODO: CopyResultのFailureの処理を追加するべき
         if (result1.IsError)
         {
             ErrorManager.Instance.PostInternalError("Failed to copy directory.", tag: result1.Errors.ToErrorString());
             Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.CopyDirectoryFailed]);
+        }
+        else if (result1.Value.Failures.Count > 0)
+        {
+            result1.Value.Failures.ForEach(i => ErrorManager.Instance.PostInternalError(string.Format("Failed to copy file: '{0}' to '{1}'", i.SourcePath, i.DestinationPath), tag: i.ErrorMessage));
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.FoundProcessingFailedPath]);
+        }
+        else
+        {
+            Dialog_Show(Localizer.Instance[LocalizationKey.Success.Default], Localizer.Instance[LocalizationKey.Success.CopyDirectory]);
         }
     }
 

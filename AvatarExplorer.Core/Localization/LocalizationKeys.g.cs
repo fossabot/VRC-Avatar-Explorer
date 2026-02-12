@@ -283,6 +283,7 @@ public static class LocalizationKey
         public const string FetchItemThumbnail = "Success.FetchItemThumbnail";
         public const string ItemFileAdd = "Success.ItemFileAdd";
         public const string ItemFolderAdd = "Success.ItemFolderAdd";
+        public const string CopyDirectory = "Success.CopyDirectory";
     }
     public static class Warning
     {
