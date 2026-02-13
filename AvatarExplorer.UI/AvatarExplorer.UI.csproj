@@ -36,7 +36,7 @@
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
 
-    <AvaloniaResource Include="Assets\Internal\**"/>
+    <AvaloniaResource Include="Assets\Internal\**" />
 
   </ItemGroup>
 </Project>

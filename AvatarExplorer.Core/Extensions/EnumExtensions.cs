@@ -9,7 +9,7 @@ public static class EnumExtensions
     internal static string[]? GetExtensionFilters(this Enum value) => value.GetAttribute<ExtensionsFilterAttribute>()?.Filter.Split('|') ?? null;
     internal static string[]? GetFileNameFilters(this Enum value) => value.GetAttribute<FileNamesFilterAttribute>()?.Filter.Split('|') ?? null;
 
-    private static T? GetAttribute<T>(this Enum value) where T : class
+    public static T? GetAttribute<T>(this Enum value) where T : class
     {
         FieldInfo? field = value.GetType().GetField(value.ToString());
         return field?.GetCustomAttributes(typeof(T), false).FirstOrDefault() as T;

@@ -1,4 +1,6 @@
 using Avalonia.Media.Imaging;
+using AvatarExplorer.Core.Extensions;
+using AvatarExplorer.UI.Attributes;
 using AvatarExplorer.UI.Models.Common;
 
 namespace AvatarExplorer.UI.Extensions;
@@ -7,13 +9,6 @@ internal static class AntiAliasingModeExtensions
 {
     internal static BitmapInterpolationMode GetInterpolationMode(this BitmapAntiAliasingMode bitmapAntiAliasingMode)
     {
-        return bitmapAntiAliasingMode switch
-        {
-            BitmapAntiAliasingMode.None => BitmapInterpolationMode.None,
-            BitmapAntiAliasingMode.Low => BitmapInterpolationMode.LowQuality,
-            BitmapAntiAliasingMode.Medium => BitmapInterpolationMode.MediumQuality,
-            BitmapAntiAliasingMode.High => BitmapInterpolationMode.HighQuality,
-            _ => BitmapInterpolationMode.Unspecified
-        };
+        return bitmapAntiAliasingMode.GetAttribute<BitmapInterpolationAttribute>()?.BitmapInterpolationMode ?? BitmapInterpolationMode.Unspecified;
     }
 }

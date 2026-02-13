@@ -1,6 +1,7 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models.ContextMenu;
 using Material.Icons;
@@ -35,7 +36,7 @@ internal static class ContextMenuFactory
 
     private static MaterialIcon? GetMaterialIcon(ContextMenuIconType contextMenuIconType, double size = 16)
     {
-        MaterialIconKind? materialIconKind = GetMaterialIconKind(contextMenuIconType);
+        MaterialIconKind? materialIconKind = contextMenuIconType.GetMaterialIconKind();
         if (materialIconKind == null) return null;
 
         return new MaterialIcon()
@@ -43,20 +44,6 @@ internal static class ContextMenuFactory
             Kind = (MaterialIconKind)materialIconKind,
             Width = size,
             Height = size
-        };
-    }
-
-    private static MaterialIconKind? GetMaterialIconKind(ContextMenuIconType contextMenuIconType)
-    {
-        return contextMenuIconType switch
-        {
-            ContextMenuIconType.Open => MaterialIconKind.OpenInNew,
-            ContextMenuIconType.Copy => MaterialIconKind.ContentCopy,
-            ContextMenuIconType.Add => MaterialIconKind.Add,
-            ContextMenuIconType.Edit => MaterialIconKind.Edit,
-            ContextMenuIconType.Fetch => MaterialIconKind.Download,
-            ContextMenuIconType.Delete => MaterialIconKind.Delete,
-            _ => null
         };
     }
 }
