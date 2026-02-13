@@ -248,6 +248,12 @@ public partial class AvatarExplorerApp
 
     private static IReadOnlyList<ItemCountInfo> GetCategoryItemsFromPathInternal(string itemPath)
     {
+        if (!Directory.Exists(itemPath))
+        {
+            ErrorManager.Instance.PostInternalError(string.Join("Directory not found: '{0}'.", itemPath));
+            return new List<ItemCountInfo>();
+        }
+
         List<ItemFileCategoryDefinition> categoryDefinitions = Enum.GetValues<ItemFileCategoryType>()
             .Select(c => new ItemFileCategoryDefinition()
             {
@@ -296,6 +302,11 @@ public partial class AvatarExplorerApp
         string[]? fileNameFilters = targetCategory.GetFileNameFilters();
 
         List<ItemCountInfo> result = new();
+        if (!Directory.Exists(itemPath))
+        {
+            ErrorManager.Instance.PostInternalError(string.Join("Directory not found: '{0}'.", itemPath));
+            return result;
+        }
 
         foreach (string file in FileSystemService.EnumerateFiles(itemPath))
         {
