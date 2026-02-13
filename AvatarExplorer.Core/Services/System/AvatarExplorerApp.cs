@@ -517,10 +517,18 @@ public partial class AvatarExplorerApp
             }
         }
 
+        SaveItemDatabase();
+
         return removed;
     }
 
-    public bool RemoveCommonAvatar(string commonAvatarId) => _commonAvatarDatabaseManager.Remove(commonAvatarId);
+    public bool RemoveCommonAvatar(string commonAvatarId)
+    {
+        bool removed = _commonAvatarDatabaseManager.Remove(commonAvatarId);
+        SaveCommonAvatarDatabase();
+        
+        return removed;
+    }
     #endregion
 
     #region Search API
