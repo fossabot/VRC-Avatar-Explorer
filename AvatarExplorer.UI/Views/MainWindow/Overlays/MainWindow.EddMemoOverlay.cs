@@ -18,7 +18,7 @@ public partial class MainWindow
     private void EditMemoOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => EditMemoOverlay_Hide();
     private void EditMemoOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
     {
-        Item? item = _avatarExplorerApp.GetItemById(_addItemOverlay_selectedItemId);
+        Item? item = _avatarExplorerApp.GetItemById(_contextMenu_selectedItemId);
         if (item == null)
         {
             Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemNotFound]);
