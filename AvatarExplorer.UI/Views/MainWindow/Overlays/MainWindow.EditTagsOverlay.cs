@@ -3,6 +3,7 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.UI.Extensions;
@@ -49,7 +50,12 @@ public partial class MainWindow
         foreach (string tag in _editTagsOverlay_selectedTags)
         {
             Border tagBorder = ItemButtonFactory.GetTagBorder(tag);
-            if (tagBorder.Child is TextBlock tagLabel) tagLabel.Classes.Add("accent");
+            if (tagBorder.Child is TextBlock tagLabel)
+            {
+                tagLabel.FontWeight = FontWeight.Bold;
+                tagLabel.Classes.Add("accent");
+            }
+            
             tagBorder.Classes.Add("tagborder");
 
             EditTagsOverlay_TagList.Children.Add(tagBorder);
@@ -106,7 +112,7 @@ public partial class MainWindow
             Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemNotFound]);
             return;
         }
-        
+
         item.UpdateTags(_editTagsOverlay_selectedTags);
         _avatarExplorerApp.UpdateSearchIndex(item.Id);
         _avatarExplorerApp.SaveItemDatabase();

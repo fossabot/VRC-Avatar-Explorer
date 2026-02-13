@@ -138,7 +138,12 @@ internal static class ItemButtonFactory
         foreach (string itemTag in item.ItemTagsView)
         {
             Border tagBorder = GetTagBorder(itemTag);
-            if (tagBorder.Child is TextBlock tagLabel) tagLabel.Classes.Add("accent");
+            if (tagBorder.Child is TextBlock tagLabel)
+            {
+                tagLabel.FontWeight = FontWeight.Bold;
+                tagLabel.Classes.Add("accent");
+            }
+            
             tagBorder.Classes.Add("tagborder");
 
             tagPanel.Children.Add(tagBorder);
