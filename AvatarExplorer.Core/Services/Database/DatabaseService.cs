@@ -13,7 +13,7 @@ internal static class DatabaseService<T> where T : IDatabaseItem
         ErrorOr<IEnumerable<T>> deserializedResult = FileSystemService.DeserializeClass<IEnumerable<T>>(path);
         if (deserializedResult.IsError)
         {
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to load database: '{0}'.", path), tag: deserializedResult.Errors.ToErrorString());
+            ErrorManager.Instance.PostInternalError($"Failed to load database: '{path}'.", tag: deserializedResult.Errors.ToErrorString());
             return [];
         }
         
@@ -25,7 +25,7 @@ internal static class DatabaseService<T> where T : IDatabaseItem
         ErrorOr<Success> serializeResult = FileSystemService.SerializeClass(items, path);
         if (serializeResult.IsError)
         {
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to save database: '{0}'.", path), tag: serializeResult.Errors.ToErrorString());
+            ErrorManager.Instance.PostInternalError($"Failed to save database: '{path}'.", tag: serializeResult.Errors.ToErrorString());
         }
     }
 }

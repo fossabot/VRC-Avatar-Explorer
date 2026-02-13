@@ -47,16 +47,16 @@ public class Localizer : INotifyPropertyChanged
             ErrorOr<Dictionary<string, string>> deserializeResult = FileSystemService.DeserializeClass<Dictionary<string, string>>(filePath);
             if (deserializeResult.IsError)
             {
-                ErrorManager.Instance.PostInternalError(string.Format("Failed to load language: '{0}'.", Path.GetFileName(filePath)), tag: deserializeResult.Errors.ToErrorString());
-                continue;
+                ErrorManager.Instance.PostInternalError($"Failed to load language: '{Path.GetFileName(filePath)}'.", tag: deserializeResult.Errors.ToErrorString());
             }
             else if (!deserializeResult.Value.ContainsKey(LocalizationKey.LanguageName))
             {
-                ErrorManager.Instance.PostInternalError(string.Format("Failed to load language: '{0}'. No language name was defined.", Path.GetFileName(filePath)));
-                continue;
+                ErrorManager.Instance.PostInternalError($"Failed to load language: '{Path.GetFileName(filePath)}'.", tag: "No language name was defined.");
             }
-            
-            languageMaps.Add(deserializeResult.Value);
+            else
+            {
+                languageMaps.Add(deserializeResult.Value);
+            }
         }
 
         _map.Clear();

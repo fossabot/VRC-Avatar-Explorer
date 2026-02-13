@@ -105,7 +105,7 @@ internal static class StorageService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to get storage file from path: '{0}'.", filePath), ex);
+            ErrorManager.Instance.PostInternalError($"Failed to get storage file from path: '{filePath}'.", ex);
             return null;
         }
     }

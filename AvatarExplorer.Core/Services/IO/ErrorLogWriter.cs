@@ -23,8 +23,8 @@ public class ErrorLogWriter : IDisposable
             if (_writer == null) InitializeWriter();
             if (_writer == null) return;
 
-            _writer.WriteLine(string.Format("Error: {0}", title));
-            if (!string.IsNullOrEmpty(tag)) _writer.WriteLine(string.Format("Tag Message: {0}", tag));
+            _writer.WriteLine($"Error: {title}");
+            if (!string.IsNullOrEmpty(tag)) _writer.WriteLine($"Tag Message: {tag}");
             if (exception != null) _writer.WriteLine(exception.ToString());
             _writer.WriteLine();
         }
@@ -41,8 +41,8 @@ public class ErrorLogWriter : IDisposable
             if (_writer == null) InitializeWriter();
             if (_writer == null) return;
     
-            _writer.WriteLine(string.Format("Internal Error: {0}", title));
-            if (!string.IsNullOrEmpty(tag)) _writer.WriteLine(string.Format("Tag Message: {0}", tag));
+            _writer.WriteLine($"Internal Error: {title}");
+            if (!string.IsNullOrEmpty(tag)) _writer.WriteLine($"Tag Message: {tag}");
             if (exception != null) _writer.WriteLine(exception.ToString());
             _writer.WriteLine();
         }

@@ -27,7 +27,7 @@ internal static class LauncherService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to open file: '{0}'.", filePath), ex);
+            ErrorManager.Instance.PostInternalError($"Failed to open file: '{filePath}'.", ex);
             return Error.Failure(description: "Failed to open file.");
         }
     }
@@ -46,7 +46,7 @@ internal static class LauncherService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError(string.Format("Failed to open directory: '{0}'.", folderPath), ex);
+            ErrorManager.Instance.PostError($"Failed to open directory: '{folderPath}'.", ex);
             return Error.Failure(description: "Failed to open directory.");
         }
     }
@@ -65,7 +65,7 @@ internal static class LauncherService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostError(string.Format("Failed to open Uri: '{0}'.", uri), ex);
+            ErrorManager.Instance.PostError($"Failed to open Uri: '{uri}'.", ex);
             return Error.Failure(description: "Failed to open uri.");
         }
     }

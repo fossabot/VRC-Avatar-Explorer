@@ -21,7 +21,7 @@ internal static class ImageDownloader
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to download image: '{0}'.", url), ex);
+            ErrorManager.Instance.PostInternalError($"Failed to download image: '{url}'.", ex);
             return false;
         }
     }

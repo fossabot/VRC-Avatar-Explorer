@@ -135,7 +135,7 @@ public partial class AvatarExplorerApp
         if (itemId == null) return null;
 
         Item? item = _itemDatabaseManager.Items.FirstOrDefault(i => i.Id == itemId);
-        if (item == null) ErrorManager.Instance.PostInternalError(string.Format("The item with the specified ID '{0}' was not found.", itemId));
+        if (item == null) ErrorManager.Instance.PostInternalError($"The item with the specified ID '{itemId}' was not found.");
 
         return item;
     }
@@ -156,7 +156,7 @@ public partial class AvatarExplorerApp
         if (groupId == null) return null;
 
         CommonAvatar? commonAvatar = _commonAvatarDatabaseManager.Items.FirstOrDefault(i => i.Id == groupId);
-        if (commonAvatar == null) ErrorManager.Instance.PostInternalError(string.Format("The common avatar group with the specified ID '{0}' was not found.", groupId));
+        if (commonAvatar == null) ErrorManager.Instance.PostInternalError($"The common avatar group with the specified ID '{groupId}' was not found.");
 
         return commonAvatar;
     }
@@ -582,9 +582,9 @@ public partial class AvatarExplorerApp
         Item? item = GetItemById(itemId);
         if (item == null) return Error.NotFound(description: "Item not found.");
 
-        if (item.BoothId == -1) return Error.Validation(description: "Booth id not found");
+        if (item.BoothId == -1) return Error.Validation(description: "Booth id not found.");
 
-        if (IsApiCooldownNow) return Error.Failure(code: "Api.Cooldown", description: "API is on cooldown");
+        if (IsApiCooldownNow) return Error.Failure(description: "API is on cooldown.");
 
         _lastBoothApiGetTime = DateTime.Now; // 時間を更新する
         ErrorOr<BoothItem> fetchResult = await BoothService.GetItem(item.BoothId.ToString());

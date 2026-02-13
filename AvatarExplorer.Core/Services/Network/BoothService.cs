@@ -35,7 +35,7 @@ internal static class BoothService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to retrieve booth item information: '{0}'.", boothId), ex);
+            ErrorManager.Instance.PostInternalError($"Failed to retrieve booth item information: '{boothId}'.", ex);
             return Error.Failure("BoothItem.Network", "ネットワークエラー");
         }
     }

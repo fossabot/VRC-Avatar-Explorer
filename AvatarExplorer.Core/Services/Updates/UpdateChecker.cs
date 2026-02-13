@@ -20,7 +20,7 @@ public static class UpdateChecker
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to retrieve update information: '{0}'.", SoftwareLink.UpdateCheckURL), ex);
+            ErrorManager.Instance.PostInternalError($"Failed to retrieve update information: '{SoftwareLink.UpdateCheckURL}'.", ex);
             return null;
         }
     }

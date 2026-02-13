@@ -86,7 +86,7 @@ internal class BackupManager
                 string backupPath = Path.Combine(backupFolderPath, fileName);
 
                 ErrorOr<Success> result = await FileSystemService.CopyFileAsync(filePath, backupPath);
-                if (result.IsError) ErrorManager.Instance.PostInternalError(string.Format("Failed to copy file: {0}.", filePath), tag: result.Errors.ToErrorString());
+                if (result.IsError) ErrorManager.Instance.PostInternalError($"Failed to copy file: {filePath}.", tag: result.Errors.ToErrorString());
             }
 
             _lastBackupDate = DateTime.Now;

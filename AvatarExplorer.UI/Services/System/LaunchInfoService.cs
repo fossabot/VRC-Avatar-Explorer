@@ -26,7 +26,7 @@ public static class LaunchInfoService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to parse url: '{0}.'", url), ex);
+            ErrorManager.Instance.PostInternalError($"Failed to parse url: '{url}.'", ex);
             return null;
         }
     }

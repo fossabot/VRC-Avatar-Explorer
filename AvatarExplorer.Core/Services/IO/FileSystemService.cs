@@ -222,7 +222,7 @@ public static class FileSystemService
             }
             catch (Exception ex)
             {
-                ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing entry '{0}'.", entry.Name), ex);
+                ErrorManager.Instance.PostInternalError($"An error occurred while processing entry: '{entry.Name}'.", ex);
             }
 
             processedEntries++;
@@ -274,7 +274,7 @@ public static class FileSystemService
 
                 if (extractResult.IsError)
                 {
-                    ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing folder '{0}'.", itemPath), tag: extractResult.Errors.ToErrorString());
+                    ErrorManager.Instance.PostInternalError($"An error occurred while processing folder '{itemPath}'.", tag: extractResult.Errors.ToErrorString());
                     result.ProcessingFailedPaths.Add(itemPath);
                 }
             }
@@ -303,7 +303,7 @@ public static class FileSystemService
 
             if (extractResult.IsError)
             {
-                ErrorManager.Instance.PostInternalError(string.Format("An error occurred while processing folder '{0}'.", itemPath), tag: extractResult.Errors.ToErrorString());
+                ErrorManager.Instance.PostInternalError($"An error occurred while processing folder '{itemPath}'.", tag: extractResult.Errors.ToErrorString());
                 result.ProcessingFailedPaths.Add(itemPath);
             }
         }
@@ -331,7 +331,7 @@ public static class FileSystemService
 
             if (copyResult.Value.Failures.Count > 0)
             {
-                copyResult.Value.Failures.ForEach(i => ErrorManager.Instance.PostInternalError(string.Format("Failed to copy: {0}", i.SourcePath), tag: i.ErrorMessage));
+                copyResult.Value.Failures.ForEach(i => ErrorManager.Instance.PostInternalError($"Failed to copy: {i.SourcePath}", tag: i.ErrorMessage));
             }
         }
 
@@ -371,7 +371,7 @@ public static class FileSystemService
         }
         catch (Exception ex)
         {
-            ErrorManager.Instance.PostInternalError(string.Format("Failed to extract file: '{0}'.", filePath), ex);
+            ErrorManager.Instance.PostInternalError($"Failed to extract file: '{filePath}'.", ex);
             return Error.Failure(description: $"Failed to extract file: '{filePath}'.");
         }
 
@@ -383,7 +383,7 @@ public static class FileSystemService
             }
             catch (Exception ex)
             {
-                ErrorManager.Instance.PostInternalError(string.Format("Failed to remove original file: '{0}'.", filePath), ex);
+                ErrorManager.Instance.PostInternalError($"Failed to remove original file: '{filePath}'.", ex);
             }
         }
 
@@ -549,10 +549,10 @@ public static class FileSystemService
         try
         {
             if (sourceFile == destinationFile)
-                return Error.Conflict("File.Copy", "Source and destination are the same."); // sourceとdestinationが同じ場合は無視
+                return Error.Conflict("Source and destination are the same.");
 
             if (!File.Exists(sourceFile))
-                return Error.NotFound("File.Copy", $"Source file not found: {sourceFile}");
+                return Error.NotFound($"Source file not found: '{sourceFile}'.");
 
             PrepareFileDirectory(destinationFile);
             using Stream sourceStream = File.OpenRead(sourceFile);
@@ -563,7 +563,7 @@ public static class FileSystemService
         }
         catch (Exception ex)
         {
-            return Error.Failure(description: $"Failed to copy file: {ex.Message}");
+            return Error.Failure(description: $"Failed to copy file: '{ex.Message}'.");
         }
     }
     #endregion
@@ -576,7 +576,7 @@ public static class FileSystemService
 
     public static IEnumerable<string> EnumerateFiles(string rootDirectory)
     {
-        if (!Directory.Exists(rootDirectory)) throw new DirectoryNotFoundException(string.Format("directory not found {0}.", rootDirectory));
+        if (!Directory.Exists(rootDirectory)) throw new DirectoryNotFoundException($"Directory not found: {rootDirectory}.");
 
         Stack<string> directories = new();
         directories.Push(rootDirectory);
@@ -593,7 +593,7 @@ public static class FileSystemService
             }
             catch (Exception ex)
             {
-                ErrorManager.Instance.PostInternalError(string.Format("Failed to retrieve subdirectories for '{0}'.", directory), ex);
+                ErrorManager.Instance.PostInternalError($"Failed to retrieve subdirectories for '{directory}'.", ex);
                 continue;
             }
 
@@ -610,7 +610,7 @@ public static class FileSystemService
             }
             catch (Exception ex)
             {
-                ErrorManager.Instance.PostInternalError(string.Format("Failed to retrieve files for '{0}'.", directory), ex);
+                ErrorManager.Instance.PostInternalError($"Failed to retrieve files for '{directory}'.", ex);
                 continue;
             }
 
