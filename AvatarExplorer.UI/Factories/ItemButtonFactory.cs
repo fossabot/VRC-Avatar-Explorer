@@ -11,6 +11,7 @@ using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Models.System;
 using AvatarExplorer.Core.Services.Items;
 using AvatarExplorer.Core.Utils;
+using AvatarExplorer.UI.Data;
 using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models.Items;
@@ -57,7 +58,7 @@ internal static class ItemButtonFactory
     {
         Image itemIcon = new()
         {
-            Source = ImageService.Get(item.ImageFileName, item.IconType),
+            Source = ImageService.Get(item.ImageFileName, item.IconType) ?? ImageService.Get(SystemIconKey.FileIcon),
             Width = userPreferences.NormalIconSize,
             Height = userPreferences.NormalIconSize,
             Stretch = Stretch.Fill,
@@ -143,7 +144,7 @@ internal static class ItemButtonFactory
                 tagLabel.FontWeight = FontWeight.Bold;
                 tagLabel.Classes.Add("accent");
             }
-            
+
             tagBorder.Classes.Add("tagborder");
 
             tagPanel.Children.Add(tagBorder);
