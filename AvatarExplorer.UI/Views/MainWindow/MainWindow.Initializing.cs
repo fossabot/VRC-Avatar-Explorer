@@ -104,11 +104,11 @@ public partial class MainWindow
             await SetApplicationArgs(args);
         });
     }
-    private void OnErrorReceived(string message, Exception? exception, string? tag)
+    private void OnErrorReceived(string message, Exception? exception, string tag)
     {
         // Ignored
     }
-    private void OnInternalErrorReceived(string message, Exception? exception, string? tag)
+    private void OnInternalErrorReceived(string message, Exception? exception, string tag)
     {
         // Ignored
     }

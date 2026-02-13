@@ -16,7 +16,7 @@ public class ErrorLogWriter : IDisposable
         FileSystemService.PrepareFileDirectory(_logFilePath);
     }
 
-    public void Write(string title, Exception? exception, string? tag)
+    public void Write(string title, Exception? exception, string tag)
     {
         try
         {
@@ -34,7 +34,7 @@ public class ErrorLogWriter : IDisposable
         }
     }
 
-    public void InternalWrite(string title, Exception? exception, string? tag)
+    public void InternalWrite(string title, Exception? exception, string tag)
     {
         try
         {

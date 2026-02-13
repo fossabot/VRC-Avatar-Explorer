@@ -1047,6 +1047,7 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Timestamp" Binding="{Binding Date, StringFormat={}{0:yyyy/MM/dd HH:mm:ss}}"/>
                                     <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"/>
+                                    <DataGridTextColumn Header="Tag" Binding="{Binding Tag}"/>
                                 </DataGrid.Columns>
 
                                 <DataGrid.Styles>
