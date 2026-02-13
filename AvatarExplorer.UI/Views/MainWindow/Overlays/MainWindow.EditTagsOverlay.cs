@@ -55,8 +55,9 @@ public partial class MainWindow
                 tagLabel.FontWeight = FontWeight.Bold;
                 tagLabel.Classes.Add("accent");
             }
-            
+
             tagBorder.Classes.Add("tagborder");
+            tagBorder.PointerPressed += EditTagsOverlay_Tag_Click;
 
             EditTagsOverlay_TagList.Children.Add(tagBorder);
         }
@@ -65,9 +66,9 @@ public partial class MainWindow
     }
 
     #region Event Handler
-    private void EditTagsOverlay_Tag_Click(object? sender, RoutedEventArgs e)
+    private void EditTagsOverlay_Tag_Click(object? sender, PointerPressedEventArgs e)
     {
-        if (sender is Button button && button.Content is string tag)
+        if (sender is Border border && border.Child is TextBlock taglabel && taglabel.Text is string tag)
         {
             _editTagsOverlay_selectedTags.RemoveAll(i => i == tag);
             EditTagsOverlay_ReloadTagList();
