@@ -31,9 +31,9 @@ internal static class UnitypackageSelectorButtonFactory
         Grid contentGrid = new() { ColumnSpacing = 10, ColumnDefinitions = new("Auto,*") };
 
         // アイコン (アイコンにCornerRadiusを適用するため、ChildにImageが指定されたBorderが返ってくる)
-        Border itemBorder = ItemButtonFactory.CreateItemIconBorder(item, userPreferences, false);
-        contentGrid.Children.Add(itemBorder);
-        Grid.SetColumn(itemBorder, 0);
+        Border itemIconBorder = ItemButtonFactory.CreateItemIconBorder(item, userPreferences, false);
+        contentGrid.Children.Add(itemIconBorder);
+        Grid.SetColumn(itemIconBorder, 0);
 
         // タイトルリスト
         Grid textGrid = CreateTextAndIconGrid(item, runtimeSettings, itemIndex, onCopyClick, onRemoveClick);

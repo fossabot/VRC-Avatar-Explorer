@@ -30,9 +30,9 @@ internal static class ItemButtonFactory
         Grid contentGrid = new() { ColumnSpacing = 10, ColumnDefinitions = new("Auto,*") };
 
         // アイコン (アイコンにCornerRadiusを適用するため、ChildにImageが指定されたBorderが返ってくる)
-        Border itemBorder = CreateItemIconBorder(item, userPreferences);
-        contentGrid.Children.Add(itemBorder);
-        Grid.SetColumn(itemBorder, 0);
+        Border itemIconBorder = CreateItemIconBorder(item, userPreferences);
+        contentGrid.Children.Add(itemIconBorder);
+        Grid.SetColumn(itemIconBorder, 0);
 
         // テキスト + タグ部分
         Grid textGrid = CreateTextAndTagGrid(item, runtimeSettings);
@@ -143,6 +143,7 @@ internal static class ItemButtonFactory
 
             tagPanel.Children.Add(tagBorder);
         }
+
         return tagPanel;
     }
 
@@ -176,7 +177,6 @@ internal static class ItemButtonFactory
     {
         StringBuilder toolTipTextBuilder = new();
 
-        // AppendLine()1つだとシンプルな改行になるので、1行空けたければ2ついる
         toolTipTextBuilder.Append(item.Title);
 
         toolTipTextBuilder.AppendLine();
