@@ -124,18 +124,24 @@ internal static class ItemButtonFactory
 
         if (!string.IsNullOrEmpty(item.CommonAvatarName))
         {
-            Button commonAvatarButton = GetTagButton(Localizer.Instance.Get(LocalizationKey.Button.Tag.CommonAvatar, item.CommonAvatarName));
-            commonAvatarButton.FontWeight = FontWeight.Bold;
-            commonAvatarButton.Foreground = new SolidColorBrush(Colors.White);
-            commonAvatarButton.Background = new SolidColorBrush(Colors.Green);
-            tagPanel.Children.Add(commonAvatarButton);
+            Border commonAvatarBorder = GetTagBorder(Localizer.Instance.Get(LocalizationKey.Button.Tag.CommonAvatar, item.CommonAvatarName));
+            if (commonAvatarBorder.Child is TextBlock tagLabel)
+            {
+                tagLabel.FontWeight = FontWeight.Bold;
+                tagLabel.Foreground = new SolidColorBrush(Colors.White);
+            }
+
+            commonAvatarBorder.Background = new SolidColorBrush(Colors.Green);
+            tagPanel.Children.Add(commonAvatarBorder);
         }
 
         foreach (string itemTag in item.ItemTagsView)
         {
-            Button tagButton = GetTagButton(itemTag, onClick: null);
-            tagButton.Classes.Add("accent");
-            tagPanel.Children.Add(tagButton);
+            Border tagBorder = GetTagBorder(itemTag);
+            if (tagBorder.Child is TextBlock tagLabel) tagLabel.Classes.Add("accent");
+            tagBorder.Classes.Add("tagborder");
+
+            tagPanel.Children.Add(tagBorder);
         }
         return tagPanel;
     }
@@ -157,11 +163,12 @@ internal static class ItemButtonFactory
         if (onClick != null) button.Click += onClick;
     }
 
-    internal static Button GetTagButton(string text, EventHandler<RoutedEventArgs>? onClick = null)
+    internal static Border GetTagBorder(string text)
     {
-        Button tagButton = new() { Content = text, CornerRadius = new(15), Height = 30, FontSize = 13.5, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+        Border tagButton = new() { CornerRadius = new(15), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+        TextBlock tagLabel = new() { Text = text, FontSize = 13, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Padding = new(8, 5) };
+        tagButton.Child = tagLabel;
 
-        if (onClick != null) tagButton.Click += onClick;
         return tagButton;
     }
 

@@ -63,6 +63,10 @@
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
 
+        <Style Selector="Border.tagborder">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
+        </Style>
+
         <Style Selector="Border.panelbackground">
             <Setter Property="Background" Value="{DynamicResource Background.Panel}"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>

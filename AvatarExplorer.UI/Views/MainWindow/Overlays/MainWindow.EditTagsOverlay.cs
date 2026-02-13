@@ -48,9 +48,11 @@ public partial class MainWindow
 
         foreach (string tag in _editTagsOverlay_selectedTags)
         {
-            Button tagButton = ItemButtonFactory.GetTagButton(tag, EditTagsOverlay_Tag_Click);
-            tagButton.Classes.Add("accent");
-            EditTagsOverlay_TagList.Children.Add(tagButton);
+            Border tagBorder = ItemButtonFactory.GetTagBorder(tag);
+            if (tagBorder.Child is TextBlock tagLabel) tagLabel.Classes.Add("accent");
+            tagBorder.Classes.Add("tagborder");
+
+            EditTagsOverlay_TagList.Children.Add(tagBorder);
         }
 
         EditTagsOverlay_TagListScrollViewer.Offset = AvaloniaVectorUtils.MaxValue;
