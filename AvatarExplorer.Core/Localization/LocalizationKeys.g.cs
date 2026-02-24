@@ -546,6 +546,7 @@ public static class LocalizationKey
     {
         public const string Title = "EditSupportedAvatars.Title";
         public const string Search = "EditSupportedAvatars.Search";
+        public const string Cancel = "EditSupportedAvatars.Cancel";
         public const string Confirm = "EditSupportedAvatars.Confirm";
     }
     public static class EditImplementedAvatars

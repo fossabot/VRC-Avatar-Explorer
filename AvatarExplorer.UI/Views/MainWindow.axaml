@@ -733,7 +733,7 @@
 
                         <!-- 下のボタン -->
                         <Grid ColumnDefinitions="*,150,150" Grid.Row="6" Margin="10,0,10,0" ColumnSpacing="20">
-                            <Button Classes="button" FontWeight="Bold" Grid.Column="1" Content="{Binding [EditSupportedAvatars.AddItem.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditSupportedAvatarsOverlay_Cancel_Click"/>
+                            <Button Classes="button" FontWeight="Bold" Grid.Column="1" Content="{Binding [EditSupportedAvatars.Cancel]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditSupportedAvatarsOverlay_Cancel_Click"/>
                             <Button Classes="accent" FontWeight="Bold" Grid.Column="2" Content="{Binding [EditSupportedAvatars.Confirm]}" VerticalAlignment="Center" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,7" FontSize="15" Click="EditSupportedAvatarsOverlay_Confirm_Click"/>
                         </Grid>
                     </Grid>

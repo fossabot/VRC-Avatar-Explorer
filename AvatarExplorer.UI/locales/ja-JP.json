@@ -321,6 +321,7 @@
 
     "EditSupportedAvatars.Title": "対応アバターの選択",
     "EditSupportedAvatars.Search": "検索",
+    "EditSupportedAvatars.Cancel": "キャンセル",
     "EditSupportedAvatars.Confirm": "確定",
 
     "EditImplementedAvatars.Title": "実装アバターの選択",
