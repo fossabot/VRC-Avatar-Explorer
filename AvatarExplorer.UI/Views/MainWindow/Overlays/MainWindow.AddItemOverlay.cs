@@ -270,9 +270,14 @@ public partial class MainWindow
         int index = AddItemOverlay_ItemTypeComboBox.Items.Add(customCategory);
         AddItemOverlay_ItemTypeComboBox.SelectedIndex = index;
     }
-    private void AddItemOverlay_EditSupportedAvatars_Click(object? sender, RoutedEventArgs e)
+    private async void AddItemOverlay_EditSupportedAvatars_Click(object? sender, RoutedEventArgs e)
     {
-        EditSupportedAvatarsOverlay_Show(_addItemOverlay_addItemWindowValues.SupportedAvatarsView);
+        List<string>? supportedAvatars = await EditSupportedAvatarsOverlay_ShowAsyncSafe(_addItemOverlay_addItemWindowValues.SupportedAvatarsView);
+        if (supportedAvatars != null)
+        {
+            _addItemOverlay_addItemWindowValues.UpdateSupportedAvatars(supportedAvatars);
+            AddItemOverlay_UpdateSupportedAvatarsLabel();
+        }
     }
     private async void AddItemOverlay_AddFolder_Click(object? sender, RoutedEventArgs e)
     {

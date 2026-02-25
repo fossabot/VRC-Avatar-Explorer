@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models.Items;
@@ -13,13 +16,43 @@ namespace AvatarExplorer.UI;
 public partial class MainWindow
 {
     private readonly List<string> _editSupportedAvatarsOverlay_selectedAvatars = new();
+    private TaskCompletionSource<List<string>?>? _editSupportedAvatarsTcs;
 
-    private void EditSupportedAvatarsOverlay_Show(IReadOnlyList<string>? avatars = null)
+    private Task<List<string>?> EditSupportedAvatarsOverlay_ShowAsync(IReadOnlyList<string>? avatars = null)
     {
+        if (_editSupportedAvatarsTcs != null) throw new InvalidOperationException("EditSupportedAvatarsOverlay is already shown.");
+
+        _editSupportedAvatarsTcs = new TaskCompletionSource<List<string>?>();
+
         EditSupportedAvatarsOverlay.IsVisible = true;
         EditSupportedAvatarsOverlay_InitializeList(avatars);
+
+        return _editSupportedAvatarsTcs.Task;
     }
-    private void EditSupportedAvatarsOverlay_Hide() => EditSupportedAvatarsOverlay.IsVisible = false;
+
+    private async Task<List<string>?> EditSupportedAvatarsOverlay_ShowAsyncSafe(IReadOnlyList<string>? avatars = null)
+    {
+        try
+        {
+            return await EditSupportedAvatarsOverlay_ShowAsync(avatars);
+        }
+        catch (Exception ex)
+        {
+            ErrorManager.Instance.PostError("Failed to open dialog.", ex);
+            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.OpenDialogFailed]);
+            return null;
+        }
+    }
+
+    private void EditSupportedAvatarsOverlay_Hide(List<string>? result)
+    {
+        EditSupportedAvatarsOverlay.IsVisible = false;
+
+        TaskCompletionSource<List<string>?>? tcs = _editSupportedAvatarsTcs;
+        _editSupportedAvatarsTcs = null;
+
+        tcs?.TrySetResult(result);
+    }
 
     private void EditSupportedAvatarsOverlay_InitializeList(IReadOnlyList<string>? avatars = null)
     {
@@ -46,24 +79,9 @@ public partial class MainWindow
     }
 
     #region Event Handler
-    private void EditSupportedAvatarsOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => EditSupportedAvatarsOverlay_Hide();
-    private void EditSupportedAvatarsOverlay_Confirm_Click(object? sender, RoutedEventArgs e)
-    {
-        Item? item = _avatarExplorerApp.GetItemById(_addItemOverlay_selectedItemId);
-        if (item == null)
-        {
-            Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ItemNotFound]);
-            return;
-        }
+    private void EditSupportedAvatarsOverlay_Cancel_Click(object? sender, RoutedEventArgs e) => EditSupportedAvatarsOverlay_Hide(null);
+    private void EditSupportedAvatarsOverlay_Confirm_Click(object? sender, RoutedEventArgs e) => EditSupportedAvatarsOverlay_Hide(_editSupportedAvatarsOverlay_selectedAvatars);
     
-        item.UpdateSupportedAvatars(_editSupportedAvatarsOverlay_selectedAvatars);
-        _avatarExplorerApp.UpdateSearchIndex(item.Id);
-        _avatarExplorerApp.SaveItemDatabase();
-
-        AddItemOverlay_UpdateSupportedAvatarsLabel();
-
-        EditSupportedAvatarsOverlay_Hide();
-    }
     private void EditSupportedAvatarsOverlay_ItemButton_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button || button.Tag is not ItemTagInfo itemTagInfo) return;
