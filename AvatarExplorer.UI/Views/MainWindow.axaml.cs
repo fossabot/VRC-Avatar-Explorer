@@ -373,7 +373,7 @@ public partial class MainWindow : Window
         Main_RenderLeftPanel();
 
         // 最後に表示されていた画面が検索画面だったら、キャッシュを元にもう一度検索してあげる
-        if (_main_isLastWindowSearch) Main_ExecuteSearchItems();
+        if (_main_isLastWindowSearch) Main_ExecuteSearchItems(_main_searchTextCache);
         else
         {
             // 再読込する前に、前の画面のスクロール位置を保存してあげる
