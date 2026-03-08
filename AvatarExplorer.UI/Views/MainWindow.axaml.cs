@@ -265,10 +265,12 @@ public partial class MainWindow : Window
 
         SearchFilter searchFilter = SearchFilterBuilder.Build(_main_searchTextCache, (token) =>
         {
-            string? localizationKey = Localizer.Instance.GetKey(token);
-            if (localizationKey == null || !CategoryLocalizationKeys.Contains(localizationKey)) return token;
+            foreach (string key in CategoryLocalizationKeys)
+            {
+                if (Localizer.Instance[key] == token) return key;
+            }
 
-            return localizationKey;
+            return token;
         });
 
         if (AdvancedSearchPanel_Enable.IsChecked ?? false) AdvancedSearchPanel_ApplyValues(searchFilter);
