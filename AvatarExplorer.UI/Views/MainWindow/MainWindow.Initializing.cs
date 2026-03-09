@@ -9,7 +9,6 @@ using AvatarExplorer.UI.Extensions;
 using AvatarExplorer.UI.Localization;
 using AvatarExplorer.UI.Models.Common;
 using AvatarExplorer.UI.Models.ContextMenu;
-using AvatarExplorer.UI.Models.Settings;
 using AvatarExplorer.UI.Services.System;
 
 namespace AvatarExplorer.UI;
@@ -102,14 +101,6 @@ public partial class MainWindow
             Activate();
             await SetApplicationArgs(args);
         });
-    }
-    private void OnErrorReceived(string message, Exception? exception, string tag)
-    {
-        // Ignored
-    }
-    private void OnInternalErrorReceived(string message, Exception? exception, string tag)
-    {
-        // Ignored
     }
 
     private async Task CheckSchemeAsync()
