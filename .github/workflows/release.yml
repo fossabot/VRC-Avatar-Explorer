@@ -35,11 +35,7 @@ jobs:
 
       - name: Publish Application
         run: |
-          dotnet publish -c Release \
-            -r ${{ matrix.runtime }} \
-            --self-contained true \
-            -p:PublishSingleFile=true \
-            -o ./publish
+          dotnet publish "./AvatarExplorer.UI/AvatarExplorer.UI.csproj" -c Release -r ${{ matrix.runtime }} --self-contained true -p:PublishSingleFile=true -o ./publish
 
       - name: Compress
         shell: bash
@@ -62,6 +58,7 @@ jobs:
       - name: Create or Update Release
         uses: softprops/action-gh-release@v2
         with:
+          draft: true
           prerelease: ${{ contains(github.ref_name, 'beta') }}
           files: ${{ env.ASSET_PATH }}
           generate_release_notes: true
