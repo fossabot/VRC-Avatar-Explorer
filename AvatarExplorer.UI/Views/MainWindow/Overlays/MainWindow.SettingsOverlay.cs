@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -256,13 +257,12 @@ public partial class MainWindow
         string? filePath = await StorageService.SaveFileDialog(this, Localizer.Instance[LocalizationKey.Dialog.SelectSaveFilePath], "csv");
         if (filePath == null) return;
 
-        var localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
+        Dictionary<ItemType, string> localizedItemTypesMapping = Enum.GetValues<ItemType>().ToDictionary(i => i, i => Localizer.Instance[i.GetLocalizationKey() ?? i.ToString()]);
 
         YesNoResult? result = await ShowYesNoDialogSafeAsync(Localizer.Instance[LocalizationKey.Dialog.Confirmation.Default], Localizer.Instance[LocalizationKey.Dialog.Confirmation.ExportToCsv.IncludeImplementedToSupported]);
         if (result == null) return;
 
         ErrorOr<Success> exportResult;
-        
         if (result == YesNoResult.Yes) exportResult = await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, true);
         else exportResult = await _avatarExplorerApp.ExportToCsv(filePath, localizedItemTypesMapping, false);
         

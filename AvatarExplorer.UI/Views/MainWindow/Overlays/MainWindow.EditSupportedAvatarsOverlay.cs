@@ -22,7 +22,7 @@ public partial class MainWindow
     {
         if (_editSupportedAvatarsTcs != null) throw new InvalidOperationException("EditSupportedAvatarsOverlay is already shown.");
 
-        _editSupportedAvatarsTcs = new TaskCompletionSource<List<string>?>();
+        _editSupportedAvatarsTcs = new();
 
         EditSupportedAvatarsOverlay.IsVisible = true;
         EditSupportedAvatarsOverlay_InitializeList(avatars);

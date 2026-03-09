@@ -43,7 +43,8 @@ public partial class MainWindow
         {
             ErrorManager.Instance.PostInternalError("Failed to import data.", tag: result.Errors.ToErrorString());
             Dialog_Show(Localizer.Instance[LocalizationKey.Error.Default], Localizer.Instance[LocalizationKey.Error.ImportFailed]);
-        } else
+        }
+        else
         {
             Main_ReloadCurrentWindow();
         }

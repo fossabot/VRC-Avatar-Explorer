@@ -15,7 +15,7 @@ public partial class MainWindow
     {
         if (_textTcs != null) throw new InvalidOperationException("TextDialog is already shown.");
 
-        _textTcs = new TaskCompletionSource<string?>();
+        _textTcs = new();
 
         TextDialogOverlay_Title.Text = title;
         if (!string.IsNullOrEmpty(initialText)) TextDialogOverlay_Content.Text = initialText;
@@ -42,7 +42,7 @@ public partial class MainWindow
     {
         TextDialogOverlay.IsVisible = false;
 
-        var tcs = _textTcs;
+        TaskCompletionSource<string?>? tcs = _textTcs;
         _textTcs = null;
 
         tcs?.TrySetResult(result);

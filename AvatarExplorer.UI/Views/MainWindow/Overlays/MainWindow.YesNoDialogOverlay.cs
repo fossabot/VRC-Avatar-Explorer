@@ -16,7 +16,7 @@ public partial class MainWindow
     {
         if (_yesNoTcs != null) throw new InvalidOperationException("YesNoDialog is already shown.");
 
-        _yesNoTcs = new TaskCompletionSource<YesNoResult>();
+        _yesNoTcs = new();
 
         YesNoDialogTitle.Text = title;
         YesNoDialogContent.Text = content;
