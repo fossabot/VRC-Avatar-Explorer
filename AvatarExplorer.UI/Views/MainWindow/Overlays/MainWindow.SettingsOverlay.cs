@@ -100,33 +100,35 @@ public partial class MainWindow
     {
         string previousDataRootDirectoryPath = RuntimeSettings.DataRootDirectory;
 
-        // 基本
-        if (SettingsOverlay_ItemsFolderPathTextBox != null) _avatarExplorerApp.SetDataRootDirectory(SettingsOverlay_ItemsFolderPathTextBox.Text ?? string.Empty);
-        if (SettingsOverlay_LanguageComboBox != null) _userPreferences.SetLanguage(SettingsOverlay_LanguageComboBox.SelectedIndex);
-        if (SettingsOverlay_SortOrderComboBox != null) _avatarExplorerApp.SetItemsSortOrder((ItemSortOrder)SettingsOverlay_SortOrderComboBox.SelectedIndex);
-        if (SettingsOverlay_ThemeComboBox != null) _userPreferences.SetTheme((Theme)SettingsOverlay_ThemeComboBox.SelectedIndex);
+        RuntimeSettings runtimeSettings = new()
+        {
+            DataRootDirectory = SettingsOverlay_ItemsFolderPathTextBox?.Text ?? string.Empty,
+            ItemSortOrder = (ItemSortOrder)(SettingsOverlay_SortOrderComboBox?.SelectedIndex ?? 0),
+            RemoveBrackets = SettingsOverlay_RemoveBracketsCheckBox?.IsChecked ?? false,
+            RemoveOriginal = SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false,
+            AutoBackupRootDirectory = SettingsOverlay_AutoBackupPathTextBox?.Text ?? string.Empty,
+            AutoBackupInterval = ValueParser.Int(SettingsOverlay_AutoBackupIntervalTextBox?.Text, 5),
+            MaxDegreeOfParallelism = ValueParser.Int(SettingsOverlay_MaxDegreeOfParallelismTextBox?.Text, 4)
+        };
 
-        // 表示
-        if (SettingsOverlay_RemoveBracketsCheckBox != null) _avatarExplorerApp.SetRemoveBrackets(SettingsOverlay_RemoveBracketsCheckBox.IsChecked ?? false);
-        if (SettingsOverlay_NormalIconSizeSlider != null && SettingsOverlay_HoverIconSizeSlider != null) _userPreferences.SetIconSize((int)SettingsOverlay_NormalIconSizeSlider.Value, (int)SettingsOverlay_HoverIconSizeSlider.Value);
-        if (SettingsOverlay_EnableHoverIconSizeCheckBox != null) _userPreferences.UseHoverIconSize(SettingsOverlay_EnableHoverIconSizeCheckBox.IsChecked ?? false);
-        if (SettingsOverlay_AntiAliasingModeComboBox != null) _userPreferences.SetAntialiasing((BitmapAntiAliasingMode)SettingsOverlay_AntiAliasingModeComboBox.SelectedIndex);
-        if (SettingsOverlay_ItemsPerPageTextBox != null) _userPreferences.SetItemsPerPage(ValueParser.Int(SettingsOverlay_ItemsPerPageTextBox.Text, 30));
-        if (SettingsOverlay_RemoveOriginalCheckBox != null) _avatarExplorerApp.SetRemoveOriginal(SettingsOverlay_RemoveOriginalCheckBox.IsChecked ?? false);
+        UserPreferences userPreferences = new()
+        {
+            Language = SettingsOverlay_LanguageComboBox?.SelectedIndex ?? 0,
+            Theme = (Theme)(SettingsOverlay_ThemeComboBox?.SelectedIndex ?? 0),
+            NormalIconSize = (int)(SettingsOverlay_NormalIconSizeSlider?.Value ?? 70),
+            HoverIconSize = (int)(SettingsOverlay_HoverIconSizeSlider?.Value ?? 200),
+            EnableHoverIconSize = SettingsOverlay_EnableHoverIconSizeCheckBox?.IsChecked ?? true,
+            AntiAliasingMode = (BitmapAntiAliasingMode)(SettingsOverlay_AntiAliasingModeComboBox?.SelectedIndex ?? 0),
+            ItemsPerPage = ValueParser.Int(SettingsOverlay_ItemsPerPageTextBox?.Text, 30),
+            UseBackgroundImage = SettingsOverlay_UseBackgroundImageCheckBox?.IsChecked ?? false,
+            BackgroundImage = SettingsOverlay_BackgroundImagePathTextBox?.Text ?? string.Empty,
+            BackgroundOpacity = Math.Clamp((int)(SettingsOverlay_BackgroundImageOpacitySlider?.Value ?? 20), 0, 100),
+            CheckForUpdate = SettingsOverlay_CheckForUpdateCheckBox.IsChecked ?? true,
+            UpdateChannel = (UpdateChannel)(SettingsOverlay_UpdateChannelComboBox?.SelectedIndex ?? 0)
+        };
 
-        // 背景
-        if (SettingsOverlay_UseBackgroundImageCheckBox != null) _userPreferences.UseBackground(SettingsOverlay_UseBackgroundImageCheckBox.IsChecked ?? false);
-        if (SettingsOverlay_BackgroundImagePathTextBox != null) _userPreferences.SetBackground(SettingsOverlay_BackgroundImagePathTextBox.Text ?? string.Empty);
-        if (SettingsOverlay_BackgroundImageOpacitySlider != null) _userPreferences.SetBackgroundOpacity(Math.Clamp((int)SettingsOverlay_BackgroundImageOpacitySlider.Value, 0, 100));
-
-        // データ
-        if (SettingsOverlay_AutoBackupPathTextBox != null) _avatarExplorerApp.SetAutoBackupRootDirectory(SettingsOverlay_AutoBackupPathTextBox.Text ?? string.Empty);
-        if (SettingsOverlay_AutoBackupIntervalTextBox != null) _avatarExplorerApp.SetAutoBackupInterval(ValueParser.Int(SettingsOverlay_AutoBackupIntervalTextBox.Text, 5));
-
-        // システム
-        if (SettingsOverlay_MaxDegreeOfParallelismTextBox != null) _avatarExplorerApp.SetMaxDegreeOfParallelism(ValueParser.Int(SettingsOverlay_MaxDegreeOfParallelismTextBox.Text, 5));
-        if (SettingsOverlay_CheckForUpdateCheckBox != null) _userPreferences.SetCheckForUpdate(SettingsOverlay_CheckForUpdateCheckBox.IsChecked ?? false);
-        if (SettingsOverlay_UpdateChannelComboBox != null) _userPreferences.SetUpdateChannel((UpdateChannel)SettingsOverlay_UpdateChannelComboBox.SelectedIndex);
+        _userPreferences = userPreferences;
+        _avatarExplorerApp.SetRuntimeSettings(runtimeSettings);
 
         SettingsOverlay_ApplyPreferenceSettingsToUi();
         SettingsOverlay_SetUiValueFromCurrentSettings();
@@ -327,7 +329,7 @@ public partial class MainWindow
 
         if (File.Exists(userPreferencesFilePath))
         {
-            _userPreferences.FromOther(UserPreferencesService.Load(userPreferencesFilePath));
+            _userPreferences = UserPreferencesService.Load(userPreferencesFilePath);
             UserPreferencesService.Save(_userPreferences);
         }
 

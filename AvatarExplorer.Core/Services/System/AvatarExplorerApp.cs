@@ -26,7 +26,7 @@ public partial class AvatarExplorerApp
 
     private readonly SelectionState _selectionState = new();
     private readonly Dictionary<ItemTagStates, Func<SelectionNode, IReadOnlyList<ItemCountInfo>>> _stateHandlers;
-    private readonly RuntimeSettings _runtimeSettings = new();
+    private RuntimeSettings _runtimeSettings = new();
 
     public AvatarExplorerApp()
     {
@@ -83,18 +83,7 @@ public partial class AvatarExplorerApp
     public void LoadRuntimeSettings(string? path = null)
     {
         string loadPath = path ?? SystemPath.RuntimeSettingsFilePath;
-        RuntimeSettings runtimeSettings = RuntimeSettingsService.Load(loadPath);
-        SetRuntimeSettingsInternal(runtimeSettings);
-    }
-    private void SetRuntimeSettingsInternal(RuntimeSettings runtimeSettings)
-    {
-        _runtimeSettings.SetDataRootDirectory(runtimeSettings.DataRootDirectory);
-        _runtimeSettings.SetAutoBackupRootDirectory(runtimeSettings.AutoBackupRootDirectory);
-        _runtimeSettings.SetSortOrder(runtimeSettings.ItemSortOrder);
-        _runtimeSettings.SetRemoveOriginal(runtimeSettings.RemoveOriginal);
-        _runtimeSettings.SetRemoveBrackets(runtimeSettings.RemoveBrackets);
-        _runtimeSettings.SetAutoBackupInterval(runtimeSettings.AutoBackupInterval);
-        _runtimeSettings.SetMaxDegreeOfParallelism(runtimeSettings.MaxDegreeOfParallelism);
+        _runtimeSettings =  RuntimeSettingsService.Load(loadPath);
     }
     #endregion
 
@@ -340,21 +329,13 @@ public partial class AvatarExplorerApp
     #endregion
 
     #region Set API
-    public void SetDataRootDirectory(string path) => _runtimeSettings.SetDataRootDirectory(path);
-    public void SetAutoBackupRootDirectory(string path)
+    public void SetRuntimeSettings(RuntimeSettings runtimeSettings)
     {
-        _runtimeSettings.SetAutoBackupRootDirectory(path);
-        _backupManager.SetAutoBackupPath(path);
+        _runtimeSettings = runtimeSettings;
+
+        _backupManager.SetAutoBackupPath(_runtimeSettings.AutoBackupRootDirectory);
+        _backupManager.SetAutoBackupInterval(_runtimeSettings.AutoBackupInterval);
     }
-    public void SetItemsSortOrder(ItemSortOrder sortOrder) => _runtimeSettings.SetSortOrder(sortOrder);
-    public void SetRemoveOriginal(bool value) => _runtimeSettings.SetRemoveOriginal(value);
-    public void SetRemoveBrackets(bool value) => _runtimeSettings.SetRemoveBrackets(value);
-    public void SetAutoBackupInterval(int value)
-    {
-        _runtimeSettings.SetAutoBackupInterval(value);
-        _backupManager.SetAutoBackupInterval(value);
-    }
-    public void SetMaxDegreeOfParallelism(int value) => _runtimeSettings.SetMaxDegreeOfParallelism(value);
     #endregion
 
     #region Add API
@@ -556,7 +537,7 @@ public partial class AvatarExplorerApp
     public async Task<ErrorOr<Success>> ImportFromKonoAsset(string dataFolderPath, Func<(string, int), Task>? reportProgress = null)
     {
         ErrorOr<DataImportResult> result = await DataImporter.FromKonoAsset(dataFolderPath, _runtimeSettings, reportProgress);
-        if (result.IsError) return Error.Failure(result.Errors.ToErrorString());
+        if (result.IsError) return Error.Failure(description: result.Errors.ToErrorString());
 
         _itemDatabaseManager.AddRange(result.Value.Items);
         _commonAvatarDatabaseManager.AddRange(result.Value.CommonAvatars);
@@ -588,7 +569,7 @@ public partial class AvatarExplorerApp
 
         _lastBoothApiGetTime = DateTime.Now; // 時間を更新する
         ErrorOr<BoothItem> fetchResult = await BoothService.GetItem(item.BoothId.ToString());
-        if (fetchResult.IsError) return Error.Failure(fetchResult.Errors.ToErrorString());
+        if (fetchResult.IsError) return Error.Failure(description: fetchResult.Errors.ToErrorString());
 
         string itemThumbnailFileName = item.BoothId + ".png";
         bool result = await ImageDownloader.Fetch(fetchResult.Value.ThumbnailUrl, Path.Combine(SystemPath.ItemThumbnailsPath, itemThumbnailFileName), true);

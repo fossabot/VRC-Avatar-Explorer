@@ -10,14 +10,14 @@ public class ChangeLog
 
     public override string ToString()
     {
-        var stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new();
 
         void AppendSection(string title, List<string> items)
         {
             if (stringBuilder.Length > 0) stringBuilder.AppendLine();
             
             stringBuilder.AppendLine($"# {title}");
-            foreach (var item in items)
+            foreach (string item in items)
             {
                 stringBuilder.AppendLine($"・ {item}");
             }

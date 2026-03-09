@@ -51,8 +51,7 @@ public partial class MainWindow
     }
     private void InitializeUserPreferences()
     {
-        UserPreferences userPreferences = UserPreferencesService.Load(SystemPath.UserPreferencesFilePath);
-        _userPreferences.FromOther(userPreferences);
+        _userPreferences = UserPreferencesService.Load(SystemPath.UserPreferencesFilePath);
     }
     private void InitializeContextMenuHandlers()
     {

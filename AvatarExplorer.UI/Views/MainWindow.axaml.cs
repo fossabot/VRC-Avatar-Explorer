@@ -40,7 +40,7 @@ public partial class MainWindow : Window
 
     private ItemTagStates _main_lastRightPanelItemTagState = ItemTagStates.None;
 
-    private readonly UserPreferences _userPreferences = new();
+    private UserPreferences _userPreferences = new();
     private int ItemsPerPage => _userPreferences.ItemsPerPage;
 
     private RuntimeSettings RuntimeSettings => _avatarExplorerApp.GetRuntimeSettings();

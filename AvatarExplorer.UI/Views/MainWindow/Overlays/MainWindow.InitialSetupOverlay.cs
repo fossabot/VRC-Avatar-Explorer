@@ -30,7 +30,11 @@ public partial class MainWindow
 
         if (InitialSetupOverlay_LanguageComboBox != null)
         {
-            _userPreferences.SetLanguage(InitialSetupOverlay_LanguageComboBox.SelectedIndex);
+            _userPreferences = _userPreferences with
+            {
+                Language = InitialSetupOverlay_LanguageComboBox?.SelectedIndex ?? 0
+            };
+
             SettingsOverlay_ApplyLanguage(_userPreferences.Language);
         }
     }
@@ -42,7 +46,11 @@ public partial class MainWindow
 
         if (InitialSetupOverlay_ItemsFolderPathTextBox != null)
         {
-            _avatarExplorerApp.SetDataRootDirectory(folders[0]);
+            _avatarExplorerApp.SetRuntimeSettings(RuntimeSettings with
+            {
+                DataRootDirectory = folders[0]
+            });
+            
             InitialSetupOverlay_ItemsFolderPathTextBox.Text = RuntimeSettings.DataRootDirectory;
         }
     }
