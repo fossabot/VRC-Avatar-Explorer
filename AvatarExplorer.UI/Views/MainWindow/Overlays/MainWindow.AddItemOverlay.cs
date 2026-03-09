@@ -192,7 +192,14 @@ public partial class MainWindow
 
     private void AddItemOverlay_UpdateSupportedAvatarsLabel()
     {
-        AddItemOverlay_EditSupportedAvatarsButton.Content = string.Format(Localizer.Instance.Get(LocalizationKey.AddItem.SelectedAvatarsCount, _addItemOverlay_addItemWindowValues.SupportedAvatarsView.Count.ToString()));
+        int totalAvatarsCount = 0;
+        foreach (string avatar in _addItemOverlay_addItemWindowValues.SupportedAvatarsView)
+        {
+            if (avatar.StartsWith(CommonAvatar.InternalPathPrefix)) totalAvatarsCount += _avatarExplorerApp.GetCommonAvatarById(CommonAvatar.GetGroupId(avatar))?.AvatarsView.Count ?? 0;
+            else totalAvatarsCount++;
+        }
+
+        AddItemOverlay_EditSupportedAvatarsButton.Content = string.Format(Localizer.Instance.Get(LocalizationKey.AddItem.SelectedAvatarsCount, totalAvatarsCount.ToString()));
     }
 
     private void AddItemOverlay_SetValuesToUi(AddItemOverlayWindowValues addItemWindowValues)
