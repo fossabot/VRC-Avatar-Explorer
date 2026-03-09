@@ -28,7 +28,7 @@ public partial class MainWindow
     internal string? _addItemOverlay_selectedItemId = null;
     internal readonly AddItemOverlayWindowValues _addItemOverlay_addItemWindowValues = new();
 
-    private void AddItemOverlay_ShowEdit(Item item)
+    private void AddItemOverlay_Show(Item item)
     {
         AddItemOverlay_InitializeAddItemWindowCategories();
 
@@ -45,7 +45,7 @@ public partial class MainWindow
 
         AddItemOverlay_UpdateSupportedAvatarsLabel();
     }
-    private void AddItemOverlay_ShowAdd(IEnumerable<string>? itemPaths = null)
+    private void AddItemOverlay_Show(IEnumerable<string>? itemPaths = null)
     {
         // もし表示されてる状態でD&Dされたら、アイテムパスの追加だけしてあげる
         if (AddItemOverlay.IsVisible && itemPaths != null)
@@ -71,16 +71,16 @@ public partial class MainWindow
 
         AddItemOverlay_UpdateSupportedAvatarsLabel();
     }
-    private async Task AddItemOverlay_ShowAdd(LaunchInfo launchInfo)
+    private async Task AddItemOverlay_Show(LaunchInfo launchInfo)
     {
         AddItemOverlay_InitializeAddItemWindowCategories();
 
         _addItemOverlay_selectedItemId = null;
-        AddItemOverlay_BoothLinkTextBox.Text = string.Format(BoothLink.ItemURLWithoutAuthorFormat, launchInfo.AssetId);
+        AddItemOverlay_BoothLinkTextBox.Text = string.Format(BoothLink.ItemURLWithoutAuthorFormat, launchInfo.BoothId);
 
         _addItemOverlay_addItemWindowValues.Reset();
 
-        _addItemOverlay_addItemWindowValues.ItemPaths.AddRange(launchInfo.AssetDirs);
+        _addItemOverlay_addItemWindowValues.ItemPaths.AddRange(launchInfo.AssetPaths);
         AddItemOverlay_SetValuesToUi(_addItemOverlay_addItemWindowValues);
 
         AddItemOverlay.IsVisible = true;

@@ -14,14 +14,11 @@ public static class LaunchInfoService
         {
             Uri uri = new(url);
             NameValueCollection query = HttpUtility.ParseQueryString(uri.Query);
-
-            string[] dir = query.GetValues("dir") ?? [];
-            string id = query.Get("id") ?? string.Empty;
-
+            
             return new LaunchInfo
             {
-                AssetDirs = dir,
-                AssetId = id
+                AssetPaths = query.GetValues("dir") ?? [],
+                BoothId = query.Get("id") ?? string.Empty
             };
         }
         catch (Exception ex)

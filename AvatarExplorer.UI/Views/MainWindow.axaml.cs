@@ -24,6 +24,7 @@ using AvatarExplorer.UI.Services.External;
 using AvatarExplorer.UI.Services.System;
 using AvatarExplorer.UI.Services.Utilities;
 using AvatarExplorer.UI.Services.ViewControl;
+using AvatarExplorer.UI.Utils;
 using ErrorOr;
 
 namespace AvatarExplorer.UI;
@@ -91,7 +92,7 @@ public partial class MainWindow : Window
         LaunchInfo? launchInfo = LaunchInfoService.GetLaunchInfo(args[0]);
         if (launchInfo == null) return;
 
-        if (launchInfo.AssetDirs.Length != 0 && !string.IsNullOrEmpty(launchInfo.AssetId)) await AddItemOverlay_ShowAdd(launchInfo);
+        if (launchInfo.AssetPaths.Length != 0 && !string.IsNullOrEmpty(launchInfo.BoothId)) await AddItemOverlay_Show(launchInfo);
     }
 
     #region Left Panel
@@ -258,20 +259,11 @@ public partial class MainWindow : Window
         Main_ExecuteSearchItems();
     }
 
-    private static readonly string[] CategoryLocalizationKeys = Enum.GetValues<ItemType>().Select(i => i.GetLocalizationKey()).Where(i => i != null).ToArray()!;
     private void Main_ExecuteSearchItems(string searchText = "")
     {
         if (!string.IsNullOrEmpty(searchText)) _main_searchTextCache = searchText;
 
-        SearchFilter searchFilter = SearchFilterBuilder.Build(_main_searchTextCache, (token) =>
-        {
-            foreach (string key in CategoryLocalizationKeys)
-            {
-                if (Localizer.Instance[key] == token) return key;
-            }
-
-            return token;
-        });
+        SearchFilter searchFilter = SearchFilterBuilder.Build(_main_searchTextCache, SearchUtils.ParseCategory);
 
         if (AdvancedSearchPanel_Enable.IsChecked ?? false) AdvancedSearchPanel_ApplyValues(searchFilter);
 

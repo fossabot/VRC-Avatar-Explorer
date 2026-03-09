@@ -23,7 +23,7 @@ public partial class MainWindow
     private void Main_SettingsButton_Click(object? sender, RoutedEventArgs e) => SettingsOverlay_Show();
     private void Main_UndoButton_Click(object? sender, RoutedEventArgs e) => Main_ExecuteUndo();
     private void Main_HomeButton_Click(object? sender, RoutedEventArgs e) => Main_ExecuteHome();
-    private void Main_AddItem_Click(object? sender, RoutedEventArgs e) => AddItemOverlay_ShowAdd();
+    private void Main_AddItem_Click(object? sender, RoutedEventArgs e) => AddItemOverlay_Show();
     #endregion
 
     #region Side Panel
@@ -81,7 +81,7 @@ public partial class MainWindow
         // ソフト内からD&Dしたアイテムはスキップするように
         if (storageItemPaths.Length == 1 && storageItemPaths[0] == _main_lastDragAndDropItem) return;
 
-        AddItemOverlay_ShowAdd(storageItemPaths);
+        AddItemOverlay_Show(storageItemPaths);
     }
     #endregion
 

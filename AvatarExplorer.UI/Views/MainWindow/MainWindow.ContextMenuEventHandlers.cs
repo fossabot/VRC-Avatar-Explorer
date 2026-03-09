@@ -112,7 +112,7 @@ public partial class MainWindow
         Item? item = ItemButton_ContextMenu_GetItemById(itemId);
         if (item == null) return Task.CompletedTask;
 
-        AddItemOverlay_ShowEdit(item);
+        AddItemOverlay_Show(item);
         return Task.CompletedTask;
     }
     private async Task ItemButton_ContextMenu_EditItemTitle(string itemId)

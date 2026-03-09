@@ -9,12 +9,13 @@ namespace AvatarExplorer.UI.Utils;
 internal static class SearchUtils
 {
     private static readonly string[] CategoryLocalizationKeys = Enum.GetValues<ItemType>().Select(i => i.GetLocalizationKey()).Where(i => i != null).ToArray()!;
-
-    internal static string ParseCategory(string text)
+    internal static string ParseCategory(string token)
     {
-        string? localizationKey = Localizer.Instance.GetKey(text);
-        if (localizationKey == null || !CategoryLocalizationKeys.Contains(localizationKey)) return text;
+        foreach (string key in CategoryLocalizationKeys)
+        {
+            if (Localizer.Instance[key] == token) return key;
+        }
 
-        return localizationKey;
+        return token;
     }
 }
