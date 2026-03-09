@@ -46,8 +46,9 @@ jobs:
           EXTENSION="${{ matrix.extension }}"
           OUTPUT_NAME="${APP_NAME}_${VERSION#v}-${RUNTIME}.${EXTENSION}"
           
-          cd publish
-          if [ "${EXTENSION}" == "zip" ]; then
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            powershell -Command "Compress-Archive -Path * -DestinationPath '../${OUTPUT_NAME}'"
+          elif [ "${EXTENSION}" == "zip" ]; then
             zip -r "../${OUTPUT_NAME}" .
           else
             tar -czvf "../${OUTPUT_NAME}" .
