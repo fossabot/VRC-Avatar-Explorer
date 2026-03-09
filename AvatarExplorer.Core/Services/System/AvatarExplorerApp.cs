@@ -408,7 +408,7 @@ public partial class AvatarExplorerApp
     public async Task<ErrorOr<Success>> UpdateItemThumbnail(string itemId, string imageFilePath)
     {
         Item? item = GetItemById(itemId);
-        if (item == null) return Error.NotFound(description: "item not found.");
+        if (item == null) return Error.NotFound(description: "Item not found.");
 
         ErrorOr<Success> result = await FileSystemService.CopyFileAsync(imageFilePath, Path.Combine(SystemPath.ItemThumbnailsPath, Path.GetFileName(imageFilePath)));
         if (result.IsError) return Error.Failure(description: result.Errors.ToErrorString());
@@ -420,7 +420,7 @@ public partial class AvatarExplorerApp
     public async Task<ErrorOr<Success>> UpdateAuthorThumbnail(string itemId, string imageFilePath)
     {
         Item? item = GetItemById(itemId);
-        if (item == null) return Error.NotFound(description: "item not found.");
+        if (item == null) return Error.NotFound(description: "Item not found.");
 
         ErrorOr<Success> result = await FileSystemService.CopyFileAsync(imageFilePath, Path.Combine(SystemPath.AuthorThumbnailsPath, Path.GetFileName(imageFilePath)));
         if (result.IsError) return Error.Failure(description: result.Errors.ToErrorString());

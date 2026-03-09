@@ -17,15 +17,13 @@ internal static class BoothService
     {
         try
         {
+            if (boothId.Any(c => !char.IsNumber(c))) return Error.Failure(description: "The BoothId contains characters other than numbers.");
+
             string url = string.Format(BoothLink.ItemJsonURLFormat, boothId);
             string response = await HttpService.Client.GetStringAsync(url);
 
             BoothItem? boothItem = JsonSerializer.Deserialize<BoothItem>(response, JsonSerializerOptions);
-
-            if (boothItem == null)
-            {
-                return Error.Failure("BoothItem.Deserialize", "デシリアライズに失敗しました");
-            }
+            if (boothItem == null) return Error.Failure(description: "Failed to deserialize data.");
 
             return boothItem with
             {
@@ -36,7 +34,7 @@ internal static class BoothService
         catch (Exception ex)
         {
             ErrorManager.Instance.PostInternalError($"Failed to retrieve booth item information: '{boothId}'.", ex);
-            return Error.Failure("BoothItem.Network", "ネットワークエラー");
+            return Error.Failure(description: "Failed to retrieve booth item information.");
         }
     }
     private static ItemType SuggestItemType(string title, string type)
