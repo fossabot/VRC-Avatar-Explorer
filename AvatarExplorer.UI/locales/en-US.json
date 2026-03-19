@@ -2,6 +2,8 @@
     "LanguageName": "English",
     "LanguagePriority": "1",
     
+    "BoothLanguageCode": "en",
+    
     "Title.AdministratorMode": "Administrator Mode",
     
     "Main.Search.Watermark": "Type to search...",
