@@ -1,5 +1,7 @@
 # VRC Avatar Explorer
 
+English README: [README-en.md](README-en.md)
+
 ![GitHub deployments](https://img.shields.io/github/deployments/puk06/VRC-Avatar-Explorer/release?style=flat)
 ![GitHub Release](https://img.shields.io/github/v/release/puk06/VRC-Avatar-Explorer?label=Stable)
 ![GitHub Release](https://img.shields.io/github/v/release/puk06/VRC-Avatar-Explorer?include_prereleases&label=Pre-Release)
@@ -37,6 +39,19 @@ VRChatユーザー向けのシンプルかつ強力な**クロスプラットフ
 1. [最新のリリースページ](https://github.com/puk06/VRC-Avatar-Explorer/releases/latest)を開きます。
 2. 使用しているOSに対応したファイルをダウンロードします。
 3. 解凍したフォルダ内にある `AvatarExplorer` を実行してください。
+
+---
+
+## 開発環境
+
+- 開発には **.NET 10.0 SDK** を使用します。
+- 開発を始める前に、.NET 10.0 SDK をダウンロード・インストールしてください。
+
+## プロジェクト構成
+
+- **AvatarExplorer.Core**: AvatarExplorer のコア部分です。CLI などからこのライブラリを操作することで、新しい AvatarExplorer クライアントを作れます。シンプルなクラスライブラリで、UI に依存しません。
+- **AvatarExplorer.UI**: AvatarExplorer.Core を UI で操作するためのアプリケーションです。Avalonia UI で作られています。
+- **Tools/LocalizationKeyGenerator**: `AvatarExplorer.UI/locales/ja-JP.json` から `AvatarExplorer.Core/Localization/LocalizationKeys.g.cs` を生成するツールです。`AvatarExplorer.Core` のビルド時に自動で生成されます。
 
 ---
 
