@@ -576,6 +576,7 @@ public class AvatarExplorerApp
             item.UpdateSupportedAvatars(item.SupportedAvatarsView.SelectMany(i => i == internalId ? commonAvatar.AvatarsView : [i]).Distinct());
         }
 
+        UpdateSearchIndex();
         SaveItemDatabase();
     }
     public void ReplaceSupportedAvatarsToCommonAvatarGroup(string groupId)
@@ -590,6 +591,7 @@ public class AvatarExplorerApp
             item.UpdateSupportedAvatars(item.SupportedAvatarsView.Select(i => commonAvatar.AvatarsView.Contains(i) ? internalId : i).Distinct());
         }
 
+        UpdateSearchIndex();
         SaveItemDatabase();
     }
     #endregion
