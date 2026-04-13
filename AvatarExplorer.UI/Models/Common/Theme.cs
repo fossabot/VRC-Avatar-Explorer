@@ -3,5 +3,8 @@ namespace AvatarExplorer.UI.Models.Common;
 public enum Theme
 {
     Dark,
-    Light
+    Light,
+    Sakura,
+    Mint,
+    Lavender
 }
