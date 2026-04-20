@@ -31,9 +31,12 @@ internal static class ItemButtonFactory
         Grid contentGrid = new() { ColumnSpacing = 10, ColumnDefinitions = new("Auto,*") };
 
         // アイコン (アイコンにCornerRadiusを適用するため、ChildにImageが指定されたBorderが返ってくる)
-        Border itemIconBorder = CreateItemIconBorder(item, userPreferences);
-        contentGrid.Children.Add(itemIconBorder);
-        Grid.SetColumn(itemIconBorder, 0);
+        Border? itemIconBorder = CreateItemIconBorder(item, userPreferences);
+        if (itemIconBorder != null)
+        {
+            contentGrid.Children.Add(itemIconBorder);
+            Grid.SetColumn(itemIconBorder, 0);
+        }
 
         // テキスト + タグ部分
         Grid textGrid = CreateTextAndTagGrid(item, runtimeSettings);
@@ -54,10 +57,12 @@ internal static class ItemButtonFactory
         return button;
     }
 
-    internal static Border CreateItemIconBorder(UISelectableItem item, UserPreferences userPreferences, bool enableHoverIconSize = true)
+    internal static Border? CreateItemIconBorder(UISelectableItem item, UserPreferences userPreferences, bool enableHoverIconSize = true)
     {
         Bitmap? itemIconBitmap = ImageService.Get(item.ImageFileName, item.IconType);
         bool isFallbackIcon = itemIconBitmap == null;
+
+        if (isFallbackIcon && item.ImageFileName == SystemIconKey.None) return null; // アイコンがなく、アイコンタイプも指定されていない場合はアイコンなし
 
         Image itemIcon = new()
         {
