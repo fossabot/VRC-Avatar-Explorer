@@ -1,50 +1,44 @@
 using System.Collections.Generic;
-using System.Linq;
 using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Services.System;
 
 namespace AvatarExplorer.UI.Services.ViewControl;
 
-internal class PageManager
+internal class PageManager(int defaultValue) : CacheManager<ItemTagStates, int>(defaultValue)
 {
-    private readonly Dictionary<ItemTagStates, int> _currentPageStates = new()
-    {
-        { ItemTagStates.SearchItem, 0 },
-        { ItemTagStates.RootAvatar, 0 },
-        { ItemTagStates.RootAuthor, 0 },
-        { ItemTagStates.RootCategory, 0 },
-        { ItemTagStates.RootItem, 0 },
-        { ItemTagStates.RootSelectedCategory, 0 },
-        { ItemTagStates.RootSelectedItem, 0 },
-        { ItemTagStates.ItemFileCategoryOpen, 0 }
-    };
+    private static readonly HashSet<ItemTagStates> _supportedPageStates =
+    [
+        ItemTagStates.SearchItem,
+        ItemTagStates.RootAvatar,
+        ItemTagStates.RootAuthor,
+        ItemTagStates.RootCategory,
+        ItemTagStates.RootItem,
+        ItemTagStates.RootSelectedCategory,
+        ItemTagStates.RootSelectedItem,
+        ItemTagStates.ItemFileCategoryOpen
+    ];
 
-    private static readonly ItemTagStates[] _leftPanelStates =
+    private static readonly HashSet<ItemTagStates> _leftPanelStates =
     [
         ItemTagStates.RootAvatar,
         ItemTagStates.RootAuthor,
         ItemTagStates.RootCategory
     ];
 
-    internal bool IsPageSupported(ItemTagStates itemTagState) => _currentPageStates.ContainsKey(itemTagState);
-    internal bool IsStateResetSupported(ItemTagStates itemTagState) => !_leftPanelStates.Contains(itemTagState);
-
-    internal int GetPage(ItemTagStates itemTagState) => IsPageSupported(itemTagState) ? _currentPageStates[itemTagState] : -1;
-    internal void SetPage(ItemTagStates itemTagState, int value)
+    public override int Get(ItemTagStates key)
     {
-        if (!IsPageSupported(itemTagState)) return;
-        _currentPageStates[itemTagState] = value;
+        if (ContainsKey(key)) return base.Get(key);
+        return _supportedPageStates.Contains(key) ? 0 : base.Get(key);
     }
 
-    internal void ResetPageValue(ItemTagStates itemTagState)
+    public override bool Remove(ItemTagStates key)
     {
-        if (!IsPageSupported(itemTagState) || !IsStateResetSupported(itemTagState)) return;
-        SetPage(itemTagState, 0);
-    }
-    internal void ResetAllPageValues()
-    {
-        foreach (ItemTagStates key in GetKeys().Where(IsStateResetSupported))
-            ResetPageValue(key);
+        if (_leftPanelStates.Contains(key)) return false; // 左パネルのページ情報は消さないようにする
+        return base.Remove(key);
     }
 
-    internal ItemTagStates[] GetKeys() => _currentPageStates.Keys.ToArray();
+    public override void Clear()
+    {
+        foreach (var state in GetKeys()) Remove(state);
+    }
 }
