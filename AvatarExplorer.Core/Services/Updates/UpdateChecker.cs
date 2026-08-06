@@ -1,5 +1,6 @@
 using AvatarExplorer.Core.Data.Links;
 using AvatarExplorer.Core.Extensions;
+using AvatarExplorer.Core.Models.System;
 using AvatarExplorer.Core.Models.Updates;
 using AvatarExplorer.Core.Services.IO;
 using AvatarExplorer.Core.Services.Network;
@@ -9,6 +10,17 @@ namespace AvatarExplorer.Core.Services.Updates;
 
 public static class UpdateChecker
 {
+    public static event Action<VersionRelease>? UpdateAvailable;
+
+    public static async Task<bool> CheckForUpdate(UpdateChannel updateChannel)
+    {
+        var latestRelease = await GetLatestUpdateReleaseInfo(updateChannel);
+        if (latestRelease == null) return false;
+
+        UpdateAvailable?.Invoke(latestRelease);
+        return true;
+    }
+
     public async static Task<UpdateManifest?> GetUpdateManifest()
     {
         try
@@ -30,10 +42,10 @@ public static class UpdateChecker
             var updateManifest = await GetUpdateManifest();
             if (updateManifest == null) return null;
 
-            var pendingReleases = updateManifest.Releases.GetPendingUpdates();
+            var pendingReleases = updateManifest.Releases.GetPendingUpdates(updateChannel);
             if (!pendingReleases.Any()) return null;
 
-            var latestVersion = pendingReleases.GetLatestUpdate(updateChannel);
+            var latestVersion = pendingReleases.GetLatestUpdate();
             if (latestVersion == null) return null;
 
             var latestUpdateReleaseInfo = new VersionRelease()

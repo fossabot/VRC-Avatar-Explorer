@@ -1,0 +1,70 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Avalonia.Media.Imaging;
+using AvatarExplorer.UI.Localization;
+using AvatarExplorer.UI.Models.Items;
+using AvatarExplorer.UI.Services.Utilities;
+using AvatarExplorer.UI.Utils;
+using ReactiveUI.Fody.Helpers;
+
+namespace AvatarExplorer.UI.ViewModels.Component;
+
+public class BulkImportItemViewModel : ViewModelBase
+{
+    [Reactive] public Bitmap? Thumbnail { get; set; } = null;
+    [Reactive] public string Title { get; private set; } = string.Empty;
+    [Reactive] public string Description { get; private set; } = string.Empty;
+
+    [Reactive] public double Width { get; set; } = 0;
+    [Reactive] public double Height { get; set; } = 0;
+
+    public string ImageFileName { get; set; } = string.Empty;
+    public string TitleRaw { get; set; } = string.Empty;
+    public bool TitleLocalizable { get; } = false;
+
+    public LoclizableField DescriptionRaw = new();
+
+    [Reactive] public IEnumerable<string> UnitypackageNames { get; private set; } = [];
+    [Reactive] public int SelectedUnitypackage { get; set; } = 0;
+    public string SelectedUnitypackagePath => (SelectedUnitypackage >= 0 || SelectedUnitypackage < UnitypackageFullPaths.Length) ? UnitypackageFullPaths[SelectedUnitypackage] : string.Empty;
+    
+    public string[] UnitypackageFullPaths { get; set; } = [];
+    // [Reactive] public BitmapInterpolationMode BitmapInterpolationMode { get; set; } = BitmapInterpolationMode.None;
+
+    public string ItemId { get; set; } = string.Empty;
+
+    public BulkImportItemViewModel Update(int iconSize = 80, bool removeBrackets = false)
+    {
+        Thumbnail = ImageService.Get(ImageFileName);
+        Title = TitleLocalizable ? Localizer.Instance[TitleRaw] : TitleRaw;
+
+        Description = DescriptionRaw.Args == null ? Localizer.Instance[DescriptionRaw.Key] : Localizer.Instance.Get(DescriptionRaw.Key, DescriptionRaw.Args);
+
+        Width = Height = (Thumbnail != null) ? iconSize : 0;
+
+        if (removeBrackets)
+        {
+            Title = TextBracketsUtils.RemoveBrackets(TitleRaw);
+        }
+
+        UnitypackageNames = UnitypackageFullPaths.Select(i => Path.GetFileName(i) ?? i);
+        var previousSelectedPackage = SelectedUnitypackage;
+        SelectedUnitypackage = -1;
+        SelectedUnitypackage = previousSelectedPackage;
+
+        return this;
+    }
+
+    public BulkImportItemViewModel Copy()
+    {
+        return new()
+        {
+            ImageFileName = ImageFileName,
+            TitleRaw = TitleRaw,
+            DescriptionRaw = DescriptionRaw,
+            UnitypackageFullPaths = UnitypackageFullPaths,
+            SelectedUnitypackage = SelectedUnitypackage
+        };
+    }
+}

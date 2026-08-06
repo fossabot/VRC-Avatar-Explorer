@@ -1,5 +1,5 @@
-using AvatarExplorer.Core.Models.Updates;
 using AvatarExplorer.UI.Models.Common;
+using AvatarExplorer.UI.Models.Sort;
 
 namespace AvatarExplorer.UI.Models.Settings;
 
@@ -16,6 +16,7 @@ public record UserPreferences
     public Theme Theme { get; init; } = Theme.Dark;
     public int ItemsPerPage { get; init; } = 30;
     public BitmapAntiAliasingMode AntiAliasingMode { get; init; } = BitmapAntiAliasingMode.None;
-    public bool CheckForUpdate { get; init; } = true;
-    public UpdateChannel UpdateChannel { get; init; } = UpdateChannel.Stable;
+    public bool RemoveBrackets { get; init; } = false;
+    public ItemSortOrder SortOrder { get; init; } = ItemSortOrder.UpdatedDate;
+    public SortDirection SortDirection { get; init; } = SortDirection.Descending;
 }

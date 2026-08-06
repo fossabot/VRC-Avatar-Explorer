@@ -1,21 +1,16 @@
 ﻿using System.Collections.Immutable;
 using System.Text.Json.Serialization;
-using AvatarExplorer.Core.Models.Common;
+using AvatarExplorer.Core.Interfaces;
 
 namespace AvatarExplorer.Core.Models.Items;
 
-public class CommonAvatar : AbstractDatabaseItem, ISelectableItem
+public class CommonAvatar(string groupName) : AbstractDatabaseItem, INavigationable
 {
-    public string GroupName { get; set; } = string.Empty;
+    [JsonInclude] public string GroupName { get; private set; } = groupName;
     [JsonInclude] public ImmutableArray<string> Avatars { get; private set; } = [];
 
+    public void UpdateGroupName(string newName) => GroupName = newName;
     public void UpdateAvatars(IEnumerable<string> avatars) => Avatars = avatars.ToImmutableArray();
 
-    [JsonIgnore] public static readonly string InternalPathPrefix = "<sys:commonavatar>";
-    public string GetInternalId() => InternalPathPrefix + Id;
-    public static string? GetGroupId(string internalId)
-    {
-        if (string.IsNullOrEmpty(internalId) || !internalId.StartsWith(InternalPathPrefix)) return null;
-        return internalId[InternalPathPrefix.Length..];
-    }
+    [JsonIgnore] public string Identifier => "commonavatar:" + Id;
 }

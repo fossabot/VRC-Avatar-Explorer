@@ -12,7 +12,7 @@
 
 namespace AvatarExplorer.Core.Localization;
 
-public static class LocalizationKey
+public static class Loc
 {
     public const string LanguageName = "LanguageName";
     public const string LanguagePriority = "LanguagePriority";
@@ -39,7 +39,6 @@ public static class LocalizationKey
         public static class Path
         {
             public const string Placeholder = "Main.Path.Placeholder";
-            public const string SearchResult = "Main.Path.SearchResult";
             public static class Root
             {
                 public const string Avatar = "Main.Path.Root.Avatar";
@@ -50,6 +49,15 @@ public static class LocalizationKey
             public const string Search = "Main.Path.Search";
             public const string Removed = "Main.Path.Removed";
             public const string RootFolder = "Main.Path.RootFolder";
+        }
+        public static class Sort
+        {
+            public const string Title = "Main.Sort.Title";
+            public const string Author = "Main.Sort.Author";
+            public const string CreatedDate = "Main.Sort.CreatedDate";
+            public const string UpdatedDate = "Main.Sort.UpdatedDate";
+            public const string Ascending = "Main.Sort.Ascending";
+            public const string Descending = "Main.Sort.Descending";
         }
     }
     public static class ItemCategory
@@ -127,10 +135,6 @@ public static class LocalizationKey
             public const string RemoveAssetData = "Dialog.Confirmation.RemoveAssetData";
             public const string CopyAssetData = "Dialog.Confirmation.CopyAssetData";
             public const string NoAvatarsAndValidateType = "Dialog.Confirmation.NoAvatarsAndValidateType";
-            public static class ExportToCsv
-            {
-                public const string IncludeImplementedToSupported = "Dialog.Confirmation.ExportToCsv.IncludeImplementedToSupported";
-            }
             public static class EditCommonAvatars
             {
                 public const string ReplaceAvatarsToGroup = "Dialog.Confirmation.EditCommonAvatars.ReplaceAvatarsToGroup";
@@ -180,6 +184,7 @@ public static class LocalizationKey
     }
     public static class Processing
     {
+        public const string Default = "Processing.Default";
         public static class Unitypackage
         {
             public static class Status
@@ -218,7 +223,6 @@ public static class LocalizationKey
     {
         public static class Item
         {
-            public const string OpenFolder = "ContextMenu.Item.OpenFolder";
             public const string ShowOtherItemsByAuthor = "ContextMenu.Item.ShowOtherItemsByAuthor";
             public static class Add
             {
@@ -250,13 +254,14 @@ public static class LocalizationKey
         }
         public static class ItemFolder
         {
-            public const string OpenFileInExplorer = "ContextMenu.ItemFolder.OpenFileInExplorer";
+            public const string OpenFolder = "ContextMenu.ItemFolder.OpenFolder";
+            public const string ShowInExplorer = "ContextMenu.ItemFolder.ShowInExplorer";
         }
         public static class ItemFile
         {
             public const string OpenFile = "ContextMenu.ItemFile.OpenFile";
             public const string BulkImportList = "ContextMenu.ItemFile.BulkImportList";
-            public const string OpenFileInExplorer = "ContextMenu.ItemFile.OpenFileInExplorer";
+            public const string ShowInExplorer = "ContextMenu.ItemFile.ShowInExplorer";
             public const string OpenUnitypackageViewer = "ContextMenu.ItemFile.OpenUnitypackageViewer";
             public const string OpenPdfViewer = "ContextMenu.ItemFile.OpenPdfViewer";
         }
@@ -295,6 +300,7 @@ public static class LocalizationKey
         public const string IsOrSearch = "SearchFilter.IsOrSearch";
         public const string IsCategoryOrSearch = "SearchFilter.IsCategoryOrSearch";
         public const string EmptySupportedAvatarAsNone = "SearchFilter.EmptySupportedAvatarAsNone";
+        public const string NegationPrefix = "SearchFilter.NegationPrefix";
     }
     public static class Success
     {
@@ -382,6 +388,16 @@ public static class LocalizationKey
                 public const string Author = "Settings.SortOrder.Options.Author";
                 public const string Created = "Settings.SortOrder.Options.Created";
                 public const string Updated = "Settings.SortOrder.Options.Updated";
+            }
+        }
+        public static class SortDirection
+        {
+            public const string Title = "Settings.SortDirection.Title";
+            public const string Description = "Settings.SortDirection.Description";
+            public static class Options
+            {
+                public const string Ascending = "Settings.SortDirection.Options.Ascending";
+                public const string Descending = "Settings.SortDirection.Options.Descending";
             }
         }
         public static class Theme
@@ -509,23 +525,11 @@ public static class LocalizationKey
             public const string Description = "Settings.ImportFromOther.Description";
             public const string Import = "Settings.ImportFromOther.Import";
         }
-        public static class ImportThumbnail
-        {
-            public const string Title = "Settings.ImportThumbnail.Title";
-            public const string Description = "Settings.ImportThumbnail.Description";
-            public const string Import = "Settings.ImportThumbnail.Import";
-        }
         public static class FetchAllThumbnails
         {
             public const string Title = "Settings.FetchAllThumbnails.Title";
             public const string Description = "Settings.FetchAllThumbnails.Description";
             public const string Open = "Settings.FetchAllThumbnails.Open";
-        }
-        public static class ExportCsv
-        {
-            public const string Title = "Settings.ExportCsv.Title";
-            public const string Description = "Settings.ExportCsv.Description";
-            public const string Export = "Settings.ExportCsv.Export";
         }
         public static class RestoreFromBackup
         {
@@ -629,7 +633,6 @@ public static class LocalizationKey
         public const string AdvancedSearch = "SidePanel.AdvancedSearch";
         public const string BulkImport = "SidePanel.BulkImport";
         public const string BulkImportPreset = "SidePanel.BulkImportPreset";
-        public const string ItemDetails = "SidePanel.ItemDetails";
     }
     public static class AdvancedSearch
     {
@@ -656,41 +659,46 @@ public static class LocalizationKey
         public const string Save = "BulkImport.Save";
         public const string Reset = "BulkImport.Reset";
     }
-    public static class AddItem
+    public static class ItemEditor
     {
-        public const string BoothItemInfo = "AddItem.BoothItemInfo";
-        public const string AddFolder = "AddItem.AddFolder";
-        public const string AddFile = "AddItem.AddFile";
-        public const string BoothUrl = "AddItem.BoothUrl";
-        public const string BoothUrlPlaceholder = "AddItem.BoothUrlPlaceholder";
-        public const string FetchInfo = "AddItem.FetchInfo";
-        public const string Title = "AddItem.Title";
-        public const string Author = "AddItem.Author";
-        public const string Category = "AddItem.Category";
-        public const string SupportedAvatars = "AddItem.SupportedAvatars";
-        public const string SelectedAvatarsCount = "AddItem.SelectedAvatarsCount";
-        public const string ShowAdvancedSettings = "AddItem.ShowAdvancedSettings";
-        public const string ItemMemo = "AddItem.ItemMemo";
-        public const string EditItemMemo = "AddItem.EditItemMemo";
-        public const string Tags = "AddItem.Tags";
-        public const string SelectedTagsCount = "AddItem.SelectedTagsCount";
-        public const string ShowInternalInfo = "AddItem.ShowInternalInfo";
-        public const string AuthorId = "AddItem.AuthorId";
-        public const string BoothId = "AddItem.BoothId";
-        public const string ImageUrl = "AddItem.ImageUrl";
-        public const string AuthorImageUrl = "AddItem.AuthorImageUrl";
-        public const string ConfirmAndSave = "AddItem.ConfirmAndSave";
-        public const string RemoveFolder = "AddItem.RemoveFolder";
+        public const string BoothItemInfo = "ItemEditor.BoothItemInfo";
+        public const string AddFolder = "ItemEditor.AddFolder";
+        public const string AddFile = "ItemEditor.AddFile";
+        public const string BoothUrl = "ItemEditor.BoothUrl";
+        public const string BoothUrlPlaceholder = "ItemEditor.BoothUrlPlaceholder";
+        public const string FetchInfo = "ItemEditor.FetchInfo";
+        public const string Title = "ItemEditor.Title";
+        public const string Author = "ItemEditor.Author";
+        public const string Category = "ItemEditor.Category";
+        public const string SupportedAvatars = "ItemEditor.SupportedAvatars";
+        public const string SelectedAvatarsCount = "ItemEditor.SelectedAvatarsCount";
+        public const string ShowAdvancedSettings = "ItemEditor.ShowAdvancedSettings";
+        public const string ItemMemo = "ItemEditor.ItemMemo";
+        public const string EditItemMemo = "ItemEditor.EditItemMemo";
+        public const string Tags = "ItemEditor.Tags";
+        public const string SelectedTagsCount = "ItemEditor.SelectedTagsCount";
+        public const string ShowInternalInfo = "ItemEditor.ShowInternalInfo";
+        public const string AuthorId = "ItemEditor.AuthorId";
+        public const string BoothId = "ItemEditor.BoothId";
+        public const string ImageUrl = "ItemEditor.ImageUrl";
+        public const string AuthorImageUrl = "ItemEditor.AuthorImageUrl";
+        public const string ConfirmAndSave = "ItemEditor.ConfirmAndSave";
+        public static class LinkToOriginal
+        {
+            public const string Title = "ItemEditor.LinkToOriginal.Title";
+            public const string Description = "ItemEditor.LinkToOriginal.Description";
+        }
+        public const string RemoveFolder = "ItemEditor.RemoveFolder";
     }
-    public static class EditSupportedAvatars
+    public static class SelectAvatars
     {
-        public const string Title = "EditSupportedAvatars.Title";
-        public const string Search = "EditSupportedAvatars.Search";
-        public const string AddTempAvatar = "EditSupportedAvatars.AddTempAvatar";
-    }
-    public static class EditImplementedAvatars
-    {
-        public const string Title = "EditImplementedAvatars.Title";
+        public static class Title
+        {
+            public const string SupportedAvatars = "SelectAvatars.Title.SupportedAvatars";
+            public const string ImplementedAvatars = "SelectAvatars.Title.ImplementedAvatars";
+        }
+        public const string Search = "SelectAvatars.Search";
+        public const string AddTempAvatar = "SelectAvatars.AddTempAvatar";
     }
     public static class EditCommonAvatars
     {
@@ -699,6 +707,7 @@ public static class LocalizationKey
         public const string AddGroup = "EditCommonAvatars.AddGroup";
         public const string RenameGroup = "EditCommonAvatars.RenameGroup";
         public const string RemoveGroup = "EditCommonAvatars.RemoveGroup";
+        public const string Search = "EditCommonAvatars.Search";
         public const string ReplaceToGroup = "EditCommonAvatars.ReplaceToGroup";
     }
     public static class ResolveTempAvatar
@@ -728,14 +737,33 @@ public static class LocalizationKey
         public const string NewTag = "EditTags.NewTag";
         public const string SelectTag = "EditTags.SelectTag";
     }
-    public static class SelectImportType
+    public static class ImportData
     {
-        public const string Title = "SelectImportType.Title";
-        public static class Options
+        public const string Title = "ImportData.Title";
+        public const string Description = "ImportData.Description";
+        public const string ImportSource = "ImportData.ImportSource";
+        public static class FolderPath
         {
-            public const string V1 = "SelectImportType.Options.V1";
-            public const string KonoAsset = "SelectImportType.Options.KonoAsset";
+            public const string Title = "ImportData.FolderPath.Title";
+            public const string Browse = "ImportData.FolderPath.Browse";
         }
+        public const string Import = "ImportData.Import";
+        public const string SelectData = "ImportData.SelectData";
+        public const string Database = "ImportData.Database";
+        public const string Thumbnails = "ImportData.Thumbnails";
+    }
+    public static class ExportData
+    {
+        public const string Title = "ExportData.Title";
+        public const string Description = "ExportData.Description";
+        public const string ExportType = "ExportData.ExportType";
+        public static class FolderPath
+        {
+            public const string Title = "ExportData.FolderPath.Title";
+            public const string Browse = "ExportData.FolderPath.Browse";
+        }
+        public const string IncludeCommonToSupported = "ExportData.IncludeCommonToSupported";
+        public const string Export = "ExportData.Export";
     }
     public static class FetchAllThumbnailsOverlay
     {
@@ -781,8 +809,20 @@ public static class LocalizationKey
     public static class MergeCategory
     {
         public const string Title = "MergeCategory.Title";
+        public const string SourceCategory = "MergeCategory.SourceCategory";
         public const string TargetCategory = "MergeCategory.TargetCategory";
         public const string Merge = "MergeCategory.Merge";
+    }
+    public static class UnitypackageViewer
+    {
+        public const string Export = "UnitypackageViewer.Export";
+        public const string Title = "UnitypackageViewer.Title";
+        public static class Status
+        {
+            public const string Loading = "UnitypackageViewer.Status.Loading";
+            public const string LoadFailed = "UnitypackageViewer.Status.LoadFailed";
+            public const string Entries = "UnitypackageViewer.Status.Entries";
+        }
     }
     public static class DialogResult
     {

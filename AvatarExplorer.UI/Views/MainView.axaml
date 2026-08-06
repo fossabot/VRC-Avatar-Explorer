@@ -1,0 +1,322 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:AvatarExplorer.UI.ViewModels"
+    xmlns:loc="using:AvatarExplorer.UI.Localization"
+    xmlns:panels="using:AvatarExplorer.UI.Views.Panels"
+    xmlns:component="using:AvatarExplorer.UI.ViewModels.Component"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:i="clr-namespace:Availability.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+    xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+    x:Class="AvatarExplorer.UI.Views.MainView"
+    x:DataType="vm:MainViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="Button.PathSegment">
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="CornerRadius" Value="6"/>
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel Margin="12">
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+            <Border Grid.Column="1" Classes="panelbackground">
+                <Grid ColumnDefinitions="Auto,Auto,2.3*,Auto,*,Auto" ColumnSpacing="10">
+                    <Button Classes="button" Grid.Column="0" Content="{materialIcons:MaterialIconExt Kind=ArrowLeft}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" FontSize="19" CornerRadius="8" Padding="15,0,15,0" Command="{Binding UndoCommand}"/>
+                    <Button Classes="button" Grid.Column="1" Content="{materialIcons:MaterialIconExt Kind=HomeOutline}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" FontSize="19" CornerRadius="8" Padding="15,0,15,0" Command="{Binding HomeCommand}"/>
+                    
+                    <Border Grid.Column="2" Classes="panelbackground" CornerRadius="8" Padding="8,0">
+                        <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
+                            <Button Grid.Column="0" Classes="button PathSegment"
+                                    IsVisible="{Binding HasOverflow}"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,10,0">
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <ItemsControl ItemsSource="{Binding PathSegments}" MaxWidth="300">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Spacing="2"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="component:PathSegment">
+                                                    <Panel VerticalAlignment="Center" IsVisible="{Binding IsClickable}">
+                                                        <Button Classes="button PathSegment"
+                                                                HorizontalAlignment="Stretch"
+                                                                HorizontalContentAlignment="Left"
+                                                                Command="{Binding $parent[UserControl].DataContext.NavigateToSegmentCommand}"
+                                                                CommandParameter="{Binding State}"
+                                                                IsVisible="{Binding IsClickable}"
+                                                                IsEnabled="{Binding IsClickable}">
+                                                            <TextBlock Text="{Binding DisplayName}" FontSize="13" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="280"/>
+                                                        </Button>
+                                                        <TextBlock Text="{Binding DisplayName}" FontSize="13" VerticalAlignment="Center" IsVisible="{Binding !IsClickable}" Margin="2,2"/>
+                                                    </Panel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <TextBlock Text="..." FontSize="13" VerticalAlignment="Center"/>
+                            </Button>
+
+                            <ScrollViewer Grid.Column="1" x:Name="PathScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center">
+                                <ItemsControl ItemsSource="{Binding PathSegments}" VerticalAlignment="Center">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="2"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="component:PathSegment">
+                                            <Panel VerticalAlignment="Center">
+                                                <Button Classes="button PathSegment"
+                                                        Command="{Binding $parent[UserControl].DataContext.NavigateToSegmentCommand}"
+                                                        CommandParameter="{Binding State}"
+                                                        IsVisible="{Binding IsClickable}"
+                                                        IsEnabled="{Binding IsClickable}">
+                                                    <TextBlock Text="{Binding DisplayName}" FontSize="13" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="200"/>
+                                                </Button>
+                                                <TextBlock Text="{Binding DisplayName}" FontSize="13" VerticalAlignment="Center" IsVisible="{Binding !IsClickable}" Margin="2,2"/>
+                                            </Panel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                    
+                    <materialIcons:MaterialIcon Grid.Column="3" Kind="Magnify" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    <TextBox Text="{Binding SearchText}" Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" PlaceholderText="{Binding [Main.Search.Placeholder], Source={x:Static loc:Localizer.Instance}}" FontSize="14" CornerRadius="8"/>
+                    
+                    <Button Classes="accentbutton" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CornerRadius="8" Margin="5,0,0,0" Command="{Binding AddItemCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <materialIcons:MaterialIcon Kind="Plus" Width="25" Height="25" VerticalAlignment="Center"/>
+                            <TextBlock Classes="accentbutton" FontSize="15" FontWeight="Bold" Text="{Binding [Main.AddItem], Source={x:Static loc:Localizer.Instance}}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <Border Classes="panelbackground">
+                <Button Classes="button" FontWeight="Bold" Content="{materialIcons:MaterialIconExt Kind=CogOutline}" HorizontalAlignment="Stretch" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" Width="35" FontSize="19" CornerRadius="8" Command="{Binding OpenSettingsCommand}"/>
+            </Border>
+        </Grid>
+
+        <Panel Margin="0,12,-12,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="300" Width="300" MaxWidth="550"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition MinWidth="250" Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition MinWidth="{Binding SidePanelMinWidth}" Width="{Binding SidePanelWidth}" MaxWidth="{Binding SidePanelMaxWidth}"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Classes="panelbackground">
+                    <Grid RowDefinitions="Auto,*">
+                        <TabControl x:Name="CategoryTabControl" Grid.Row="0" HorizontalAlignment="Stretch" SelectedIndex="{Binding SelectedCategory}" Margin="-5,-10,5,5" FontSize="18">
+                            <TabItem Header="{Binding [Main.Filter.Avatar], Source={x:Static loc:Localizer.Instance}}" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+                            <TabItem Header="{Binding [Main.Filter.Author], Source={x:Static loc:Localizer.Instance}}" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+                            <TabItem Header="{Binding [Main.Filter.Category], Source={x:Static loc:Localizer.Instance}}" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+                        </TabControl>
+
+                        <Grid RowDefinitions="*,Auto" Grid.Row="1" RowSpacing="5">
+                            <Panel Grid.Row="0">
+                                <Border CornerRadius="8" ClipToBounds="True">
+                                    <ScrollViewer x:Name="Main_LeftPanelScrollViewer">
+                                        <ItemsControl ItemsSource="{Binding LeftItems}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <VirtualizingStackPanel Margin="0,0,10,0"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="component:ItemViewModel">
+                                                <!-- TODO: Implemented用のクラスも作るべきかも -->
+                                                    <Button Classes="button" Classes.accentbutton="{Binding IsSelected}" ContextMenu="{Binding ContextMenu}" ToolTip.Tip="{Binding ToolTip}" HorizontalAlignment="Stretch" VerticalAlignment="Top" CornerRadius="8" Padding="7" Margin="0,0,0,5" Command="{Binding $parent[UserControl].DataContext.SelectLeftItemCommand}" CommandParameter="{Binding}">
+                                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                            <Border CornerRadius="8" ClipToBounds="true" HorizontalAlignment="Center" VerticalAlignment="Top">
+                                                                <Image Source="{Binding Thumbnail}" Width="{Binding Width}" Height="{Binding Height}" Stretch="Fill" VerticalAlignment="Top"/>
+                                                            </Border>
+
+                                                            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,5,*">
+                                                                <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                                                                <TextBlock Grid.Row="1" Text="{Binding Description}" FontSize="13" TextTrimming="CharacterEllipsis"/>
+                                                                <ItemsControl Grid.Row="3" ItemsSource="{Binding Tags}">
+                                                                    <ItemsControl.ItemsPanel>
+                                                                        <ItemsPanelTemplate>
+                                                                            <WrapPanel Grid.Row="3" Orientation="Horizontal" ItemSpacing="5" LineSpacing="5"/>
+                                                                        </ItemsPanelTemplate>
+                                                                    </ItemsControl.ItemsPanel>
+
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate x:DataType="component:TagViewModel">
+                                                                            <Border CornerRadius="15" HorizontalAlignment="Center" VerticalAlignment="Center" Classes.commonavatar="{Binding IsCommonAvatar}" Classes.tag="{Binding !IsCommonAvatar}">
+                                                                                <TextBlock Text="{Binding Label}" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="8,5" Classes.commonavatar="{Binding IsCommonAvatar}" Classes.tag="{Binding !IsCommonAvatar}" FontWeight="Bold"/>
+                                                                            </Border>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </Border>
+                            </Panel>
+
+                            <Border Grid.Row="1" Classes="panelbackground" CornerRadius="8" Padding="8,4">
+                                <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="4">
+                                    <Button Classes="button pagebutton" Grid.Column="0" Width="30" Height="30" Padding="0" Command="{Binding LeftGoFirstCommand}" IsEnabled="{Binding LeftPageInfo.CanGoFirst}">
+                                        <materialIcons:MaterialIcon Kind="FirstPage" Width="20" Height="20"/>
+                                    </Button>
+                                    <Button Classes="button pagebutton" Grid.Column="1" Width="30" Height="30" Padding="0" Command="{Binding LeftGoPrevCommand}" IsEnabled="{Binding LeftPageInfo.CanGoPrev}">
+                                        <materialIcons:MaterialIcon Kind="ChevronLeft" Width="20" Height="20"/>
+                                    </Button>
+                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="0">
+                                        <TextBlock Text="{Binding LeftPageInfo.PageDisplay}" FontSize="12" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding LeftPageInfo.ItemRangeDisplay}" FontSize="11" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource Text.Secondary}"/>
+                                    </StackPanel>
+                                    <Button Classes="button pagebutton" Grid.Column="3" Width="30" Height="30" Padding="0" Command="{Binding LeftGoNextCommand}" IsEnabled="{Binding LeftPageInfo.CanGoNext}">
+                                        <materialIcons:MaterialIcon Kind="ChevronRight" Width="20" Height="20"/>
+                                    </Button>
+                                    <Button Classes="button pagebutton" Grid.Column="4" Width="30" Height="30" Padding="0" Command="{Binding LeftGoLastCommand}" IsEnabled="{Binding LeftPageInfo.CanGoLast}">
+                                        <materialIcons:MaterialIcon Kind="LastPage" Width="20" Height="20"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <GridSplitter Grid.Column="1" Opacity="0"/>
+
+                <Border Grid.Column="2" Classes="panelbackground">
+                    <Panel>
+                        <StackPanel x:Name="Main_RightPanelParent" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" IsVisible="False">
+                            <Image Source="avares://AvatarExplorer/Assets/Internal/EmptyIcon.png" Width="150" Height="150" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding [Error.Nothing], Source={x:Static loc:Localizer.Instance}}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="25" Foreground="{DynamicResource Text.Primary}"/>
+                        </StackPanel>
+
+                        <Grid RowDefinitions="*,Auto" RowSpacing="5">
+                            <Panel>
+                                <Border CornerRadius="8" ClipToBounds="True">
+                                    <ScrollViewer x:Name="Main_RightPanelScrollViewer">
+                                        <ItemsControl ItemsSource="{Binding MainItems}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <VirtualizingStackPanel Margin="0,0,10,0"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="component:ItemViewModel">
+                                                    <Button Classes="button" ContextMenu="{Binding ContextMenu}" ToolTip.Tip="{Binding ToolTip}" HorizontalAlignment="Stretch" VerticalAlignment="Top" CornerRadius="8" Padding="7" Margin="0,0,0,5" Command="{Binding $parent[UserControl].DataContext.SelectRightItemCommand}" CommandParameter="{Binding}" Loaded="OnMainItemButtonLoaded" Unloaded="OnMainItemButtonUnloaded">
+                                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                            <Border CornerRadius="8" ClipToBounds="true" HorizontalAlignment="Center" VerticalAlignment="Top">
+                                                                <Image Source="{Binding Thumbnail}" Width="{Binding Width}" Height="{Binding Height}" Stretch="Fill" VerticalAlignment="Top" Loaded="OnMainItemImageLoaded" Unloaded="OnMainItemImageUnloaded"/>
+                                                            </Border>
+
+                                                            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,5,*">
+                                                                <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                                                                <TextBlock Grid.Row="1" Text="{Binding Description}" FontSize="13" TextTrimming="CharacterEllipsis"/>
+                                                                <ItemsControl Grid.Row="3" ItemsSource="{Binding Tags}">
+                                                                    <ItemsControl.ItemsPanel>
+                                                                        <ItemsPanelTemplate>
+                                                                            <WrapPanel Grid.Row="3" Orientation="Horizontal" ItemSpacing="5" LineSpacing="5"/>
+                                                                        </ItemsPanelTemplate>
+                                                                    </ItemsControl.ItemsPanel>
+
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate x:DataType="component:TagViewModel">
+                                                                            <Border CornerRadius="15" HorizontalAlignment="Center" VerticalAlignment="Center" Classes.commonavatar="{Binding IsCommonAvatar}" Classes.tag="{Binding !IsCommonAvatar}">
+                                                                                <TextBlock Text="{Binding Label}" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="8,5" Classes.commonavatar="{Binding IsCommonAvatar}" Classes.tag="{Binding !IsCommonAvatar}" FontWeight="Bold"/>
+                                                                            </Border>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </Border>
+                            </Panel>
+
+                            <Border Grid.Row="1" Classes="panelbackground" CornerRadius="8" Padding="10,6">
+                                <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="8">
+                                    <Button Classes="button pagebutton" Grid.Column="0" Width="35" Height="35" Padding="0" Command="{Binding RightGoFirstCommand}" IsEnabled="{Binding RightPageInfo.CanGoFirst}">
+                                        <materialIcons:MaterialIcon Kind="FirstPage" Width="22" Height="22"/>
+                                    </Button>
+                                    <Button Classes="button pagebutton" Grid.Column="1" Width="35" Height="35" Padding="0" Command="{Binding RightGoPrevCommand}" IsEnabled="{Binding RightPageInfo.CanGoPrev}">
+                                        <materialIcons:MaterialIcon Kind="ChevronLeft" Width="22" Height="22"/>
+                                    </Button>
+                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="0">
+                                        <TextBlock Text="{Binding RightPageInfo.PageDisplay}" FontSize="14" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding RightPageInfo.ItemRangeDisplay}" FontSize="12" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource Text.Secondary}"/>
+                                    </StackPanel>
+                                    <Button Classes="button pagebutton" Grid.Column="3" Width="35" Height="35" Padding="0" Command="{Binding RightGoNextCommand}" IsEnabled="{Binding RightPageInfo.CanGoNext}">
+                                        <materialIcons:MaterialIcon Kind="ChevronRight" Width="22" Height="22"/>
+                                    </Button>
+                                    <Button Classes="button pagebutton" Grid.Column="4" Width="35" Height="35" Padding="0" Command="{Binding RightGoLastCommand}" IsEnabled="{Binding RightPageInfo.CanGoLast}">
+                                        <materialIcons:MaterialIcon Kind="LastPage" Width="22" Height="22"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Panel>
+                </Border>
+
+                <GridSplitter Grid.Column="3" Opacity="0" IsVisible="{Binding IsSidePanelVisible}"/>
+
+                <Panel Grid.Column="4" HorizontalAlignment="Stretch">
+                    <Border Classes="panelbackground" IsVisible="{Binding !IsSidePanelVisible}" CornerRadius="12,0,0,12" Width="50">
+                        <StackPanel Spacing="10">
+                            <Button Classes="button sidepanelbutton" Content="{materialIcons:MaterialIconExt Kind=TextSearch}" ToolTip.Tip="{Binding [SidePanel.AdvancedSearch], Source={x:Static loc:Localizer.Instance}}" FontSize="17" Command="{Binding OpenSidePanelCommand}" CommandParameter="0"/>
+                            <Button Classes="button sidepanelbutton" Content="{materialIcons:MaterialIconExt Kind=DownloadMultiple}" ToolTip.Tip="{Binding [SidePanel.BulkImport], Source={x:Static loc:Localizer.Instance}}" FontSize="17" Tag="1" Command="{Binding OpenSidePanelCommand}" CommandParameter="1"/>
+                            <Button Classes="button sidepanelbutton" Content="{materialIcons:MaterialIconExt Kind=FolderStarMultipleOutline}" ToolTip.Tip="{Binding [SidePanel.BulkImportPreset], Source={x:Static loc:Localizer.Instance}}" FontSize="17" Tag="2" Command="{Binding OpenSidePanelCommand}" CommandParameter="2"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="panelbackground" CornerRadius="12,0,0,12" IsVisible="{Binding IsSidePanelVisible}">
+                        <Grid RowSpacing="10">
+                            <Grid Grid.Row="2" ColumnSpacing="10">
+                                <TabControl x:Name="SidePanelTabControl" HorizontalAlignment="Stretch" SelectedIndex="{Binding SelectedSidePanelTab}" FontSize="18" Margin="0,0,-10,0" TabStripPlacement="Right">
+                                    <TabItem ToolTip.Tip="{Binding [SidePanel.AdvancedSearch], Source={x:Static loc:Localizer.Instance}}" Tag="0">
+                                        <TabItem.Header>
+                                            <materialIcons:MaterialIcon Kind="TextSearch" Width="16" Height="16"/>
+                                        </TabItem.Header>
+                                        <panels:AdvancedSearch/>
+                                    </TabItem>
+
+                                    <TabItem ToolTip.Tip="{Binding [SidePanel.BulkImport], Source={x:Static loc:Localizer.Instance}}" Tag="1">
+                                        <TabItem.Header>
+                                            <materialIcons:MaterialIcon Kind="DownloadMultiple" Width="16" Height="16"/>
+                                        </TabItem.Header>
+                                        <panels:BulkImport/>
+                                    </TabItem>
+
+                                    <TabItem ToolTip.Tip="{Binding [SidePanel.BulkImportPreset], Source={x:Static loc:Localizer.Instance}}" Tag="2">
+                                        <TabItem.Header>
+                                            <materialIcons:MaterialIcon Kind="FolderStarMultipleOutline" Width="16" Height="16"/>
+                                        </TabItem.Header>
+                                        <panels:BulkImportPreset/>
+                                    </TabItem>
+                                </TabControl>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Panel>
+            </Grid>
+        </Panel>
+    </DockPanel>
+</UserControl>

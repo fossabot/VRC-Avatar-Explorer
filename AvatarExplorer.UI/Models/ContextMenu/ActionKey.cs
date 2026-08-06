@@ -1,10 +1,9 @@
 namespace AvatarExplorer.UI.Models.ContextMenu;
 
-internal enum ActionKey
+public enum ActionKey
 {
     None,
     
-    OpenItemFolder,
     CopyBoothLink,
     OpenBoothLink,
     ShowOtherItemsByAuthor,
@@ -22,9 +21,11 @@ internal enum ActionKey
     EditItemTag,
     RemoveItem,
 
+    OpenFolder,
+    ShowInExplorer, // Fileにも使われる
+
     OpenFile,
     AddFileToBulkImportList,
-    OpenFileInExplorer,
     OpenUnitypackageViewer,
     OpenPdfViewer,
 

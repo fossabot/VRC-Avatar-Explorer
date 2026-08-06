@@ -1,8 +1,12 @@
+using System.Text.Json.Serialization;
+
 namespace AvatarExplorer.Core.Models.Items;
 
-public class BulkImportItem(string itemId)
+public class BulkImportItem(string itemId, string filePath)
 {
-    public string Id { get; private set; } = Guid.NewGuid().ToString();
-    public string ItemId { get; init; } = itemId;
-    public string FilePath { get; set; } = string.Empty;
+    [JsonInclude] public string ItemId { get; private set; } = itemId;
+    [JsonInclude] public string FilePath { get; private set; } = filePath;
+
+    public void UpdateItemId(string itemId) => ItemId = itemId;
+    public void UpdateItemPath(string path) => FilePath = path;
 }

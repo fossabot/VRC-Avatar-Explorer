@@ -1,51 +1,62 @@
 ﻿using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 using AvatarExplorer.Core.Data.Links;
-using AvatarExplorer.Core.Models.Common;
+using AvatarExplorer.Core.Interfaces;
 
 namespace AvatarExplorer.Core.Models.Items;
 
-public class Item : AbstractDatabaseItem, ISelectableItem
+public class Item : AbstractDatabaseItem, INavigationable
 {
-    public string Title { get; set; } = string.Empty;
-    public string Author { get; set; } = string.Empty;
-    public string AuthorId { get; set; } = string.Empty;
-    public int BoothId { get; set; } = -1;
-    public string ItemPath { get; set; } = string.Empty;
-    [JsonInclude] public ImmutableArray<string> ItemPaths { get; private set; } = []; // フォルダーをそのまま使用する設定のときにここに追加される
-    public string ThumbnailFileName { get; set; } = string.Empty;
-    public ItemType Type { get; set; } = ItemType.None;
-    public string CustomCategory { get; set; } = string.Empty;
+    [JsonInclude] public string Title { get; private set; } = string.Empty;
+    [JsonInclude] public string Author { get; private set; } = string.Empty;
+    [JsonInclude] public string AuthorId { get; private set; } = string.Empty;
+    [JsonInclude] public int BoothId { get; private set; } = -1;
+    [JsonInclude] public string ItemPath { get; private set; } = string.Empty; // デフォルトの展開先
+    [JsonInclude] public ImmutableArray<string> ItemPaths { get; private set; } = []; // フォルダー（フォルダーをそのまま使用する設定の時にここに追加される）
+    [JsonInclude] public string ThumbnailFileName { get; private set; } = string.Empty;
+    [JsonInclude] public ItemCategory Category { get; private set; } = new(ItemType.None);
     [JsonInclude] public ImmutableArray<string> SupportedAvatars { get; private set; } = [];
     [JsonInclude] public ImmutableArray<string> ImplementedAvatars { get; private set; } = [];
     [JsonInclude] public ImmutableArray<string> Tags { get; private set; } = [];
-    public string ItemMemo { get; set; } = string.Empty;
-    public string CreatedDate { get; set; } = string.Empty;
-    public string UpdatedDate { get; set; } = string.Empty;
+    [JsonInclude] public string ItemMemo { get; private set; } = string.Empty;
+    [JsonInclude] public string CreatedDate { get; private set; } = string.Empty;
+    [JsonInclude] public string UpdatedDate { get; private set; } = string.Empty;
 
+    [JsonIgnore] public string Identifier => "item:" + Id;
+
+    public void UpdateMetadata(string title, string author, string authorId, int boothId, ItemCategory category, string itemMemo)
+    {
+        Title = title;
+        Author = author;
+        AuthorId = authorId;
+        BoothId = boothId;
+        Category = new ItemCategory(category);
+        ItemMemo = itemMemo;
+    }
+
+    public void UpdateTitle(string title) => Title = title;
+    public void UpdateAuthor(string author) => Author = author;
+    public void UpdateAuthorId(string authorId) => AuthorId = authorId;
+    public void UpdateBoothId(int boothId) => BoothId = boothId;
+    public void UpdateCategory(ItemCategory category) => Category = new ItemCategory(category);
+    public void UpdateMemo(string memo) => ItemMemo = memo;
+
+    public void UpdateItemPath(string itemPath) => ItemPath = itemPath;
     public void UpdateItemPaths(IEnumerable<string> newList) => ItemPaths = newList.ToImmutableArray();
+    public void UpdateThumbnailFileName(string fileName) => ThumbnailFileName = fileName;
     public void UpdateSupportedAvatars(IEnumerable<string> newList) => SupportedAvatars = newList.ToImmutableArray();
     public void UpdateImplementedAvatars(IEnumerable<string> newList) => ImplementedAvatars = newList.ToImmutableArray();
     public void UpdateTags(IEnumerable<string> newList) => Tags = newList.ToImmutableArray();
-    
+    public void SetCreationDates(string createdDate, string updatedDate)
+    {
+        CreatedDate = createdDate;
+        UpdatedDate = updatedDate;
+    }
+    public void UpdateTimestamp(string updatedDate) => UpdatedDate = updatedDate;
+
     public string GetBoothLink(string languageCode)
     {
         if (string.IsNullOrEmpty(AuthorId)) return string.Format(BoothLink.ItemURLWithoutAuthorFormat, languageCode, BoothId);
         else return string.Format(BoothLink.ItemURLFormat, AuthorId, BoothId);
-    }
-    
-    internal Item SetValuesFromCreationContext(ItemCreationContext itemCreationContext)
-    {
-        Title = itemCreationContext.Title;
-        Author = itemCreationContext.Author;
-        AuthorId = itemCreationContext.AuthorId;
-        BoothId = itemCreationContext.BoothId;
-        Type = itemCreationContext.ItemType;
-        CustomCategory = itemCreationContext.CustomCategory;
-        UpdateSupportedAvatars(itemCreationContext.SupportedAvatars);
-        UpdateTags(itemCreationContext.Tags);
-        ItemMemo = itemCreationContext.ItemMemo;
-
-        return this;
     }
 }

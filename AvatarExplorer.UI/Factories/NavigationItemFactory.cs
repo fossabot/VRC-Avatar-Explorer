@@ -1,0 +1,151 @@
+using System.Collections.ObjectModel;
+using System.Linq;
+using AvatarExplorer.Core.Localization;
+using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.UI.Data;
+using AvatarExplorer.UI.ViewModels.Component;
+using AvatarExplorer.Core.Interfaces;
+using AvatarExplorer.UI.Services.ViewControl;
+
+namespace AvatarExplorer.UI.Factories;
+
+public static class NavigationItemFactory
+{
+    public static ItemViewModel CreateFromNavigationable(INavigationable source)
+    {
+        if (source is Avatar avatar)
+        {
+            return FromAvatar(avatar);
+        }
+
+        if (source is Item item)
+        {
+            return new ItemViewModel
+            {
+                ImageFileName = item.ThumbnailFileName,
+                TitleRaw = item.Title,
+                TitleLocalizable = false,
+                DescriptionRaw = new(Loc.Button.Description.Item.Author, [item.Author]),
+                Identifier = source.Identifier,
+                ViewModelType = ViewModelType.Item,
+                Tags = item.Tags.Select(t => new TagViewModel { ValueRaw = t }).ToArray(),
+                CreatedDate = item.CreatedDate,
+                UpdatedDate = item.UpdatedDate,
+                ItemMemo = item.ItemMemo
+            };
+        }
+
+        if (source is Author author)
+        {
+            return new ItemViewModel
+            {
+                ImageFileName = string.Empty,
+                TitleRaw = author.Name,
+                TitleLocalizable = false,
+                DescriptionRaw = new(Loc.Button.Description.Item.Count, [author.ItemCount.ToString()]),
+                Identifier = source.Identifier,
+                ViewModelType = ViewModelType.None
+            };
+        }
+
+        if (source is Folder folder)
+        {
+            var isCategory = folder.Identifier.StartsWith("type:") || folder.Identifier.StartsWith("custom:");
+            return new ItemViewModel
+            {
+                ImageFileName = SystemIconKey.FolderIcon,
+                TitleRaw = folder.Title,
+                TitleLocalizable = folder.TitleLocalizable,
+                DescriptionRaw = new(Loc.Button.Description.Item.Count, [folder.ItemCount.ToString()]),
+                Identifier = folder.Identifier,
+                ViewModelType = isCategory ? ViewModelType.ItemCategory : ViewModelType.Folder,
+                ActualValue = folder.Path
+            };
+        }
+
+        if (source is ItemFile file)
+        {
+            var hasExtension = !string.IsNullOrEmpty(file.Extension);
+
+            return new ItemViewModel
+            {
+                ImageFileName = SystemIconKey.FileIcon,
+                TitleRaw = file.FileName,
+                TitleLocalizable = false,
+                DescriptionRaw = new(hasExtension ? Loc.Button.Description.File.Extension : Loc.Button.Description.File.NoExtension, [file.Extension]),
+                Identifier = file.Identifier,
+                ViewModelType = ViewModelType.File,
+                ActualValue = file.FilePath
+            };
+        }
+
+        return new ItemViewModel
+        {
+            ImageFileName = SystemIconKey.None,
+            TitleRaw = string.Empty,
+            TitleLocalizable = false,
+            DescriptionRaw = new(string.Empty, []),
+            Identifier = string.Empty,
+            ViewModelType = ViewModelType.None
+        };
+    }
+
+    private static ItemViewModel FromAvatar(Avatar avatar)
+    {
+        if (avatar.Type == AvatarType.Item)
+        {
+            var item = (Item)avatar.Item;
+            return new ItemViewModel
+            {
+                ImageFileName = item.ThumbnailFileName,
+                TitleRaw = item.Title,
+                TitleLocalizable = false,
+                DescriptionRaw = new(Loc.Button.Description.Item.Author, [item.Author]),
+                Identifier = avatar.Identifier,
+                ViewModelType = ViewModelType.Item,
+                Tags = item.Tags.Select(t => new TagViewModel { ValueRaw = t }).ToArray(),
+                CreatedDate = item.CreatedDate,
+                UpdatedDate = item.UpdatedDate,
+                ItemMemo = item.ItemMemo
+            };
+        }
+        else if (avatar.Type == AvatarType.CommonAvatar)
+        {
+            var commonAvatar = (CommonAvatar)avatar.Item;
+
+            return new ItemViewModel
+            {
+                ImageFileName = SystemIconKey.GroupIcon,
+                TitleRaw = commonAvatar.GroupName,
+                TitleLocalizable = false,
+                DescriptionRaw = new(Loc.Button.Description.CommonAvatar.Count, [commonAvatar.Avatars.Length.ToString()]),
+                Identifier = avatar.Identifier,
+                ViewModelType = ViewModelType.CommonAvatar
+            };
+        }
+        else if (avatar.Type == AvatarType.TempAvatar)
+        {
+            var tempAvatar = (TempAvatar)avatar.Item;
+
+            return new ItemViewModel
+            {
+                ImageFileName = SystemIconKey.AvatarIcon,
+                TitleRaw = tempAvatar.AvatarName,
+                TitleLocalizable = false,
+                DescriptionRaw = new(Loc.Button.Description.TempAvatar),
+                Identifier = avatar.Identifier,
+                ViewModelType = ViewModelType.TempAvatar
+            };
+        }
+
+        return new ItemViewModel
+        {
+            ImageFileName = SystemIconKey.None,
+            TitleRaw = string.Empty,
+            TitleLocalizable = false,
+            DescriptionRaw = new(string.Empty, []),
+            Identifier = string.Empty,
+            ViewModelType = ViewModelType.None
+        };
+    }
+}

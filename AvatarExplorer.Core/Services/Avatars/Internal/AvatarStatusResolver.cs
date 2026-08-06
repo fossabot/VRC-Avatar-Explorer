@@ -1,5 +1,4 @@
 using AvatarExplorer.Core.Models.Items;
-using AvatarExplorer.Core.Models.Items.Internal;
 
 namespace AvatarExplorer.Core.Services.Avatars.Internal;
 
@@ -13,14 +12,14 @@ internal static class AvatarStatusResolver
         if ((!treatEmptySupportedAvatarAsNone && !item.SupportedAvatars.Any()) || item.SupportedAvatars.Contains(avatarId))
             result.IsSupported = true;
 
-        if (item.Type != ItemType.Clothing) return result;
+        if (item.Category.Type != ItemType.Clothing) return result;
 
         // アイテムの対応アバターが共通素体グループで登録されていた時用の処理
-        foreach (var avatar in item.SupportedAvatars)
+        foreach (var id in item.SupportedAvatars)
         {
-            if (!avatar.StartsWith(CommonAvatar.InternalPathPrefix)) continue;
+            if (!id.StartsWith("commonavatar:")) continue;
 
-            var group = commonAvatars.FirstOrDefault(g => g.Id == CommonAvatar.GetGroupId(avatar));
+            var group = commonAvatars.FirstOrDefault(g => g.Identifier == id);
             if (group != null && group.Avatars.Contains(avatarId))
             {
                 result.IsCommon = true;

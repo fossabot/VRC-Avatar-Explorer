@@ -1,73 +1,92 @@
-using System.Collections.Immutable;
 using AvatarExplorer.Core.Data.Paths;
 using AvatarExplorer.Core.Models.External;
-using AvatarExplorer.Core.Models.Items;
 using AvatarExplorer.Core.Models.System;
-using AvatarExplorer.Core.Services.Database;
 using AvatarExplorer.Core.Services.IO;
 using AvatarExplorer.Core.Services.Items;
+using AvatarExplorer.Core.Services.System.Repositories;
 
 namespace AvatarExplorer.Core.Services.System;
 
-public partial class AvatarExplorerApp
+public class AvatarExplorerApp
 {
-    public static readonly string CurrentVersion = "2.7.0-beta.5";
+    public static readonly string CurrentVersion = "2.7.0-beta.6";
 
     private static readonly AvatarExplorerApp _instance = new();
     public static AvatarExplorerApp Instance => _instance;
 
     private bool _initialized = false;
 
-    private readonly DatabaseManager<Item> _itemDatabaseManager = new(SystemPath.ItemDatabasePath);
-    private readonly DatabaseManager<CommonAvatar> _commonAvatarDatabaseManager = new(SystemPath.CommonAvatarDatabasePath);
-    private readonly DatabaseManager<TempAvatar> _tempAvatarsDatabaseManager = new(SystemPath.TempAvatarsDatabasePath);
-    private readonly DatabaseManager<BulkImportPreset> _bulkImportPresetDatabaseManager = new(SystemPath.BulkImportPresetDatabasePath);
+    public ItemRepository Items { get; } = new();
+    public CommonAvatarRepository CommonAvatars { get; } = new();
+    public TempAvatarRepository TempAvatars { get; } = new();
+    public BulkImportPresetRepository BulkImportPresets { get; } = new();
+    public ItemGroupService ItemGroupService { get; }
+    public ItemNavigationService ItemNavigationService { get; }
+    public RuntimeSettingsRepository RuntimeSettings { get; } = new();
 
-    private readonly Dictionary<string, string> _itemSearchIndexDictionary = new();
+    public Func<ArchivePasswordRequest, ValueTask<string?>>? ArchivePasswordProvider { get; set; }
 
-    public Func<ArchivePasswordRequest, ValueTask<string?>>? PasswordProvider { get; set; }
-
-    private readonly SelectionState _selectionState = new();
-    private readonly Dictionary<ItemTagStates, Func<SelectionNode, ImmutableArray<ItemCountInfo>>> _stateHandlers;
-
-    private readonly SettingsManager<RuntimeSettings> _runtimeSettingsManager = new(SystemPath.RuntimeSettingsFilePath);
-    private RuntimeSettings RuntimeSettings => _runtimeSettingsManager.Settings;
-
-    private readonly BackupManager _backupManager = new();
+    public readonly BackupManager BackupManager = new();
 
     private AvatarExplorerApp()
     {
-        _stateHandlers = new()
-        {
-            { ItemTagStates.SearchItem, HandleRootSelectedItem },
-            { ItemTagStates.RootAvatar, HandleRootAvatar },
-            { ItemTagStates.RootAuthor, HandleRootAuthor },
-            { ItemTagStates.RootCategory, HandleRootCategory },
-            { ItemTagStates.RootItem, HandleRootSelectedItem },
-            { ItemTagStates.RootSelectedCategory, HandleRootSelectedCategory },
-            { ItemTagStates.RootSelectedItem, HandleRootSelectedItem },
-            { ItemTagStates.ItemFolder, HandleItemFolder },
-            { ItemTagStates.ItemFileCategory, HandleItemFileCategory }
-        };
+        ItemGroupService = new(Items, CommonAvatars, TempAvatars, RuntimeSettings);
+        ItemNavigationService = new(ItemGroupService);
     }
 
     public void Initialize()
     {
         if (_initialized) return;
 
-        LoadItemDatabase();
-        LoadCommonAvatarDatabase();
-        LoadBulkImportPresetDatabase();
-        LoadTempAvatarsDatabase();
-        LoadRuntimeSettings();
-        StartAutoBackup();
+        RuntimeSettings.Load();
 
-        UpdateSearchIndex();
-        EnsureAllItemsDefaultPathExist();
+        Items.Load();
+        CommonAvatars.Load();
+        TempAvatars.Load();
+        BulkImportPresets.Load();
+
+        ItemGroupService.RebuildIndices();
+
+        BackupManager.AddTargetFiles(
+            [
+                SystemPath.ItemDatabasePath,
+                SystemPath.ItemDatabaseMigrationVersionPath,
+                SystemPath.CommonAvatarDatabasePath,
+                SystemPath.CommonAvatarDatabaseMigrationVersionPath,
+                SystemPath.TempAvatarsDatabasePath,
+                SystemPath.TempAvatarsDatabaseMigrationVersionPath,
+                SystemPath.BulkImportPresetDatabasePath,
+                SystemPath.BulkImportPresetDatabaseMigrationVersionPath,
+                SystemPath.RuntimeSettingsFilePath,
+                SystemPath.RuntimeSettingsMigrationVersionPath,
+            ]
+        );
+        BackupManager.OnBackupRestored += OnBackupRestored;
+
+        RuntimeSettings.OnSettingsChanged += OnRuntimeSettingsUpdated;
+        BackupManager.StartAutoBackup(RuntimeSettings.Settings.AutoBackupInterval, RuntimeSettings.Settings.AutoBackupRootDirectory);
 
         ErrorManager.Instance.OnErrorOccured += ErrorLogWriter.Instance.Write;
         ErrorManager.Instance.OnInternalErrorOccured += ErrorLogWriter.Instance.InternalWrite;
 
         _initialized = true;
+    }
+
+    public void OnBackupRestored()
+    {
+        RuntimeSettings.Load();
+
+        Items.Load();
+        CommonAvatars.Load();
+        TempAvatars.Load();
+        BulkImportPresets.Load();
+
+        ItemGroupService.RebuildIndices();
+    }
+
+    public void OnRuntimeSettingsUpdated(RuntimeSettings runtimeSettings)
+    {
+        BackupManager.SetAutoBackupInterval(runtimeSettings.AutoBackupInterval);
+        BackupManager.SetAutoBackupPath(runtimeSettings.AutoBackupRootDirectory);
     }
 }

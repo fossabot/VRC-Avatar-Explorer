@@ -1,27 +1,20 @@
-using AvatarExplorer.Core.Models.Items;
-
 namespace AvatarExplorer.Core.Services.Items;
+
+public record SelectionNode(Guid Id, string Value);
 
 internal class SelectionState
 {
     public event Action? SelectionChanged;
-
+    
     private readonly Stack<SelectionNode> _stack = new();
 
-    public void Push(ItemTagStates state, string key)
+    public Guid Push(string value)
     {
-        if (state == ItemTagStates.SearchItem && FirstOrDefault(ItemTagStates.SearchItem) != null)
-        {
-            foreach (ItemTagStates itemTagState in _stack.Select(i => i.State).ToArray())
-            {
-                Pop();
-                if (itemTagState == ItemTagStates.SearchItem) break;
-            }
-        }
-
-        _stack.Push(new SelectionNode(state, key));
-
+        var newNode = new SelectionNode(Guid.NewGuid(), value);
+        _stack.Push(newNode);
         SelectionChanged?.Invoke();
+
+        return newNode.Id;
     }
 
     public SelectionNode? Pop()
@@ -33,7 +26,6 @@ internal class SelectionState
     }
 
     public SelectionNode? Current => _stack.Count > 0 ? _stack.Peek() : null;
-
     public SelectionNode? Root => _stack.Count > 0 ? _stack.Last() : null;
 
     public void Clear()
@@ -42,7 +34,8 @@ internal class SelectionState
         SelectionChanged?.Invoke();
     }
 
-    public SelectionNode? FirstOrDefault(ItemTagStates state) => _stack.FirstOrDefault(i => state.HasFlag(i.State));
+    public SelectionNode? FirstOrDefault(string prefix) => _stack.FirstOrDefault(i => i.Value.StartsWith(prefix));
+    public SelectionNode? LastOrDefault(string prefix) => _stack.LastOrDefault(i => i.Value.StartsWith(prefix));
     
     public IEnumerable<SelectionNode> GetCurrentSelectionNodes() => _stack.Reverse();
 }
