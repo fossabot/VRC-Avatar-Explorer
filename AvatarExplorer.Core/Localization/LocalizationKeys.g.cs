@@ -427,6 +427,11 @@ public static class Loc
             public const string Title = "Settings.ItemsPerPage.Title";
             public const string Description = "Settings.ItemsPerPage.Description";
         }
+        public static class ThumbnailCompressionMaxSize
+        {
+            public const string Title = "Settings.ThumbnailCompressionMaxSize.Title";
+            public const string Description = "Settings.ThumbnailCompressionMaxSize.Description";
+        }
         public const string Item = "Settings.Item";
         public static class RemoveOriginal
         {
@@ -442,11 +447,6 @@ public static class Loc
         {
             public const string Title = "Settings.TreatEmptySupportedAvatarAsNone.Title";
             public const string Description = "Settings.TreatEmptySupportedAvatarAsNone.Description";
-        }
-        public static class ThumbnailCompressionMaxSize
-        {
-            public const string Title = "Settings.ThumbnailCompressionMaxSize.Title";
-            public const string Description = "Settings.ThumbnailCompressionMaxSize.Description";
         }
         public const string Background = "Settings.Background";
         public static class UseCustomBackground
@@ -472,7 +472,7 @@ public static class Loc
             public const string Description = "Settings.CommonAvatarManagement.Description";
             public const string OpenManagement = "Settings.CommonAvatarManagement.OpenManagement";
         }
-        public const string Data = "Settings.Data";
+        public const string DataManagement = "Settings.DataManagement";
         public static class ItemsFolder
         {
             public const string Title = "Settings.ItemsFolder.Title";
