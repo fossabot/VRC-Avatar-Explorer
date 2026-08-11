@@ -195,8 +195,13 @@ public class ItemRepository : RepositoryBase<Item>
         var root = item.ItemPath;
 
         if (Directory.Exists(root))
+        {
+            if (Directory.GetFiles(root).Length > 0)
+                folders.Add(root);
+
             foreach (var dir in Directory.GetDirectories(root))
                 folders.Add(dir);
+        }
 
         foreach (var path in item.ItemPaths)
             folders.Add(path);
