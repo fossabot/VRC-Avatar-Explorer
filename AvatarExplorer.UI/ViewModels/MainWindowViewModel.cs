@@ -21,8 +21,6 @@ using AvatarExplorer.UI.Services;
 using AvatarExplorer.UI.Services.System;
 using AvatarExplorer.UI.Utils;
 using AvatarExplorer.UI.ViewModels.Overlays;
-using Message.Avalonia;
-using Message.Avalonia.Models;
 using ReactiveUI.Fody.Helpers;
 
 namespace AvatarExplorer.UI.ViewModels;
@@ -34,19 +32,29 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
     [Reactive] public IBrush? Background { get; set; } = null;
     [Reactive] public FontFamily FontFamily { get; set; } = FontUtils.GetFontFamily(null);
 
-    public static AvatarExplorerApp AvatarExplorerApp => AvatarExplorerApp.Instance;
     public static MainWindowViewModel Instance { get; private set; } = null!;
-
     public string? LastDragDropPath { get; set; } = null;
 
     public MainViewModel MainVM { get; } = new();
-
     public ItemEditorViewModel ItemEditorVM { get; } = new();
-
-    public ArchivePasswordDialogViewModel ArchivePasswordDialogVM { get; } = new();
-    [Reactive] public bool IsArchivePasswordDialogVisible { get; set; }
-
     public EditCommonAvatarsViewModel EditCommonAvatarsVM { get; } = new();
+    public ErrorLogViewModel ErrorLogVM { get; } = new();
+    public FetchAllThumbnailsViewModel FetchAllThumbnailsVM { get; } = new();
+    public FetchAllVariationHashesViewModel FetchAllVariationHashesVM { get; } = new();
+    public ImportDataViewModel ImportDataVM { get; } = new();
+    public ExportDataViewModel ExportDataVM { get; } = new();
+    public ResetDatabaseViewModel ResetDatabaseVM { get; } = new();
+    public InitialSetupViewModel InitialSetupVM { get; } = new();
+    public MergeCategoryViewModel MergeCategoryVM { get; } = new();
+    public TagEditorViewModel TagEditorVM { get; } = new();
+    public PdfViewerViewModel PdfViewerVM { get; } = new();
+    public ProgressViewModel ProgressVM { get; } = new();
+    public ResolveTempAvatarViewModel ResolveTempAvatarVM { get; } = new();
+    public SettingsViewModel SettingsVM { get; } = new();
+    public UnitypackageViewerViewModel UnitypackageViewerVM { get; } = new();
+
+    public TextDialogViewModel TextDialogVM { get; } = new();
+    [Reactive] public bool IsTextDialogVisible { get; set; }
 
     public SelectAvatarsViewModel SelectAvatarsVM { get; } = new();
     [Reactive] public bool SelectAvatarsVisible { get; set; }
@@ -57,39 +65,14 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
     public EditTagsViewModel EditTagsVM { get; } = new();
     [Reactive] public bool IsEditTagsVisible { get; set; }
 
-    public ErrorLogViewModel ErrorLogVM { get; } = new();
-
-    public FetchAllThumbnailsViewModel FetchAllThumbnailsVM { get; } = new();
-    public FetchAllVariationHashesViewModel FetchAllVariationHashesVM { get; } = new();
-
-    public ImportDataViewModel ImportDataVM { get; } = new();
-    public ExportDataViewModel ExportDataVM { get; } = new();
-    public ResetDatabaseViewModel ResetDatabaseVM { get; } = new();
-
-    public InitialSetupViewModel InitialSetupVM { get; } = new();
-
-    public MergeCategoryViewModel MergeCategoryVM { get; } = new();
-
-    public TagEditorViewModel TagEditorVM { get; } = new();
-
-    public PdfViewerViewModel PdfViewerVM { get; } = new();
-
-    public ProgressViewModel ProgressVM { get; } = new();
-
-    public ResolveTempAvatarViewModel ResolveTempAvatarVM { get; } = new();
-
-    public SettingsViewModel SettingsVM { get; } = new();
-
-    public TextDialogViewModel TextDialogVM { get; } = new();
-    [Reactive] public bool IsTextDialogVisible { get; set; }
-
-    public UnitypackageViewerViewModel UnitypackageViewerVM { get; } = new();
-
     public UpdateDialogViewModel UpdateDialogVM { get; } = new();
     [Reactive] public bool IsUpdateDialogVisible { get; set; }
 
     public YesNoDialogViewModel YesNoDialogVM { get; } = new();
     [Reactive] public bool IsYesNoDialogVisible { get; set; }
+
+    public ArchivePasswordDialogViewModel ArchivePasswordDialogVM { get; } = new();
+    [Reactive] public bool IsArchivePasswordDialogVisible { get; set; }
 
     public event Action? WindowClosing;
 
@@ -103,11 +86,6 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
         IInitializableRegistry.Register(9999, (IPostInitializable)this);
     }
 
-    private void OnBackupRestored()
-    {
-        AppInitializer.InitializeUserPreferences();
-    }
-
     public async Task Initialize()
     {
         AppInitializer.InitializeApp();
@@ -118,14 +96,14 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
         AppInitializer.StartThumbnailCacheWarmup();
         AppInitializer.StartSingleInstanceService();
 
-        UserPreferencesService.Instance.Repository.OnSettingsChanged += ApplyPreferenceSettings;
+        InstanceRepository.UserPreferencesRepository.OnSettingsChanged += ApplyPreferenceSettings;
         Localizer.Instance.LanguageChanged += OnLanguageUpdated;
-        AvatarExplorerApp.ArchivePasswordProvider = GetArchivePassword;
+        InstanceRepository.App.ArchivePasswordProvider = GetArchivePassword;
         UpdateChecker.UpdateAvailable += OnUpdateAvailable;
         SingleInstanceService.OnPipeMessageReceived += OnPipeMessageReceived;
-        AvatarExplorerApp.BackupManager.OnBackupRestored += OnBackupRestored;
+        InstanceRepository.App.BackupManager.OnBackupRestored += OnBackupRestored;
 
-        ApplyPreferenceSettings(UserPreferencesService.Instance.Repository.Settings);
+        ApplyPreferenceSettings(InstanceRepository.UserPreferences);
         UpdateFontFamily();
         UpdateWindowTitle();
     }
@@ -140,6 +118,51 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
         UpdateFontFamily();
         UpdateWindowTitle();
     }
+    private void UpdateFontFamily()
+    {
+        FontFamily = FontUtils.GetFontFamily(Localizer.Instance[Loc.FontFamily]);
+    }
+
+    private void OnBackupRestored()
+    {
+        AppInitializer.InitializeUserPreferences();
+    }
+
+    private static void CheckIfRunningAsAdmin()
+    {
+        if (!ProcessUtils.IsWindows()) return;
+
+        if (SchemeService.IsRunAsAdmin())
+        {
+            NotificationManager.Show(
+                Localizer.Instance[Loc.Warning.Default],
+                Localizer.Instance[Loc.Warning.RunningInAdministratorMode],
+                NotificationType.Warning
+            );
+        }
+    }
+    private void UpdateWindowTitle()
+    {
+        var title = string.Format("VRC Avatar Explorer v{0}", AvatarExplorerApp.CurrentVersion);
+
+        if (ProcessUtils.IsWindows() && SchemeService.IsRunAsAdmin())
+            title += string.Format(" - [{0}]", Localizer.Instance[Loc.Title.AdministratorMode]);
+
+        WindowTitle = title;
+    }
+
+    private static async void CheckForUpdateOnStartup()
+    {
+        var settings = InstanceRepository.RuntimeSettings;
+        if (!InstanceRepository.RuntimeSettings.CheckForUpdate) return;
+
+        await UpdateChecker.CheckForUpdate(settings.UpdateChannel);
+    }
+    private void OnUpdateAvailable(VersionRelease release)
+    {
+        UpdateDialogVM.Open(AvatarExplorerApp.CurrentVersion, release);
+        IsUpdateDialogVisible = true;
+    }
 
     private void OnPipeMessageReceived(string[] args) => Dispatcher.UIThread.Post(() => OnArgsReceived(args));
     public void SetApplicationArgs(string[] args)
@@ -147,7 +170,6 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
         ApplicationArgs = args;
         OnArgsReceived(args);
     }
-
     public void OnArgsReceived(string[] args)
     {
         if (args == null || args.Length == 0 || string.IsNullOrEmpty(args[0])) return;
@@ -166,60 +188,6 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
         }
     }
 
-    private void ApplyPreferenceSettings(UserPreferences settings)
-    {
-        Localizer.Instance.SetLanguage(settings.Language);
-
-        if (settings.UseBackgroundImage) SetBackgroundImage(settings.BackgroundImage, settings.BackgroundOpacity);
-        else BackgroundImage = null;
-
-        var (themeVariant, backgroundColor) = settings.Theme.GetThemeVariant();
-        SetBackgroundColor(backgroundColor);
-        SetTheme(themeVariant);
-    }
-
-    private static async void CheckForUpdateOnStartup()
-    {
-        var settings = AvatarExplorerApp.Instance.RuntimeSettings.Settings;
-        if (!settings.CheckForUpdate) return;
-
-        await UpdateChecker.CheckForUpdate(settings.UpdateChannel);
-    }
-    private void OnUpdateAvailable(VersionRelease release)
-    {
-        UpdateDialogVM.Open(AvatarExplorerApp.CurrentVersion, release);
-        IsUpdateDialogVisible = true;
-    }
-
-    private void CheckIfRunningAsAdmin()
-    {
-        if (!ProcessUtils.IsWindows()) return;
-
-        if (SchemeService.IsRunAsAdmin())
-        {
-            ShowNotification(
-                Localizer.Instance[Loc.Warning.Default],
-                Localizer.Instance[Loc.Warning.RunningInAdministratorMode],
-                NotificationType.Warning
-            );
-        }
-    }
-
-    private void UpdateWindowTitle()
-    {
-        var title = string.Format("VRC Avatar Explorer v{0}", AvatarExplorerApp.CurrentVersion);
-
-        if (ProcessUtils.IsWindows() && SchemeService.IsRunAsAdmin())
-            title += string.Format(" - [{0}]", Localizer.Instance[Loc.Title.AdministratorMode]);
-
-        WindowTitle = title;
-    }
-    private void UpdateFontFamily()
-    {
-        FontFamily = FontUtils.GetFontFamily(Localizer.Instance[Loc.FontFamily]);
-    }
-
-    public void ShowItemEditor(string? itemId = null) => ItemEditorVM.Open(itemId);
     public void OnFilesDrop(string[] filePaths)
     {
         // ソフト内からD&Dしたアイテムはスキップするように
@@ -236,7 +204,6 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
 
         return result;
     }
-
     public async Task<string[]?> ShowSelectAvatars(string title, string[]? avatars = null, bool includeCommonAvatar = false, bool includeTempAvatar = true, bool allowCreateTempAvatar = false)
     {
         SelectAvatarsVisible = true;
@@ -245,7 +212,6 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
 
         return result;
     }
-
     public async Task<string[]?> ShowEditTagsDialog(string[]? tags = null)
     {
         IsEditTagsVisible = true;
@@ -254,7 +220,6 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
 
         return result;
     }
-
     public async Task<bool> ShowYesNoDialog(string title, string content)
     {
         IsYesNoDialogVisible = true;
@@ -263,17 +228,6 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
 
         return result;
     }
-
-    public void ShowTempAvatarResolver(string tempAvatar)
-    {
-        ResolveTempAvatarVM.Open(tempAvatar);
-    }
-
-    public void ShowTagEditor()
-    {
-        TagEditorVM.Open();
-    }
-
     public async Task<string?> ShowTextDialog(string title, string content = "")
     {
         IsTextDialogVisible = true;
@@ -282,8 +236,7 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
 
         return result;
     }
-
-    public async ValueTask<string?> GetArchivePassword(ArchivePasswordRequest request)
+    private async ValueTask<string?> GetArchivePassword(ArchivePasswordRequest request)
     {
         IsArchivePasswordDialogVisible = true;
         var password = await ArchivePasswordDialogVM.ShowAsync(request);
@@ -292,10 +245,17 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
         return password;
     }
 
-    public void ShowUnitypackageViewer(string filePath) => UnitypackageViewerVM.Open(filePath);
-    public void ShowPdfViewer(string filePath) => PdfViewerVM.Open(filePath);
-    public void ShowErrorLog() => ErrorLogVM.IsVisible = true;
+    private void ApplyPreferenceSettings(UserPreferences settings)
+    {
+        Localizer.Instance.SetLanguage(settings.Language);
 
+        if (settings.UseBackgroundImage) SetBackgroundImage(settings.BackgroundImage, settings.BackgroundOpacity);
+        else BackgroundImage = null;
+
+        var (themeVariant, backgroundColor) = settings.Theme.GetThemeVariant();
+        SetBackgroundColor(backgroundColor);
+        SetTheme(themeVariant);
+    }
     private void SetBackgroundImage(string path, int opacity)
     {
         try
@@ -326,32 +286,6 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
         if (application == null) return;
 
         application.RequestedThemeVariant = theme;
-    }
-
-    public static void ShowNotification(string title, string content, NotificationType type)
-    {
-        var manager = MessageManager.Default;
-        var messageOptions = new MessageOptions
-        {
-            Title = title,
-            Duration = TimeSpan.FromSeconds(3.5)
-        };
-
-        switch (type)
-        {
-            case NotificationType.Information:
-                manager.ShowInformationMessage(content, messageOptions);
-                break;
-            case NotificationType.Success:
-                manager.ShowSuccessMessage(content, messageOptions);
-                break;
-            case NotificationType.Warning:
-                manager.ShowWarningMessage(content, messageOptions);
-                break;
-            case NotificationType.Error:
-                manager.ShowErrorMessage(content, messageOptions);
-                break;
-        }
     }
 
     public void OnWindowClosing()
