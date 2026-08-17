@@ -13,6 +13,7 @@ using AvatarExplorer.Core.Extensions;
 using AvatarExplorer.Core.Interfaces;
 using AvatarExplorer.Core.Localization;
 using AvatarExplorer.Core.Models.Items;
+using AvatarExplorer.Core.Services.Avatars;
 using AvatarExplorer.Core.Services.Items;
 using AvatarExplorer.Core.Services.System;
 using AvatarExplorer.Core.Utils;
@@ -183,9 +184,9 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
 
         Observable
             .Merge(
-                Observable.FromEvent(h => _itemGroupService.ItemRepository.OnUpdated += h, h => _itemGroupService.ItemRepository.OnUpdated -= h),
-                Observable.FromEvent(h => _itemGroupService.CommonAvatarRepository.OnUpdated += h, h => _itemGroupService.CommonAvatarRepository.OnUpdated -= h),
-                Observable.FromEvent(h => _itemGroupService.TempAvatarRepository.OnUpdated += h, h => _itemGroupService.TempAvatarRepository.OnUpdated -= h)
+                Observable.FromEvent(h => InstanceRepository.Items.OnUpdated += h, h => InstanceRepository.Items.OnUpdated -= h),
+                Observable.FromEvent(h => InstanceRepository.CommonAvatars.OnUpdated += h, h => InstanceRepository.CommonAvatars.OnUpdated -= h),
+                Observable.FromEvent(h => InstanceRepository.TempAvatars.OnUpdated += h, h => InstanceRepository.TempAvatars.OnUpdated -= h)
             )
             .Throttle(TimeSpan.FromMilliseconds(100))
             .Subscribe(async _ => await Dispatcher.UIThread.InvokeAsync(() => Refresh()));
@@ -214,7 +215,7 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
                 return;
             }
 
-            var item = _itemGroupService.ItemRepository.Get(itemId);
+            var item = InstanceRepository.Items.Get(itemId);
             if (item == null)
             {
                 NotificationManager.Show(
@@ -363,7 +364,7 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
     private void RefreshNavigationView()
     {
         var avatarId = _itemNavigationService.GetCurrentAvatarId();
-        var commonAvatars = _itemGroupService.CommonAvatarRepository.GetAll();
+        var commonAvatars = InstanceRepository.CommonAvatars.GetAll();
         var sortOrder = UserPreferences.SortOrder;
         var sortDirection = UserPreferences.SortDirection;
         var implementedSort = UserPreferences.ImplementedSort;
@@ -408,7 +409,7 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
         return sorted.OrderByDescending(i => i.ImplementedAvatars.Contains(avatarId) == priority);
     }
 
-    private ItemViewModel CreateItemViewModelWithStatus(IIdentifiable nav, string? avatarId, IReadOnlyList<CommonAvatar> commonAvatars, bool implementedEnabled)
+    private static ItemViewModel CreateItemViewModelWithStatus(IIdentifiable nav, string? avatarId, IReadOnlyList<CommonAvatar> commonAvatars, bool implementedEnabled)
     {
         var vm = CreateItemViewModel(nav);
 
@@ -426,7 +427,7 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
             vm.IsNotImplemented = !isImplemented;
         }
 
-        var status = _itemNavigationService.ResolveAvatarStatusForCurrentAvatar(item, avatarId, commonAvatars);
+        var status = AvatarStatusResolver.Resolve(item, avatarId, commonAvatars);
         if (status.IsOnlyCommon)
         {
             var tags = new List<TagViewModel>(item.Tags.Length + 1)
@@ -476,15 +477,6 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
         {
             if (!ItemNavigationService.TryParseState(state, out var prefix, out var value)) return state;
 
-            if (prefix == ItemNavigationService.TypePrefix)
-            {
-                var categoryDisplay = ItemNavigationService.GetCategoryDisplayName(state);
-                return Localizer.Instance[categoryDisplay];
-            }
-
-            if (prefix == ItemNavigationService.CustomPrefix || prefix == ItemNavigationService.AuthorPrefix)
-                return value;
-
             if (prefix == ItemNavigationService.AvatarPrefix)
             {
                 // Item
@@ -502,11 +494,20 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
                 return value;
             }
 
+            if (prefix == ItemNavigationService.AuthorPrefix)
+                return value;
+            
+            if (prefix == ItemNavigationService.TypePrefix || prefix == ItemNavigationService.CustomPrefix)
+            {
+                var category = ItemCategory.FromIdentifier(state);
+                return category.IsLocalizable ? Localizer.Instance[category.ToString()] : category.ToString();
+            }
+
             if (prefix == ItemNavigationService.ItemPrefix)
                 return InstanceRepository.Items.Get(state)?.Title ?? value;
 
             if (prefix == ItemNavigationService.FolderPrefix)
-                return System.IO.Path.GetFileName(_itemNavigationService.ResolveFolderPath(state) ?? "Unknown Folder");
+                return System.IO.Path.GetFileName(_itemNavigationService.ResolvePath(state) ?? "Unknown Folder");
 
             if (prefix == ItemNavigationService.ExtensionPrefix && Enum.TryParse<ItemFileCategoryType>(value, out var extensionCategory))
                 return Localizer.Instance[extensionCategory.GetLocalizationKey() ?? value];
@@ -620,7 +621,7 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
                 _stateCacheManager.SaveRightState(RightPageInfo);
             }
 
-            _searchItemBaseState = _itemNavigationService.CurrentStateValue;
+            _searchItemBaseState = _itemNavigationService.CurrentState?.Value;
             _searchManager.SuspendQuery(RightPageInfo);
             _itemNavigationService.Select(item.Identifier);
             _hasSearchItem = true;
@@ -657,8 +658,8 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
             var popped = _itemNavigationService.Undo();
             if (popped != null)
             {
-                var currentState = _itemNavigationService.CurrentStateValue;
-                if (_hasSearchItem && currentState == _searchItemBaseState)
+                var currentState = _itemNavigationService.CurrentState?.Value;
+                if (_hasSearchItem && currentState != null && currentState == _searchItemBaseState)
                 {
                     // 検索アイテムがpopされた → 検索状態を復元
                     _searchManager.MarkAsRestoring();
