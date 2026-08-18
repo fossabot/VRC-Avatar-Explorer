@@ -41,6 +41,9 @@ public class ItemViewModel : ViewModelBase, IDisposable
     [Reactive] public double Height { get; set; } = 0;
 
     public string ImageFileName { get; set; } = string.Empty;
+    public string? FallbackImageFileName { get; set; } = null;
+    public string AppliedImageFileName { get; private set; } = string.Empty;
+
     public string? ThumbnailFilePath { get; set; } = null;
     public string TitleRaw { get; set; } = string.Empty;
     public bool TitleLocalizable { get; set; } = false;
@@ -70,7 +73,13 @@ public class ItemViewModel : ViewModelBase, IDisposable
         _thumbnailLoadCts?.Dispose();
         _thumbnailLoadCts = null;
 
+        AppliedImageFileName = ImageFileName;
         var fallbackIcon = ImageService.Get(ImageFileName);
+        if (fallbackIcon == null && !string.IsNullOrEmpty(FallbackImageFileName))
+        {
+            fallbackIcon = ImageService.Get(FallbackImageFileName);
+            AppliedImageFileName = FallbackImageFileName;
+        }
         SetThumbnail(fallbackIcon, owned: false);
 
         if (!string.IsNullOrEmpty(ThumbnailFilePath))
