@@ -109,7 +109,7 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
     }
     public async Task OnInitialized()
     {
-        CheckForUpdateOnStartup();
+        _ = CheckForUpdateOnStartup();
         CheckIfRunningAsAdmin();
     }
 
@@ -151,7 +151,7 @@ public class MainWindowViewModel : ViewModelBase, IInitializable, IPostInitializ
         WindowTitle = title;
     }
 
-    private static async void CheckForUpdateOnStartup()
+    private static async Task CheckForUpdateOnStartup()
     {
         var settings = InstanceRepository.RuntimeSettings;
         if (!InstanceRepository.RuntimeSettings.CheckForUpdate) return;
