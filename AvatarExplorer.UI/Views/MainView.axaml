@@ -4,6 +4,8 @@
     xmlns:loc="using:AvatarExplorer.UI.Localization"
     xmlns:panels="using:AvatarExplorer.UI.Views.Panels"
     xmlns:component="using:AvatarExplorer.UI.ViewModels.Component"
+    xmlns:common="using:AvatarExplorer.UI.Models.Common"
+    xmlns:views="using:AvatarExplorer.UI.Views"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:i="clr-namespace:Availability.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
     xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
@@ -24,7 +26,7 @@
     <DockPanel Margin="12">
         <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*" ColumnSpacing="12">
             <Border Grid.Column="1" Classes="panelbackground">
-                <Grid ColumnDefinitions="Auto,Auto,2.3*,Auto,*,Auto" ColumnSpacing="10">
+                <Grid ColumnDefinitions="Auto,Auto,2.3*,Auto,*,Auto,Auto" ColumnSpacing="10">
                     <Button Classes="button" Grid.Column="0" Content="{materialIcons:MaterialIconExt Kind=ArrowLeft}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" FontSize="19" CornerRadius="8" Padding="15,0,15,0" Command="{Binding UndoCommand}"/>
                     <Button Classes="button" Grid.Column="1" Content="{materialIcons:MaterialIconExt Kind=HomeOutline}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="35" FontSize="19" CornerRadius="8" Padding="15,0,15,0" Command="{Binding HomeCommand}"/>
                     
@@ -99,6 +101,59 @@
                             <TextBlock Classes="accentbutton" FontSize="15" FontWeight="Bold" Text="{Binding [Main.AddItem], Source={x:Static loc:Localizer.Instance}}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
+
+                    <Button Classes="button" Grid.Column="6" Width="35" Height="35" CornerRadius="8" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" ToolTip.Tip="{Binding [Main.SortOptions], Source={x:Static loc:Localizer.Instance}}">
+                        <materialIcons:MaterialIcon Kind="Tune" Width="20" Height="20"/>
+                        <Button.Flyout>
+                            <Flyout Placement="BottomEdgeAlignedRight">
+                                <StackPanel Orientation="Vertical" Spacing="10">
+                                    <TextBlock Text="{Binding [Main.SortOptions], Source={x:Static loc:Localizer.Instance}}" FontSize="14" FontWeight="Bold"/>
+                                    <Border Height="1" Background="{DynamicResource Panel.BorderBrush}"/>
+
+                                    <Grid IsSharedSizeScope="True" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="10" MinWidth="250">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="LabelColumn"/>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="ControlColumn"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding [Main.ViewMode.Title], Source={x:Static loc:Localizer.Instance}}" VerticalAlignment="Center" FontSize="12"/>
+                                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                                            <RadioButton GroupName="MainViewMode" IsChecked="{Binding MainViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static common:MainItemViewMode.List}}" Content="{Binding [Main.ViewMode.Options.List], Source={x:Static loc:Localizer.Instance}}" FontSize="12" VerticalAlignment="Center"/>
+                                            <RadioButton GroupName="MainViewMode" IsChecked="{Binding MainViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static common:MainItemViewMode.Grid}}" Content="{Binding [Main.ViewMode.Options.Grid], Source={x:Static loc:Localizer.Instance}}" FontSize="12" VerticalAlignment="Center"/>
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding [Settings.SortOrder.Title], Source={x:Static loc:Localizer.Instance}}" VerticalAlignment="Center" FontSize="12"/>
+                                        <ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="{Binding MainSortOrder}" FontSize="12" Padding="8,4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                            <ComboBoxItem Content="{Binding [Settings.SortOrder.Options.Title], Source={x:Static loc:Localizer.Instance}}"/>
+                                            <ComboBoxItem Content="{Binding [Settings.SortOrder.Options.Author], Source={x:Static loc:Localizer.Instance}}"/>
+                                            <ComboBoxItem Content="{Binding [Settings.SortOrder.Options.Created], Source={x:Static loc:Localizer.Instance}}"/>
+                                            <ComboBoxItem Content="{Binding [Settings.SortOrder.Options.Updated], Source={x:Static loc:Localizer.Instance}}"/>
+                                        </ComboBox>
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [Settings.SortDirection.Title], Source={x:Static loc:Localizer.Instance}}" VerticalAlignment="Center" FontSize="12"/>
+                                        <ComboBox Grid.Row="2" Grid.Column="1" SelectedIndex="{Binding MainSortDirection}" FontSize="12" Padding="8,4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                            <ComboBoxItem Content="{Binding [Settings.SortDirection.Options.Ascending], Source={x:Static loc:Localizer.Instance}}"/>
+                                            <ComboBoxItem Content="{Binding [Settings.SortDirection.Options.Descending], Source={x:Static loc:Localizer.Instance}}"/>
+                                        </ComboBox>
+
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding [Settings.ImplementedSort.Title], Source={x:Static loc:Localizer.Instance}}" VerticalAlignment="Center" FontSize="12"/>
+                                        <ComboBox Grid.Row="3" Grid.Column="1" SelectedIndex="{Binding MainImplementedSort}" FontSize="12" Padding="8,4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                            <ComboBoxItem Content="{Binding [Settings.ImplementedSort.Options.None], Source={x:Static loc:Localizer.Instance}}"/>
+                                            <ComboBoxItem Content="{Binding [Settings.ImplementedSort.Options.Implemented], Source={x:Static loc:Localizer.Instance}}"/>
+                                            <ComboBoxItem Content="{Binding [Settings.ImplementedSort.Options.NotImplemented], Source={x:Static loc:Localizer.Instance}}"/>
+                                        </ComboBox>
+
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding [Main.GridItemSize.Title], Source={x:Static loc:Localizer.Instance}}" VerticalAlignment="Center" FontSize="12" IsVisible="{Binding MainViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static common:MainItemViewMode.Grid}}"/>
+                                        <ComboBox Grid.Row="4" Grid.Column="1" SelectedIndex="{Binding MainGridItemSize}" FontSize="12" Padding="8,4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsVisible="{Binding MainViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static common:MainItemViewMode.Grid}}">
+                                            <ComboBoxItem Content="{Binding [Main.GridItemSize.Options.Small], Source={x:Static loc:Localizer.Instance}}"/>
+                                            <ComboBoxItem Content="{Binding [Main.GridItemSize.Options.Medium], Source={x:Static loc:Localizer.Instance}}"/>
+                                            <ComboBoxItem Content="{Binding [Main.GridItemSize.Options.Large], Source={x:Static loc:Localizer.Instance}}"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
                 </Grid>
             </Border>
 
@@ -138,7 +193,23 @@
 
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="component:ItemViewModel">
-                                                    <Button Classes="button" Classes.accentbutton="{Binding IsSelected}" Classes.implemented="{Binding IsImplemented}" Classes.notimplemented="{Binding IsNotImplemented}" ContextMenu="{Binding ContextMenu}" ToolTip.Tip="{Binding ToolTip}" ToolTip.ToolTipOpening="OnToolTipOpening" HorizontalAlignment="Stretch" VerticalAlignment="Top" CornerRadius="8" Padding="7" Margin="0,0,0,5" Command="{Binding $parent[UserControl].DataContext.SelectLeftItemCommand}" CommandParameter="{Binding}" Loaded="OnItemButtonLoaded" Unloaded="OnItemButtonUnloaded">
+                                                    <Button
+                                                        Classes="button"
+                                                        Classes.accentbutton="{Binding IsSelected}"
+                                                        Classes.implemented="{Binding IsImplemented}"
+                                                        Classes.notimplemented="{Binding IsNotImplemented}"
+                                                        ContextMenu="{Binding ContextMenu}"
+                                                        ToolTip.Tip="{Binding ToolTip}"
+                                                        ToolTip.ToolTipOpening="OnToolTipOpening"
+                                                        HorizontalAlignment="Stretch"
+                                                        VerticalAlignment="Top"
+                                                        CornerRadius="8"
+                                                        Padding="7"
+                                                        Margin="0,0,0,5"
+                                                        Command="{Binding $parent[UserControl].DataContext.SelectLeftItemCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Loaded="OnItemButtonLoaded"
+                                                        Unloaded="OnItemButtonUnloaded">
                                                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                                                             <Border CornerRadius="8" ClipToBounds="true" HorizontalAlignment="Center" VerticalAlignment="Top">
                                                                 <Image Source="{Binding Thumbnail}" Width="{Binding Width}" Height="{Binding Height}" Stretch="Fill" VerticalAlignment="Top" Loaded="OnItemImageLoaded" Unloaded="OnItemImageUnloaded"/>
@@ -198,7 +269,7 @@
 
                 <GridSplitter Grid.Column="1" Opacity="0"/>
 
-                <Border Grid.Column="2" Classes="panelbackground">
+                <Border Classes="panelbackground" Grid.Column="2">
                     <Panel>
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" IsVisible="{Binding IsMainItemsEmpty}">
                             <Image Source="avares://AvatarExplorer/Assets/Internal/EmptyIcon.png" Width="150" Height="150" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -209,50 +280,116 @@
                             <Panel>
                                 <Border CornerRadius="8" ClipToBounds="True">
                                     <ScrollViewer x:Name="RightPanelScrollViewer">
-                                        <ItemsControl ItemsSource="{Binding MainItems}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <VirtualizingStackPanel Margin="0,0,10,0"/>
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
+                                        <Grid>
+                                            <ItemsControl ItemsSource="{Binding MainItems}" IsVisible="{Binding MainViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static common:MainItemViewMode.List}}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <VirtualizingStackPanel Margin="0,0,10,0"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
 
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate x:DataType="component:ItemViewModel">
-                                                    <Button Classes="button" Classes.implemented="{Binding IsImplemented}" Classes.notimplemented="{Binding IsNotImplemented}" ContextMenu="{Binding ContextMenu}" ToolTip.Tip="{Binding ToolTip}" ToolTip.ToolTipOpening="OnToolTipOpening" HorizontalAlignment="Stretch" VerticalAlignment="Top" CornerRadius="8" Padding="7" Margin="0,0,0,5" Command="{Binding $parent[UserControl].DataContext.SelectRightItemCommand}" CommandParameter="{Binding}" Loaded="OnItemButtonLoaded" Unloaded="OnItemButtonUnloaded">
-                                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                                                            <Border CornerRadius="8" ClipToBounds="true" HorizontalAlignment="Center" VerticalAlignment="Top">
-                                                                <Image Source="{Binding Thumbnail}" Width="{Binding Width}" Height="{Binding Height}" Stretch="Fill" VerticalAlignment="Top" Loaded="OnItemImageLoaded" Unloaded="OnItemImageUnloaded"/>
-                                                            </Border>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="component:ItemViewModel">
+                                                        <Button
+                                                            Classes="button"
+                                                            Classes.implemented="{Binding IsImplemented}"
+                                                            Classes.notimplemented="{Binding IsNotImplemented}"
+                                                            ContextMenu="{Binding ContextMenu}"
+                                                            ToolTip.Tip="{Binding ToolTip}"
+                                                            ToolTip.ToolTipOpening="OnToolTipOpening"
+                                                            HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                                                            CornerRadius="8"
+                                                            Padding="7"
+                                                            Margin="0,0,0,5"
+                                                            Command="{Binding $parent[UserControl].DataContext.SelectRightItemCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            Loaded="OnItemButtonLoaded"
+                                                            Unloaded="OnItemButtonUnloaded">
+                                                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                                <Border CornerRadius="8" ClipToBounds="true" HorizontalAlignment="Center" VerticalAlignment="Top">
+                                                                    <Image Source="{Binding Thumbnail}" Width="{Binding Width}" Height="{Binding Height}" Stretch="Fill" VerticalAlignment="Top" Loaded="OnItemImageLoaded" Unloaded="OnItemImageUnloaded"/>
+                                                                </Border>
 
-                                                            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,5,*">
-                                                                <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
-                                                                <TextBlock Grid.Row="1" Text="{Binding Description}" FontSize="13" TextTrimming="CharacterEllipsis"/>
-                                                                <ItemsControl Grid.Row="3" ItemsSource="{Binding Tags}">
-                                                                    <ItemsControl.ItemsPanel>
-                                                                        <ItemsPanelTemplate>
-                                                                            <WrapPanel Grid.Row="3" Orientation="Horizontal" ItemSpacing="5" LineSpacing="5"/>
-                                                                        </ItemsPanelTemplate>
-                                                                    </ItemsControl.ItemsPanel>
+                                                                <Grid Grid.Column="1" RowDefinitions="Auto,Auto,5,*">
+                                                                    <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                                                                    <TextBlock Grid.Row="1" Text="{Binding Description}" FontSize="13" TextTrimming="CharacterEllipsis"/>
+                                                                    <ItemsControl Grid.Row="3" ItemsSource="{Binding Tags}">
+                                                                        <ItemsControl.ItemsPanel>
+                                                                            <ItemsPanelTemplate>
+                                                                                <WrapPanel Grid.Row="3" Orientation="Horizontal" ItemSpacing="5" LineSpacing="5"/>
+                                                                            </ItemsPanelTemplate>
+                                                                        </ItemsControl.ItemsPanel>
 
-                                                                    <ItemsControl.ItemTemplate>
-                                                                        <DataTemplate x:DataType="component:TagViewModel">
-                                                                            <Border CornerRadius="15" HorizontalAlignment="Center" VerticalAlignment="Center" Classes.commonavatar="{Binding IsCommonAvatar}" Classes.tag="{Binding !IsCommonAvatar}">
-                                                                                <TextBlock Text="{Binding Label}" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="8,5" Classes.commonavatar="{Binding IsCommonAvatar}" Classes.tag="{Binding !IsCommonAvatar}" FontWeight="Bold"/>
-                                                                            </Border>
-                                                                        </DataTemplate>
-                                                                    </ItemsControl.ItemTemplate>
-                                                                </ItemsControl>
+                                                                        <ItemsControl.ItemTemplate>
+                                                                            <DataTemplate x:DataType="component:TagViewModel">
+                                                                                <Border CornerRadius="15" HorizontalAlignment="Center" VerticalAlignment="Center" Classes.commonavatar="{Binding IsCommonAvatar}" Classes.tag="{Binding !IsCommonAvatar}">
+                                                                                    <TextBlock Text="{Binding Label}" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="8,5" Classes.commonavatar="{Binding IsCommonAvatar}" Classes.tag="{Binding !IsCommonAvatar}" FontWeight="Bold"/>
+                                                                                </Border>
+                                                                            </DataTemplate>
+                                                                        </ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
+                                                                </Grid>
                                                             </Grid>
-                                                        </Grid>
-                                                    </Button>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                            <ItemsControl x:Name="GridItemsControl" IsVisible="{Binding MainViewMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static common:MainItemViewMode.Grid}}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <VirtualizingStackPanel/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="views:GridRow">
+                                                        <ItemsControl ItemsSource="{Binding Items}">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <UniformGrid Columns="{Binding Columns}" Margin="0,0,10,0"/>
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate x:DataType="component:ItemViewModel">
+                                                                    <Button
+                                                                        Classes="button"
+                                                                        Classes.implemented="{Binding IsImplemented}"
+                                                                        Classes.notimplemented="{Binding IsNotImplemented}"
+                                                                        ContextMenu="{Binding ContextMenu}"
+                                                                        ToolTip.Tip="{Binding ToolTip}"
+                                                                        ToolTip.ToolTipOpening="OnToolTipOpening"
+                                                                        HorizontalAlignment="Stretch"
+                                                                        VerticalAlignment="Stretch"
+                                                                        CornerRadius="8"
+                                                                        Padding="10"
+                                                                        Margin="5"
+                                                                        Command="{Binding $parent[UserControl].DataContext.SelectRightItemCommand}"
+                                                                        CommandParameter="{Binding}"
+                                                                        Loaded="OnItemButtonLoaded"
+                                                                        Unloaded="OnItemButtonUnloaded">
+                                                                        <Grid RowDefinitions="Auto,Auto,Auto">
+                                                                            <Border CornerRadius="8" ClipToBounds="true" HorizontalAlignment="Center" VerticalAlignment="Top">
+                                                                                <Image Source="{Binding Thumbnail}" Width="{Binding $parent[views:MainView].GridItemImageSize}" Height="{Binding $parent[views:MainView].GridItemImageSize}" Stretch="UniformToFill" VerticalAlignment="Top" Loaded="OnItemImageLoaded" Unloaded="OnItemImageUnloaded"/>
+                                                                            </Border>
+
+                                                                            <TextBlock Grid.Row="1" Text="{Binding Title}" MaxLines="2" FontSize="15" FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" TextAlignment="Left" Margin="0,10,0,0"/>
+                                                                            <TextBlock Grid.Row="2" Text="{Binding Description}" FontSize="13" TextTrimming="CharacterEllipsis" TextAlignment="Left" Foreground="{DynamicResource Text.Secondary}" Margin="0,5,0,0"/>
+                                                                        </Grid>
+                                                                    </Button>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Grid>
                                     </ScrollViewer>
                                 </Border>
                             </Panel>
 
-                            <Border Grid.Row="1" Classes="panelbackground" CornerRadius="8" Padding="10,6">
+                            <Border Grid.Row="2" Classes="panelbackground" CornerRadius="8" Padding="10,6">
                                 <Grid ColumnDefinitions="35,35,*,35,35" ColumnSpacing="8">
                                     <Button Classes="button pagebutton" Grid.Column="0" Width="35" Height="35" Padding="0" Command="{Binding RightGoFirstCommand}" IsVisible="{Binding RightPageInfo.CanGoFirst}">
                                         <materialIcons:MaterialIcon Kind="FirstPage" Width="22" Height="22"/>

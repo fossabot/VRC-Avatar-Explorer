@@ -40,6 +40,26 @@ public static class Loc
             public const string Placeholder = "Main.Path.Placeholder";
             public const string SearchResult = "Main.Path.SearchResult";
         }
+        public static class GridItemSize
+        {
+            public const string Title = "Main.GridItemSize.Title";
+            public static class Options
+            {
+                public const string Small = "Main.GridItemSize.Options.Small";
+                public const string Medium = "Main.GridItemSize.Options.Medium";
+                public const string Large = "Main.GridItemSize.Options.Large";
+            }
+        }
+        public const string SortOptions = "Main.SortOptions";
+        public static class ViewMode
+        {
+            public const string Title = "Main.ViewMode.Title";
+            public static class Options
+            {
+                public const string List = "Main.ViewMode.Options.List";
+                public const string Grid = "Main.ViewMode.Options.Grid";
+            }
+        }
     }
     public static class ItemCategory
     {

@@ -18,6 +18,15 @@
     "Main.Path.Placeholder": "Aquí se muestra la ruta actual",
     "Main.Path.SearchResult": "Resultado de búsqueda",
 
+    "Main.GridItemSize.Title": "Tamaño del elemento de la cuadrícula",
+    "Main.GridItemSize.Options.Small": "Pequeño",
+    "Main.GridItemSize.Options.Medium": "Mediano",
+    "Main.GridItemSize.Options.Large": "Grande",
+    "Main.SortOptions": "Opciones de visualización",
+    "Main.ViewMode.Title": "Modo de visualización",
+    "Main.ViewMode.Options.List": "Lista",
+    "Main.ViewMode.Options.Grid": "Cuadrícula",
+
     "ItemCategory.Avatar": "Avatar",
     "ItemCategory.Clothing": "Ropa",
     "ItemCategory.Texture": "Textura",

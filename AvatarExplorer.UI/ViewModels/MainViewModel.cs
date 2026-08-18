@@ -20,6 +20,7 @@ using AvatarExplorer.Core.Utils;
 using AvatarExplorer.UI.Factories;
 using AvatarExplorer.UI.Interfaces;
 using AvatarExplorer.UI.Localization;
+using AvatarExplorer.UI.Models.Common;
 using AvatarExplorer.UI.Models.Settings;
 using AvatarExplorer.UI.Models.Sort;
 using AvatarExplorer.UI.Services;
@@ -51,6 +52,12 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
     [Reactive] public IEnumerable<ItemViewModel> LeftItems { get; set; } = [];
     [Reactive] public IEnumerable<ItemViewModel> MainItems { get; set; } = [];
     [Reactive] public bool IsMainItemsEmpty { get; set; }
+
+    [Reactive] public MainItemViewMode MainViewMode { get; set; } = MainItemViewMode.List;
+    [Reactive] public int MainGridItemSize { get; set; } = (int)GridItemSize.Medium;
+    [Reactive] public int MainSortOrder { get; set; } = (int)ItemSortOrder.UpdatedDate;
+    [Reactive] public int MainSortDirection { get; set; } = (int)SortDirection.Descending;
+    [Reactive] public int MainImplementedSort { get; set; } = (int)ImplementedSort.None;
 
     [Reactive] public PanelPageInfo LeftPageInfo { get; set; } = new();
     [Reactive] public PanelPageInfo RightPageInfo { get; set; } = new();
@@ -94,6 +101,7 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
     private readonly SidePanelManager _sidePanelManager;
     private readonly StateCacheManager _stateCacheManager;
     private readonly SearchManager _searchManager;
+    private IObservable<int>? _sortOrderObservable; // SortOrderのLocalization更新時などに、無駄にRefresh()が呼ばれないようにするためのObservable
 
     private List<ItemViewModel> _allLeftItems = [];
     private List<ItemViewModel> _allMainItems = [];
@@ -149,11 +157,23 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
 
     public async Task Initialize()
     {
+        UpdateSortSettings();
         InitializeSubscriptions();
 
-        Localizer.Instance.LanguageChanged += RefreshAllItems;
+        Localizer.Instance.LanguageChanged += () =>
+        {
+            var previousSize = MainGridItemSize;
+            MainGridItemSize = -1;
+            MainGridItemSize = previousSize; // For localization of grid item size
+
+            _sortOrderObservable?.Skip(1); // 最後にRefleshAllItems()が呼ばれるので、次のSortSettings()の更新は無視する
+            UpdateSortSettings(); // For localization of sort order and direction
+            RefreshAllItems();
+        };
         InstanceRepository.UserPreferencesRepository.OnSettingsChanged += _ =>
         {
+            _sortOrderObservable?.Skip(1); // 最後にReflesh()が呼ばれるので、次のSortSettings()の更新は無視する
+            UpdateSortSettings();
             UpdateItemsPerPage();
             Refresh();
         };
@@ -177,6 +197,7 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
             .Subscribe(_ => UpdateLeftPanelItems());
 
         this.WhenAnyValue(x => x.SearchText)
+            .Skip(1)
             .Subscribe(_ => _searchManager.RestartTimer());
 
         this.WhenAnyValue(x => x.SidePanelWidth)
@@ -189,6 +210,18 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
                 Observable.FromEvent(h => InstanceRepository.TempAvatars.OnUpdated += h, h => InstanceRepository.TempAvatars.OnUpdated -= h)
             )
             .Throttle(TimeSpan.FromMilliseconds(100))
+            .Subscribe(async _ => await Dispatcher.UIThread.InvokeAsync(() => Refresh()));
+
+        _sortOrderObservable = Observable
+            .Merge(
+                this.WhenAnyValue(x => x.MainSortOrder),
+                this.WhenAnyValue(x => x.MainSortDirection),
+                this.WhenAnyValue(x => x.MainImplementedSort)
+            )
+            .Throttle(TimeSpan.FromMilliseconds(100));
+
+        _sortOrderObservable
+            .Skip(1)
             .Subscribe(async _ => await Dispatcher.UIThread.InvokeAsync(() => Refresh()));
     }
     #endregion
@@ -295,6 +328,17 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
         var itemsPerPage = UserPreferences.ItemsPerPage;
         LeftPageInfo.PageSize = RightPageInfo.PageSize = itemsPerPage;
     }
+    private void UpdateSortSettings()
+    {
+        MainSortOrder = -1;
+        MainSortOrder = (int)UserPreferences.SortOrder;
+
+        MainSortDirection = -1;
+        MainSortDirection = (int)UserPreferences.SortDirection;
+
+        MainImplementedSort = -1;
+        MainImplementedSort = (int)UserPreferences.ImplementedSort;
+    }
 
     private void Refresh(bool refreshLeftPanelItems = true)
     {
@@ -320,8 +364,8 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
         }
         _isPreviousScreenSearch = true;
 
-        var sortOrder = UserPreferences.SortOrder;
-        var sortDirection = UserPreferences.SortDirection;
+        var sortOrder = (ItemSortOrder)MainSortOrder;
+        var sortDirection = (SortDirection)MainSortDirection;
         var isFolderSearchEnabled = UserPreferences.EnableSearchInFolder && _itemNavigationService.GetCurrentItemId() != null;
 
         if (isFolderSearchEnabled)
@@ -367,9 +411,9 @@ public class MainViewModel : ViewModelBase, IInitializable, IPostInitializable
     {
         var avatarId = _itemNavigationService.GetCurrentAvatarId();
         var commonAvatars = InstanceRepository.CommonAvatars.GetAll();
-        var sortOrder = UserPreferences.SortOrder;
-        var sortDirection = UserPreferences.SortDirection;
-        var implementedSort = UserPreferences.ImplementedSort;
+        var sortOrder = (ItemSortOrder)MainSortOrder;
+        var sortDirection = (SortDirection)MainSortDirection;
+        var implementedSort = (ImplementedSort)MainImplementedSort;
         var implementedEnabled = implementedSort != ImplementedSort.None;
 
         var navigationables = _itemNavigationService.GetCurrentSelectionView();

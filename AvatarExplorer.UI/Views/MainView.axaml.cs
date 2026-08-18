@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +23,23 @@ namespace AvatarExplorer.UI.Views;
 
 public partial class MainView : UserControl
 {
+    private static readonly double[] GridItemImageSizes = [130, 170, 210];
+    private static readonly double[] GridItemMinWidths = [150, 190, 230];
+    private const int HoverOffset = 20;
+
+    public static readonly StyledProperty<double> GridItemImageSizeProperty =
+        AvaloniaProperty.Register<MainView, double>(nameof(GridItemImageSize), 170.0);
+
+    public double GridItemImageSize
+    {
+        get => GetValue(GridItemImageSizeProperty);
+        set => SetValue(GridItemImageSizeProperty, value);
+    }
+
     private readonly HoverThumbnailWindow _hoverWindow = new();
+    private readonly ObservableCollection<GridRow> _gridRows = [];
+    private int _gridColumns = 1;
+    private double _gridItemMinWidth = 190;
 
     public MainView()
     {
@@ -34,6 +51,67 @@ public partial class MainView : UserControl
         RegisterScrollTracking();
         RegisterHoverThumbnailEvent();
         RegisterWindowClosingEvent();
+        RegisterGridResizeEvent();
+    }
+
+    private void RegisterGridResizeEvent()
+    {
+        GridItemsControl.ItemsSource = _gridRows;
+        GridItemsControl.SizeChanged += OnGridItemsControlSizeChanged;
+
+        if (DataContext is MainViewModel vm)
+        {
+            vm.PropertyChanged += OnGridItemsPropertyChanged;
+        }
+    }
+
+    private void OnGridItemsPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(MainViewModel.MainItems):
+                RebuildGridRows();
+                break;
+            case nameof(MainViewModel.MainGridItemSize):
+                UpdateGridItemSize();
+                break;
+        }
+    }
+
+    private void UpdateGridItemSize()
+    {
+        if (DataContext is not MainViewModel vm) return;
+
+        var index = Math.Clamp(vm.MainGridItemSize, 0, GridItemImageSizes.Length - 1);
+        GridItemImageSize = GridItemImageSizes[index];
+        _gridItemMinWidth = GridItemMinWidths[index];
+        UpdateGridColumns(GridItemsControl.Bounds.Width);
+        RebuildGridRows();
+    }
+
+    private void OnGridItemsControlSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        UpdateGridColumns(e.NewSize.Width);
+    }
+
+    private void UpdateGridColumns(double width)
+    {
+        var columns = Math.Max(1, (int)(width / _gridItemMinWidth));
+        if (columns == _gridColumns) return;
+        _gridColumns = columns;
+        RebuildGridRows();
+    }
+
+    private void RebuildGridRows()
+    {
+        if (DataContext is not MainViewModel vm) return;
+
+        _gridRows.Clear();
+        var items = vm.MainItems.ToList();
+        for (var i = 0; i < items.Count; i += _gridColumns)
+        {
+            _gridRows.Add(new GridRow(items.Skip(i).Take(_gridColumns).ToList(), _gridColumns));
+        }
     }
 
     private void RegisterWindowClosingEvent()
@@ -242,8 +320,6 @@ public partial class MainView : UserControl
         vm.UpdateHoverThumbnailPosition(GetScreenPosition(e));
     }
 
-    private const int HoverOffset = 20;
-
     private PixelPoint GetScreenPosition(PointerEventArgs e)
     {
         var topLevel = TopLevel.GetTopLevel(this);
@@ -257,41 +333,35 @@ public partial class MainView : UserControl
         if (sender is not Button button) return;
         if (button.DataContext is not ItemViewModel item) return;
 
-        var viewModelType = item.ViewModelType;
-        
-        if (viewModelType != ViewModelType.Item &&
-            viewModelType != ViewModelType.Avatar &&
-            viewModelType != ViewModelType.File &&
-            viewModelType != ViewModelType.Folder) return;
-
         var transferItem = new DataTransferItem();
         string? droppedPath = null;
 
-        if (viewModelType == ViewModelType.File && !string.IsNullOrEmpty(item.ActualValue))
+        switch (item.ViewModelType)
         {
-            var storageFile = await StorageService.GetStorageFileFromPath(item.ActualValue);
-            if (storageFile != null)
-            {
-                transferItem.Set(DataFormat.File, storageFile);
-                droppedPath = item.ActualValue;
-            }
-            else transferItem.Set(DataFormat.Text, item.ActualValue);
-        }
-        else if (viewModelType == ViewModelType.Item && !string.IsNullOrEmpty(item.Identifier))
-        {
-            transferItem.Set(DataFormat.Text, item.Identifier);
-        }
-        else if (viewModelType == ViewModelType.Avatar && !string.IsNullOrEmpty(item.ActualValue))
-        {
-            transferItem.Set(DataFormat.Text, item.ActualValue);
-        }
-        else if (viewModelType == ViewModelType.Folder && !string.IsNullOrEmpty(item.ActualValue))
-        {
-            transferItem.Set(DataFormat.Text, item.ActualValue);
-        }
-        else
-        {
-            return;
+            case ViewModelType.File:
+                if (string.IsNullOrEmpty(item.ActualValue)) return;
+                var storageFile = await StorageService.GetStorageFileFromPath(item.ActualValue);
+                if (storageFile != null)
+                {
+                    transferItem.Set(DataFormat.File, storageFile);
+                    droppedPath = item.ActualValue;
+                }
+                else
+                {
+                    transferItem.Set(DataFormat.Text, item.ActualValue);
+                }
+                break;
+            case ViewModelType.Item:
+                if (string.IsNullOrEmpty(item.Identifier)) return;
+                transferItem.Set(DataFormat.Text, item.Identifier);
+                break;
+            case ViewModelType.Avatar:
+            case ViewModelType.Folder:
+                if (string.IsNullOrEmpty(item.ActualValue)) return;
+                transferItem.Set(DataFormat.Text, item.ActualValue);
+                break;
+            default:
+                return;
         }
 
         var dragData = new DataTransfer();
