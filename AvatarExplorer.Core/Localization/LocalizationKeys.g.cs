@@ -205,6 +205,7 @@ public static class Loc
             public const string Preparing = "Processing.Export.Preparing";
             public const string Copying = "Processing.Export.Copying";
         }
+        public const string Downloading = "Processing.Downloading";
     }
     public static class ContextMenu
     {
@@ -369,6 +370,8 @@ public static class Loc
         public const string FetchAllVariationHashesFailed = "Error.FetchAllVariationHashesFailed";
         public const string UnitypackageNotFound = "Error.UnitypackageNotFound";
         public const string InvalidUrl = "Error.InvalidUrl";
+        public const string InvalidReleaseUrl = "Error.InvalidReleaseUrl";
+        public const string DownloadFailed = "Error.DownloadFailed";
         public const string ItemPathNotFound = "Error.ItemPathNotFound";
     }
     public static class Settings
@@ -887,6 +890,7 @@ public static class Loc
         public const string ChangeLogs = "UpdateDialog.ChangeLogs";
         public const string Later = "UpdateDialog.Later";
         public const string UpdateNow = "UpdateDialog.UpdateNow";
+        public const string OpenReleasePage = "UpdateDialog.OpenReleasePage";
         public const string NoUpdateAvailableTitle = "UpdateDialog.NoUpdateAvailableTitle";
         public const string NoUpdateAvailable = "UpdateDialog.NoUpdateAvailable";
     }
