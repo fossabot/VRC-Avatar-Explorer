@@ -1,0 +1,8 @@
+.flatpak-builder
+
+publish
+build-dir
+repo
+
+memo.md
+*.flatpak
