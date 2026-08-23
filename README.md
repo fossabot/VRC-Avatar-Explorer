@@ -4,6 +4,7 @@ English README: [README-en.md](README-en.md)
 
 ![GitHub Release](https://img.shields.io/github/v/release/puk06/VRC-Avatar-Explorer?label=Stable)
 ![GitHub Release](https://img.shields.io/github/v/release/puk06/VRC-Avatar-Explorer?include_prereleases&label=Pre-Release)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fpuk06%2FVRC-Avatar-Explorer.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fpuk06%2FVRC-Avatar-Explorer?ref=badge_shield)
 
 VRChatユーザー向けのシンプルかつ強力な**クロスプラットフォーム対応アセット管理ツール**です。
 
@@ -66,3 +67,7 @@ Boothからの自動アイテム取得機能に対応していますが、本ア
 - **AvatarExplorer.UI**: AvatarExplorer.Core を UI で操作するためのアプリケーションです。Avalonia UI で作られています。
 - **Tools/LocalizationKeyGenerator**: `AvatarExplorer.Core/Data/Localization/ja-JP.json` から `AvatarExplorer.Core/Localization/LocalizationKeys.g.cs` を生成するツールです。`AvatarExplorer.Core` のビルド時に自動で生成されます。
 ---
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fpuk06%2FVRC-Avatar-Explorer.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fpuk06%2FVRC-Avatar-Explorer?ref=badge_large)
